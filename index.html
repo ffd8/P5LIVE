@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html manifest="cache.manifest">
+<head>
+  <title>Tinkerpad</title>
+  <meta charset="utf-8">
+  <link rel="icon" type="image/png" href="apple-touch-icon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Tinkerpad">
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, minimal-ui">
+  <style type="text/css">
+    * {
+      box-sizing: border-box;
+    }
+    ::selection {
+      background-color: #fff;
+    }
+    html {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      font-weight: 300;
+      font-family: 'Source Sans Pro', 'Open Sans', Roboto, 'Helvetica Neue', 'Segoe UI', 'Myriad Pro', Helvetica, Myriad, Arial, sans-serif;
+    }
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      color: #839496;
+      background: #000;
+      position: relative;
+    }
+    
+    
+    #editor,
+    #preview {
+      width: 100vw;
+      height:100vh;
+      margin: 0;
+      z-index: -1;
+      position:fixed;
+      outline: none;
+      background: none;
+      border: none;
+      box-sizing: border-box;
+
+    }
+    #editor {
+      transition: background-color .1s ease-in-out;
+      font-family: 'Monaco','Source Code Pro', Menlo, Consolas, monospace;
+      color: #fff;
+      padding: 15px;
+      font-size: 3vw;
+      line-height: 1.2;
+      font-weight: 300;
+      z-index:1;
+      mix-blend-mode:difference;
+      -webkit-font-smoothing: antialiased;
+      display:block;
+    }
+    #preview {
+      //background: #fff;
+      appearance: none;
+      z-index:-1;
+    }
+    #preview:hover,
+    #preview:focus {
+      opacity: 1;
+      cursor: default;
+    }
+    header{
+      display:none;
+    }
+    footer {
+      display:none;
+      background: #073642;
+      width: 100%;
+      height: 30px;
+      line-height: 30px;
+      padding: 0 5px;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 250;
+    }
+    footer .download {
+      position: absolute;
+      top: 50px;
+      left: 50px;
+    }
+    @media (max-width: 481px) {
+      header #brand {
+        font-size: 10pt;
+      }
+      header #brand strong {
+        display: none;
+      }
+    }
+  </style>
+    <script src="p5/p5.min.js"></script>
+    <script src="p5/addons/p5.dom.min.js"></script>
+    <script src="p5/addons/p5.sound.min.js"></script>
+    <script src="p5/sketch.js?11"></script>
+</head>
+<body>
+  <section>
+    <div id="preview"></div>
+    <textarea id="editor" autofocus></textarea>
+    <div id="holdscript"></div>
+  </section>
+  <header>
+    <span id="brand"><span id="filename"></span></span>
+    <nav>
+      <button id="save" onclick="exportNote()">save</button>
+      <button id="switch" onclick="switchNote()">switch</button>
+    </nav>
+  </header>
+  <footer><a id="download" download="export.html"></a></footer>
+  <script type="text/javascript">
+    /*
+      TODO
+      - pulldown of saved localstorage or new (check expirations)
+      - toggle nav
+      - add pres: auto/default text colors, fontsize
+      - search again for p5js livecode projects
+      - use default sketch for template of new project
+      - rename settings
+      - check issue for WEBGL + instance of p5js
+      - cleanup un-necessary css/html
+      - add about
+      - check fontsize not saving/updating
+      - add bulletproof crash/prevention
+    */
+
+
+    var editorPane = document.getElementById('editor'),
+        previewPane = document.getElementById('preview'),
+        downloadLink = document.getElementById('download'),
+        fileName = '',
+        fontSize = 3, 
+        autoMode = false;
+
+        editorPane.style.display = "block";
+
+    // Editor Interactions
+    onload = editorPane.onkeyup = function() {
+      if(autoMode){refreshView();}
+      if(fileName == ''){ switchNote() };
+      localStorage[fileName] = editorPane.value;
+      document.body.id = 'tapZap';
+      tapZap();
+    };
+    editorPane.onfocus= function() {
+      this.style.webkitTransform = 'translate3D(0px, -10000px,0)';
+      webkitRequestAnimationFrame(function() {
+        this.style.webkitTransform = '';
+      }.bind(this));
+    };
+    editorPane.onkeydown = function(event) {
+      if(event.keyCode === 9) {
+        softTab('  '); // tabs set at 2 spaces
+        event.preventDefault();
+      }else if(event.keyCode == 13 && event.shiftKey){ // enter = recompile
+        refreshView();
+        event.preventDefault();
+      }else if(event.keyCode == 65 && event.shiftKey){ // a = autoMode
+        autoModeToggle();
+        event.preventDefault();
+      }else if(event.keyCode == 72 && event.shiftKey){ // h = hide
+        editorToggle();
+        event.preventDefault();
+      }else if(event.keyCode == 38 && event.shiftKey){ // up arrow = bigger font
+        adjustFont(.5);
+        event.preventDefault();
+      }else if(event.keyCode == 40 && event.shiftKey){ // down arrow = smaller font
+        adjustFont(-.5);
+        event.preventDefault();
+      }
+    }
+
+    // Editor Functions
+    function refreshView() {
+      editorPane.style.height = (window.innerHeight - 110) + 'px';
+      previewPane.style.height = (window.innerHeight - 110) + 'px';
+      //(previewPane.contentWindow.document).write(editorPane.value);
+      //(previewPane.contentWindow.document).close();
+      updateP5();
+      editorPane.focus();
+    }
+
+    function updateP5(){
+      var s = document.createElement("script");
+      s.type = "text/javascript";
+      //s.src = "";//"sketch2.js";
+      s.innerHTML = editorPane.value; //document.getElementById('myscript').innerHTML;
+      s.id = "p5update";
+      document.getElementById("holdscript").innerHTML = "";
+      document.getElementById("holdscript").appendChild(s);
+    }
+
+    function autoModeToggle(){
+      autoMode = !autoMode;
+        if(autoMode){
+          editor.style.color = "rgb(100, 255, 100)";
+        }else{
+          editor.style.color = "rgb(255, 255, 255)";
+        }
+    }
+
+    function editorToggle(){
+      if(editorPane.style.display != "block"){
+        editorPane.style.display = "block";
+      }else{
+        editorPane.style.display = "none";
+      }
+    }
+
+    function adjustFont(newVal){
+      //alert(editorPane.style.fontSize);
+      fontSize += newVal;
+      editorPane.style.fontSize = fontSize + "vw";
+    }
+
+    function softTab(spaces) {
+      if(document.selection) {
+        editorPane.focus();
+        var tab = document.selection.createRange();
+        tab.text = spaces;
+        return;
+      }
+      else if(editorPane.selectionStart || editorPage.selectionStart == '0') {
+        var startPos = editorPane.selectionStart,
+            endPos = editorPane.selectionEnd,
+            scrollTop = editorPane.scrollTop;
+            editorPane.value = editorPane.value.substring(0, startPos) + spaces + editorPane.value.substring(endPos, editorPane.value.length);
+            editorPane.focus();
+            editorPane.selectionStart = startPos + spaces.length;
+            editorPane.selectionEnd = startPos + spaces.length;
+      } else {
+        editorPane.value += textArea.value;
+        editorPane.focus();
+      }
+    };
+    function switchNote() {
+      fileName = prompt('Welcome to Tinkerpad\n\nThinkerpad is a mobile-friendly scratchpad for tinkering around with HTML, CSS, and JS in the browser. It can also be bookmarked for offline use.\n\nTo Use the Default Scratchpad:\nPress \'Enter\' or select \'Cancel\' to load the default scratchpad\n\nTo Create a New Scratchpad:\nEnter the name of the new scratchpad you wish to create and select \'OK\'\n\nTo Open a Saved Scratchpad:\nEnter the name of the saved scratchpad below to wish to continue editing and select \'OK\'\n\nSaved Scratchpads in This Browser:\n' + Object.keys(localStorage).join(", "), '');
+      if(fileName == null || fileName == '') { fileName = 'scratchpad'; editorPane.value = localStorage[fileName] }
+      if(localStorage[fileName] != ''){ editorPane.value = localStorage[fileName] }
+      if(editorPane.value == 'undefined'){ editorPane.value = ''; }
+      downloadLink.setAttribute('download', fileName + '.html');
+      document.getElementById('filename').innerHTML = ': ' + fileName;
+      document.title = 'Tinkerpad:' + fileName;
+      refreshView();
+    };
+    function swingPane(reveal, conceal) {
+      var revealPane = document.getElementById(reveal),
+          concealPane = document.getElementById(conceal);
+      if(revealPane.style.width != '100%') {
+        concealPane.setAttribute('style', 'width: 0; margin: 0; padding: 0;');
+        revealPane.setAttribute('style', 'width: 100%; margin-left: 0; opacity: 1;');
+      } else {
+        concealPane.setAttribute('style', 'width: 49.25%;');
+        revealPane.setAttribute('style', 'width: 49.25%;');
+      }
+      refreshView();
+    };
+    function exportNote() {
+      downloadLink.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(editorPane.value);
+      downloadLink.click();
+    };
+
+    // tapZap eliminates the 300ms standard delay added afer `touchstart` for mobile users, for quicker user interactions
+    function tapZap(element, handler) {
+      this.element = element;
+      this.handler = handler;
+      element.addEventListener('touchstart', this, false);
+      element.addEventListener('click', this, false);
+    };
+    tapZap.prototype.handleEvent = function(event) {
+      switch (event.type) {
+        case 'touchstart': this.onTouchStart(event); break;
+        case 'touchmove': this.onTouchMove(event); break;
+        case 'touchend': this.onClick(event); break;
+        case 'click': this.onClick(event); break;
+      }
+    };
+    tapZap.prototype.onTouchStart = function(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.element.addEventListener('touchend', this, false);
+      document.body.addEventListener('touchmove', this, false);
+      this.startX = event.touches[0].clientX;
+      this.startY = event.touches[0].clientY;
+      isMoving = false;
+    };
+    tapZap.prototype.onTouchMove = function(event) {
+      if(Math.abs(event.touches[0].clientX - this.startX) > 10 ||
+          Math.abs(event.touches[0].clientY - this.startY) > 10) {
+        this.reset();
+      }
+    };
+    tapZap.prototype.onClick = function(event) {
+      this.reset();
+      this.handler(event);
+      if(event.type == 'touchend') {
+        preventGhostClick(this.startX, this.startY);
+      }
+    };
+    tapZap.prototype.reset = function() {
+      this.element.removeEventListener('touchend', this, false);
+      document.body.removeEventListener('touchmove', this, false);
+    };
+    function preventGhostClick(x, y) {
+      coordinates.push(x, y);
+      window.setTimeout(ghostPop, 2500);
+    };
+    function ghostPop() {
+      coordinates.splice(0, 2);
+    };
+    function ghostClick(event) {
+      for (var i = 0; i < coordinates.length; i += 2) {
+        var x = coordinates[i];
+        var y = coordinates[i + 1];
+        if(Math.abs(event.clientX - x) < 25 && Math.abs(event.clientY - y) < 25) {
+          event.stopPropagation();
+          event.preventDefault();
+        }
+      }
+    };
+    document.addEventListener('click', ghostClick.onClick, true);
+    var coordinates = [];
+    function initTapZap() {
+      new tapZap(document.getElementbyId('tapZap'), goSomewhere);
+    }
+    function goSomewhere() {
+      var theTarget = document.elementFromPoint(this.startX, this.startY);
+      if(theTarget.nodeType == 3) theTarget = theTarget.parentNode;
+      var theEvent = document.createEvent('MouseEvents');
+      theEvent.initEvent('click', true, true);
+      theTarget.dispatchEvent(theEvent);
+    };
+  </script>
+</body>
+</html>
