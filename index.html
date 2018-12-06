@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html manifest="cache.manifest">
+<!-- <html manifest="cache.manifest"> -->
 <head>
-  <title>Tinkerpad</title>
+  <title>P5LIVE</title>
   <meta charset="utf-8">
   <link rel="icon" type="image/png" href="apple-touch-icon.png">
   <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="Tinkerpad">
+  <meta name="apple-mobile-web-app-title" content="P5LIVE">
   <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, minimal-ui">
   <style type="text/css">
     * {
@@ -19,29 +19,30 @@
     html {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
-      font-weight: 300;
+      width: 100vw;
+      height: 100vh;
       font-family: 'Source Sans Pro', 'Open Sans', Roboto, 'Helvetica Neue', 'Segoe UI', 'Myriad Pro', Helvetica, Myriad, Arial, sans-serif;
     }
     body {
       margin: 0;
       padding: 0;
-      width: 100%;
-      height: 100%;
+      width: 100vw;
+      height: 100vh;
       color: #839496;
       background: #000;
       position: relative;
+      background:#000;
     }
     
-    
     #editor,
-    #preview {
+    #preview, canvas {
+      position:fixed;
+      top:0;
+      left:0;
       width: 100vw;
       height:100vh;
       margin: 0;
       z-index: -1;
-      position:fixed;
       outline: none;
       background: none;
       border: none;
@@ -52,19 +53,23 @@
       transition: background-color .1s ease-in-out;
       font-family: 'Monaco','Source Code Pro', Menlo, Consolas, monospace;
       color: #fff;
-      padding: 15px;
+      padding: 25px;
       font-size: 3vw;
-      line-height: 1.2;
-      font-weight: 300;
+      line-height: 1.3;
       z-index:1;
       mix-blend-mode:difference;
+      will-change: opacity;
       -webkit-font-smoothing: antialiased;
       display:block;
+      box-sizing: border-box;
     }
     #preview {
-      //background: #fff;
+      background: #000;
       appearance: none;
       z-index:-1;
+      -webkit-user-select: none; /* Chrome/Safari */        
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* IE10+ */
     }
     #preview:hover,
     #preview:focus {
@@ -103,7 +108,7 @@
     <script src="p5/p5.min.js"></script>
     <script src="p5/addons/p5.dom.min.js"></script>
     <script src="p5/addons/p5.sound.min.js"></script>
-    <script src="p5/sketch.js?11"></script>
+    <script src="p5/sketch.js?13"></script>
 </head>
 <body>
   <section>
@@ -119,38 +124,83 @@
     </nav>
   </header>
   <footer><a id="download" download="export.html"></a></footer>
+  <textarea style="display:none" id="p5-template">
+function setup() {
+  createCanvas(windowWidth, windowHeight);
+
+}
+
+function draw() {
+  
+}</textarea>
   <script type="text/javascript">
     /*
       TODO
       - pulldown of saved localstorage or new (check expirations)
       - toggle nav
-      - add pres: auto/default text colors, fontsize
+      - add nav: auto/default text colors, fontsize
       - search again for p5js livecode projects
-      - use default sketch for template of new project
       - rename settings
-      - check issue for WEBGL + instance of p5js
+      - check issue for WEBGL, background + instance of p5js
       - cleanup un-necessary css/html
       - add about
-      - check fontsize not saving/updating
-      - add bulletproof crash/prevention
+      - add autoMode crash prevention
+      - check/fix mousepressed focus issue
+      - really reset instance for various settings
     */
 
+
+    // init localStorage
+    var reset = false;
+    if(reset){
+      localStorage.removeItem("sketches");
+      localStorage.removeItem("settings");
+    }
+    if(localStorage.getItem("sketches") == null){
+       localStorage.setItem("sketches", "default");
+    }
+    if(localStorage.getItem("settings") == null){
+        localStorage.setItem("settings", JSON.stringify({"fontSize":3, "editColor":"rgb(255, 255, 255)", "autoColor":"rgb(100, 255, 100)", "autoMode":false}));
+    }
 
     var editorPane = document.getElementById('editor'),
         previewPane = document.getElementById('preview'),
         downloadLink = document.getElementById('download'),
+        p5template = document.getElementById('p5-template'),
         fileName = '',
-        fontSize = 3, 
-        autoMode = false;
+        sketches = getSketches(", "),
+        settings = getSettings(),
+        autoMode = settings.autoMode;
+        
 
-        editorPane.style.display = "block";
+        // init sketches
+    editorPane.style.display = "block";
+    editorPane.style.fontSize = settings.fontSize+"vw";
+
+    // Load settings
+    function getSettings(){
+      return JSON.parse(localStorage.getItem('settings'));
+    }
+
+    // Save settings
+    function updateSettings(){
+      localStorage.setItem('settings', JSON.stringify(settings));
+    }
+
+    // Load Sketches
+    function getSketches(splitter){
+      var sketchesSplit = localStorage.getItem("sketches").split(splitter);
+
+      return sketchesSplit.filter(Boolean);
+    }
 
     // Editor Interactions
     onload = editorPane.onkeyup = function() {
-      if(autoMode){refreshView();}
+      //console.log(Object.keys(localStorage));
       if(fileName == ''){ switchNote() };
+      if(autoMode){refreshView();}
       localStorage[fileName] = editorPane.value;
-      document.body.id = 'tapZap';
+      //document.body.id = 'preview';
       tapZap();
     };
     editorPane.onfocus= function() {
@@ -161,30 +211,38 @@
     };
     editorPane.onkeydown = function(event) {
       if(event.keyCode === 9) {
-        softTab('  '); // tabs set at 2 spaces
+        if(editorPane.style.display == "block")
+          softTab('  '); // tabs set at 2 spaces
         event.preventDefault();
-      }else if(event.keyCode == 13 && event.shiftKey){ // enter = recompile
-        refreshView();
-        event.preventDefault();
-      }else if(event.keyCode == 65 && event.shiftKey){ // a = autoMode
-        autoModeToggle();
-        event.preventDefault();
-      }else if(event.keyCode == 72 && event.shiftKey){ // h = hide
-        editorToggle();
-        event.preventDefault();
-      }else if(event.keyCode == 38 && event.shiftKey){ // up arrow = bigger font
+      }else if(event.keyCode == 38 && event.altKey){ // up arrow = bigger font
         adjustFont(.5);
         event.preventDefault();
-      }else if(event.keyCode == 40 && event.shiftKey){ // down arrow = smaller font
+      }else if(event.keyCode == 40 && event.altKey){ // down arrow = smaller font
         adjustFont(-.5);
+        event.preventDefault();
+      }else if(event.keyCode == 13 && event.altKey){ // enter = recompile
+        refreshView();
+        event.preventDefault();
+      }
+    }
+
+     window.onkeydown = function(event) {
+      if(event.keyCode == 72 && event.altKey){ // h = hide
+        editorToggle();
+        event.preventDefault();
+      }else if(event.keyCode == 65 && event.altKey){ // a = autoMode
+        autoModeToggle();
+        event.preventDefault();
+      }else if(event.keyCode == 79 && event.altKey){ // o = open
+        switchNote();
         event.preventDefault();
       }
     }
 
     // Editor Functions
     function refreshView() {
-      editorPane.style.height = (window.innerHeight - 110) + 'px';
-      previewPane.style.height = (window.innerHeight - 110) + 'px';
+      //editorPane.style.height = (window.innerHeight) + 'px';
+      //previewPane.style.height = (window.innerHeight - 110) + 'px';
       //(previewPane.contentWindow.document).write(editorPane.value);
       //(previewPane.contentWindow.document).close();
       updateP5();
@@ -199,6 +257,7 @@
       s.id = "p5update";
       document.getElementById("holdscript").innerHTML = "";
       document.getElementById("holdscript").appendChild(s);
+      setup();
     }
 
     function autoModeToggle(){
@@ -220,8 +279,9 @@
 
     function adjustFont(newVal){
       //alert(editorPane.style.fontSize);
-      fontSize += newVal;
-      editorPane.style.fontSize = fontSize + "vw";
+      settings.fontSize += newVal;
+      editorPane.style.fontSize = settings.fontSize + "vw";
+      updateSettings();
     }
 
     function softTab(spaces) {
@@ -245,13 +305,13 @@
       }
     };
     function switchNote() {
-      fileName = prompt('Welcome to Tinkerpad\n\nThinkerpad is a mobile-friendly scratchpad for tinkering around with HTML, CSS, and JS in the browser. It can also be bookmarked for offline use.\n\nTo Use the Default Scratchpad:\nPress \'Enter\' or select \'Cancel\' to load the default scratchpad\n\nTo Create a New Scratchpad:\nEnter the name of the new scratchpad you wish to create and select \'OK\'\n\nTo Open a Saved Scratchpad:\nEnter the name of the saved scratchpad below to wish to continue editing and select \'OK\'\n\nSaved Scratchpads in This Browser:\n' + Object.keys(localStorage).join(", "), '');
-      if(fileName == null || fileName == '') { fileName = 'scratchpad'; editorPane.value = localStorage[fileName] }
-      if(localStorage[fileName] != ''){ editorPane.value = localStorage[fileName] }
-      if(editorPane.value == 'undefined'){ editorPane.value = ''; }
+      fileName = prompt('P5LIVE\nThis is a quick + dirty p5.js live-coding environment.\n\nDefault Sketch:\nPress \'OK\' or \'Cancel\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + getSketches(",  "), '');
+      if(fileName == null || fileName == '') { fileName = 'default'; editorPane.value = p5template.value;}
+      if(localStorage[fileName] != ''){ if (sketches.indexOf(fileName) === -1) sketches.unshift(fileName); editorPane.value = localStorage[fileName]; localStorage.setItem("sketches", sketches.join(", ")); }
+      if(editorPane.value == 'undefined'){ editorPane.value = p5template.value; }
       downloadLink.setAttribute('download', fileName + '.html');
       document.getElementById('filename').innerHTML = ': ' + fileName;
-      document.title = 'Tinkerpad:' + fileName;
+      document.title = 'P5LIVE - ' + fileName;
       refreshView();
     };
     function swingPane(reveal, conceal) {
@@ -265,7 +325,11 @@
         revealPane.setAttribute('style', 'width: 49.25%;');
       }
       refreshView();
+
     };
+
+   
+
     function exportNote() {
       downloadLink.href = 'data:text/html;charset=utf-8,' + encodeURIComponent(editorPane.value);
       downloadLink.click();
@@ -332,7 +396,7 @@
     document.addEventListener('click', ghostClick.onClick, true);
     var coordinates = [];
     function initTapZap() {
-      new tapZap(document.getElementbyId('tapZap'), goSomewhere);
+      new tapZap(document.getElementbyId('preview'), goSomewhere);
     }
     function goSomewhere() {
       var theTarget = document.elementFromPoint(this.startX, this.startY);
