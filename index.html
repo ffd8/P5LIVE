@@ -42,7 +42,7 @@
       width: 100vw;
       height:100vh;
       margin: 0;
-      z-index: -1;
+      //z-index: -1;
       outline: none;
       background: none;
       border: none;
@@ -86,20 +86,50 @@
       position:fixed;
       top:0;
       right:0;
+      margin-right:-20vw;
       height:100vh;
       width:20vw;
-      background:#333;
       box-sizing: border-box;
       padding:15px;
       color:#fff;
       z-index:101;
-      /*transition: right 2s linear;*/
+      transition: margin-right .4s linear;
+      mix-blend-mode:difference;
+
+    }
+    #menu-switch{
+    	position:absolute;
+    	font-size:2.5vw;
+    	top:0;
+    	left:-2.5vw;
+    	height:100%;
+    	cursor:pointer;
+    	mix-blend-mode:difference;
+    	color:#fff;
+    	opacity:.1;
+    	transition: opacity .5s linear;
+    }
+    #menu-switch:hover{
+    	opacity:1;
+    }
+    #menu-bg{
+    	position:absolute;
+    	top:0;
+    	left:0;
+    	width:100%;
+    	height:100%;
+    	background:#333;
+    	z-index:-1;
+    	opacity: .5;
+    }
+    .menu-section{
+    	margin:0 0 35px 0;
     }
     .menu-header{
       font-size:1.5vw;
       color:#fff;
       border-bottom:1px solid #fff;
-      margin:25px 0 10px 0;
+      margin:0px 0 5px 0;
     }
     #menu-sketches-holder{
       color:#fff;
@@ -131,7 +161,7 @@
     }
     #menu-settings-fontsize{
       width:2em;
-      font-size:1.5vw;
+      font-size:1.25vw;
       text-align:center;
       color:#fff;
       border:none;
@@ -139,6 +169,21 @@
       background:none;
       border-bottom:2px solid #fff;
     }
+
+/* ACE EDITOR */
+   /* 
+    .ace_gutter-cell {
+    	font-size:0px;
+
+    }
+    .ace-twilight, .ace_gutter{
+    }
+ 
+
+    .ace_gutter, .ace_gutter > .ace_layer {
+    	//background:none;
+        width: 20px !important;
+    }*/
 
     footer {
       display:none;
@@ -169,8 +214,10 @@
     <script src="includes/p5/p5.min.js"></script>
     <script src="includes/p5/addons/p5.dom.min.js"></script>
     <script src="includes/p5/addons/p5.sound.min.js"></script>
-    <script src="includes/p5/sketchX.js?13"></script>
+    <script src="includes/p5/sketch.js"></script>
     <script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+    
 </head>
 <body>
   <section>
@@ -185,25 +232,38 @@
     <span id="brand"><span id="filename"></span></span>
     <nav>
       <button id="save" onclick="exportNote()">save</button>
-      <button id="switch" onclick="switchNote()">switch</button>
+      <button id="switch" onclick="switchSketch()">switch</button>
     </nav>
   </header>
   <div id="menu">
-    <div>
+  	<div id="menu-bg"></div>
+  	<div id="menu-switch" onclick="menuToggle();">X</div>
+    <div class="menu-section">
       <div id="menu-settings-header" class="menu-header">SETTINGS</div>
       <div id="menu-settings">
         <div>
-          Font-Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="2"> vw
+          Font-Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="2" onkeyup="fontSizeAdjust(this.value);"> vw
+        </div>
+        <div >
+            <span style="cursor:help;" title="Prevents compiling unless strict Javascript is error free">Strict Compile:</span> 
+            <input type="checkbox" id="settings-errormode" name="settings-errormode" value="settings-errormode" onchange="errorModeToggle();" >
         </div>
         <div>
-            Auto Compile: <input type="checkbox" id="settings-automode" name="settings-automode" value="settings-automode" onchange="autoModeToggle();">
+            <span style="cursor:help;" title="Force new instance of P5JS on each compile">Instance Compile:</span> 
+            <input type="checkbox" id="settings-hardcompile" name="settings-hardcompile" value="settings-hardcompile" onchange="hardCompileToggle();">
+        </div>
+        <div>
+            <span style="cursor:help;" title="Compile code on each keypress">Auto Compile:</span> 
+            <input type="checkbox" id="settings-automode" name="settings-automode" value="settings-automode" onchange="autoModeToggle();">
         </div>
          <div>
-            Fullscreen: <input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();">
+            <span style="cursor:help;" title="Toggle fullscreen mode">Fullscreen:</span> 
+            <input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();">
         </div>
+        
       </div>
     </div>
-    <div>
+    <div class="menu-section">
       <div id="menu-sketches-header" class="menu-header">SKETCHES</div>
       <div id="menu-sketches-holder">
         <div id="menu-sketches">
@@ -211,7 +271,10 @@
         </div>
       </div>
         <div>
-          <button>EXPORT</button>
+          <button onclick="sketchesExport();">EXPORT</button>
+          <!-- <input  onclick="sketchesImport();">IMPORT</button> -->
+          <button onclick="document.getElementById('file-input').click();">IMPORT</button>
+					<input id="file-input" type="file" name="name" style="display: none;" onchange="sketchesImport(this.files[0]);" />
         </div>
     </div>
    
@@ -227,25 +290,39 @@ function draw() {
 	
 }</textarea>
   <script type="text/javascript">
+
+  	/*
+	CMD KEYS
+	CTRL + ENTER = refresh code
+	CTRL + a = autocompile code
+	CTRL + h = hide editor
+	CTRL + f = fullscreen toggle
+	CTRL + m = menu toggle
+	CTRL + ENTER = refresh code
+	CTRL + r = refresh p5js
+  	*/
+
     /*
       TODO
       - pulldown of saved localstorage or new (check expirations)
-      - toggle nav
-      - add nav: auto/default text colors, fontsize
+      √- toggle nav
+      √- add nav: auto/default text colors, fontsize
       - rename settings
       - cleanup un-necessary css/html
       - add about
-      - really reset instance for various settings
-      - fix template not working on new
-      - fix key commands (font size)
-      - check reload issue with forloop / map??
-      - ease javascript for ;
-      - build menu for settings, sketches
-      - remove, save as, sketches
+      √- adjust font via settings menu
+      - 
+      √- really reset instance for various settings
+      √- fix template not working on new
+      √- fix key commands (font size)
+      √- check reload issue with forloop / map??
+      √- ease javascript for ';' and '!== vs !='
+      √- build menu for settings, sketches
+      √- remove, [ save as ??], sketches
 
       CREDITS
       p5.js - https://p5js.org
-      tinkerpad - https://github.com/tomhodgins/tinkerpad
+      tinkerpad (just localstorage idea?) - https://github.com/tomhodgins/tinkerpad
       ace editor - https://ace.c9.io
     */
 
@@ -261,30 +338,69 @@ function draw() {
        localStorage.setItem("sketches", "default");
     }
     if(localStorage.getItem("settings") == null){
-        localStorage.setItem("settings", JSON.stringify({"fontSize":3, "editColor":"rgb(255, 255, 255)", "autoColor":"rgb(100, 255, 100)", "autoMode":false}));
+        localStorage.setItem("settings", JSON.stringify({"fontSize":3, "editColor":"rgb(255, 255, 255)", "autoColor":"rgb(100, 255, 100)", "autoMode":false, "hardCompile":true}));
     }
 
     var editorPane = document.getElementById('editor'),
         previewPane = document.getElementById('preview'),
         downloadLink = document.getElementById('download'),
         p5template = document.getElementById('p5-template'),
+        p5script = document.getElementById("holdscript"),
         menuSketches = document.getElementById('menu-sketches'),
         menuSettings = document.getElementById('menu-settings'),
+        settingsErrorMode = document.getElementById('settings-errormode'),
+        settingsAutoMode = document.getElementById('settings-automode'),
+        settingsFullscreen = document.getElementById('settings-fullscreen'),
+        settingsHardCompile = document.getElementById('settings-hardcompile'),
+        settingsFontsize = document.getElementById('menu-settings-fontsize');
+        menuPanel = document.getElementById('menu'),
+        menuSwitch = document.getElementById('menu-switch'),
+        menuMode = true, //*temp
         fileName = '',
         sketches = getSketches(", "),
         settings = getSettings(),
+        errorMode = settings.errorMode, 
         autoMode = settings.autoMode, 
         fullscreenMode = false,
         validCode = true, 
+        hardCompile = settings.hardCompile,
+        debugMode = true,
+        sketchLoaded = false,
+        pLen = 0, 
         p5;
         
     //autoMode = true;
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/twilight");
     editor.session.setMode("ace/mode/javascript");
+    editor.setOptions({
+    	showPrintMargin: false,
+    	animatedScroll: false,
+    	displayIndentGuides: false,
+    	useWorker: false, // investigate
+    	showLineNumbers: false,
+    	showGutter: false,
+    	//enableLiveAutocompletion:true,
+    	//fixedWidthGutter: true,
+    });
     //editor.session.$worker.send("changeOptions", [{asi: true}]);
 
-   
+      // init sketches
+    editorPane.style.visibility = "visible";
+
+
+    // load stored settings
+    loadSettings();
+
+
+    // stylize editor gutter
+	  var gut = document.getElementsByClassName("ace_gutter");
+		for (var i = 0; i < gut.length; i++) {
+	  		//gut[i].style.background = "none";
+		}
+
+
+   	// compile if no errors
     editor.session.on('changeMode', function(e, session){
       if ("ace/mode/javascript" === session.getMode().$id) {
         if (!!session.$worker) {
@@ -305,23 +421,47 @@ function draw() {
       }
     });
 
-    // CMD-KEYS
-  
+
+    // CMD-KEYS (remove key conflicts)
     editor.commands.removeCommands(["gotoright","movelinesup", "movelinesdown", "gotolinestart", "splitline"]);
 
-
-    // remove keybindings, but keep code
-  // ** KILLED BACKSPACE + right arrow (gotoright)??
-   //editor.commands.bindKey("Backspace", "backspace");
+   // replace backspace w/o ctrl + h
    editor.commands.addCommand({
     name: "backspace",
-    bindKey: { win: "backspace", mac: "backspace" },
-    exec: function(editor) {  },
-    scrollIntoView: "cursor",
-    multiSelectAction: "forEach"
+    bindKey: { win: "Shift-Backspace|Backspace", mac: "Ctrl-Backspace|Shift-Backspace|Backspace" },
+    exec: function(e) { e.remove("left") },
+    multiSelectAction: "forEach",
+    scrollIntoView: "cursor"
    });
-   console.log(editor.commands);
 
+   //replace gotoright w/o ctrl + f
+   editor.commands.addCommand({
+    name: "gotoright",
+    bindKey: { win: "Right", mac: "Right" },
+    exec: function(e,t) { e.navigateRight(t.times) },
+    multiSelectAction: "forEach",
+    scrollIntoView: "cursor",
+    readOnly:!0
+   });
+
+
+   if(debugMode)
+   	listCommands();
+
+   function listCommands(){
+   	var cmds = editor.commands.commands;
+   	var k = [];
+   	for (var cmd in cmds){
+   		k.push(cmd.name +" = "+ cmd.bindKey);
+   	}
+
+   	console.log(cmds);
+   }
+
+   // check storageKeys
+    if(debugMode)
+			getKeys();
+    
     function getKeys(){
       var k = [];
       for (var key in localStorage){
@@ -330,13 +470,24 @@ function draw() {
       console.log(k.join(", "));
     }
 
-        // init sketches
-    editorPane.style.visibility = "visible";
-    editorPane.style.fontSize = settings.fontSize+"vw";
-
-    // Load settings
+  
+    // Get settings
     function getSettings(){
       return JSON.parse(localStorage.getItem('settings'));
+    }
+
+    // Load settings
+    function loadSettings(){
+
+    	// fontSize
+			editorPane.style.fontSize = settings.fontSize+"vw";
+    	
+    	// load toggles
+			hardCompileUpdate();
+    	errorModeUpdate();
+    	autoModeUpdate();
+    	fullscreenUpdate();
+    	menuUpdate();
     }
 
     // Save settings
@@ -364,7 +515,7 @@ function draw() {
       editor.setValue(localStorage[sketch], 1);
       fileName = sketch;
       updateMenu();
-      updateP5();
+      updateP5(hardCompile);
       editor.focus();
     }
 
@@ -381,6 +532,39 @@ function draw() {
             updateSketches();
             updateMenu();
           }
+    }
+
+    function sketchesExport(){
+    	var jsonExport = {};
+    	jsonExport.sketches = [];
+    	for(var i=0; i < sketches.length; i++){
+    		jsonExport.sketches.push({"sketchName":sketches[i], "sketchCode":localStorage.getItem(sketches[i])});
+      }
+      jsonExport.settings = settings;
+      var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
+      saveJSON(jsonExport, 'p5live_'+dateStamp+'.json');
+      if(debugMode)
+      	console.log(jsonExport);
+    }
+
+    function sketchesImport(data){
+    	var reader = new FileReader();
+			reader.onload = function(data) {
+		    var jsonObj = JSON.parse(event.target.result);
+		    console.log(jsonObj); // WOOHOOO use for import!
+		  }
+
+		  reader.readAsText(data);
+    }
+
+    function sketchesImportLoad(file){
+    // 	if (file.type === 'text') {
+    // 		console.log(file);
+    // 		//createP(file.data);
+  		// }
+    	// loadJSON(url, function(){
+
+    	// });
     }
 
     function updateMenu(){
@@ -404,35 +588,43 @@ function draw() {
     // Editor Interactions
     onload = editorPane.onkeyup = function() {
       //console.log(Object.keys(localStorage));
-      if(fileName == ''){ switchNote() };
-      if(autoMode){refreshView();}
+      if(fileName == ''){ switchSketch() };
+      if(autoMode){
+      	// only refresh if new content typed
+      	var cLen = editor.getValue().length;
+      	console.log(cLen +" / "+ pLen);
+      	if(cLen != pLen){
+      		pLen = cLen;
+      		refreshView();
+      	}
+      }
       localStorage[fileName] = editor.getValue();
      // console.log('hi');
       //document.body.id = 'preview';
       //tapZap();
     };
-    editorPane.onfocus= function() {
-      this.style.webkitTransform = 'translate3D(0px, -10000px,0)';
-      webkitRequestAnimationFrame(function() {
-        this.style.webkitTransform = '';
-      }.bind(this));
-    };
+   
+    // editorPane.onfocus= function() {
+    //   this.style.webkitTransform = 'translate3D(0px, -10000px,0)';
+    //   webkitRequestAnimationFrame(function() {
+    //     this.style.webkitTransform = '';
+    //   }.bind(this));
+    // };
+
     editorPane.onkeydown = function(event) {
-      console.log(event);
-      if(event.keyCode == 38 && event.ctrlKey){ // up arrow = bigger font
-        adjustFont(.5);
+    	// check length of editor
+    	pLen = editor.getValue().length;
+
+    	if(debugMode)
+      		console.log(event);
+      if((event.key == '+' || event.key == '=' )&& event.ctrlKey){ // up arrow = bigger font
+        fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
         event.preventDefault();
-      }else if(event.keyCode == 40 && event.ctrlKey){ // down arrow = smaller font
-        adjustFont(-.5);
-        event.preventDefault();
-      }else if(event.keyCode == 13 && event.ctrlKey){ // enter = recompile
-        refreshView();
+      }else if((event.key == '-') && event.ctrlKey){ // down arrow = smaller font
+        fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
         event.preventDefault();
       }else if(event.keyCode == 65 && event.ctrlKey){ // a = auto compile
         autoModeToggle();
-        event.preventDefault();
-      }else if(event.keyCode == 70 && event.ctrlKey){ // f = fullscreen
-        fullscreenToggle();
         event.preventDefault();
       }
     }
@@ -442,40 +634,60 @@ function draw() {
         editorToggle();
         event.preventDefault();
       }else if(event.keyCode == 79 && event.ctrlKey){ // o = open
-        switchNote();
+        switchSketch();
+        event.preventDefault();
+      }else if(event.keyCode == 77 && event.ctrlKey){ // m = menu
+        menuToggle();
+        event.preventDefault();
+      }else if(event.keyCode == 70 && event.ctrlKey){ // f = fullscreen
+        fullscreenToggle();
+        event.preventDefault();
+      }else if(event.keyCode == 82 && event.ctrlKey){ // r = auto compile
+        //refreshView();
+        updateP5(true);
+        editorPane.focus();
+        event.preventDefault();
+      }else if(event.keyCode == 13 && event.ctrlKey){ // enter = recompile
+        refreshView();
         event.preventDefault();
       }
     }
 
+    // loop/noLoop on window blur
+    window.onblur = function () { noLoop(); }
+		window.onfocus = function () { loop(); }
+
     // Editor Functions
     function refreshView() {
-      //editorPane.style.height = (window.innerHeight) + 'px';
-      //previewPane.style.height = (window.innerHeight - 110) + 'px';
-      //(previewPane.contentWindow.document).write(editorPane.value);
-      //(previewPane.contentWindow.document).close();
-      updateP5();
+      updateP5(hardCompile);
       editorPane.focus();
     }
 
-    function updateP5(){
-      if(validCode){
-        p5RemoveHack();
-        document.getElementById("holdscript").innerHTML = "";
+    function updateP5(compileMode){
+      if(validCode || !errorMode){
+      	sketchLoaded = false;
+        p5script.innerHTML = "";
         
-        var ps = document.createElement("script");
-        ps.type = "text/javascript";
-        ps.src = "includes/p5/p5.min.js";
-        document.getElementById("holdscript").appendChild(ps);
-        
-        var ps2 = document.createElement("script");
-        ps.type = "text/javascript";
-        ps.src = "includes/p5/addons/p5.dom.min.js";
-        document.getElementById("holdscript").appendChild(ps2);
-        
+        if(compileMode){
+	        p5RemoveHack();
+	        var ps = document.createElement("script");
+	        ps.type = "text/javascript";
+	        ps.src = "includes/p5/p5.min.js";
+	        p5script.appendChild(ps);
+	        
+	        var ps2 = document.createElement("script");
+	        ps.type = "text/javascript";
+	        ps.src = "includes/p5/addons/p5.dom.min.js";
+	        p5script.appendChild(ps2);
+        }
         var s = document.createElement("script");
         s.type = "text/javascript";
         s.innerHTML = editor.getValue();
-        document.getElementById("holdscript").appendChild(s);
+        p5script.appendChild(s);
+
+        if(!hardCompile)
+        	setup();
+        sketchLoaded = true;
       }
     }
 
@@ -490,56 +702,135 @@ function draw() {
       }
     }
 
-    function autoModeToggle(){
-      autoMode = !autoMode;
-      var settingsAutomode = document.getElementById('settings-automode');
-        if(autoMode){
-              editor.setTheme("ace/theme/gob");
-              settingsAutomode.checked = true;
-          //editor.style.color = "rgb(100, 255, 100)";
-        }else{
-              editor.setTheme("ace/theme/twilight");
-              settingsAutomode.checked = false;
-          //editor.style.color = "rgb(255, 255, 255)";
-        }
-        console.log("autoMode: "+autoMode);
+    function errorModeToggle(){
+    	errorMode = !errorMode;
+      errorModeUpdate();
     }
 
-    function fullscreenToggle(){
-      fullscreenMode = !fullscreenMode;
-      var settingsFullscreen = document.getElementById('settings-fullscreen');
-      if(fullscreenMode){
-        fullscreen(true);
-        settingsFullscreen.checked = true;
-      }else{
-        fullscreen(false);
-        settingsFullscreen.checked = false;
+    function errorModeUpdate(){
+    	checkToggle("errorMode", errorMode, settingsErrorMode);
+    	if(errorMode){
+              //editor.session.setOption("showGutter", true);
+              editor.renderer.setShowGutter(true); 
+              editor.session.setOption("useWorker", true);
+        }else{
+              //editor.session.setOption("showGutter", false);
+              //editor.renderer.setShowGutter(true); 
+              editor.renderer.setShowGutter(false);
+              editor.session.setOption("useWorker", false);
       }
     }
 
+
+    function autoModeToggle(){
+    	autoMode = !autoMode;
+   		autoModeUpdate();
+    }
+
+    function autoModeUpdate(){
+    	checkToggle("autoMode", autoMode, settingsAutoMode);
+      if(autoMode){
+      	editor.setTheme("ace/theme/gob");
+      }else{
+      	editor.setTheme("ace/theme/twilight");
+      }
+    }
+
+    function fullscreenToggle(){
+	    fullscreenMode = !fullscreenMode;
+			fullscreenUpdate();
+    }
+
+    function fullscreenUpdate(){
+    	checkToggle("fullscreenMode", fullscreenMode, settingsFullscreen);
+      if(fullscreenMode){
+        const canv = document.querySelector('canvas');
+        canv.style.top = 0;
+        if(sketchLoaded)
+        	fullscreen(true);
+        editorUpdate();
+      }else{
+      	if(sketchLoaded)
+        	fullscreen(false);
+      }
+    }
+
+    function hardCompileToggle(){
+    	hardCompile = !hardCompile;
+    	hardCompileUpdate();
+    }
+
+    function hardCompileUpdate(){
+    	checkToggle("hardCompile", hardCompile, settingsHardCompile);
+    }
+
+
+    // generic checkbox function
+    function checkToggle(checkName, checkVar, checkElm){
+    	//checkVar = !checkVar;
+    	if(checkVar){
+				checkElm.checked = true;
+    	}else{
+				checkElm.checked = false;
+    	}
+    	settings[checkName] = checkVar;
+    	updateSettings();
+    	if(debugMode){
+				console.log(checkName+": "+checkVar);
+    	}
+    }
+
+    // hide/show editor
     function editorToggle(){
-      if(editorPane.style.visibility != "visible"){
+    	if(editorPane.style.visibility != "visible"){
         editorPane.style.visibility = "visible";
-        editor.focus();
       }else{
         editorPane.style.visibility = "hidden";
+      }
+      editorUpdate();
+    }
+
+    function editorUpdate(){
+      if(editorPane.style.visibility != "visible"){
+        editor.focus();
+      }else{
         const canv = document.querySelector('canvas');
         canv.focus();
       }
     }
 
-    function adjustFont(newVal){
-      //alert(editorPane.style.fontSize);
-      settings.fontSize += newVal;
-      var settingsFontsize = document.getElementById('menu-settings-fontsize').value = settings.fontSize;
-      editorPane.style.fontSize = settings.fontSize + "vw";
-      updateSettings();
+    // hide/show menu
+    function menuToggle(){
+      menuMode = !menuMode;
+      menuUpdate();
     }
 
-    
-    function switchNote() {
+    function menuUpdate(){
+    	if(!menuMode){
+        menuPanel.style.marginRight = "-20vw";
+        menuSwitch.innerHTML = "☰";
+      }else{
+        menuPanel.style.marginRight = "0vw";
+        menuSwitch.innerHTML = "X";
+      }
+    }
+
+    // adjust fontsize
+    function fontSizeAdjust(newVal){
+      settings.fontSize = newVal;
+      updateSettings();
+      fontSizeUpdate();
+    }
+
+    function fontSizeUpdate(){
+    	if(settingsFontsize !== document.activeElement)
+      	settingsFontsize.value = settings.fontSize;
+			editorPane.style.fontSize = settings.fontSize + "vw";
+    }
+
+    // switch sketches
+    function switchSketch() {
       fileName = prompt('P5LIVE\nThis is a quick + dirty p5.js live-coding environment.\n\nDefault Sketch:\nPress \'OK\' or \'Cancel\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + getSketches(",  "), '');
-      console.log("edit leng: "+editor.getValue().length);
       if(fileName == null || fileName == '') { 
         fileName = 'default'; //editor.setValue("hi"); // p5template.value
         localStorage[fileName] = p5template.value;
@@ -574,19 +865,7 @@ function draw() {
       updateMenu();
     };
 
-    function swingPane(reveal, conceal) {
-      var revealPane = document.getElementById(reveal),
-          concealPane = document.getElementById(conceal);
-      if(revealPane.style.width != '100%') {
-        concealPane.setAttribute('style', 'width: 0; margin: 0; padding: 0;');
-        revealPane.setAttribute('style', 'width: 100%; margin-left: 0; opacity: 1;');
-      } else {
-        concealPane.setAttribute('style', 'width: 49.25%;');
-        revealPane.setAttribute('style', 'width: 49.25%;');
-      }
-      refreshView();
-
-    };
+   
 
    
 
@@ -595,76 +874,7 @@ function draw() {
       downloadLink.click();
     };
 
-    // tapZap eliminates the 300ms standard delay added afer `touchstart` for mobile users, for quicker user interactions
-    function tapZap(element, handler) {
-      this.element = element;
-      this.handler = handler;
-      element.addEventListener('touchstart', this, false);
-      element.addEventListener('click', this, false);
-    };
-    tapZap.prototype.handleEvent = function(event) {
-      switch (event.type) {
-        case 'touchstart': this.onTouchStart(event); break;
-        case 'touchmove': this.onTouchMove(event); break;
-        case 'touchend': this.onClick(event); break;
-        case 'click': this.onClick(event); break;
-      }
-    };
-    tapZap.prototype.onTouchStart = function(event) {
-      event.preventDefault();
-      event.stopPropagation();
-      this.element.addEventListener('touchend', this, false);
-      document.body.addEventListener('touchmove', this, false);
-      this.startX = event.touches[0].clientX;
-      this.startY = event.touches[0].clientY;
-      isMoving = false;
-    };
-    tapZap.prototype.onTouchMove = function(event) {
-      if(Math.abs(event.touches[0].clientX - this.startX) > 10 ||
-          Math.abs(event.touches[0].clientY - this.startY) > 10) {
-        this.reset();
-      }
-    };
-    tapZap.prototype.onClick = function(event) {
-      this.reset();
-      this.handler(event);
-      if(event.type == 'touchend') {
-        preventGhostClick(this.startX, this.startY);
-      }
-    };
-    tapZap.prototype.reset = function() {
-      this.element.removeEventListener('touchend', this, false);
-      document.body.removeEventListener('touchmove', this, false);
-    };
-    function preventGhostClick(x, y) {
-      coordinates.push(x, y);
-      window.setTimeout(ghostPop, 2500);
-    };
-    function ghostPop() {
-      coordinates.splice(0, 2);
-    };
-    function ghostClick(event) {
-      for (var i = 0; i < coordinates.length; i += 2) {
-        var x = coordinates[i];
-        var y = coordinates[i + 1];
-        if(Math.abs(event.clientX - x) < 25 && Math.abs(event.clientY - y) < 25) {
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      }
-    };
-    document.addEventListener('click', ghostClick.onClick, true);
-    var coordinates = [];
-    function initTapZap() {
-      new tapZap(document.getElementbyId('preview'), goSomewhere);
-    }
-    function goSomewhere() {
-      var theTarget = document.elementFromPoint(this.startX, this.startY);
-      if(theTarget.nodeType == 3) theTarget = theTarget.parentNode;
-      var theEvent = document.createEvent('MouseEvents');
-      theEvent.initEvent('click', true, true);
-      theTarget.dispatchEvent(theEvent);
-    };
+   
   </script>
 </body>
 </html>
