@@ -346,9 +346,8 @@
 	          <button onclick="loadDefault();">NEW</button>
 	          <button onclick="document.getElementById('file-input').click();">IMPORT</button>
 						<input id="file-input" type="file" name="name" style="display: none;" onchange="sketchesImport(this.files[0]);" />
-	          <button onclick="document.getElementById('file-input-replace').click();">REPLACE</button>
-						<input id="file-input-replace" type="file" name="name" style="display: none;" onchange="sketchesReplace(this.files[0]);" />
 	          <button onclick="sketchesExport();">EXPORT</button>
+	          <button onclick="sketchesClear();">CLEAR</button>
 	        </div>
 
 	        <div id="menu-sketches-new"></div>
@@ -415,49 +414,83 @@ function ease(iVal, oVal, eVal){
 /*
 P5LIVE v 1.0.1
 cc teddavis.org 2019
-bringing p5js into a live-coding environment!
+p5.js live-coding vj environment!
 
+
+GETTING STARTED
+-------------------------------
+- Create, New Sketch + start coding! 
+  Save, Type a name into 'Save Sketch As...' and hit Return.
+  Save As, same as above while editing existing sketch.
+  
+- Sketches Menu:
+  NEW, new sketch.
+  IMPORT, select JSON file from export (all or single sketch).
+  EXPORT, download entire sketch list as JSON for import.
+  CLEAR, erase entire sketches list.
+  
+- Sketches List:
+  Load, click on sketch name.
+  Rename, click 'id' and type new name.
+  Export, click '↓' to download JSON file for import.
+  Remove, click 'x' and comfirm removal.
+  
+- Settings:
+  Font Size, adjust size of editor text.
+  Strict Compile, avoid bugs as only valid code will compiple.
+  Instance Compile, full reset between WEBGL + 2D or if changes don't appear.
+  Auto Compile, live-coding mode, refreshes on keyup.
+  Fullscreen, toggle fullScreen(), ideal for VJing
+  Eco Render, toggle loop()/noLoop() when browser window is out of focus.
+  Cursor, toggle visible cursor when hiding editor (ctrl + e).
+  
+
+SHORTCUTS
+-------------------------------
+ctrl + n » new sketch
+ctrl + enter » compile once
+ctrl + r » instance compile once
+ctrl + a » autocompile toggle
+ctrl + e » editor toggle
+ctrl + f » fullscreen toggle
+ctrl + m » menu toggle
+ctrl + o » open sketch prompt
+ctrl + c » cursor toggle
+ctrl + - » decrease fontsize
+ctrl + + » increase fontsize
+ctrl + 1,2,3...0 » load first 10 sketches
+
+
+FUTURE
+-------------------------------
+- etherpad-like collaborative editing
+- api (get for sketch + settings)
+- mobile optimization
+- audio variables (avg amp, fft)
+- export image [video?]
+- re-order saved sketches (https://github.com/SortableJS/Sortable)
+- tree structure for sketches
+- console
+- additional js libs (via settings)
+- export as HTML for website usage
+    
 
 THANKS
 -------------------------------
 p5.js » https://p5js.org (magic)
 ace editor » https://ace.c9.io (editor)
 tinkerpad » https://github.com/tomhodgins/tinkerpad (localstorage idea)
+Roboto Mono » https://github.com/google/roboto (font)
 
 
-CMD-KEYS
+INSPIRATION
 -------------------------------
-ctrl + enter » compile
-ctrl + r » instance compile
-ctrl + a » autocompile
-ctrl + e » editor toggle
-ctrl + f » fullscreen toggle
-ctrl + m » menu toggle
-ctrl + o » open sketch prompt
-ctrl + - » decrease fontsize
-ctrl + + » increase fontsize
-
-
-TIPS
--------------------------------
-- While livecoding, once done with setup(), turn off 'Instance Compile' 
-  to keep frameCount clock running and smooth refreshes.
-  
-- Instance Compile is required if switching between WEBGL + 2D sketches,
-  same for any major settings changes in p5js (rectMode, etc).
- 
-
-PLANS
--------------------------------
-    - etherpad-like collaborative editing
-    - mobile optomization
-    - audio in
-    - export image [video?]
-    
+- Hydra » 
+- of livecode »
 
 SOURCE
 -------------------------------
-github » *github link*
+github » https://github.com/ffd8/p5live
 
 
 */
@@ -471,7 +504,7 @@ function setup() {
 }
 
 function draw() {
-	var lc = 12;
+	var lc = 8;
 	for(var i=0; i < lc; i++){
 	    var x = map(i, 0, lc-1, width/2, mouseX);
 	    var y = map(i, 0, lc-1, height/2, mouseY);
@@ -489,6 +522,9 @@ function draw() {
   <script type="text/javascript">
     /*
       TODO
+      - check audio lib bug?! (traaash instance)
+      - replace vars w/ settings.vars
+      - update sketches to obj w/ order
       - cleanup un-necessary css/html
       - reimplement manifest for offline use?
       - FB/share details
@@ -496,8 +532,6 @@ function draw() {
       - double check unloading p5 scripts (audio etc)...
       - initial settings (special for mobile)
       - array of loaded js scripts (input for csv, local/remote)
-      - function for loading array
-      - store cur sketch in settings for refresh on it?
       - 
     */
 
@@ -509,24 +543,28 @@ function draw() {
     var reset = false;
 
     if(reset){
+    	localStorage.clear();
       localStorage.removeItem("sketches");
       localStorage.removeItem("settings");
     }
     if(localStorage.getItem("sketches") == null){
-       localStorage.setItem("sketches", "default");
+       localStorage.setItem("sketches", "");
     }
-    if(localStorage.getItem("settings") == null){
-        localStorage.setItem("settings", JSON.stringify({"fontSize":3, "editColor":"rgb(255, 255, 255)", "autoColor":"rgb(100, 255, 100)", "autoCompile":false, "instanceCompile":true}));
-    }
+    // if(localStorage.getItem("settings") == null){
+    //     localStorage.setItem("settings", JSON.stringify({"fontSize":3, "editColor":"rgb(255, 255, 255)", "autoColor":"rgb(100, 255, 100)", "autoCompile":false, "instanceCompile":true}));
+    // }
 
     var initSettings = {
-    	"fontSize":2, 
+    	"welcome":true,
+    	"fontSize":1.5, 
     	"autoCompile":false, 
     	"instanceCompile":true,
     	"ecoRender": true,
     	"strictCompile": false,
     	"canvasCursor": true,
     	"fullscreenMode":false,
+    	"fileName": '',
+    	"menuMode": true,
 
     	"scripts": ["includes/p5/p5.min.js", "includes/p5/addons/p5.dom.min.js", "includes/p5/addons/p5.sound.min.js"],
 
@@ -552,22 +590,22 @@ function draw() {
         menuNewSketch = document.getElementById('menu-sketch-new'),
         menuPanel = document.getElementById('menu'),
         menuSwitch = document.getElementById('menu-switch'),
-        menuMode = true, //*temp
-        fileName = '',
         sketches = getSketches(", "),
         settings = getSettings(),
+        menuMode = settings.menuMode, //*temp
+        //fileName = settings.fileName,
         scripts = initSettings.scripts,
         strictCompile = settings.strictCompile, 
         autoCompile = settings.autoCompile, 
-        fullscreenMode = false,
-        validCode = true, 
+        fullscreenMode = settings.fullscreenMode,
+        ecoRender = settings.ecoRender,
         instanceCompile = settings.instanceCompile,
+        canvasCursor = settings.canvasCursor,
+        validCode = true, 
         debugMode = true,
         sketchLoaded = false,
-        ecoRender = settings.ecoRender,
         pLen = 0, 
         paused = false,
-        canvasCursor = settings.canvasCursor,
         p5;
        
 		// init editor 
@@ -690,7 +728,11 @@ function draw() {
 
     // get settings from localstorage
     function getSettings(){
-      return JSON.parse(localStorage.getItem('settings'));
+    	var tempSettings = initSettings;
+    	if(localStorage.hasOwnProperty('settings')){
+      	tempSettings = JSON.parse(localStorage.getItem('settings'));
+    	}
+    	return tempSettings;
     }
 
     // react to settings once gathered
@@ -706,12 +748,20 @@ function draw() {
     	menuToggleUpdate();
     	ecoRenderUpdate();
     	cursorToggleUpdate();
+
+    	if(settings.welcome){
+    		loadAbout();
+    		settings.welcome = false;
+    	}else{
+    		loadSketch(settings.fileName);
+    	}
     }
 
     // set settings to localstorage
     function updateSettings(){
       localStorage.setItem('settings', JSON.stringify(settings));
-      console.log(getSettings());
+      if(debugMode)
+	      console.log(getSettings());
     }
 
     // set sketches list to localstorage
@@ -729,10 +779,11 @@ function draw() {
     // load sketch
     function loadSketch(sketch){
     	if(localStorage.hasOwnProperty(sketch)){
-	      fileName = sketch;
-    		editor.setValue(localStorage[fileName], 1);
+	      settings.fileName = sketch;
+    		editor.setValue(localStorage[settings.fileName], 1);
       	updateMenu();
       	updateP5(instanceCompile);
+      	updateSettings();
       	editor.focus();
     	}else{
     		loadDefault();
@@ -763,7 +814,7 @@ function draw() {
 	        if (index !== -1) {
 	            sketches.splice(index, 1);
 	        }
-	        if(sketch === fileName){
+	        if(sketch === settings.fileName){
 	        	setTimeout(function(){ loadDefault(); }, 100);
 	        }
 	        updateSketches();
@@ -823,7 +874,7 @@ function draw() {
 		    	if (sketches.indexOf(sketchName) === -1) {
 	          sketches.unshift(sketchName);
 	        }
-	        if(sketchName == fileName){
+	        if(sketchName == settings.fileName){
 	        	loadSketch(sketchName);
 	        }
 		    }
@@ -845,6 +896,9 @@ function draw() {
     function sketchesClear(){
     	var doubleCheck = confirm("Are you sure you want to remove ALL skeches?");
     	if(doubleCheck){
+    		for(var i=0; i < sketches.length; i++){
+    			localStorage.removeItem(sketches[i]);
+    		}
 	    	localStorage.removeItem("sketches");
 	    	sketches = [];
 	    	updateSketches();
@@ -861,7 +915,7 @@ function draw() {
       var selSelected = false;
       for(var i=0; i < sketchesSplit.length; i++){
         var selClass = "";
-        if(sketchesSplit[i] == fileName){
+        if(sketchesSplit[i] == settings.fileName){
           selClass = 'sketch-selected';
           selSelected = true;
         }
@@ -887,7 +941,7 @@ function draw() {
     // Editor Interactions
     onload = editorPane.onkeyup = function() {
       //console.log(Object.keys(localStorage));
-      if(fileName == ''){ 
+      if(settings.fileName == ''){ 
       	loadDefault();
       };
       if(autoCompile){
@@ -899,7 +953,7 @@ function draw() {
       		refreshView();
       	}
       }
-      localStorage[fileName] = editor.getValue();
+      localStorage[settings.fileName] = editor.getValue();
     };
    
     editorPane.onkeydown = function(event) {
@@ -1218,6 +1272,7 @@ function draw() {
     // hide/show menu
     function menuToggle(){
       menuMode = !menuMode;
+      updateSettings();
       menuToggleUpdate();
     }
 
@@ -1248,10 +1303,9 @@ function draw() {
 
 		/* LOAD VARIOUS SKETCHES */
 
-
     function loadDefault(){
-    		fileName = 'default'; //editor.setValue("hi"); // p5template.value
-        localStorage.setItem(fileName, p5template);
+    		settings.fileName = 'default'; //editor.setValue("hi"); // p5template.value
+        localStorage.setItem(settings.fileName, p5template);
         editor.setValue(p5template, 1);
         editor.gotoLine(7, 1, false);
         editor.focus();
@@ -1260,8 +1314,8 @@ function draw() {
     }
 
     function loadAbout(){
-    	fileName = 'p5liveabout'; //editor.setValue("hi"); // p5template.value
-      localStorage.setItem(fileName, p5liveabout);
+    	settings.fileName = 'p5liveabout'; //editor.setValue("hi"); // p5template.value
+      localStorage.setItem(settings.fileName, p5liveabout);
       editor.setValue(p5liveabout, 1);
       editor.gotoLine(7, 1, false);
       editor.focus();
@@ -1270,29 +1324,44 @@ function draw() {
     }
 
     function loadNew(newName){
-    	fileName = newName;
-    	if(localStorage[fileName] != ''){ 
-	        if (sketches.indexOf(fileName) === -1) {
-	          sketches.unshift(fileName);
-	          updateSketches();
+    	if(newName != ''){
+	    	settings.fileName = newName;
+	    	if (sketches.indexOf(settings.fileName) === -1) {
+    			sketches.unshift(settings.fileName);
+    			updateSketches();
 	          if(editor.getValue().length > 86){ // 86 = template length
-			         localStorage[fileName] = editor.getValue();
-			      }else{
-			      	editor.setValue(p5template, 1);
-			      }
-	        }else{
-	          editor.setValue(localStorage[fileName], 1);
-	        }
-	        editor.focus(); 
+	          	localStorage[settings.fileName] = editor.getValue();
+	          }else{
+	          	editor.setValue(p5template, 1);
+	          }
+	      }else{
+	        editor.setValue(localStorage[settings.fileName], 1);
 	      }
+	      editor.focus(); 
+	    }
     }
+    	// if(localStorage[settings.fileName] != ''){ 
+    	// 	if (sketches.indexOf(settings.fileName) === -1) {
+    	// 		sketches.unshift(settings.fileName);
+    	// 		updateSketches();
+	    //       if(editor.getValue().length > 86){ // 86 = template length
+	    //       	localStorage[settings.fileName] = editor.getValue();
+	    //       }else{
+	    //       	editor.setValue(p5template, 1);
+	    //       }
+	    //     }else{
+	    //     	editor.setValue(localStorage[settings.fileName], 1);
+	    //     }
+	    //     editor.focus(); 
+	    //   }
+	    // }
 
     // create typed in sketch
     function loadType(){
     	if(event.keyCode === 13) {
     		var fn = menuNewSketch.value;
     		loadNew(fn);
-    		document.title = 'P5LIVE - ' + fileName;
+    		document.title = 'P5LIVE - ' + settings.fileName;
         refreshView();
         event.preventDefault();
     	}
@@ -1302,14 +1371,14 @@ function draw() {
     /* PROMPT SKETCH SWITCHER */
 
     function switchSketch() {
-      fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + getSketches(",  "), '');
-      if(fileName == '') { 
+      settings.fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + getSketches(",  "), '');
+      if(settings.fileName == '') { 
         loadDefault();
       }else{
-	      loadNew(fileName);
+	      loadNew(settings.fileName);
     	}
 
-      document.title = 'P5LIVE - ' + fileName;
+      document.title = 'P5LIVE - ' + settings.fileName;
       refreshView();
       updateMenu();
     };
