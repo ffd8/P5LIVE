@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="P5LIVE">
-  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, minimal-ui">
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
   <style type="text/css">
 		@font-face {
 		    font-family: 'roboto_mono';
@@ -161,7 +161,7 @@
     }
     #menu-sketches-holder{
       color:#fff;
-      height:36vh;
+      height:30vh;
       overflow:hidden;
      	overflow-y:auto;
     }
@@ -317,10 +317,10 @@
     	}
     }
   </style>
-    <script src="includes/p5/p5.min.js"></script>
+    <!-- <script src="includes/p5/p5.min.js"></script>
     <script src="includes/p5/addons/p5.dom.min.js"></script>
     <script src="includes/p5/addons/p5.sound.min.js"></script>
-    <script src="includes/p5/sketch.js"></script>
+    <script src="includes/p5/sketch.js"></script> -->
     <script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
     
@@ -339,6 +339,7 @@
 	  	<div class="menu-section">
 	  		<div class="menu-header">P5LIVE</div>
 	  		<div class="menu-contents" onclick="loadAbout();" style="cursor:help;" title="go ahead, click me">About</div>
+	  		<div class="menu-contents" onclick="resetP5();" style="cursor:help;" title="refresh P5LIVE">Reset</div>
 	  	</div>
 	  	<div class="menu-section">
 	      <div id="menu-sketches-header" class="menu-header">SKETCHES</div>
@@ -485,8 +486,9 @@ Roboto Mono » https://github.com/google/roboto (font)
 
 INSPIRATION
 -------------------------------
-- Hydra » 
-- of livecode »
+- cyril » https://github.com/cyrilcode/cyril
+- Hydra » https://github.com/ojack/hydra
+
 
 SOURCE
 -------------------------------
@@ -523,8 +525,8 @@ function draw() {
     /*
       TODO
       - check audio lib bug?! (traaash instance)
-      - replace vars w/ settings.vars
       - update sketches to obj w/ order
+      - set SSL default on teddavis.org
       - cleanup un-necessary css/html
       - reimplement manifest for offline use?
       - FB/share details
@@ -542,17 +544,15 @@ function draw() {
     // init localStorage
     var reset = false;
 
-    if(reset){
-    	localStorage.clear();
-      localStorage.removeItem("sketches");
-      localStorage.removeItem("settings");
+    if(reset){localStorage.clear();}
+
+    function resetP5(){
+   		var doubleCheck = confirm("Are you sure you want to reset P5LIVE?");
+	    if(doubleCheck){
+    		localStorage.clear();
+    		location.reload();
+    	}
     }
-    if(localStorage.getItem("sketches") == null){
-       localStorage.setItem("sketches", "");
-    }
-    // if(localStorage.getItem("settings") == null){
-    //     localStorage.setItem("settings", JSON.stringify({"fontSize":3, "editColor":"rgb(255, 255, 255)", "autoColor":"rgb(100, 255, 100)", "autoCompile":false, "instanceCompile":true}));
-    // }
 
     var initSettings = {
     	"welcome":true,
@@ -565,8 +565,9 @@ function draw() {
     	"fullscreenMode":false,
     	"fileName": '',
     	"menuMode": true,
-
-    	"scripts": ["includes/p5/p5.min.js", "includes/p5/addons/p5.dom.min.js", "includes/p5/addons/p5.sound.min.js"],
+    	"debugMode": true,
+    	"sketches": [],
+    	"scripts": ["includes/p5/p5.min.js", "includes/p5/addons/p5.dom.min.js"], // , "includes/p5/addons/p5.sound.min.js"
 
 
     }
@@ -590,19 +591,8 @@ function draw() {
         menuNewSketch = document.getElementById('menu-sketch-new'),
         menuPanel = document.getElementById('menu'),
         menuSwitch = document.getElementById('menu-switch'),
-        sketches = getSketches(", "),
         settings = getSettings(),
-        menuMode = settings.menuMode, //*temp
-        //fileName = settings.fileName,
-        scripts = initSettings.scripts,
-        strictCompile = settings.strictCompile, 
-        autoCompile = settings.autoCompile, 
-        fullscreenMode = settings.fullscreenMode,
-        ecoRender = settings.ecoRender,
-        instanceCompile = settings.instanceCompile,
-        canvasCursor = settings.canvasCursor,
         validCode = true, 
-        debugMode = true,
         sketchLoaded = false,
         pLen = 0, 
         paused = false,
@@ -714,7 +704,7 @@ function draw() {
       console.log(k.join(", "));
     }
 
-		if(debugMode){
+		if(settings.debugMode){
 			listCommands();
 			getKeys();
 		}
@@ -737,10 +727,7 @@ function draw() {
 
     // react to settings once gathered
     function loadSettings(){
-    	// load fontSize
-			editorPane.style.fontSize = settings.fontSize+"vw";
-    	
-    	// load toggles
+    	fontSizeUpdate();
 			instanceCompileUpdate();
     	strictCompileUpdate();
     	autoCompileUpdate();
@@ -749,24 +736,31 @@ function draw() {
     	ecoRenderUpdate();
     	cursorToggleUpdate();
 
+    	// if(!settings.instanceCompile){
+    	// 	//updateP5(true);
+    		loadScripts();
+    	// }
+
     	if(settings.welcome){
     		loadAbout();
     		settings.welcome = false;
+    		updateSettings();
     	}else{
     		loadSketch(settings.fileName);
     	}
+
     }
 
     // set settings to localstorage
     function updateSettings(){
       localStorage.setItem('settings', JSON.stringify(settings));
-      if(debugMode)
-	      console.log(getSettings());
+      if(settings.debugMode){console.log(getSettings());}
     }
 
     // set sketches list to localstorage
     function updateSketches(){
-      localStorage.setItem("sketches", sketches.join(", ")); 
+      //localStorage.setItem("sketches", sketches.join(", ")); 
+      updateSettings();
       updateMenu();
     }
 
@@ -782,7 +776,7 @@ function draw() {
 	      settings.fileName = sketch;
     		editor.setValue(localStorage[settings.fileName], 1);
       	updateMenu();
-      	updateP5(instanceCompile);
+      	updateP5(settings.instanceCompile);
       	updateSettings();
       	editor.focus();
     	}else{
@@ -795,9 +789,9 @@ function draw() {
     	var newName = prompt('Please enter a new name for "'+sketch+'":');
     	if(newName != ''){
     		localStorage.setItem(newName, localStorage[sketch]);
-    		var index = sketches.indexOf(sketch);
+    		var index = settings.sketches.indexOf(sketch);
 				if (index !== -1) {
-				    sketches[index] = newName;
+				    settings.sketches[index] = newName;
 				}
     		localStorage.removeItem(sketch);
     		updateSketches();
@@ -810,9 +804,9 @@ function draw() {
 	    var doubleCheck = confirm("Are you sure you want to delete: " +sketch+" ?");
 	      if(doubleCheck){
 	        localStorage.removeItem(sketch);
-	        var index = sketches.indexOf(sketch);    // <-- Not supported in <IE9
+	        var index = settings.sketches.indexOf(sketch);    // <-- Not supported in <IE9
 	        if (index !== -1) {
-	            sketches.splice(index, 1);
+	            settings.sketches.splice(index, 1);
 	        }
 	        if(sketch === settings.fileName){
 	        	setTimeout(function(){ loadDefault(); }, 100);
@@ -844,22 +838,20 @@ function draw() {
     	jsonExport.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
       var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
       saveJSON(jsonExport, 'P5L_'+sketch+'_'+dateStamp+'.json');
-      if(debugMode)
-      	console.log(jsonExport);
+      if(settings.debugMode){console.log(jsonExport);}
     }
 
     // export all sketches to JSON
     function sketchesExport(){
     	var jsonExport = {};
     	jsonExport.sketches = [];
-    	for(var i=0; i < sketches.length; i++){
-    		jsonExport.sketches.push({"sketchName":sketches[i], "sketchCode":localStorage.getItem(sketches[i])});
+    	for(var i=0; i < settings.sketches.length; i++){
+    		jsonExport.sketches.push({"sketchName":settings.sketches[i], "sketchCode":localStorage.getItem(settings.sketches[i])});
       }
       jsonExport.settings = settings;
       var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
       saveJSON(jsonExport, 'P5L_sketches_'+dateStamp+'.json');
-      if(debugMode)
-      	console.log(jsonExport);
+      if(settings.debugMode){console.log(jsonExport);}
     }
 
     // import sketches from JSON
@@ -871,8 +863,8 @@ function draw() {
 		    	var sketchName = jsonObj.sketches[i].sketchName;
 		    	var sketchCode = jsonObj.sketches[i].sketchCode;
 		    	localStorage.setItem(sketchName, sketchCode);
-		    	if (sketches.indexOf(sketchName) === -1) {
-	          sketches.unshift(sketchName);
+		    	if (settings.sketches.indexOf(sketchName) === -1) {
+	          settings.sketches.unshift(sketchName);
 	        }
 	        if(sketchName == settings.fileName){
 	        	loadSketch(sketchName);
@@ -888,7 +880,7 @@ function draw() {
     	var doubleCheck = confirm("Are you sure you want to replace ALL skeches?");
     	if(doubleCheck){
 	    	localStorage.removeItem("sketches");
-	    	sketches = [];
+	    	settings.sketches = [];
 	    	sketchesImport(data);
     	}
     }
@@ -896,11 +888,11 @@ function draw() {
     function sketchesClear(){
     	var doubleCheck = confirm("Are you sure you want to remove ALL skeches?");
     	if(doubleCheck){
-    		for(var i=0; i < sketches.length; i++){
-    			localStorage.removeItem(sketches[i]);
+    		for(var i=0; i < settings.sketches.length; i++){
+    			localStorage.removeItem(settings.sketches[i]);
     		}
 	    	localStorage.removeItem("sketches");
-	    	sketches = [];
+	    	settings.sketches = [];
 	    	updateSketches();
     	}
     }
@@ -910,19 +902,18 @@ function draw() {
     /* LIST SKETCHES IN MENU */
 
     function updateMenu(){
-      var sketchesSplit = localStorage.getItem("sketches").split(', ');
+      //var sketchesSplit = localStorage.getItem("sketches").split(', ');
       var menuSketchesHTML = '';
       var selSelected = false;
-      for(var i=0; i < sketchesSplit.length; i++){
+      for(var i=0; i < settings.sketches.length; i++){
         var selClass = "";
-        if(sketchesSplit[i] == settings.fileName){
+        if(settings.sketches[i] == settings.fileName){
           selClass = 'sketch-selected';
           selSelected = true;
         }
         var marq = "";
-        if(sketchesSplit[i].length > 15)
-        	marq = "marq";
-        menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'"><div class="menu-sketch-nav"><a class="menu-sketch-button" onclick="renameSketch(\''+sketchesSplit[i]+'\')" title="Rename Sketch">id</a><a class="menu-sketch-button" onclick="exportSketch(\''+sketchesSplit[i]+'\')" title="Export Sketch">↓</a><a class="menu-sketch-button" onclick="removeSketch(\''+sketchesSplit[i]+'\')" title="Remove Sketch">x</a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+sketchesSplit[i]+'\')">'+sketchesSplit[i]+'</div></div>';
+        if(settings.sketches[i].length > 15){marq = "marq";}
+        menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'"><div class="menu-sketch-nav"><a class="menu-sketch-button" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch">id</a><a class="menu-sketch-button" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch">↓</a><a class="menu-sketch-button" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch">x</a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
       }
       var selClass = "";
       if(!selSelected){
@@ -943,8 +934,8 @@ function draw() {
       //console.log(Object.keys(localStorage));
       if(settings.fileName == ''){ 
       	loadDefault();
-      };
-      if(autoCompile){
+      }
+      if(settings.autoCompile){
       	// only refresh if new content typed
       	var cLen = editor.getValue().length;
       	console.log(cLen +" / "+ pLen);
@@ -960,8 +951,7 @@ function draw() {
     	// check length of editor
     	pLen = editor.getValue().length;
 
-    	if(debugMode)
-      		console.log(event);
+    	if(settings.debugMode){console.log(event);}
       if((event.key == '+' || event.key == '=' )&& event.ctrlKey){ // up arrow = bigger font
         fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
         event.preventDefault();
@@ -1005,9 +995,8 @@ function draw() {
         event.preventDefault();
       }if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 0-9 = preset sketches
         var keySketch = event.keyCode - 49;
-        if(keySketch == -1)
-        	keySketch = 9;
-        loadSketch(sketches[keySketch]);
+        if(keySketch == -1){keySketch = 9;}
+        loadSketch(settings.sketches[keySketch]);
         event.preventDefault();
       }if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
         //loadSketch("blah");
@@ -1021,13 +1010,13 @@ function draw() {
 
     // compile + focus
     function refreshView() {
-      updateP5(instanceCompile);
+      updateP5(settings.instanceCompile);
       editorPane.focus();
     }
 
     // compile latest editor code
     function updateP5(compileMode){
-      if(validCode || !strictCompile){
+      if(validCode || !settings.strictCompile){
       	sketchLoaded = false;
         p5script.innerHTML = "";
         
@@ -1036,9 +1025,7 @@ function draw() {
 	        p5RemoveHack();
 
 	        // load external scripts
-	        for(var i=0; i < scripts.length; i++){
-	        	p5script.appendChild(loadScript(scripts[i]));
-	        }
+	        loadScripts();
         }
 
         // load sketch from editor
@@ -1050,23 +1037,30 @@ function draw() {
         s.innerHTML += p5custom;
         
         // pause on demand
-        if(paused)
-        	s.innerHTML += "function preload(){if(paused){noLoop();}}";
+        if(paused){s.innerHTML += "function preload(){if(paused){noLoop();}}";}
+        
         p5script.appendChild(s);
 
         // run setup if changing sketches w/o instance
-        if(!instanceCompile)
-        	setup();
+        if(!settings.instanceCompile){window.setTimeout(function(){setup();}, 100);}
+
 
         // cursor toggle
-        if(!canvasCursor)
-        	window.setTimeout(function(){noCursor();}, 100);
+        if(!settings.canvasCursor){window.setTimeout(function(){noCursor();}, 100);}
         
         // if(p5.instance.getAudioContext() != null)
         // 	p5.instance.getAudioContext().resume();
 
         sketchLoaded = true;
       }
+    }
+
+    function loadScripts(){
+    	if(settings.debugMode){console.log(settings.scripts);}
+
+	    for(var i=0; i < settings.scripts.length; i++){
+	    	p5script.appendChild(loadScript(settings.scripts[i]));
+	    }
     }
 
     function loadScript(scriptPath){
@@ -1080,12 +1074,23 @@ function draw() {
     // GoToLoop » https://codepen.io/GoSubRoutine/pen/ZBPjdP
     function p5RemoveHack() {
       if (window.p5 && p5.instance) {
+
+      	// heavy remove
+      	var x = document.getElementsByClassName("p5Canvas");
+				for (var i = 0; i < x.length; i++) {
+				  x[i].remove();
+				}
+
       	// potential for resetting sound context..
       	// console.log(p5.instance.getAudioContext().state);
       	//  if(p5.instance.getAudioContext().state == "running")
       	//  	p5.instance.getAudioContext().suspend();
         p5.instance.remove();
         p5.instance = window.setup = window.draw = null;
+    //     var x = document.getElementsByClassName("p5Canvas");
+				// for (var i = 0; i < x.length; i++) {
+				//   x[i].remove();
+				// }
       } else {
         const canv = document.querySelector('canvas');
         canv && canv.remove();
@@ -1097,13 +1102,13 @@ function draw() {
 
     // toggle strict javascript for compiling
     function strictCompileToggle(){
-    	strictCompile = !strictCompile;
+    	settings.strictCompile = !settings.strictCompile;
       strictCompileUpdate();
     }
 
     function strictCompileUpdate(){
-    	checkToggle("strictCompile", strictCompile, settingsErrorMode);
-    	if(strictCompile){
+    	checkToggle("strictCompile", settings.strictCompile, settingsErrorMode);
+    	if(settings.strictCompile){
               //editor.session.setOption("showGutter", true);
               editor.renderer.setShowGutter(true); 
               editor.session.setOption("useWorker", true);
@@ -1118,13 +1123,13 @@ function draw() {
 
     // toggle auto-compile
     function autoCompileToggle(){
-    	autoCompile = !autoCompile;
+    	settings.autoCompile = !settings.autoCompile;
    		autoCompileUpdate();
     }
 
     function autoCompileUpdate(){
-    	checkToggle("autoCompile", autoCompile, settingsAutoMode);
-      if(autoCompile){
+    	checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
+      if(settings.autoCompile){
       	editor.setTheme("ace/theme/gob");
       }else{
       	editor.setTheme("ace/theme/twilight");
@@ -1134,17 +1139,17 @@ function draw() {
 
     // toggle ecorender (pause if focus is lost)
 		function ecoRenderToggle(){
-    	ecoRender = !ecoRender;
+    	settings.ecoRender = !settings.ecoRender;
    		ecoRenderUpdate();
     }
 
     function ecoRenderUpdate(){
-    	checkToggle("ecoRender", ecoRender, settingsEcoMode);
+    	checkToggle("ecoRender", settings.ecoRender, settingsEcoMode);
     }
 
     // loop/noLoop on window blur
     window.onblur = function () { 
-    	if(ecoRender && sketchLoaded){
+    	if(settings.ecoRender && sketchLoaded){
     		noLoop(); 
     	}
     }
@@ -1157,45 +1162,47 @@ function draw() {
 
     // toggle fullscreen
     function fullscreenToggle(){
-	    fullscreenMode = !fullscreenMode;
+	    settings.fullscreenMode = !settings.fullscreenMode;
 			fullscreenUpdate();
     }
 
     function fullscreenUpdate(){
-    	checkToggle("fullscreenMode", fullscreenMode, settingsFullscreen);
-      if(fullscreenMode){
-        const canv = document.querySelector('canvas');
-        canv.style.top = 0;
-        if(sketchLoaded)
+    	checkToggle("fullscreenMode", settings.fullscreenMode, settingsFullscreen);
+      if(settings.fullscreenMode){
+        if(sketchLoaded){
+        	const canv = document.querySelector('canvas');
+        	canv.style.top = 0;
         	fullscreen(true);
-        editorToggleUpdate();
+        	editorToggleUpdate();
+        }
       }else{
-      	if(sketchLoaded)
+      	if(sketchLoaded){
         	fullscreen(false);
+      	}
       }
     }
 
 
     // create new instance of p5js on compile
     function instanceCompileToggle(){
-    	instanceCompile = !instanceCompile;
+    	settings.instanceCompile = !settings.instanceCompile;
     	instanceCompileUpdate();
     }
 
     function instanceCompileUpdate(){
-    	checkToggle("instanceCompile", instanceCompile, settingsHardCompile);
+    	checkToggle("instanceCompile", settings.instanceCompile, settingsHardCompile);
     }
 
     //cursor toggle
     function cursorToggle(){
-    	canvasCursor = !canvasCursor;
+    	settings.canvasCursor = !settings.canvasCursor;
     	cursorToggleUpdate();
     }
 
     function cursorToggleUpdate(){
-    	checkToggle("canvasCursor", canvasCursor, settingsCanvasCursor);
+    	checkToggle("canvasCursor", settings.canvasCursor, settingsCanvasCursor);
     	if(sketchLoaded){
-    		if(!canvasCursor){
+    		if(!settings.canvasCursor){
     			noCursor();
     		}else{
     			cursor();
@@ -1214,9 +1221,7 @@ function draw() {
     	}
     	settings[checkName] = checkVar;
     	updateSettings();
-    	if(debugMode){
-				console.log(checkName+": "+settings[checkName]);
-    	}
+    	if(settings.debugMode){console.log(checkName+": "+settings[checkName]);}
     }
 
 
@@ -1236,6 +1241,7 @@ function draw() {
     function editorToggleUpdate(){
       if(editorPane.style.visibility != "visible"){
         const canv = document.querySelector('canvas');
+        editor.blur();
         canv.focus();
       }else{
         editor.focus();
@@ -1271,13 +1277,13 @@ function draw() {
 
     // hide/show menu
     function menuToggle(){
-      menuMode = !menuMode;
+      settings.menuMode = !settings.menuMode;
       updateSettings();
       menuToggleUpdate();
     }
 
     function menuToggleUpdate(){
-    	if(!menuMode){
+    	if(!settings.menuMode){
         menuPanel.style.marginRight = "-250px";
         menuSwitch.innerHTML = "«";
       }else{
@@ -1294,8 +1300,9 @@ function draw() {
     }
 
     function fontSizeUpdate(){
-    	if(settingsFontsize !== document.activeElement)
+    	if(settingsFontsize !== document.activeElement){
       	settingsFontsize.value = settings.fontSize;
+    	}
 			editorPane.style.fontSize = settings.fontSize + "vw";
     }
 
@@ -1310,7 +1317,7 @@ function draw() {
         editor.gotoLine(7, 1, false);
         editor.focus();
         updateMenu();
-        setTimeout(function(){ updateP5(instanceCompile); }, 100);
+        setTimeout(function(){ updateP5(settings.instanceCompile); }, 100);
     }
 
     function loadAbout(){
@@ -1320,14 +1327,14 @@ function draw() {
       editor.gotoLine(7, 1, false);
       editor.focus();
       updateMenu();
-      setTimeout(function(){ updateP5(instanceCompile); }, 100);
+      setTimeout(function(){ updateP5(settings.instanceCompile); }, 100);
     }
 
     function loadNew(newName){
     	if(newName != ''){
 	    	settings.fileName = newName;
-	    	if (sketches.indexOf(settings.fileName) === -1) {
-    			sketches.unshift(settings.fileName);
+	    	if (settings.sketches.indexOf(settings.fileName) === -1) {
+    			settings.sketches.unshift(settings.fileName);
     			updateSketches();
 	          if(editor.getValue().length > 86){ // 86 = template length
 	          	localStorage[settings.fileName] = editor.getValue();
@@ -1338,6 +1345,7 @@ function draw() {
 	        editor.setValue(localStorage[settings.fileName], 1);
 	      }
 	      editor.focus(); 
+	      updateSettings();
 	    }
     }
     	// if(localStorage[settings.fileName] != ''){ 
