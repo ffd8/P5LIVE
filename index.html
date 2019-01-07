@@ -268,9 +268,10 @@
     	background:#555;
     }
     #menu-settings{
+      line-height:1.6em;
     }
     #menu-settings div{
-      margin-bottom:10px;
+      //margin-bottom:10px;
     }
     #menu-settings-fontsize{
       width:2em;
@@ -284,6 +285,13 @@
       font-family: 'roboto_mono', 'Monaco', monospace;
       font-weight: 200;
 
+    }
+    #settings-libs{
+    	outline:none;
+    	background:none;
+    	border:none;
+    	border-bottom:1px solid #444;
+    	color:#fff;
     }
 
     /* 
@@ -323,6 +331,7 @@
     <script src="includes/p5/sketch.js"></script> -->
     <script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+      <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
     
 </head>
 <body>
@@ -363,29 +372,37 @@
 	        <div>
 	          Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="2" onkeyup="fontSizeAdjust(this.value);"> vw
 	        </div>
-	        <div >
-	            <span style="cursor:help;" title="Prevents compiling unless strict Javascript is error free">Strict Compile:</span> 
+	        <div style="cursor:help;" title="Prevents compiling unless strict Javascript is error free">
+	            <span>Strict Compile:</span> 
 	            <input type="checkbox" id="settings-strictcompile" name="settings-strictcompile" value="settings-strictcompile" onchange="strictCompileToggle();" >
 	        </div>
-	        <div>
-	            <span style="cursor:help;" title="Force new instance of P5JS on each compile">Instance Compile:</span> 
+	        <div style="cursor:help;" title="Force new instance of P5JS on each compile">
+	            <span>Instance Compile:</span> 
 	            <input type="checkbox" id="settings-instancecompile" name="settings-instancecompile" value="settings-instancecompile" onchange="instanceCompileToggle();">
 	        </div>
-	        <div>
-	            <span style="cursor:help;" title="LIVE CODING! Compile code on each keypress">Auto Compile:</span> 
+	        <div style="cursor:help;" title="Compiles code on each keypress">
+	            <span>Auto Compile:</span> 
 	            <input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();">
 	        </div>
-	         <div>
-	            <span style="cursor:help;" title="Toggle fullscreen mode">Fullscreen:</span> 
+	         <div style="cursor:help;" title="Toggle fullscreen mode">
+	            <span>Fullscreen:</span> 
 	            <input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();">
 	        </div>
-	        <div>
-	            <span style="cursor:help;" title="Only render if window is active (focused)">Eco Render:</span> 
+	        <div style="cursor:help;" title="Only render if window is active (focused)">
+	            <span>Eco Render:</span> 
 	            <input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();">
 	        </div>
-	        <div>
-	            <span style="cursor:help;" title="Display mouse cursor when editor is hidden">Cursor:</span> 
+	        <div style="cursor:help;" title="Display mouse cursor when editor is hidden">
+	            <span>Cursor:</span> 
 	            <input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();">
+	        </div>
+	         <div style="cursor:help;" title="* If unchecked, can only view menu via ctrl+m">
+	            <span>Menu Tab:</span> 
+	            <input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
+	        </div>
+	        <div style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
+	            <span>Libs:</span> 
+	            <input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 	        </div>
 	      </div>
 	    </div>
@@ -435,6 +452,7 @@ GETTING STARTED
   Rename, click 'id' and type new name.
   Export, click '↓' to download JSON file for import.
   Remove, click 'x' and comfirm removal.
+  Sort, click and drag to desired order.
   
 - Settings:
   Font Size, adjust size of editor text.
@@ -444,6 +462,12 @@ GETTING STARTED
   Fullscreen, toggle fullScreen(), ideal for VJing
   Eco Render, toggle loop()/noLoop() when browser window is out of focus.
   Cursor, toggle visible cursor when hiding editor (ctrl + e).
+  
+- Note that all settings/sketches are stored in localStorage.
+  Clearing browser cache/storage = will probably erase sketches. 
+  Be sure to export often.
+  
+- Write ES5 JS code (var), due to recompiling issues with let/const.
   
 
 SHORTCUTS
@@ -462,17 +486,21 @@ ctrl + + » increase fontsize
 ctrl + 1,2,3...0 » load first 10 sketches
 
 
+FUNCTIONS
+-------------------------------
+- ease(inVal, outVal, easeVal); // use to smooth values
+
+
 FUTURE
 -------------------------------
 - etherpad-like collaborative editing
 - api (get for sketch + settings)
 - mobile optimization
+- additional js libs (via settings)
 - audio variables (avg amp, fft)
 - export image [video?]
-- re-order saved sketches (https://github.com/SortableJS/Sortable)
-- tree structure for sketches
 - console
-- additional js libs (via settings)
+- tree structure for sketches
 - export as HTML for website usage
     
 
@@ -499,31 +527,32 @@ github » https://github.com/ffd8/p5live
 
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-    rectMode(CENTER);
-    noCursor();
-    noStroke();
-
+	noStroke();
+	mouseX = width/2;
+	mouseY = height/2;
 }
 
 function draw() {
-	var lc = 8;
-	for(var i=0; i < lc; i++){
-	    var x = map(i, 0, lc-1, width/2, mouseX);
-	    var y = map(i, 0, lc-1, height/2, mouseY);
-	    var s = map(i, 0, lc-1, width, width/lc);
-	    var fc = abs(sin((frameCount*i)*0.001))*155;
-	    push();
-	    translate(x, y);
-	    var rs = sin(frameCount*i*0.0005)*15;
-	    rotate(radians(rs));
-	    fill(100+fc);
-	    rect(0, 0, s, s);
-	    pop();
-	}
+	background(0);
+	tri(0, 0, mouseX, mouseY, 0, height, 100);
+	tri(0, 0, mouseX, mouseY, width, 0, 200);
+	tri(width, height, mouseX, mouseY, 0, height, 0);
+	tri(width, height, mouseX, mouseY, width, 0, 255);
+}
+
+function tri(x1, y1, x2, y2, x3, y3, fc){
+	var v = 0.002;
+	fill(abs(sin(fc+(frameCount*v)))*255);
+	beginShape();
+	vertex(x1, y1);
+	vertex(x2, y2);
+	vertex(x3, y3);
+	endShape();
 }</textarea>
   <script type="text/javascript">
     /*
       TODO
+      - dual canvases on initial load?!
       - check audio lib bug?! (traaash instance)
       - update sketches to obj w/ order
       - set SSL default on teddavis.org
@@ -565,11 +594,11 @@ function draw() {
     	"fullscreenMode":false,
     	"fileName": '',
     	"menuMode": true,
+    	"menutab":true,
     	"debugMode": true,
     	"sketches": [],
-    	"scripts": ["includes/p5/p5.min.js", "includes/p5/addons/p5.dom.min.js"], // , "includes/p5/addons/p5.sound.min.js"
-
-
+    	"sketchesSortable": '',
+    	"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"], // , 
     }
 
     // init vars
@@ -581,13 +610,14 @@ function draw() {
         p5script = document.getElementById("holdscript"),
         menuSketches = document.getElementById('menu-sketches'),
         menuSettings = document.getElementById('menu-settings'),
+        settingsFontsize = document.getElementById('menu-settings-fontsize'),
         settingsErrorMode = document.getElementById('settings-strictcompile'),
+        settingsHardCompile = document.getElementById('settings-instancecompile'),
         settingsAutoMode = document.getElementById('settings-autocompile'),
+        settingsFullscreen = document.getElementById('settings-fullscreen'),
         settingsEcoMode = document.getElementById('settings-ecorender'),
         settingsCanvasCursor = document.getElementById('settings-canvascursor'),
-        settingsFullscreen = document.getElementById('settings-fullscreen'),
-        settingsHardCompile = document.getElementById('settings-instancecompile'),
-        settingsFontsize = document.getElementById('menu-settings-fontsize'),
+        settingsMenutab = document.getElementById('settings-menutab'),
         menuNewSketch = document.getElementById('menu-sketch-new'),
         menuPanel = document.getElementById('menu'),
         menuSwitch = document.getElementById('menu-switch'),
@@ -735,10 +765,12 @@ function draw() {
     	menuToggleUpdate();
     	ecoRenderUpdate();
     	cursorToggleUpdate();
+    	menutabToggleUpdate();
 
     	// if(!settings.instanceCompile){
     	// 	//updateP5(true);
-    		loadScripts();
+    	//console.log("loading scripts");
+    	loadScripts();
     	// }
 
     	if(settings.welcome){
@@ -776,8 +808,8 @@ function draw() {
 	      settings.fileName = sketch;
     		editor.setValue(localStorage[settings.fileName], 1);
       	updateMenu();
-      	updateP5(settings.instanceCompile);
       	updateSettings();
+      	setTimeout(function(){ updateP5(true);}, 100);
       	editor.focus();
     	}else{
     		loadDefault();
@@ -804,7 +836,7 @@ function draw() {
 	    var doubleCheck = confirm("Are you sure you want to delete: " +sketch+" ?");
 	      if(doubleCheck){
 	        localStorage.removeItem(sketch);
-	        var index = settings.sketches.indexOf(sketch);    // <-- Not supported in <IE9
+	        var index = settings.sketches.indexOf(sketch);
 	        if (index !== -1) {
 	            settings.sketches.splice(index, 1);
 	        }
@@ -859,9 +891,10 @@ function draw() {
     	var reader = new FileReader();
 			reader.onload = function(data) {
 		    var jsonObj = JSON.parse(event.target.result);
-		    for(var i=0; i < jsonObj.sketches.length; i++){
-		    	var sketchName = jsonObj.sketches[i].sketchName;
-		    	var sketchCode = jsonObj.sketches[i].sketchCode;
+		    var jsonSketches = jsonObj.sketches.reverse();
+		    for(var i=0; i < jsonSketches.length; i++){
+		    	var sketchName = jsonSketches[i].sketchName;
+		    	var sketchCode = jsonSketches[i].sketchCode;
 		    	localStorage.setItem(sketchName, sketchCode);
 		    	if (settings.sketches.indexOf(sketchName) === -1) {
 	          settings.sketches.unshift(sketchName);
@@ -913,7 +946,7 @@ function draw() {
         }
         var marq = "";
         if(settings.sketches[i].length > 15){marq = "marq";}
-        menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'"><div class="menu-sketch-nav"><a class="menu-sketch-button" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch">id</a><a class="menu-sketch-button" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch">↓</a><a class="menu-sketch-button" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch">x</a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
+        menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'" data-id="'+settings.sketches[i]+'"><div class="menu-sketch-nav"><a class="menu-sketch-button" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch">id</a><a class="menu-sketch-button" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch">↓</a><a class="menu-sketch-button" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch">x</a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
       }
       var selClass = "";
       if(!selSelected){
@@ -924,6 +957,34 @@ function draw() {
       document.getElementById('menu-sketches-new').innerHTML = menuSketchesNew;
 			menuNewSketch = document.getElementById('menu-sketch-new');
     }
+
+    // SortableJS for sketcheslist
+		Sortable.create(menuSketches, {
+			group: "sketchOrder",//"localStorage-example",
+			store: {
+				/**
+				 * Get the order of elements. Called once during initialization.
+				 * @param   {Sortable}  sortable
+				 * @returns {Array}
+				 */
+				get: function (sortable) {
+					var order = settings.sketches;
+					return order;// ? order.split('|') : [];
+				},
+
+				/**
+				 * Save the order of elements. Called onEnd (when the item is dropped).
+				 * @param {Sortable}  sortable
+				 */
+				set: function (sortable) {
+					var order = sortable.toArray();
+					settings.sketches = order;
+					updateSettings();
+				}
+			}
+		})
+
+    
 
 
 
@@ -1010,7 +1071,8 @@ function draw() {
 
     // compile + focus
     function refreshView() {
-      updateP5(settings.instanceCompile);
+      //updateP5(settings.instanceCompile);
+      setTimeout(function(){ updateP5(settings.instanceCompile);}, 100);
       editorPane.focus();
     }
 
@@ -1042,7 +1104,7 @@ function draw() {
         p5script.appendChild(s);
 
         // run setup if changing sketches w/o instance
-        if(!settings.instanceCompile){window.setTimeout(function(){setup();}, 100);}
+        if(!settings.instanceCompile){setTimeout(function(){setup();}, 100);}
 
 
         // cursor toggle
@@ -1076,10 +1138,10 @@ function draw() {
       if (window.p5 && p5.instance) {
 
       	// heavy remove
-      	var x = document.getElementsByClassName("p5Canvas");
-				for (var i = 0; i < x.length; i++) {
-				  x[i].remove();
-				}
+    		// var x = document.getElementsByClassName("p5Canvas");
+				// for (var i = 0; i < x.length; i++) {
+				//   x[i].remove();
+				// }
 
       	// potential for resetting sound context..
       	// console.log(p5.instance.getAudioContext().state);
@@ -1087,10 +1149,6 @@ function draw() {
       	//  	p5.instance.getAudioContext().suspend();
         p5.instance.remove();
         p5.instance = window.setup = window.draw = null;
-    //     var x = document.getElementsByClassName("p5Canvas");
-				// for (var i = 0; i < x.length; i++) {
-				//   x[i].remove();
-				// }
       } else {
         const canv = document.querySelector('canvas');
         canv && canv.remove();
@@ -1210,6 +1268,21 @@ function draw() {
     	}
     }
 
+    //menutab toggle
+    function menutabToggle(){
+    	settings.menutab = !settings.menutab;
+    	menutabToggleUpdate();
+    }
+
+    function menutabToggleUpdate(){
+    	checkToggle("menutab", settings.menutab, settingsMenutab);
+    	if(!settings.menutab){
+				menuSwitch.style.display = "none";
+    	}else{
+    		menuSwitch.style.display = "block";
+    	}    	
+    }
+
 
     // checkbox function
     function checkToggle(checkName, checkVar, checkElm){
@@ -1324,10 +1397,9 @@ function draw() {
     	settings.fileName = 'p5liveabout'; //editor.setValue("hi"); // p5template.value
       localStorage.setItem(settings.fileName, p5liveabout);
       editor.setValue(p5liveabout, 1);
-      editor.gotoLine(7, 1, false);
       editor.focus();
       updateMenu();
-      setTimeout(function(){ updateP5(settings.instanceCompile); }, 100);
+      setTimeout(function(){ updateP5(true); }, 100);
     }
 
     function loadNew(newName){
