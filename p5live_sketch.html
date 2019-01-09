@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>P5LIVE – sketch</title>
+	<script src="includes/p5/p5.min.js"></script>
+	<script src="includes/p5/addons/p5.dom.min.js"></script>
+    <script src="includes/p5/addons/p5.sound.min.js"></script>
+    <style type="text/css">
+    	body{
+    		margin:0;
+    	}
+    	canvas{
+    		width:100vw;
+    		height:100vh;
+    		margin:0;
+
+    	}
+    	#catchfocus{
+    		position: fixed;
+    		width:100vw;
+    		height:100vh;
+    		top:0;
+    		left:0;
+    		z-index:99;
+    	}
+    </style>
+    <script type="text/javascript">
+        //var p5;
+    	var p5p = parent.document;
+	  	var p5console = p5p.getElementById('p5-console');
+	  	
+	  	// clear console if all good
+	  	p5console.value = "";
+		p5console.style.background = "none";
+        markLine();
+
+        // pass errors to parent
+        window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+            p5console.value = lineNumber +" / "+errorMsg;
+            p5console.style.background = "#222";
+            markLine(lineNumber);            
+            return false;
+        }
+
+        function markLine(n){
+            var myCustomData = {};
+            if(n != null){
+                myCustomData = { 'lineNumber': n }
+            }
+            var event = new CustomEvent('myEvent', { detail: myCustomData });
+            window.parent.document.dispatchEvent(event);
+        }
+
+        function sketchStatus(){
+            if(p5.instance){
+                var myCustomData = {'status': true};
+                var event = new CustomEvent('myEvent', { detail: myCustomData });
+                window.parent.document.dispatchEvent(event);
+            }
+        }
+
+        // pass console.log's to parent
+        var console = {
+            log: function(m){
+                p5console.value = m;
+                p5console.style.background = "#222";
+            }       
+        };
+    </script>
+</head>
+<body onload="">
+	<div id="catchfocus" onmouseup="parent.document.getElementById('ti').focus();"></div>
+	<script type="text/javascript"></script>
+</body>
+</html>

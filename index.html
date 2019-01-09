@@ -48,46 +48,67 @@
       position: relative;
       background:#000;
     }
-    
-    #editor,
-    #preview, canvas {
+    iframe{
+			outline:none;
+			border:none;
+			margin:0;
+			background:#000;
+		}
+    .p5-ta, #p5-editor{
+      font-family: 'roboto_mono', monospace;
+      font-weight: 400;
       position:fixed;
-      top:0;
-      left:0;
-      width: 100vw;
-      height:100vh;
-      margin: 0;
-      outline: none;
+      z-index:1;
+      font-size:20pt;
+      width:100vw;
       background: none;
-      border: none;
+      outline:none;
+      border:none;
+      border-bottom:1px dashed #000;
       box-sizing: border-box;
+      color:#fff;
+      margin: 0;
+      will-change: opacity;
+      /*-webkit-font-smoothing: antialiased;*/
 
     }
-    #editor {
-    	font-family: 'roboto_mono', monospace;
-      font-weight: 400;
-      color: #fff;
-      padding: 25px;
-      font-size: 3vw;
-      z-index:1;
+    .p5-ta{
+      padding: 15px;      
+    }
+    #p5-editor{
+      top:0;
+      height:100vh;
       mix-blend-mode:difference;
-      will-change: opacity;
-      -webkit-font-smoothing: antialiased;
       visibility: visible;
-      box-sizing: border-box;
+
     }
-    #preview {
-      background: #000;
-      appearance: none;
-      z-index:-1;
-      -webkit-user-select: none; /* Chrome/Safari */        
-      -moz-user-select: none; /* Firefox */
-      -ms-user-select: none; /* IE10+ */
+    
+    #p5-code {
+      height:100vh;
+      top:0vh;
     }
-    #preview:hover,
-    #preview:focus {
-      opacity: 1;
-      cursor: default;
+
+    #p5-console{
+      height:5vh;
+      top:95vh;
+      font-size:10pt;
+    }
+
+    #ti{
+      position: fixed;
+      top:-10;
+      height:0px;
+      width:0px;
+      background:none;
+      outline:none;
+      border:none;
+      z-index:9999;
+    }
+    
+    .myMarker {
+      position:fixed;
+      background:rgba(200,0,0,0.25);
+      z-index:20
     }
     
     /* MENU */
@@ -325,22 +346,20 @@
     	}
     }
   </style>
-    <!-- <script src="includes/p5/p5.min.js"></script>
-    <script src="includes/p5/addons/p5.dom.min.js"></script>
-    <script src="includes/p5/addons/p5.sound.min.js"></script>
-    <script src="includes/p5/sketch.js"></script> -->
     <script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
     <script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-      <script src="https://raw.githack.com/SortableJS/Sortable/master/Sortable.js"></script>
-    
+    <script src="includes/js/Sortable.js"></script>
+    <script src="includes/js/beautify.js"></script>
 </head>
 <body>
-  <div>
-    <div id="preview"></div>
-    <pre id="editor" autofocus></pre>
-    <div id="holdscript"></div>
+  <input type="text" name="" id="ti">
+  <div id="p5-editor">
+    <pre id="p5-code" autofocus class="p5-ta"></pre>
+    <textarea id="p5-console" class="p5-ta"></textarea>
   </div>
-  
+
+  <iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" style="width:100vw;height:100vh;" src="p5live_sketch.html" onLoad="injectJS()";></iframe>
+
   <div id="menu">
   	<div id="menu-bg"></div>
   	<div id="menu-switch" onclick="menuToggle();">X</div>
@@ -375,10 +394,6 @@
 	        <div style="cursor:help;" title="Prevents compiling unless strict Javascript is error free">
 	            <span>Strict Compile:</span> 
 	            <input type="checkbox" id="settings-strictcompile" name="settings-strictcompile" value="settings-strictcompile" onchange="strictCompileToggle();" >
-	        </div>
-	        <div style="cursor:help;" title="Force new instance of P5JS on each compile">
-	            <span>Instance Compile:</span> 
-	            <input type="checkbox" id="settings-instancecompile" name="settings-instancecompile" value="settings-instancecompile" onchange="instanceCompileToggle();">
 	        </div>
 	        <div style="cursor:help;" title="Compiles code on each keypress">
 	            <span>Auto Compile:</span> 
@@ -418,16 +433,18 @@ function setup() {
 function draw() {
 	
 }</textarea>
-	<textarea style="display:none;" id="p5-custom">
+<textarea style="display:none;" id="p5-custom">
 function windowResized() {
-  resizeCanvas(windowWidth, windowHeight);
+	resizeCanvas(windowWidth, windowHeight);
 }
+
 
 function ease(iVal, oVal, eVal){
 	var targetX = iVal;
 	var dx = targetX - oVal; 
 	return oVal += dx * eVal;
-}</textarea>
+}
+</textarea>
 <textarea style="display:none;" id="p5live-about">
 /*
 P5LIVE v 1.0.1
@@ -457,7 +474,6 @@ GETTING STARTED
 - Settings:
   Font Size, adjust size of editor text.
   Strict Compile, avoid bugs as only valid code will compiple.
-  Instance Compile, full reset between WEBGL + 2D or if changes don't appear.
   Auto Compile, live-coding mode, refreshes on keyup.
   Fullscreen, toggle fullScreen(), ideal for VJing
   Eco Render, toggle loop()/noLoop() when browser window is out of focus.
@@ -473,8 +489,7 @@ GETTING STARTED
 SHORTCUTS
 -------------------------------
 ctrl + n » new sketch
-ctrl + enter » compile once
-ctrl + r » instance compile once
+ctrl + enter » recompile
 ctrl + a » autocompile toggle
 ctrl + e » editor toggle
 ctrl + f » fullscreen toggle
@@ -493,7 +508,8 @@ FUNCTIONS
 
 FUTURE
 -------------------------------
-- etherpad-like collaborative editing
+- etherpad-like collaborative editing (firepad? codepile?)
+- custom code/functions header
 - api (get for sketch + settings)
 - mobile optimization
 - additional js libs (via settings)
@@ -552,15 +568,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
   <script type="text/javascript">
     /*
       TODO
-      - dual canvases on initial load?!
-      - check audio lib bug?! (traaash instance)
-      - update sketches to obj w/ order
+      - cursor (if editor hidden, inject code to iframe + pause)
+      - pass keyboard into p5frame too??
+      - add strict toggle
       - set SSL default on teddavis.org
       - cleanup un-necessary css/html
       - reimplement manifest for offline use?
       - FB/share details
       - split css/js or single page = benefit?
-      - double check unloading p5 scripts (audio etc)...
       - initial settings (special for mobile)
       - array of loaded js scripts (input for csv, local/remote)
       - 
@@ -587,7 +602,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	"welcome":true,
     	"fontSize":1.5, 
     	"autoCompile":false, 
-    	"instanceCompile":true,
     	"ecoRender": true,
     	"strictCompile": false,
     	"canvasCursor": true,
@@ -598,21 +612,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	"debugMode": true,
     	"sketches": [],
     	"sketchesSortable": '',
-    	"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"], // , 
+    	//"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"], // , 
     }
 
     // init vars
-    var editorPane = document.getElementById('editor'),
-        previewPane = document.getElementById('preview'),
+    var p5editor = document.getElementById('p5-editor'),
+        p5code = document.getElementById('p5-code'),
+        p5console = document.getElementById('p5-console'),
+        p5custom = document.getElementById('p5-custom'),
         p5template = document.getElementById('p5-template').value,
+        p5frame = document.getElementById('p5-frame'),
+        p5f = p5frame.contentWindow,
         p5liveabout = document.getElementById('p5live-about').value,
-        p5custom = document.getElementById('p5-custom').value,
         p5script = document.getElementById("holdscript"),
         menuSketches = document.getElementById('menu-sketches'),
         menuSettings = document.getElementById('menu-settings'),
         settingsFontsize = document.getElementById('menu-settings-fontsize'),
         settingsErrorMode = document.getElementById('settings-strictcompile'),
-        settingsHardCompile = document.getElementById('settings-instancecompile'),
         settingsAutoMode = document.getElementById('settings-autocompile'),
         settingsFullscreen = document.getElementById('settings-fullscreen'),
         settingsEcoMode = document.getElementById('settings-ecorender'),
@@ -626,10 +642,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
         sketchLoaded = false,
         pLen = 0, 
         paused = false,
-        p5;
+        markerID = [];
        
 		// init editor 
-    var editor = ace.edit("editor");
+		var Range = ace.require('ace/range').Range;
+    var editor = ace.edit("p5-code");
     editor.setTheme("ace/theme/twilight");
     editor.session.setMode("ace/mode/javascript");
     editor.setOptions({
@@ -642,32 +659,64 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	tabSize: 4, useSoftTabs: false
     });
 
-    editorPane.style.visibility = "visible";
+    p5editor.style.visibility = "visible";
 
 
 
     /* FANCY EDITOR FUNCTIONS */
 
-   	// compile if no errors (** still needed??)
-    editor.session.on('changeMode', function(e, session){
-      if ("ace/mode/javascript" === session.getMode().$id) {
-        if (!!session.$worker) {
-          session.$worker.send("changeOptions", [{
-            asi: true,
-          }]);
-        }
-      }
-    });
-
-    // prevent compile if bad code
+    // check for errors
     editor.getSession().on("changeAnnotation", function(){
       var annot = editor.getSession().getAnnotations();
-      if(annot.length == 0){
-        validCode = true;
-      }else{
-        validCode = false;
+ 			validCode = true;
+ 			for(var i=0; i < annot.length; i++){
+ 				if(annot[i].type === "error"){
+ 					addMarker(annot[i].row);
+ 					validCode = false;
+ 				}
+ 			}
+
+ 			if(validCode){
+ 				removeMarkers();
+ 			}
+
+ 			if(settings.autoCompile){
+      	// only refresh if new content typed
+      	var cLen = editor.getValue().length;
+      	console.log(cLen +" / "+ pLen);
+      	if(cLen != pLen){
+      		pLen = cLen;
+      		recompile();
+      	}
       }
+
     });
+
+			function addMarker(n){
+				var elementPos = markerID.map(function(x) {return x.line; }).indexOf(n);
+				if (elementPos === -1) {
+ 					markerID.push({"line":n, "id":editor.session.addMarker(new Range(n, 0, n, 7000), "myMarker", "fullLine")});
+ 				}
+ 			}
+
+    function removeMarkers(){
+    	for(var i=0; i < markerID.length; i++){
+ 					editor.session.removeMarker(markerID[i].id);
+ 			}
+ 			markerID = [];
+    }
+
+    // function validateCode(){
+    // 	var annot = editor.getSession().getAnnotations();
+ 			// //console.log(annot[0].type);
+ 			// validCode = true;
+ 			// for(var i=0; i < annot.length; i++){
+ 			// 	if(annot[i].type === "error"){
+ 			// 		validCode = false;
+ 			// 	}
+ 			// }
+ 			// console.log(validCode);
+    // }
 
     // CMD-KEYS (remove key conflicts)
     editor.commands.removeCommands(["gotoright","movelinesup", "movelinesdown", "gotolinestart", "splitline", "gotolineend", "golineup", "jumptomatching", "golinedown"]);
@@ -711,6 +760,32 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     readOnly:!0
    });
 
+   // beautify!
+		var beautifyOptions = {
+			  "indent_size": "1",
+			  "indent_char": "\t",
+			  "max_preserve_newlines": "5",
+			  "preserve_newlines": true,
+			  "keep_array_indentation": false,
+			  "break_chained_methods": false,
+			  "indent_scripts": "normal",
+			  "brace_style": "collapse",
+			  "space_before_conditional": false,
+			  "unescape_strings": false,
+			  "jslint_happy": false,
+			  "end_with_newline": false,
+			  "wrap_line_length": "0",
+			  "indent_inner_html": false,
+			  "comma_first": false,
+			  "e4x": false
+			}
+
+			/*
+				// add shortcut below
+				var tempCode = js_beautify(editor.getValue(), beautifyOptions);
+				editor.setValue(tempCode, 1);
+			*/
+
 
 
    /* DEBUG EDITOR COMMANDS + STORAGE */
@@ -739,6 +814,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			getKeys();
 		}
 
+
+		/* p5 iframe communcation */
+
+		// mark error line
+		window.document.addEventListener('myEvent', handleEvent, false)
+		function handleEvent(e) {
+		  //console.log(e.detail) // outputs: {foo: 'bar'}
+			if(e.detail.lineNumber != undefined){
+			  	var errorLine = parseInt(e.detail.lineNumber)-1;
+	  			addMarker(errorLine);
+  		}else{
+  				removeMarkers()
+  		}
+
+  		// sketchloaded
+  		if(e.detail.status){
+  			sketchLoaded = true;
+  		}else{
+  			sketchLoaded = false;
+  		}
+		}
+
   
 
     /* SETTINGS + SKETCHES */
@@ -758,7 +855,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     // react to settings once gathered
     function loadSettings(){
     	fontSizeUpdate();
-			instanceCompileUpdate();
     	strictCompileUpdate();
     	autoCompileUpdate();
     	fullscreenUpdate();
@@ -766,12 +862,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	ecoRenderUpdate();
     	cursorToggleUpdate();
     	menutabToggleUpdate();
-
-    	// if(!settings.instanceCompile){
-    	// 	//updateP5(true);
-    	//console.log("loading scripts");
-    	loadScripts();
-    	// }
 
     	if(settings.welcome){
     		loadAbout();
@@ -807,9 +897,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	if(localStorage.hasOwnProperty(sketch)){
 	      settings.fileName = sketch;
     		editor.setValue(localStorage[settings.fileName], 1);
+    		pLen = editor.getValue().length;
       	updateMenu();
       	updateSettings();
-      	setTimeout(function(){ updateP5(true);}, 100);
+      	setTimeout(function(){recompile();}, 100);
       	editor.focus();
     	}else{
     		loadDefault();
@@ -852,9 +943,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	if(sketchLoaded){
     		paused = !paused;
     		if(paused){
-    			noLoop();
+    			p5f.noLoop();
     		}else{
-    			loop();
+    			p5f.loop();
     		}
     	}
     }
@@ -869,7 +960,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	jsonExport.sketches = [];
     	jsonExport.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
       var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-      saveJSON(jsonExport, 'P5L_'+sketch+'_'+dateStamp+'.json');
+      p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+dateStamp+'.json');
       if(settings.debugMode){console.log(jsonExport);}
     }
 
@@ -882,7 +973,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
       }
       jsonExport.settings = settings;
       var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-      saveJSON(jsonExport, 'P5L_sketches_'+dateStamp+'.json');
+      p5f.saveJSON(jsonExport, 'P5L_sketches_'+dateStamp+'.json');
       if(settings.debugMode){console.log(jsonExport);}
     }
 
@@ -991,24 +1082,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* EDITOR KEY-CMDS */
 
     // Editor Interactions
-    onload = editorPane.onkeyup = function() {
-      //console.log(Object.keys(localStorage));
+    onload = p5code.onkeyup = function() {
       if(settings.fileName == ''){ 
       	loadDefault();
       }
-      if(settings.autoCompile){
-      	// only refresh if new content typed
-      	var cLen = editor.getValue().length;
-      	console.log(cLen +" / "+ pLen);
-      	if(cLen != pLen){
-      		pLen = cLen;
-      		refreshView();
-      	}
-      }
+      
       localStorage[settings.fileName] = editor.getValue();
     };
    
-    editorPane.onkeydown = function(event) {
+    p5code.onkeydown = function(event) {
     	// check length of editor
     	pLen = editor.getValue().length;
 
@@ -1041,12 +1123,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
       }else if(event.keyCode == 70 && event.ctrlKey){ // f = fullscreen
         fullscreenToggle();
         event.preventDefault();
-      }else if(event.keyCode == 82 && event.ctrlKey){ // r = reset compile
-        updateP5(true);
-        editorPane.focus();
-        event.preventDefault();
       }else if(event.keyCode == 13 && event.ctrlKey){ // enter = recompile
-        refreshView();
+        recompile();
         event.preventDefault();
       }else if(event.keyCode == 80 && event.ctrlKey){ // p = pause
         pauseSketch();
@@ -1060,8 +1138,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
         loadSketch(settings.sketches[keySketch]);
         event.preventDefault();
       }if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
-        //loadSketch("blah");
-        console.log(p5);
+      	// test function here
         event.preventDefault();
       }
     }
@@ -1069,91 +1146,26 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
     /* COMPILE CODE */
 
-    // compile + focus
-    function refreshView() {
-      //updateP5(settings.instanceCompile);
-      setTimeout(function(){ updateP5(settings.instanceCompile);}, 100);
-      editorPane.focus();
+    function recompile(){
+    	if(validCode || !settings.strictCompile){
+    		p5frame.src = "p5live_sketch.html";
+    	}
     }
 
-    // compile latest editor code
-    function updateP5(compileMode){
-      if(validCode || !settings.strictCompile){
-      	sketchLoaded = false;
-        p5script.innerHTML = "";
-        
-        // if instance compile
-        if(compileMode){
-	        p5RemoveHack();
+    // function loadScripts(){
+    // 	if(settings.debugMode){console.log(settings.scripts);}
 
-	        // load external scripts
-	        loadScripts();
-        }
+	   //  for(var i=0; i < settings.scripts.length; i++){
+	   //  	p5script.appendChild(loadScript(settings.scripts[i]));
+	   //  }
+    // }
 
-        // load sketch from editor
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.innerHTML = editor.getValue();
-
-        // add window resize snippet
-        s.innerHTML += p5custom;
-        
-        // pause on demand
-        if(paused){s.innerHTML += "function preload(){if(paused){noLoop();}}";}
-        
-        p5script.appendChild(s);
-
-        // run setup if changing sketches w/o instance
-        if(!settings.instanceCompile){setTimeout(function(){setup();}, 100);}
-
-
-        // cursor toggle
-        if(!settings.canvasCursor){window.setTimeout(function(){noCursor();}, 100);}
-        
-        // if(p5.instance.getAudioContext() != null)
-        // 	p5.instance.getAudioContext().resume();
-
-        sketchLoaded = true;
-      }
-    }
-
-    function loadScripts(){
-    	if(settings.debugMode){console.log(settings.scripts);}
-
-	    for(var i=0; i < settings.scripts.length; i++){
-	    	p5script.appendChild(loadScript(settings.scripts[i]));
-	    }
-    }
-
-    function loadScript(scriptPath){
-    	var ps = document.createElement("script");
-	        ps.type = "text/javascript";
-	        ps.src = scriptPath;
-    	return ps;
-    }
-
-    // hack to completely refresh global-instance p5js
-    // GoToLoop » https://codepen.io/GoSubRoutine/pen/ZBPjdP
-    function p5RemoveHack() {
-      if (window.p5 && p5.instance) {
-
-      	// heavy remove
-    		// var x = document.getElementsByClassName("p5Canvas");
-				// for (var i = 0; i < x.length; i++) {
-				//   x[i].remove();
-				// }
-
-      	// potential for resetting sound context..
-      	// console.log(p5.instance.getAudioContext().state);
-      	//  if(p5.instance.getAudioContext().state == "running")
-      	//  	p5.instance.getAudioContext().suspend();
-        p5.instance.remove();
-        p5.instance = window.setup = window.draw = null;
-      } else {
-        const canv = document.querySelector('canvas');
-        canv && canv.remove();
-      }
-    }
+    // function loadScript(scriptPath){
+    // 	var ps = document.createElement("script");
+	   //      ps.type = "text/javascript";
+	   //      ps.src = scriptPath;
+    // 	return ps;
+    // }
 
 
     /* SETTINGS TOGGLES */
@@ -1208,12 +1220,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     // loop/noLoop on window blur
     window.onblur = function () { 
     	if(settings.ecoRender && sketchLoaded){
-    		noLoop(); 
+    		if(document.activeElement !== p5frame){
+		    	p5f.noLoop();
+	    	}
     	}
     }
 		window.onfocus = function () { 
 			if(sketchLoaded){
-				loop(); 
+				p5f.loop();
 			}
 		}
 
@@ -1228,28 +1242,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	checkToggle("fullscreenMode", settings.fullscreenMode, settingsFullscreen);
       if(settings.fullscreenMode){
         if(sketchLoaded){
-        	const canv = document.querySelector('canvas');
-        	canv.style.top = 0;
-        	fullscreen(true);
+        	openFullscreen();
         	editorToggleUpdate();
         }
       }else{
       	if(sketchLoaded){
-        	fullscreen(false);
+        	closeFullscreen();
       	}
       }
     }
 
-
-    // create new instance of p5js on compile
-    function instanceCompileToggle(){
-    	settings.instanceCompile = !settings.instanceCompile;
-    	instanceCompileUpdate();
-    }
-
-    function instanceCompileUpdate(){
-    	checkToggle("instanceCompile", settings.instanceCompile, settingsHardCompile);
-    }
 
     //cursor toggle
     function cursorToggle(){
@@ -1303,19 +1305,18 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
     // hide/show editor
     function editorToggle(){
-    	if(editorPane.style.visibility != "visible"){
-        editorPane.style.visibility = "visible";
+    	if(p5editor.style.visibility != "visible"){
+        p5editor.style.visibility = "visible";
       }else{
-        editorPane.style.visibility = "hidden";
+        p5editor.style.visibility = "hidden";
       }
       editorToggleUpdate();
     }
 
     function editorToggleUpdate(){
-      if(editorPane.style.visibility != "visible"){
+      if(p5editor.style.visibility != "visible"){
         const canv = document.querySelector('canvas');
         editor.blur();
-        canv.focus();
       }else{
         editor.focus();
       }
@@ -1376,7 +1377,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	if(settingsFontsize !== document.activeElement){
       	settingsFontsize.value = settings.fontSize;
     	}
-			editorPane.style.fontSize = settings.fontSize + "vw";
+			p5code.style.fontSize = settings.fontSize + "vw";
+      //editor.setFontSize(settings.fontSize);
     }
 
 
@@ -1390,7 +1392,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
         editor.gotoLine(7, 1, false);
         editor.focus();
         updateMenu();
-        setTimeout(function(){ updateP5(settings.instanceCompile); }, 100);
+        setTimeout(function(){ recompile(); }, 100);
     }
 
     function loadAbout(){
@@ -1399,7 +1401,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
       editor.setValue(p5liveabout, 1);
       editor.focus();
       updateMenu();
-      setTimeout(function(){ updateP5(true); }, 100);
+      setTimeout(function(){ recompile(); }, 100);
     }
 
     function loadNew(newName){
@@ -1442,7 +1444,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     		var fn = menuNewSketch.value;
     		loadNew(fn);
     		document.title = 'P5LIVE - ' + settings.fileName;
-        refreshView();
+        recompile();
         event.preventDefault();
     	}
     }
@@ -1459,9 +1461,141 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	}
 
       document.title = 'P5LIVE - ' + settings.fileName;
-      refreshView();
       updateMenu();
+      recompile();
     };
+
+
+    /* iFrame magic */
+
+    // pass mouse events down
+    // ** check if needed still?
+    /*
+    function bindIFrameMousemove(iframe){
+			iframe.contentWindow.addEventListener('mousemove', function(event) {
+		  	var clRect = iframe.getBoundingClientRect();
+		  	var evt = new CustomEvent('mousemove', {bubbles: true, cancelable: false});
+				evt.clientX = event.clientX + clRect.left;
+				evt.clientY = event.clientY + clRect.top;
+				iframe.dispatchEvent(evt);
+			});
+		};
+
+		bindIFrameMousemove(document.getElementById('p5-frame'));
+	*/
+
+		// get mouse clicks on top
+		// *** crazy magic, inspired from here:
+		// https://stackoverflow.com/a/44143731/10885535
+		window.addEventListener('mousemove', function(){passMouse(event)});
+		window.addEventListener('mouseup', function(){passMouseClick(event)});
+		window.addEventListener('mousedown', function(){passMouseClick(event)});
+		
+		var fields = ['pageX','pageY','screenX', 'screenY', 'clientX', 
+									'clientY','ctrlKey', 'altKey', 'shiftKey', 'metaKey',
+									'button', 'buttons', 'relatedTarget', 'region'];
+		
+		var pass = false;
+		function passMouse(e){
+			pass = !pass;
+			if (pass) {
+			    
+			    var opts = {};
+			    fields.forEach(function(f) {
+			    	if (f in e) {
+			      	opts[f] = e[f];
+			      }
+			    });
+			    var copy = new MouseEvent(e.type, opts);
+			    p5f.dispatchEvent(copy);
+		    }
+		};
+
+		function passMouseClick(e){
+			    var fields = [	'pageX','pageY','screenX', 'screenY', 'clientX', 'clientY',
+			    				'ctrlKey', 'altKey', 'shiftKey', 'metaKey',
+			                  	'button', 'buttons', 'relatedTarget', 'region'];
+			    var opts = {};
+			    fields.forEach(function(f) {
+			    	if (f in e) {
+			      	opts[f] = e[f];
+			      }
+			    });
+			    var copy = new MouseEvent(e.type, opts);
+			    p5f.dispatchEvent(copy);  
+		};
+
+
+		// pass keys on down
+		// tips: https://stackoverflow.com/questions/596481/
+		window.addEventListener('keydown', function(ev) {
+			var e = new Event("keydown"); 
+					e.key=ev.key; 
+					e.keyCode=ev.keyCode; 
+					e.which=ev.keyCode; 
+					e.altKey=ev.altKey; 
+					e.ctrlKey=ev.ctrlKey; 
+					e.shiftKey=ev.shiftKey; 
+					e.metaKey=ev.metaKey; 
+					e.bubbles=ev.bubbles; 
+			p5f.dispatchEvent(e);
+		});
+
+		window.addEventListener('keyup', function(ev) {
+			var e = new Event("keyup"); 
+					e.key=ev.key; 
+					e.keyCode=ev.keyCode; 
+					e.which=ev.keyCode; 
+					e.altKey=ev.altKey; 
+					e.ctrlKey=ev.ctrlKey; 
+					e.shiftKey=ev.shiftKey; 
+					e.metaKey=ev.metaKey; 
+					e.bubbles=ev.bubbles;  
+			p5f.dispatchEvent(e);
+		});
+
+
+	// pass sketch into p5frame
+	// https://jaspreetchahal.org/how-to-inject-javascript-into-an-iframe/
+	function injectJS() {
+    // ** add special features
+    // if(paused){s.innerHTML += "function preload(){if(paused){noLoop();}}";}
+    // if(!settings.canvasCursor){window.setTimeout(function(){noCursor();}, 100);}
+
+
+		var iFrameHead = p5f.document.getElementsByTagName("head")[0];
+		var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.innerHTML = editor.getValue() + p5custom.value + 'new p5(); sketchStatus();';
+				iFrameHead.appendChild(s);
+	}
+
+	/* View in fullscreen */
+	function openFullscreen() {
+		var elem = document.body;
+		if (elem.requestFullscreen) {
+		elem.requestFullscreen();
+		} else if (elem.mozRequestFullScreen) { /* Firefox */
+		elem.mozRequestFullScreen();
+		} else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+		elem.webkitRequestFullscreen();
+		} else if (elem.msRequestFullscreen) { /* IE/Edge */
+		elem.msRequestFullscreen();
+		}
+	}
+
+	/* Close fullscreen */
+	function closeFullscreen() {
+	  if (document.exitFullscreen) {
+	    document.exitFullscreen();
+	  } else if (document.mozCancelFullScreen) { /* Firefox */
+	    document.mozCancelFullScreen();
+	  } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+	    document.webkitExitFullscreen();
+	  } else if (document.msExitFullscreen) { /* IE/Edge */
+	    document.msExitFullscreen();
+	  }
+	}
 
   </script>
 </body>
