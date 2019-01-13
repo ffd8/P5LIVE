@@ -577,7 +577,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/*
 			TODO
-			- fix debug toggle
+			- consider changing fontsize to pt/px?
 			- set SSL default on teddavis.org
 			- cleanup un-necessary css/html
 			- reimplement manifest for offline use?
@@ -977,7 +977,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load demos
 		function loadDemo(){
-			var doubleCheck = confirm("Are you sure you want to replace sketches list with demos?");
+			var doubleCheck = confirm("Are you sure you want to add demos to sketches list?");
 			if(doubleCheck){
 				var demosPath = "includes/demos/P5L_demos.json";
 				var request = new XMLHttpRequest();
