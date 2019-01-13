@@ -28,10 +28,12 @@
         //var p5;
     	var p5p = parent.document;
 	  	var p5console = p5p.getElementById('p5-console');
-	  	
+
 	  	// clear console if all good
-	  	p5console.value = "";
-		p5console.style.background = "none";
+        if(p5console != null){
+	  		p5console.value = "";
+			p5console.style.background = "none";
+        }
         markLine();
 
         // pass errors to parent
@@ -62,14 +64,15 @@
         // pass console.log's to parent
         var console = {
             log: function(m){
-                p5console.value = m;
-                p5console.style.background = "#222";
+                if(m != "p5.RendererGL: enabled webgl context"){
+                    p5console.value = m;
+                    p5console.style.background = "#222";
+                }
             }       
         };
     </script>
 </head>
 <body onload="">
-	<div id="catchfocus" onmouseup="parent.document.getElementById('ti').focus();"></div>
 	<script type="text/javascript"></script>
 </body>
 </html>
