@@ -1,437 +1,438 @@
 <!DOCTYPE html>
 <!-- <html manifest="cache.manifest"> -->
 <head>
-  <title>P5LIVE</title>
-  <meta charset="utf-8">
-  <link rel="icon" type="image/png" href="apple-touch-icon.png">
-  <link rel="apple-touch-icon" href="apple-touch-icon.png">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="P5LIVE">
-  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
-  <style type="text/css">
-		@font-face {
-		    font-family: 'roboto_mono';
-		    src: url('includes/fonts/robotomono-regular-webfont.woff2') format('woff2'),
-		         url('includes/fonts/robotomono-regular-webfont.woff') format('woff');
-		    font-weight: 400;
-		    font-style: normal;
-		}
-		@font-face {
-		    font-family: 'roboto_mono';
-		    src: url('includes/fonts/robotomono-light-webfont.woff2') format('woff2'),
-		         url('includes/fonts/robotomono-light-webfont.woff') format('woff');
-		    font-weight: 200;
-		    font-style: normal;
-		}
-    * {
-      box-sizing: border-box;
-    }
-    ::selection {
-      background-color: #fff;
-    }
-    html {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      font-family: 'roboto_mono', 'Monaco', monospace;
-      font-weight: 200;
-    }
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100vw;
-      height: 100vh;
-      color: #839496;
-      background: #000;
-      position: relative;
-      background:#000;
-    }
-    #p5-frame, #p5-frame-cover{
-			outline:none;
-			border:none;
-			margin:0;
-			background:#000;
-      position:fixed;
-      top:0;
-      left:0;
-      width:100vw;
-      height:100vh;
-      z-index:-1;
-		}
-    #p5-frame-cover{
-      background:none;
-      z-index:0;
-      cursor:none;
-    }
+	<title>P5LIVE</title>
+	<meta charset="utf-8">
+	<link rel="icon" type="image/png" href="apple-touch-icon.png">
+	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="P5LIVE">
+	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
+	<style type="text/css">
+	@font-face {
+		font-family: 'roboto_mono';
+		src: url('includes/fonts/robotomono-regular-webfont.woff2') format('woff2'),
+		url('includes/fonts/robotomono-regular-webfont.woff') format('woff');
+		font-weight: 400;
+		font-style: normal;
+	}
+	@font-face {
+		font-family: 'roboto_mono';
+		src: url('includes/fonts/robotomono-light-webfont.woff2') format('woff2'),
+		url('includes/fonts/robotomono-light-webfont.woff') format('woff');
+		font-weight: 200;
+		font-style: normal;
+	}
+	* {
+		box-sizing: border-box;
+	}
+	::selection {
+		background-color: #fff;
+	}
+	html {
+		margin: 0;
+		padding: 0;
+		width: 100vw;
+		height: 100vh;
+		font-family: 'roboto_mono', 'Monaco', monospace;
+		font-weight: 200;
+	}
+	body {
+		margin: 0;
+		padding: 0;
+		width: 100vw;
+		height: 100vh;
+		color: #839496;
+		background: #000;
+		position: relative;
+		background:#000;
+	}
+	#p5-frame, #p5-frame-cover{
+		outline:none;
+		border:none;
+		margin:0;
+		background:#000;
+		position:fixed;
+		top:0;
+		left:0;
+		width:100vw;
+		height:100vh;
+		z-index:-1;
+	}
+	#p5-frame-cover{
+		background:none;
+		z-index:0;
+		cursor:none;
+	}
 
-    /* EDITOR */
-    .p5-ta, #p5-editor{
-      font-family: 'roboto_mono', monospace;
-      font-weight: 400;
-      position:fixed;
-      z-index:1;
-      font-size:20pt;
-      width:100vw;
-      background: none;
-      outline:none;
-      border:none;
-      border-bottom:1px dashed #000;
-      box-sizing: border-box;
-      color:#fff;
-      margin: 0;
-      will-change: opacity;
-      /*-webkit-font-smoothing: antialiased;*/
-    }
-    .p5-ta{
-      padding: 15px;      
-    }
-    #p5-editor{
-      top:0;
-      height:100vh;
-      mix-blend-mode:difference;
-      visibility: visible;
-    }
-    #p5-code {
-      height:100vh;
-      top:0vh;
-    }
-    #p5-console{
-      height:5vh;
-      top:95vh;
-      font-size:10pt;
-      resize:none;
-    }
-    .myMarker {
-      position:fixed;
-      background:rgba(200,0,0,0.25);
-      z-index:20
-    }
-    
-    /* MENU */
-    #menu, #menu-sketch-new{
-      font-size:1vw;
-    }
-    #menu{
-      position:fixed;
-      top:0;
-      right:0;
-      margin-right:-250px;
-      height:100vh;
-      width:250px;
-      color:#fff;
-      z-index:101;
-      transition: margin-right .4s linear;
-    }
-    #menu-switch{
-    	position:absolute;
-    	font-size:4vw;
-    	top:0;
-    	left:-2.4vw;
-    	height:100%;
-    	cursor:pointer;
-    	color:#fff;
-    	opacity:.1;
-    	transition: opacity .5s linear;
-    	z-index:1000;
-    	background:#222;
-    }
-    #menu-switch:hover{
-    	opacity:.5;
-    }
-    #menu-bg{
-    	position:absolute;
-    	top:0;
-    	left:0;
-    	width:100%;
-    	height:100%;
-    	background:#333;
-    	z-index:-1;
-    	opacity: .5;
-    }
-    #menu-sections{
-    	position:absolute;
-    	left:0;
-    	top:0;
-    	width:100%;
-    	height:100%;
-      box-sizing: border-box;
-      padding:15px;
-    	overflow-y:auto;
-    }
-    .menu-section{
-    	position:relative;
-    	margin:0 0 25px 0;
-    	border:1px solid #888;
-    }
-    .menu-header{
-      font-size:1.5vw;
-      color:#fff;
-      border-bottom:1px solid #fff;
-      margin:0px 0 5px 0;
-      padding-left:5px;
-      font-weight:700;
-    }
-    .menu-contents{
-    	padding-left:5px;
-    	padding-bottom:5px;
-    }
-    #menu-sketches-holder{
-      color:#fff;
-      height:30vh;
-      overflow:hidden;
-     	overflow-y:auto;
-    }
-    .menu-sketches-buttons{
-    	padding-left:0px;
-    	margin-bottom: 0px;
-    	margin-top:-5px;
-    	font-size:1vw;
-    	position:relative;
-    	width:100%;
-    	height:20px;
-    }
-    .menu-sketches-buttons button{
-    	color:#fff;
-    	background:#666;
-    	margin:0px;
-    	padding:0px;
-    	border:1px solid #888;
-    	border-left:none;
-    	border-top:none;
-    	outline:none;
-    	cursor:pointer;
-    	font-family: 'roboto_mono', 'Monaco', monospace;
-      font-weight: 400;
-      width:25%;
-      float:left;
-      height:20px;
-    }
-    .menu-sketches-buttons button:last-child{
-    	border-right:none;
-    }
-    .menu-sketches-buttons button:hover{
-    	background:#444;
-    	color:#fff;
-    }
-    #menu-sketches{
-      height:100%;
-    }
-    #menu-sketches-new{
-    	background:#222;
-    }
-    #menu-sketch-new{
-    	outline:none;
-    	border:none;
-    	background:none;
-    	color:#fff;
-    	padding-top:4px;
-    	padding-left:5px;
-    	height:auto;
-    	margin:0;
-    	font-family: 'roboto_mono', 'Monaco', monospace;
-      font-weight: 200;
-    }
-    .menu-sketch-holder{
-      margin:0px;
-      padding:0;
-      height:25px;
-      cursor:pointer;
-      //overflow: hidden;
-      box-sizing: border-box;
-    }
-    .menu-sketch-holder:hover{
-    	background:#666;
-    }
-		.menu-sketch-holder:hover .menu-sketch-nav{
-			display:block;
-		}
-    .menu-sketch{
-    	position: relative;
-      width: 67%;
-      height:100%;
-    	float:none;
-      padding:2px 5px;
-      overflow: hidden;
-    	white-space: nowrap;
-    }
-    .marq:hover{
-    	animation: marquee 5s linear infinite;
-    }
-    @keyframes marquee {
-	    0%   { text-indent: 0em }
-	    100% { text-indent: -20em }
-		}
-    .sketch-selected{
-      background:#444;
-    }
-    .sketch-selected .menu-sketch-nav{
-    	display:block;
-    }
-    .menu-sketch-nav{
-    	float:right;
-    	width:33%;
-    	height:100%;
-    	display:none;
-    	z-index:101;
-    }
-    .menu-sketch-button{
-    	font-size:7pt;
-    	height:100%;
-    	color:#fff;
-    	padding:5px 8px 5px 8px;
-    }
-    .menu-sketch-button:hover{
-    	background:#555;
-    }
-    #menu-settings{
-      line-height:1.6em;
-    }
-    #menu-settings-fontsize{
-      width:2em;
-      font-size:1.25vw;
-      text-align:center;
-      color:#fff;
-      border:none;
-      outline:none;
-      background:none;
-      border-bottom:1px solid #444;
-      font-family: 'roboto_mono', 'Monaco', monospace;
-      font-weight: 200;
-    }
-    #settings-libs{
-    	outline:none;
-    	background:none;
-    	border:none;
-    	border-bottom:1px solid #444;
-    	color:#fff;
-    }
+	/* EDITOR */
+	.p5-ta, #p5-editor{
+		font-family: 'roboto_mono', monospace;
+		font-weight: 400;
+		position:fixed;
+		z-index:1;
+		font-size:20pt;
+		width:100vw;
+		background: none;
+		outline:none;
+		border:none;
+		border-bottom:1px dashed #000;
+		box-sizing: border-box;
+		color:#fff;
+		margin: 0;
+		will-change: opacity;
+		/*-webkit-font-smoothing: antialiased;*/
+	}
+	.p5-ta{
+		padding: 15px;      
+	}
+	#p5-editor{
+		top:0;
+		height:100vh;
+		mix-blend-mode:difference;
+		visibility: visible;
+	}
+	#p5-code {
+		height:100vh;
+		top:0vh;
+	}
+	#p5-console{
+		height:5vh;
+		top:95vh;
+		font-size:10pt;
+		resize:none;
+	}
+	.myMarker {
+		position:fixed;
+		background:rgba(200,0,0,0.25);
+		z-index:20
+	}
+	
+	/* MENU */
+	#menu, #menu-sketch-new{
+		font-size:1vw;
+	}
+	#menu{
+		position:fixed;
+		top:0;
+		right:0;
+		margin-right:-250px;
+		height:100vh;
+		width:250px;
+		color:#fff;
+		z-index:101;
+		transition: margin-right .4s linear;
+	}
+	#menu-switch{
+		position:absolute;
+		font-size:4vw;
+		top:0;
+		left:-2.4vw;
+		height:100%;
+		cursor:pointer;
+		color:#fff;
+		opacity:.1;
+		transition: opacity .5s linear;
+		z-index:1000;
+		background:#222;
+	}
+	#menu-switch:hover{
+		opacity:.5;
+	}
+	#menu-bg{
+		position:absolute;
+		top:0;
+		left:0;
+		width:100%;
+		height:100%;
+		background:#333;
+		z-index:-1;
+		opacity: .5;
+	}
+	#menu-sections{
+		position:absolute;
+		left:0;
+		top:0;
+		width:100%;
+		height:100%;
+		box-sizing: border-box;
+		padding:15px;
+		overflow-y:auto;
+	}
+	.menu-section{
+		position:relative;
+		margin:0 0 25px 0;
+		border:1px solid #888;
+	}
+	.menu-header{
+		font-size:1.5vw;
+		color:#fff;
+		border-bottom:1px solid #fff;
+		margin:0px 0 5px 0;
+		padding-left:5px;
+		font-weight:700;
+	}
+	.menu-contents{
+		padding-left:5px;
+		padding-bottom:5px;
+	}
+	#menu-sketches-holder{
+		color:#fff;
+		height:30vh;
+		overflow:hidden;
+		overflow-y:auto;
+	}
+	.menu-sketches-buttons{
+		padding-left:0px;
+		margin-bottom: 0px;
+		margin-top:-5px;
+		font-size:1vw;
+		position:relative;
+		width:100%;
+		height:20px;
+	}
+	.menu-sketches-buttons button{
+		color:#fff;
+		background:#666;
+		margin:0px;
+		padding:0px;
+		border:1px solid #888;
+		border-left:none;
+		border-top:none;
+		outline:none;
+		cursor:pointer;
+		font-family: 'roboto_mono', 'Monaco', monospace;
+		font-weight: 400;
+		width:25%;
+		float:left;
+		height:20px;
+	}
+	.menu-sketches-buttons button:last-child{
+		border-right:none;
+	}
+	.menu-sketches-buttons button:hover{
+		background:#444;
+		color:#fff;
+	}
+	#menu-sketches{
+		height:100%;
+	}
+	#menu-sketches-new{
+		background:#222;
+	}
+	#menu-sketch-new{
+		outline:none;
+		border:none;
+		background:none;
+		color:#fff;
+		padding-top:4px;
+		padding-left:5px;
+		height:auto;
+		margin:0;
+		font-family: 'roboto_mono', 'Monaco', monospace;
+		font-weight: 200;
+	}
+	.menu-sketch-holder{
+		margin:0px;
+		padding:0;
+		height:25px;
+		cursor:pointer;
+		//overflow: hidden;
+		box-sizing: border-box;
+	}
+	.menu-sketch-holder:hover{
+		background:#666;
+	}
+	.menu-sketch-holder:hover .menu-sketch-nav{
+		display:block;
+	}
+	.menu-sketch{
+		position: relative;
+		width: 67%;
+		height:100%;
+		float:none;
+		padding:2px 5px;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+	.marq:hover{
+		animation: marquee 5s linear infinite;
+	}
+	@keyframes marquee {
+		0%   { text-indent: 0em }
+		100% { text-indent: -20em }
+	}
+	.sketch-selected{
+		background:#444;
+	}
+	.sketch-selected .menu-sketch-nav{
+		display:block;
+	}
+	.menu-sketch-nav{
+		float:right;
+		width:33%;
+		height:100%;
+		display:none;
+		z-index:101;
+	}
+	.menu-sketch-button{
+		font-size:7pt;
+		height:100%;
+		color:#fff;
+		padding:5px 8px 5px 8px;
+	}
+	.menu-sketch-button:hover{
+		background:#555;
+	}
+	#menu-settings{
+		line-height:1.6em;
+	}
+	#menu-settings-fontsize{
+		width:2em;
+		font-size:1.25vw;
+		text-align:center;
+		color:#fff;
+		border:none;
+		outline:none;
+		background:none;
+		border-bottom:1px solid #444;
+		font-family: 'roboto_mono', 'Monaco', monospace;
+		font-weight: 200;
+	}
+	#settings-libs{
+		outline:none;
+		background:none;
+		border:none;
+		border-bottom:1px solid #444;
+		color:#fff;
+	}
 
-    /* 
-		  ##Device = Tablets, Ipads (landscape)
-		  ##Screen = B/w 768px to 1024px
-		*/
+		/* 
+			##Device = Tablets, Ipads (landscape)
+			##Screen = B/w 768px to 1024px
+			*/
 
-		@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-		  
-		  
-		  
-		}
+			@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+				
+				
+				
+			}
 
-    /* MOBILE */
-    @media (max-width: 767px) {
-    	#menu-bg{
-    		opacity:1;
-    	}
-    	.menu-header{
-    		font-size:2.5vh;
-    	}
-     	#menu{
-     		font-size:2vh;
-     	}
-     	#menu-switch{
-	    	font-size:40px;
-	    	top:0;
-	    	left:-24px;
-	    	opacity:1;
-	    	background:#222;
-    	}
-    }
-  </style>
-    <script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-    <script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-    <script src="includes/js/Sortable.js"></script>
-    <script src="includes/js/beautify.js"></script>
-</head>
-<body>
-  <!-- small hack for any focus on background -->
-  <!-- <input type="text" name="" id="ti"> -->
-  <div id="p5-editor">
-    <pre id="p5-code" autofocus class="p5-ta"></pre>
-    <textarea id="p5-console" class="p5-ta" disabled></textarea>
-  </div>
+			/* MOBILE */
+			@media (max-width: 767px) {
+				#menu-bg{
+					opacity:1;
+				}
+				.menu-header{
+					font-size:2.5vh;
+				}
+				#menu{
+					font-size:2vh;
+				}
+				#menu-switch{
+					font-size:40px;
+					top:0;
+					left:-24px;
+					opacity:1;
+					background:#222;
+				}
+			}
+		</style>
+		<script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+		<script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+		<script src="includes/js/Sortable.js"></script>
+		<script src="includes/js/beautify.js"></script>
+	</head>
+	<body>
+		<!-- small hack for any focus on background -->
+		<!-- <input type="text" name="" id="ti"> -->
+		<div id="p5-editor">
+			<pre id="p5-code" autofocus class="p5-ta"></pre>
+			<textarea id="p5-console" class="p5-ta" disabled></textarea>
+		</div>
 
-  <iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" src="p5live_sketch.html" onLoad="injectJS()";></iframe>
-  <div id="p5-frame-cover"></div>
+		<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" src="p5live_sketch.html" onLoad="injectJS()";></iframe>
+		<div id="p5-frame-cover"></div>
 
-  <div id="menu">
-  	<div id="menu-bg"></div>
-  	<div id="menu-switch" onclick="menuToggle();">X</div>
-  	<div id="menu-sections">
-	  	<div class="menu-section">
-	  		<div class="menu-header">P5LIVE</div>
-        	<div class="menu-sketches-buttons">
-        		<button onclick="loadAbout();" title="The more you know...">ABOUT</button>
-	          <button onclick="resetP5();" title="Totally reset P5Live">RESET</button>
-            <button onclick="loadDemo();" title="Load P5LIVE demos">DEMOS</button>
-       		</div>
-	  	</div>
-	  	<div class="menu-section">
-	      <div id="menu-sketches-header" class="menu-header">SKETCHES</div>
-	      	<div class="menu-sketches-buttons">
-	          <button onclick="loadDefault();" title="CTRL + N » Create new sketch">NEW</button>
-	          <button onclick="document.getElementById('file-input').click();" title="Import sketch(es)">IMPORT</button>
+		<div id="menu">
+			<div id="menu-bg"></div>
+			<div id="menu-switch" onclick="menuToggle();">X</div>
+			<div id="menu-sections">
+				<div class="menu-section">
+					<div class="menu-header">P5LIVE</div>
+					<div class="menu-sketches-buttons">
+						<button onclick="loadAbout();" title="The more you know...">ABOUT</button>
+						<button onclick="resetP5();" title="Totally reset P5Live">RESET</button>
+						<button onclick="loadDemo();" title="Load P5LIVE demos">DEMOS</button>
+					</div>
+				</div>
+				<div class="menu-section">
+					<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
+					<div class="menu-sketches-buttons">
+						<button onclick="loadDefault();" title="CTRL + N » Create new sketch">NEW</button>
+						<button onclick="document.getElementById('file-input').click();" title="Import sketch(es)">IMPORT</button>
 						<input id="file-input" type="file" name="name" style="display: none;" onchange="sketchesImport(this.files[0]);" />
-	          <button onclick="sketchesExport();" title="Export all sketches">EXPORT</button>
-	          <button onclick="sketchesClear();" title="Clear entire sketches list">CLEAR</button>
-	        </div>
+						<button onclick="sketchesExport();" title="Export all sketches">EXPORT</button>
+						<button onclick="sketchesClear();" title="Clear entire sketches list">CLEAR</button>
+					</div>
 
-	        <div id="menu-sketches-new"></div>
-	      <div id="menu-sketches-holder" >
-	        <div id="menu-sketches"></div>
-	      </div>
-	    </div>
-	  	
-	    <div class="menu-section">
-	      <div id="menu-settings-header" class="menu-header">SETTINGS</div>
-	      <div id="menu-settings" class="menu-contents">
-	        <div>
-	          Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="2" onkeyup="fontSizeAdjust(this.value);"> vw
-	        </div>
-	        <!-- <div style="cursor:help;" title="Prevents compiling unless strict Javascript is error free">
-	            <span>Strict Compile:</span> 
-	            <input type="checkbox" id="settings-strictcompile" name="settings-strictcompile" value="settings-strictcompile" onchange="strictCompileToggle();" >
-	        </div> -->
-	        <div style="cursor:help;" title="CTRL + A » Compiles code on each keypress">
-	            <span>Auto Compile:</span> 
-	            <input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();">
-	        </div>
-	         <div style="cursor:help;" title="CTRL + F » Toggle fullscreen mode">
-	            <span>Fullscreen:</span> 
-	            <input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();">
-	        </div>
-	        <div style="cursor:help;" title="Only render if window is active (focused)">
-	            <span>Eco Render:</span> 
-	            <input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();">
-	        </div>
-	        <div style="cursor:help;" title="CTRL + C » Display mouse cursor when editor is hidden">
-	            <span>Cursor:</span> 
-	            <input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();">
-	        </div>
-	         <div style="cursor:help;" title="CTRL + M » If unchecked, can only view menu via ctrl+m">
-	            <span>Menu Tab:</span> 
-	            <input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
-	        </div>
-	        <div style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
-	            <span>Libs:</span> 
-	            <input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
-	        </div>
-	      </div>
-	    </div>
-    </div>
-  </div>
-  <footer><a id="download" download="export.html"></a></footer>
-  <textarea style="display:none;" id="p5-template">
+					<div id="menu-sketches-new"></div>
+					<div id="menu-sketches-holder" >
+						<div id="menu-sketches"></div>
+					</div>
+				</div>
+				
+				<div class="menu-section">
+					<div id="menu-settings-header" class="menu-header">SETTINGS</div>
+					<div id="menu-settings" class="menu-contents">
+						<div>
+							Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="2" onkeyup="fontSizeAdjust(this.value);"> vw
+						</div>
+					<!-- <div style="cursor:help;" title="Prevents compiling unless strict Javascript is error free">
+							<span>Strict Compile:</span> 
+							<input type="checkbox" id="settings-strictcompile" name="settings-strictcompile" value="settings-strictcompile" onchange="strictCompileToggle();" >
+						</div> -->
+						<div style="cursor:help;" title="CTRL + A » Compiles code on each keypress">
+							<span>Auto Compile:</span> 
+							<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();">
+						</div>
+						<div style="cursor:help;" title="CTRL + F » Toggle fullscreen mode">
+							<span>Fullscreen:</span> 
+							<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();">
+						</div>
+						<div style="cursor:help;" title="Only render if window is active (focused)">
+							<span>Eco Render:</span> 
+							<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();">
+						</div>
+						<div style="cursor:help;" title="CTRL + C » Display mouse cursor when editor is hidden">
+							<span>Cursor:</span> 
+							<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();">
+						</div>
+						<div style="cursor:help;" title="CTRL + M » If unchecked, can only view menu via ctrl+m">
+							<span>Menu Tab:</span> 
+							<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
+						</div>
+						<div style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
+							<span>Libs:</span> 
+							<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<footer><a id="download" download="export.html"></a></footer>
+		<textarea style="display:none;" id="p5-template">
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-
+	
 }
 
 function draw() {
 	
 }</textarea>
-<textarea style="display:none;" id="p5-custom">
+	<textarea style="display:none;" id="p5-custom">
+// readjust if window-resized
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
 }
@@ -458,37 +459,37 @@ p5.js live-coding vj environment!
 GETTING STARTED
 -------------------------------
 - Create, New Sketch + start coding! 
-  Save, Type a name into 'Save Sketch As...' and hit Return.
-  Save As, same as above while editing existing sketch.
-  
+Save, Type a name into 'Save Sketch As...' and hit Return.
+Save As, same as above while editing existing sketch.
+
 - Sketches Menu:
-  NEW, new sketch.
-  IMPORT, select JSON file from export (all or single sketch).
-  EXPORT, download entire sketch list as JSON for import.
-  CLEAR, erase entire sketches list.
-  
+NEW, new sketch.
+IMPORT, select JSON file from export (all or single sketch).
+EXPORT, download entire sketch list as JSON for import.
+CLEAR, erase entire sketches list.
+
 - Sketches List:
-  Load, click on sketch name.
-  Rename, click 'id' and type new name.
-  Export, click '↓' to download JSON file for import.
-  Remove, click 'x' and comfirm removal.
-  Sort, click and drag to desired order.
-  
+Load, click on sketch name.
+Rename, click 'id' and type new name.
+Export, click '↓' to download JSON file for import.
+Remove, click 'x' and comfirm removal.
+Sort, click and drag to desired order.
+
 - Settings:
-  Font Size, adjust size of editor text.
-  Auto Compile, live-coding mode, refreshes on keyup.
-  Fullscreen, toggle fullScreen(), ideal for VJing
-  Eco Render, toggle loop()/noLoop() when browser window is out of focus.
-  Cursor, toggle visible cursor when hiding editor (ctrl + e).
-  
+Font Size, adjust size of editor text.
+Auto Compile, live-coding mode, refreshes on keyup.
+Fullscreen, toggle fullScreen(), ideal for VJing
+Eco Render, toggle loop()/noLoop() when browser window is out of focus.
+Cursor, toggle visible cursor when hiding editor (ctrl + e).
+
 - Note that all settings/sketches are stored in localStorage.
-  Clearing browser cache/storage = will probably erase sketches. 
-  Be sure to export often.
-  
+Clearing browser cache/storage = will probably erase sketches. 
+Be sure to export often.
+
 - Write ES5 JS code (var), due to recompiling issues with let/const.
 
 - Fan going nuts? Set pixelDensity(1); within setup() if on a retina display.
-  
+
 
 SHORTCUTS
 -------------------------------
@@ -522,7 +523,7 @@ FUTURE
 - export image [video?]
 - tree structure for sketches
 - export as HTML for website usage
-    
+
 
 THANKS
 -------------------------------
@@ -570,425 +571,425 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	vertex(x3, y3);
 	endShape();
 }</textarea>
-  <script type="text/javascript">
+<script type="text/javascript">
 
-  	'use strict'
+	'use strict'
 
-    /*
-      TODO
-      - fix debug toggle
-      - set SSL default on teddavis.org
-      - cleanup un-necessary css/html
-      - reimplement manifest for offline use?
-      - FB/share details
-      - split css/js or single page = benefit?
-      - initial settings (special for mobile)
-      - array of loaded js scripts (input for csv, local/remote)
-      - 
-    */
+		/*
+			TODO
+			- fix debug toggle
+			- set SSL default on teddavis.org
+			- cleanup un-necessary css/html
+			- reimplement manifest for offline use?
+			- FB/share details
+			- split css/js or single page = benefit?
+			- initial settings (special for mobile)
+			- array of loaded js scripts (input for csv, local/remote)
+			- 
+			*/
 
 
 
-    /* INIT THINGS */
+			/* INIT THINGS */
 
-    // init localStorage
-    var reset = false;
+		// init localStorage
+		var reset = false;
 
-    if(reset){localStorage.clear();}
+		if(reset){localStorage.clear();}
 
-    function resetP5(){
-   		var doubleCheck = confirm("Are you sure you want to completely reset P5LIVE?");
-	    if(doubleCheck){
-    		localStorage.clear();
-    		location.reload();
-    	}
-    }
+		function resetP5(){
+			var doubleCheck = confirm("Are you sure you want to completely reset P5LIVE?");
+			if(doubleCheck){
+				localStorage.clear();
+				location.reload();
+			}
+		}
 
-    var initSettings = {
-    	"welcome":true,
-    	"fontSize":1.5, 
-    	"autoCompile":false, 
-    	"ecoRender": true,
-    	// "strictCompile": false,
-    	"canvasCursor": true,
-    	"fullscreenMode":false,
-    	"fileName": '',
-    	"menuMode": true,
-    	"menutab":true,
-    	"debugMode": false,
-    	"sketches": [],
-    	"sketchesSortable": '',
-    	"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"], // , 
-    }
+		var initSettings = {
+			"welcome":true,
+			"fontSize":1.5, 
+			"autoCompile":false, 
+			"ecoRender": true,
+			// "strictCompile": false,
+			"canvasCursor": true,
+			"fullscreenMode":false,
+			"fileName": '',
+			"menuMode": true,
+			"menutab":true,
+			"debugMode": false,
+			"sketches": [],
+			"sketchesSortable": '',
+			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"], // , 
+		}
 
-    // init vars
-    var p5editor = document.getElementById('p5-editor'),
-        p5code = document.getElementById('p5-code'),
-        p5console = document.getElementById('p5-console'),
-        p5custom = document.getElementById('p5-custom'),
-        p5template = document.getElementById('p5-template').value,
-        p5frame = document.getElementById('p5-frame'),
-        p5frameCover = document.getElementById('p5-frame-cover'),
-        p5f = p5frame.contentWindow,
-        p5liveabout = document.getElementById('p5live-about').value,
-        p5script = document.getElementById("holdscript"),
-        menuSketches = document.getElementById('menu-sketches'),
-        menuSettings = document.getElementById('menu-settings'),
-        settingsFontsize = document.getElementById('menu-settings-fontsize'),
-        settingsAutoMode = document.getElementById('settings-autocompile'),
-        settingsFullscreen = document.getElementById('settings-fullscreen'),
-        settingsEcoMode = document.getElementById('settings-ecorender'),
-        settingsCanvasCursor = document.getElementById('settings-canvascursor'),
-        settingsMenutab = document.getElementById('settings-menutab'),
-        menuNewSketch = document.getElementById('menu-sketch-new'),
-        menuPanel = document.getElementById('menu'),
-        menuSwitch = document.getElementById('menu-switch'),
-        settings = getSettings(),
-        validCode = true, 
-        sketchLoaded = false,
-        pLen = 0, 
-        paused = false,
-        markerID = [],
-        errorTimer, 
-        fc = 0;
+		// init vars
+		var p5editor = document.getElementById('p5-editor'),
+		p5code = document.getElementById('p5-code'),
+		p5console = document.getElementById('p5-console'),
+		p5custom = document.getElementById('p5-custom'),
+		p5template = document.getElementById('p5-template').value,
+		p5frame = document.getElementById('p5-frame'),
+		p5frameCover = document.getElementById('p5-frame-cover'),
+		p5f = p5frame.contentWindow,
+		p5liveabout = document.getElementById('p5live-about').value,
+		p5script = document.getElementById("holdscript"),
+		menuSketches = document.getElementById('menu-sketches'),
+		menuSettings = document.getElementById('menu-settings'),
+		settingsFontsize = document.getElementById('menu-settings-fontsize'),
+		settingsAutoMode = document.getElementById('settings-autocompile'),
+		settingsFullscreen = document.getElementById('settings-fullscreen'),
+		settingsEcoMode = document.getElementById('settings-ecorender'),
+		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
+		settingsMenutab = document.getElementById('settings-menutab'),
+		menuNewSketch = document.getElementById('menu-sketch-new'),
+		menuPanel = document.getElementById('menu'),
+		menuSwitch = document.getElementById('menu-switch'),
+		settings = getSettings(),
+		validCode = true, 
+		sketchLoaded = false,
+		pLen = 0, 
+		paused = false,
+		markerID = [],
+		errorTimer, 
+		fc = 0;
 
-        settings.debugMode = false;
-       
+		settings.debugMode = false;
+		
 		// init editor 
 		var Range = ace.require('ace/range').Range;
-    var editor = ace.edit("p5-code");
-    editor.setTheme("ace/theme/twilight");
-    editor.session.setMode("ace/mode/javascript");
-    editor.setOptions({
-    	showPrintMargin: false,
-    	animatedScroll: false,
-    	displayIndentGuides: false,
-    	useWorker: true,
-    	showLineNumbers: false,
-    	showGutter: false,
-    	tabSize: 4, useSoftTabs: false,
-    });
-   
-    p5editor.style.visibility = "visible";
+		var editor = ace.edit("p5-code");
+		editor.setTheme("ace/theme/twilight");
+		editor.session.setMode("ace/mode/javascript");
+		editor.setOptions({
+			showPrintMargin: false,
+			animatedScroll: false,
+			displayIndentGuides: false,
+			useWorker: true,
+			showLineNumbers: false,
+			showGutter: false,
+			tabSize: 4, useSoftTabs: false,
+		});
+		
+		p5editor.style.visibility = "visible";
 
 
 
-    /* FANCY EDITOR FUNCTIONS */
+		/* FANCY EDITOR FUNCTIONS */
 
-    // check for errors
-    editor.getSession().on("changeAnnotation", function(){
-      var annot = editor.getSession().getAnnotations();
- 			validCode = true;
- 			for(var i=0; i < annot.length; i++){
- 				if(annot[i].type === "error"){
- 					addMarker(annot[i].row);
- 					validCode = false;
- 				}
- 			}
+		// check for errors
+		editor.getSession().on("changeAnnotation", function(){
+			var annot = editor.getSession().getAnnotations();
+			validCode = true;
+			for(var i=0; i < annot.length; i++){
+				if(annot[i].type === "error"){
+					addMarker(annot[i].row);
+					validCode = false;
+				}
+			}
 
- 			if(validCode){
- 				removeMarkers();
- 			}
-    });
+			if(validCode){
+				removeMarkers();
+			}
+		});
 
-    editor.getSession().on("update", function(){
-    	console.log(results);
-    	});
+		editor.getSession().on("update", function(){
+			console.log(results);
+		});
 
 		function addMarker(n){
 			var elementPos = markerID.map(function(x) {return x.line; }).indexOf(n);
 			if (elementPos === -1) {
-					markerID.push({"line":n, "id":editor.session.addMarker(new Range(n, 0, n, 7000), "myMarker", "fullLine")});
-				}
+				markerID.push({"line":n, "id":editor.session.addMarker(new Range(n, 0, n, 7000), "myMarker", "fullLine")});
 			}
+		}
 
-    function removeMarkers(){
-    	for(var i=0; i < markerID.length; i++){
- 					editor.session.removeMarker(markerID[i].id);
- 			}
- 			markerID = [];
-    }
-
-
-    /* CMD-KEYS (remove key conflicts) */
-    editor.commands.removeCommands(["gotoright","movelinesup", "movelinesdown", "gotolinestart", "splitline", "gotolineend", "golineup", "jumptomatching", "golinedown", "transposeletters"]);
-
-   // replace backspace w/o ctrl + h
-   	editor.commands.addCommand({
-    name: "backspace",
-    bindKey: { win: "Shift-Backspace|Backspace", mac: "Ctrl-Backspace|Shift-Backspace|Backspace" },
-    exec: function(e) { e.remove("left") },
-    multiSelectAction: "forEach",
-    scrollIntoView: "cursor"
-   });
-
-   // replace gotoright w/o ctrl + f
-   editor.commands.addCommand({
-    name: "gotoright",
-    bindKey: { win: "Right", mac: "Right" },
-    exec: function(e,t) { e.navigateRight(t.times) },
-    multiSelectAction: "forEach",
-    scrollIntoView: "cursor",
-    readOnly:!0
-   });
-
-   // replace golineup w/o ctrl + p
-   editor.commands.addCommand({
-    name: "golineup",
-    bindKey: { win: "Up", mac: "Up" },
-    exec: function(e,t) { e.navigateUp(t.times) },
-    multiSelectAction: "forEach",
-    scrollIntoView: "cursor",
-    readOnly:!0
-   });
-
-   // replace golinedown w/o ctrl + n
-   editor.commands.addCommand({
-    name: "golinedown",
-    bindKey: { win: "Down", mac: "Down" },
-    exec: function(e,t) { e.navigateDown(t.times) },
-    multiSelectAction: "forEach",
-    scrollIntoView: "cursor",
-    readOnly:!0
-   });
-
-   // beautify!
-		var beautifyOptions = {
-			  "indent_size": "1",
-			  "indent_char": "\t",
-			  "max_preserve_newlines": "5",
-			  "preserve_newlines": true,
-			  "keep_array_indentation": false,
-			  "break_chained_methods": false,
-			  "indent_scripts": "normal",
-			  "brace_style": "collapse",
-			  "space_before_conditional": false,
-			  "unescape_strings": false,
-			  "jslint_happy": false,
-			  "end_with_newline": false,
-			  "wrap_line_length": "0",
-			  "indent_inner_html": false,
-			  "comma_first": false,
-			  "e4x": false
+		function removeMarkers(){
+			for(var i=0; i < markerID.length; i++){
+				editor.session.removeMarker(markerID[i].id);
 			}
-
-
-
-   /* DEBUG EDITOR COMMANDS + STORAGE */
-
-   // list ace editor commands
-   function listCommands(){
-   	var cmds = editor.commands.commands;
-   	var k = [];
-   	for (var cmd in cmds){
-   		k.push(cmd.name +" = "+ cmd.bindKey);
-   	}
-   	console.log(cmds);
-   }
-
-   // check storageKeys    
-    function getKeys(){
-      var k = [];
-      for (var key in localStorage){
-         k.push(key);
-      }
-      console.log(k.join(", "));
-    }
-
-		if(settings.debugMode){
-			listCommands();
-			getKeys();
+			markerID = [];
 		}
 
 
-		/* p5 iframe communcation */
+		/* CMD-KEYS (remove key conflicts) */
+		editor.commands.removeCommands(["gotoright","movelinesup", "movelinesdown", "gotolinestart", "splitline", "gotolineend", "golineup", "jumptomatching", "golinedown", "transposeletters"]);
+
+	 // replace backspace w/o ctrl + h
+	 editor.commands.addCommand({
+	 	name: "backspace",
+	 	bindKey: { win: "Shift-Backspace|Backspace", mac: "Ctrl-Backspace|Shift-Backspace|Backspace" },
+	 	exec: function(e) { e.remove("left") },
+	 	multiSelectAction: "forEach",
+	 	scrollIntoView: "cursor"
+	 });
+
+	 // replace gotoright w/o ctrl + f
+	 editor.commands.addCommand({
+	 	name: "gotoright",
+	 	bindKey: { win: "Right", mac: "Right" },
+	 	exec: function(e,t) { e.navigateRight(t.times) },
+	 	multiSelectAction: "forEach",
+	 	scrollIntoView: "cursor",
+	 	readOnly:!0
+	 });
+
+	 // replace golineup w/o ctrl + p
+	 editor.commands.addCommand({
+	 	name: "golineup",
+	 	bindKey: { win: "Up", mac: "Up" },
+	 	exec: function(e,t) { e.navigateUp(t.times) },
+	 	multiSelectAction: "forEach",
+	 	scrollIntoView: "cursor",
+	 	readOnly:!0
+	 });
+
+	 // replace golinedown w/o ctrl + n
+	 editor.commands.addCommand({
+	 	name: "golinedown",
+	 	bindKey: { win: "Down", mac: "Down" },
+	 	exec: function(e,t) { e.navigateDown(t.times) },
+	 	multiSelectAction: "forEach",
+	 	scrollIntoView: "cursor",
+	 	readOnly:!0
+	 });
+
+	 // beautify!
+	 var beautifyOptions = {
+	 	"indent_size": "1",
+	 	"indent_char": "\t",
+	 	"max_preserve_newlines": "5",
+	 	"preserve_newlines": true,
+	 	"keep_array_indentation": false,
+	 	"break_chained_methods": false,
+	 	"indent_scripts": "normal",
+	 	"brace_style": "collapse",
+	 	"space_before_conditional": false,
+	 	"unescape_strings": false,
+	 	"jslint_happy": false,
+	 	"end_with_newline": false,
+	 	"wrap_line_length": "0",
+	 	"indent_inner_html": false,
+	 	"comma_first": false,
+	 	"e4x": false
+	 }
+
+
+
+	 /* DEBUG EDITOR COMMANDS + STORAGE */
+
+	 // list ace editor commands
+	 function listCommands(){
+	 	var cmds = editor.commands.commands;
+	 	var k = [];
+	 	for (var cmd in cmds){
+	 		k.push(cmd.name +" = "+ cmd.bindKey);
+	 	}
+	 	console.log(cmds);
+	 }
+
+	 // check storageKeys    
+	 function getKeys(){
+	 	var k = [];
+	 	for (var key in localStorage){
+	 		k.push(key);
+	 	}
+	 	console.log(k.join(", "));
+	 }
+
+	 if(settings.debugMode){
+	 	listCommands();
+	 	getKeys();
+	 }
+
+
+	 /* p5 iframe communcation */
 
 		// mark error line
 		window.document.addEventListener('myEvent', handleEvent, false)
 		function handleEvent(e) {
-		  //console.log(e.detail) // outputs: {foo: 'bar'}
+			//console.log(e.detail) // outputs: {foo: 'bar'}
 			if(e.detail.lineNumber != undefined){
-			  	var errorLine = parseInt(e.detail.lineNumber)-1;
-	  			addMarker(errorLine);
-  		}else{
-  				removeMarkers()
-  		}
+				var errorLine = parseInt(e.detail.lineNumber)-1;
+				addMarker(errorLine);
+			}else{
+				removeMarkers()
+			}
 
-  		// sketchloaded
-  		if(e.detail.status){
-  			p5f.frameCount = fc;
-  			p5f.background(0);
-  			fc = 0;
-  			sketchLoaded = true;
-  		}else{
-  			sketchLoaded = false;
-  		}
+			// sketchloaded
+			if(e.detail.status){
+				p5f.frameCount = fc;
+				p5f.background(0);
+				fc = 0;
+				sketchLoaded = true;
+			}else{
+				sketchLoaded = false;
+			}
 		}
 
-  
+		
 
-    /* SETTINGS + SKETCHES */
+		/* SETTINGS + SKETCHES */
 
-  	// init settings
-    loadSettings();
+		// init settings
+		loadSettings();
 
-    // get settings from localstorage
-    function getSettings(){
-    	var tempSettings = initSettings;
-    	if(localStorage.hasOwnProperty('settings')){
-      	tempSettings = JSON.parse(localStorage.getItem('settings'));
-    	}
-    	return tempSettings;
-    }
+		// get settings from localstorage
+		function getSettings(){
+			var tempSettings = initSettings;
+			if(localStorage.hasOwnProperty('settings')){
+				tempSettings = JSON.parse(localStorage.getItem('settings'));
+			}
+			return tempSettings;
+		}
 
-    // react to settings once gathered
-    function loadSettings(){
-    	fontSizeUpdate();
-    	autoCompileUpdate();
-    	fullscreenUpdate();
-    	menuToggleUpdate();
-    	ecoRenderUpdate();
-    	cursorToggleUpdate();
-    	menutabToggleUpdate();
+		// react to settings once gathered
+		function loadSettings(){
+			fontSizeUpdate();
+			autoCompileUpdate();
+			fullscreenUpdate();
+			menuToggleUpdate();
+			ecoRenderUpdate();
+			cursorToggleUpdate();
+			menutabToggleUpdate();
 
-    	if(settings.welcome){
-    		loadAbout();
-    		settings.welcome = false;
-    		updateSettings();
-    	}else{
-    		loadSketch(settings.fileName);
-    	}
+			if(settings.welcome){
+				loadAbout();
+				settings.welcome = false;
+				updateSettings();
+			}else{
+				loadSketch(settings.fileName);
+			}
 
-    }
+		}
 
-    // set settings to localstorage
-    function updateSettings(){
-      localStorage.setItem('settings', JSON.stringify(settings));
-      if(settings.debugMode){console.log(getSettings());}
-    }
+		// set settings to localstorage
+		function updateSettings(){
+			localStorage.setItem('settings', JSON.stringify(settings));
+			if(settings.debugMode){console.log(getSettings());}
+		}
 
-    // set sketches list to localstorage
-    function updateSketches(){
-      updateSettings();
-      updateMenu();
-    }
+		// set sketches list to localstorage
+		function updateSketches(){
+			updateSettings();
+			updateMenu();
+		}
 
-    // get sketches list from localstorage
-    function getSketches(){
-      var sketchesSplit = settings.sketches;//localStorage.getItem("sketches");
-      return sketchesSplit;
-    }
+		// get sketches list from localstorage
+		function getSketches(){
+			var sketchesSplit = settings.sketches;//localStorage.getItem("sketches");
+			return sketchesSplit;
+		}
 
-    // load sketch
-    function loadSketch(sketch){
-    	if(localStorage.hasOwnProperty(sketch)){
-	      settings.fileName = sketch;
-    		editor.setValue(localStorage[settings.fileName], 1);
-    		pLen = editor.getValue().length;
-      	updateMenu();
-      	updateSettings();
-      	setTimeout(function(){fc = 0;recompile();}, 100);
-      	editor.getSession().setUndoManager(new ace.UndoManager());
-      	editor.focus();
-    	}else{
-    		loadDefault();
-    	}
-    }
+		// load sketch
+		function loadSketch(sketch){
+			if(localStorage.hasOwnProperty(sketch)){
+				settings.fileName = sketch;
+				editor.setValue(localStorage[settings.fileName], 1);
+				pLen = editor.getValue().length;
+				updateMenu();
+				updateSettings();
+				setTimeout(function(){fc = 0;recompile();}, 100);
+				editor.getSession().setUndoManager(new ace.UndoManager());
+				editor.focus();
+			}else{
+				loadDefault();
+			}
+		}
 
-    // rename sketch
-    function renameSketch(sketch){
-    	var newName = prompt('Please enter a new name for "'+sketch+'":');
-    	if(newName != ''){
-    		localStorage.setItem(newName, localStorage[sketch]);
-    		var index = settings.sketches.indexOf(sketch);
+		// rename sketch
+		function renameSketch(sketch){
+			var newName = prompt('Please enter a new name for "'+sketch+'":');
+			if(newName != ''){
+				localStorage.setItem(newName, localStorage[sketch]);
+				var index = settings.sketches.indexOf(sketch);
 				if (index !== -1) {
-				    settings.sketches[index] = newName;
+					settings.sketches[index] = newName;
 				}
-    		localStorage.removeItem(sketch);
-    		updateSketches();
-    		setTimeout(function(){ loadSketch(newName); }, 100);
-    	}
-    }
+				localStorage.removeItem(sketch);
+				updateSketches();
+				setTimeout(function(){ loadSketch(newName); }, 100);
+			}
+		}
 
-    // remove sketch
-    function removeSketch(sketch){
-	    var doubleCheck = confirm("Are you sure you want to delete: " +sketch+" ?");
-	      if(doubleCheck){
-	        localStorage.removeItem(sketch);
-	        var index = settings.sketches.indexOf(sketch);
-	        if (index !== -1) {
-	            settings.sketches.splice(index, 1);
-	        }
-	        if(sketch === settings.fileName){
-	        	setTimeout(function(){ loadDefault(); }, 100);
-	        }
-	        updateSketches();
-	      }
-    }
+		// remove sketch
+		function removeSketch(sketch){
+			var doubleCheck = confirm("Are you sure you want to delete: " +sketch+" ?");
+			if(doubleCheck){
+				localStorage.removeItem(sketch);
+				var index = settings.sketches.indexOf(sketch);
+				if (index !== -1) {
+					settings.sketches.splice(index, 1);
+				}
+				if(sketch === settings.fileName){
+					setTimeout(function(){ loadDefault(); }, 100);
+				}
+				updateSketches();
+			}
+		}
 
-    // pause sketch on demand
-    function pauseSketch(){
-    	if(sketchLoaded){
-    		paused = !paused;
-    		if(paused){
-    			p5f.noLoop();
-    		}else{
-    			p5f.loop();
-    		}
-    	}
-    }
+		// pause sketch on demand
+		function pauseSketch(){
+			if(sketchLoaded){
+				paused = !paused;
+				if(paused){
+					p5f.noLoop();
+				}else{
+					p5f.loop();
+				}
+			}
+		}
 
 
-    /* IMPORT/EXPORT SKETCHES */
+		/* IMPORT/EXPORT SKETCHES */
 
-    // export single sketch to JSON
-    function exportSketch(sketch){
-    	var jsonExport = {};
-    	jsonExport.sketches = [];
-    	jsonExport.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
-      var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-      p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+dateStamp+'.json');
-      if(settings.debugMode){console.log(jsonExport);}
-    }
+		// export single sketch to JSON
+		function exportSketch(sketch){
+			var jsonExport = {};
+			jsonExport.sketches = [];
+			jsonExport.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
+			var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
+			p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+dateStamp+'.json');
+			if(settings.debugMode){console.log(jsonExport);}
+		}
 
-    // export all sketches to JSON
-    function sketchesExport(){
-    	var jsonExport = {};
-    	jsonExport.sketches = [];
-    	for(var i=0; i < settings.sketches.length; i++){
-    		jsonExport.sketches.push({"sketchName":settings.sketches[i], "sketchCode":localStorage.getItem(settings.sketches[i])});
-      }
-      jsonExport.settings = settings;
-      var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-      p5f.saveJSON(jsonExport, 'P5L_sketches_'+dateStamp+'.json');
-      if(settings.debugMode){console.log(jsonExport);}
-    }
+		// export all sketches to JSON
+		function sketchesExport(){
+			var jsonExport = {};
+			jsonExport.sketches = [];
+			for(var i=0; i < settings.sketches.length; i++){
+				jsonExport.sketches.push({"sketchName":settings.sketches[i], "sketchCode":localStorage.getItem(settings.sketches[i])});
+			}
+			jsonExport.settings = settings;
+			var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
+			p5f.saveJSON(jsonExport, 'P5L_sketches_'+dateStamp+'.json');
+			if(settings.debugMode){console.log(jsonExport);}
+		}
 
-    // import sketches from JSON
-    function sketchesImport(data){
-    	var reader = new FileReader();
+		// import sketches from JSON
+		function sketchesImport(data){
+			var reader = new FileReader();
 			reader.onload = function(data) {
-		    var jsonObj = JSON.parse(event.target.result);
-		    parseSketches(jsonObj);
-		  }
-		  reader.readAsText(data);
-    }
+				var jsonObj = JSON.parse(event.target.result);
+				parseSketches(jsonObj);
+			}
+			reader.readAsText(data);
+		}
 
-    // load demos
-    function loadDemo(){
-    	var doubleCheck = confirm("Are you sure you want to replace sketches list with demos?");
-    	if(doubleCheck){
-	      var demosPath = "includes/demos/P5L_demos.json";
-	      var request = new XMLHttpRequest();
+		// load demos
+		function loadDemo(){
+			var doubleCheck = confirm("Are you sure you want to replace sketches list with demos?");
+			if(doubleCheck){
+				var demosPath = "includes/demos/P5L_demos.json";
+				var request = new XMLHttpRequest();
 				request.open("GET", demosPath, false);
 				request.send(null)
 				var jsonObj = JSON.parse(request.responseText);
 				parseSketches(jsonObj);
 			}
-    }
+		}
 
-    function parseSketches(jsonObj){
-    	var jsonSketches = jsonObj.sketches.reverse();
+		function parseSketches(jsonObj){
+			var jsonSketches = jsonObj.sketches.reverse();
 			for(var i=0; i < jsonSketches.length; i++){
 				var sketchName = jsonSketches[i].sketchName;
 				var sketchCode = jsonSketches[i].sketchCode;
@@ -1001,49 +1002,49 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			}
 			updateSketches();
-    }
+		}
 
-    // clear all sketches
-    function sketchesClear(){
-    	var doubleCheck = confirm("Are you sure you want to clear (remove) ALL skeches?");
-    	if(doubleCheck){
-    		for(var i=0; i < settings.sketches.length; i++){
-    			localStorage.removeItem(settings.sketches[i]);
-    		}
-	    	localStorage.removeItem("sketches");
-	    	settings.sketches = [];
-	    	updateSketches();
-    	}
-    }
+		// clear all sketches
+		function sketchesClear(){
+			var doubleCheck = confirm("Are you sure you want to clear (remove) ALL skeches?");
+			if(doubleCheck){
+				for(var i=0; i < settings.sketches.length; i++){
+					localStorage.removeItem(settings.sketches[i]);
+				}
+				localStorage.removeItem("sketches");
+				settings.sketches = [];
+				updateSketches();
+			}
+		}
 
 
 
-    /* LIST SKETCHES IN MENU */
+		/* LIST SKETCHES IN MENU */
 
-    function updateMenu(){
-      var menuSketchesHTML = '';
-      var selSelected = false;
-      for(var i=0; i < settings.sketches.length; i++){
-        var selClass = "";
-        if(settings.sketches[i] == settings.fileName){
-          selClass = 'sketch-selected';
-          selSelected = true;
-        }
-        var marq = "";
-        if(settings.sketches[i].length > 15){marq = "marq";}
-        menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'" data-id="'+settings.sketches[i]+'"><div class="menu-sketch-nav"><a class="menu-sketch-button" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch">id</a><a class="menu-sketch-button" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch">↓</a><a class="menu-sketch-button" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch">x</a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
-      }
-      var selClass = "";
-      if(!selSelected){
-      	selClass = 'sketch-selected';
-      }
-      var menuSketchesNew = '<div class="menu-sketch-holder '+selClass+'"><input type="" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onkeydown="loadType(this);"></div>';
-      menuSketches.innerHTML = menuSketchesHTML;
-      document.getElementById('menu-sketches-new').innerHTML = menuSketchesNew;
+		function updateMenu(){
+			var menuSketchesHTML = '';
+			var selSelected = false;
+			for(var i=0; i < settings.sketches.length; i++){
+				var selClass = "";
+				if(settings.sketches[i] == settings.fileName){
+					selClass = 'sketch-selected';
+					selSelected = true;
+				}
+				var marq = "";
+				if(settings.sketches[i].length > 15){marq = "marq";}
+				menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'" data-id="'+settings.sketches[i]+'"><div class="menu-sketch-nav"><a class="menu-sketch-button" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch">id</a><a class="menu-sketch-button" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch">↓</a><a class="menu-sketch-button" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch">x</a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
+			}
+			var selClass = "";
+			if(!selSelected){
+				selClass = 'sketch-selected';
+			}
+			var menuSketchesNew = '<div class="menu-sketch-holder '+selClass+'"><input type="" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onkeydown="loadType(this);"></div>';
+			menuSketches.innerHTML = menuSketchesHTML;
+			document.getElementById('menu-sketches-new').innerHTML = menuSketchesNew;
 			menuNewSketch = document.getElementById('menu-sketch-new');
-    }
+		}
 
-    // SortableJS for sketcheslist
+		// SortableJS for sketcheslist
 		Sortable.create(menuSketches, {
 			group: "sketchOrder",//"localStorage-example",
 			store: {
@@ -1064,194 +1065,194 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* EDITOR KEY-CMDS */
 
-    // Editor Interactions
-    onload = p5code.onkeyup = function() {
-      if(settings.fileName == ''){ 
-      	loadDefault();
-      }
-      
-      localStorage[settings.fileName] = editor.getValue();
-      clearTimeout(errorTimer);
-    	errorTimer = setTimeout(function(){checkErrors();}, 500);
-    };
-   
-    p5code.onkeydown = function(event) {
-    	// check length of editor
-    	pLen = editor.getValue().length;
+		// Editor Interactions
+		onload = p5code.onkeyup = function() {
+			if(settings.fileName == ''){ 
+				loadDefault();
+			}
+			
+			localStorage[settings.fileName] = editor.getValue();
+			clearTimeout(errorTimer);
+			errorTimer = setTimeout(function(){checkErrors();}, 500);
+		};
+		
+		p5code.onkeydown = function(event) {
+			// check length of editor
+			pLen = editor.getValue().length;
 
-    	if(settings.debugMode){console.log(event);}
-      if((event.key == '+' || event.key == '=' )&& event.ctrlKey){ // up arrow = bigger font
-        fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
-        event.preventDefault();
-      }else if((event.key == '-') && event.ctrlKey){ // down arrow = smaller font
-        fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
-        event.preventDefault();
-      }else if(event.keyCode == 65 && event.ctrlKey){ // a = auto compile
-        autoCompileToggle();
-        event.preventDefault();
-      }else if(event.keyCode == 84 && event.ctrlKey){ // t = tidy code
-        var tempCode = js_beautify(editor.getValue(), beautifyOptions);
+			if(settings.debugMode){console.log(event);}
+			if((event.key == '+' || event.key == '=' )&& event.ctrlKey){ // up arrow = bigger font
+				fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
+				event.preventDefault();
+			}else if((event.key == '-') && event.ctrlKey){ // down arrow = smaller font
+				fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
+				event.preventDefault();
+			}else if(event.keyCode == 65 && event.ctrlKey){ // a = auto compile
+				autoCompileToggle();
+				event.preventDefault();
+			}else if(event.keyCode == 84 && event.ctrlKey){ // t = tidy code
+				var tempCode = js_beautify(editor.getValue(), beautifyOptions);
 				editor.setValue(tempCode, 1);
-        event.preventDefault();
-      }
-    }
+				event.preventDefault();
+			}
+		}
 
-    function checkErrors(){
-    	var annos = editor.getSession().getAnnotations();
-    	if(settings.debugMode){console.log(annos)};
-    	var errorsFound = false;
-    	for(var i=0; i < annos.length; i++){
-    		if(annos[i].type == "error"){
-    			errorsFound = true;
-    		}
-    	}
-    	if(errorsFound){
-    		validCode = false; 
-    	}else{
-    		validCode = true;
-    		if(settings.autoCompile){
-	    		var cLen = editor.getValue().length;
-	      	if(cLen != pLen){
-	      		pLen = cLen;
-	      		recompile();
-	      	}
-	    	}
-    	}
+		function checkErrors(){
+			var annos = editor.getSession().getAnnotations();
+			if(settings.debugMode){console.log(annos)};
+			var errorsFound = false;
+			for(var i=0; i < annos.length; i++){
+				if(annos[i].type == "error"){
+					errorsFound = true;
+				}
+			}
+			if(errorsFound){
+				validCode = false; 
+			}else{
+				validCode = true;
+				if(settings.autoCompile){
+					var cLen = editor.getValue().length;
+					if(cLen != pLen){
+						pLen = cLen;
+						recompile();
+					}
+				}
+			}
 
-    	if(settings.debugMode){console.log("validCode: " + validCode);}
-    }
+			if(settings.debugMode){console.log("validCode: " + validCode);}
+		}
 
-     window.onkeydown = function(event) {
-      if(event.keyCode == 69 && event.ctrlKey){ // e = editor toggle
-        editorToggle();
-        event.preventDefault();
-      }if(event.keyCode == 67 && event.ctrlKey){ // c = editor toggle
-        cursorToggle();
-        event.preventDefault();
-      }else if(event.keyCode == 79 && event.ctrlKey){ // o = open
-        switchSketch();
-        event.preventDefault();
-      }else if(event.keyCode == 77 && event.ctrlKey){ // m = menu
-        menuToggle();
-        event.preventDefault();
-      }else if(event.keyCode == 70 && event.ctrlKey){ // f = fullscreen
-        fullscreenToggle();
-        event.preventDefault();
-      }else if(event.keyCode == 13 && event.ctrlKey){ // enter = recompile
-        recompile();
-        event.preventDefault();
-      }else if(event.keyCode == 80 && event.ctrlKey){ // p = pause
-        pauseSketch();
-        event.preventDefault();
-      }else if(event.keyCode == 78 && event.ctrlKey){ // n = new
-        loadDefault();
-        event.preventDefault();
-      }if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 0-9 = preset sketches
-        var keySketch = event.keyCode - 49;
-        if(keySketch == -1){keySketch = 9;}
-        loadSketch(settings.sketches[keySketch]);
-        event.preventDefault();
-      }if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
-      	// test function here
-        event.preventDefault();
-      }
-    }
+		window.onkeydown = function(event) {
+			if(event.keyCode == 69 && event.ctrlKey){ // e = editor toggle
+				editorToggle();
+				event.preventDefault();
+			}if(event.keyCode == 67 && event.ctrlKey){ // c = editor toggle
+				cursorToggle();
+				event.preventDefault();
+			}else if(event.keyCode == 79 && event.ctrlKey){ // o = open
+				switchSketch();
+				event.preventDefault();
+			}else if(event.keyCode == 77 && event.ctrlKey){ // m = menu
+				menuToggle();
+				event.preventDefault();
+			}else if(event.keyCode == 70 && event.ctrlKey){ // f = fullscreen
+				fullscreenToggle();
+				event.preventDefault();
+			}else if(event.keyCode == 13 && event.ctrlKey){ // enter = recompile
+				recompile();
+				event.preventDefault();
+			}else if(event.keyCode == 80 && event.ctrlKey){ // p = pause
+				pauseSketch();
+				event.preventDefault();
+			}else if(event.keyCode == 78 && event.ctrlKey){ // n = new
+				loadDefault();
+				event.preventDefault();
+			}if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 0-9 = preset sketches
+				var keySketch = event.keyCode - 49;
+				if(keySketch == -1){keySketch = 9;}
+				loadSketch(settings.sketches[keySketch]);
+				event.preventDefault();
+			}if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
+				// test function here
+				event.preventDefault();
+			}
+		}
 
-    // prevent lost work in default
-    window.addEventListener("beforeunload", function (e) {
-    	if(settings.fileName == "default"){
-			  var confirmationMessage = "\o/";
+		// prevent lost work in default
+		window.addEventListener("beforeunload", function (e) {
+			if(settings.fileName == "default"){
+				var confirmationMessage = "\o/";
 
-			  (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-			  return confirmationMessage;                            //Webkit, Safari, Chrome
-		  }
+				(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+				return confirmationMessage;                            //Webkit, Safari, Chrome
+			}
 		});
 
 
 
-    /* COMPILE CODE */
+		/* COMPILE CODE */
 
-    function recompile(){
-    	if(validCode || !settings.strictCompile){
-    		p5frame.src = "p5live_sketch.html";
-    	}
-    }
+		function recompile(){
+			if(validCode || !settings.strictCompile){
+				p5frame.src = "p5live_sketch.html";
+			}
+		}
 
-    function loadScripts(elm){
-    	if(settings.debugMode){console.log(settings.scripts);}
-    	console.log(elm);
-	    for(var i=0; i < settings.scripts.length; i++){
-	    	elm.appendChild(loadScript(settings.scripts[i]));
-	    }
-    }
+		function loadScripts(elm){
+			if(settings.debugMode){console.log(settings.scripts);}
+			console.log(elm);
+			for(var i=0; i < settings.scripts.length; i++){
+				elm.appendChild(loadScript(settings.scripts[i]));
+			}
+		}
 
-    function loadScript(scriptPath){
-    	var ps = document.createElement("script");
-	        ps.type = "text/javascript";
-	        ps.src = scriptPath;
-    	return ps;
-    }
-
-
-
-    /* SETTINGS TOGGLES */
-
-    // toggle strict javascript for compiling
-    function strictCompileToggle(){
-    	settings.strictCompile = !settings.strictCompile;
-      strictCompileUpdate();
-    }
-
-    function strictCompileUpdate(){
-    	checkToggle("strictCompile", settings.strictCompile, settingsErrorMode);
-    	if(settings.strictCompile){
-              //editor.session.setOption("showGutter", true);
-              editor.renderer.setShowGutter(true); 
-              //editor.session.setOption("useWorker", true);
-        }else{
-              //editor.session.setOption("showGutter", false);
-              //editor.renderer.setShowGutter(true); 
-              editor.renderer.setShowGutter(false);
-              //editor.session.setOption("useWorker", false);
-      }
-    }
+		function loadScript(scriptPath){
+			var ps = document.createElement("script");
+			ps.type = "text/javascript";
+			ps.src = scriptPath;
+			return ps;
+		}
 
 
-    // toggle auto-compile
-    function autoCompileToggle(){
-    	settings.autoCompile = !settings.autoCompile;
-   		autoCompileUpdate();
-    }
 
-    function autoCompileUpdate(){
-    	checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
-      if(settings.autoCompile){
-      	editor.setTheme("ace/theme/gob");
-      }else{
-      	editor.setTheme("ace/theme/twilight");
-      }
-    }
+		/* SETTINGS TOGGLES */
+
+		// toggle strict javascript for compiling
+		function strictCompileToggle(){
+			settings.strictCompile = !settings.strictCompile;
+			strictCompileUpdate();
+		}
+
+		function strictCompileUpdate(){
+			checkToggle("strictCompile", settings.strictCompile, settingsErrorMode);
+			if(settings.strictCompile){
+							//editor.session.setOption("showGutter", true);
+							editor.renderer.setShowGutter(true); 
+							//editor.session.setOption("useWorker", true);
+						}else{
+							//editor.session.setOption("showGutter", false);
+							//editor.renderer.setShowGutter(true); 
+							editor.renderer.setShowGutter(false);
+							//editor.session.setOption("useWorker", false);
+						}
+					}
 
 
-    // toggle ecorender (pause if focus is lost)
+		// toggle auto-compile
+		function autoCompileToggle(){
+			settings.autoCompile = !settings.autoCompile;
+			autoCompileUpdate();
+		}
+
+		function autoCompileUpdate(){
+			checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
+			if(settings.autoCompile){
+				editor.setTheme("ace/theme/gob");
+			}else{
+				editor.setTheme("ace/theme/twilight");
+			}
+		}
+
+
+		// toggle ecorender (pause if focus is lost)
 		function ecoRenderToggle(){
-    	settings.ecoRender = !settings.ecoRender;
-   		ecoRenderUpdate();
-    }
+			settings.ecoRender = !settings.ecoRender;
+			ecoRenderUpdate();
+		}
 
-    function ecoRenderUpdate(){
-    	checkToggle("ecoRender", settings.ecoRender, settingsEcoMode);
-    }
+		function ecoRenderUpdate(){
+			checkToggle("ecoRender", settings.ecoRender, settingsEcoMode);
+		}
 
 
-    // loop/noLoop on window blur
-    window.onblur = function () { 
-    	if(settings.ecoRender && sketchLoaded){
-    		if(document.activeElement !== p5frame){
-		    	p5f.noLoop();
-	    	}
-    	}
-    }
+		// loop/noLoop on window blur
+		window.onblur = function () { 
+			if(settings.ecoRender && sketchLoaded){
+				if(document.activeElement !== p5frame){
+					p5f.noLoop();
+				}
+			}
+		}
 		window.onfocus = function () { 
 			if(sketchLoaded){
 				p5f.loop();
@@ -1259,249 +1260,249 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 
-    // toggle fullscreen
-    function fullscreenToggle(){
-	    settings.fullscreenMode = !settings.fullscreenMode;
+		// toggle fullscreen
+		function fullscreenToggle(){
+			settings.fullscreenMode = !settings.fullscreenMode;
 			fullscreenUpdate();
-    }
+		}
 
-    function fullscreenUpdate(){
-    	checkToggle("fullscreenMode", settings.fullscreenMode, settingsFullscreen);
-      if(settings.fullscreenMode){
-        if(sketchLoaded){
-        	openFullscreen();
-        	editorToggleUpdate();
-        }
-      }else{
-      	if(sketchLoaded){
-        	closeFullscreen();
-      	}
-      }
-    }
-
-
-    //cursor toggle
-    function cursorToggle(){
-    	settings.canvasCursor = !settings.canvasCursor;
-    	cursorToggleUpdate();
-    }
-
-    function cursorToggleUpdate(){
-    	checkToggle("canvasCursor", settings.canvasCursor, settingsCanvasCursor);
-    	if(sketchLoaded){
-    		if(!settings.canvasCursor){
-    			p5f.noCursor();
-    			p5frameCover.style.cursor = "none";
-    		}else{
-    			p5f.cursor();
-    			p5frameCover.style.cursor = "crosshair";
-    		}
-    	}
-    }
+		function fullscreenUpdate(){
+			checkToggle("fullscreenMode", settings.fullscreenMode, settingsFullscreen);
+			if(settings.fullscreenMode){
+				if(sketchLoaded){
+					openFullscreen();
+					editorToggleUpdate();
+				}
+			}else{
+				if(sketchLoaded){
+					closeFullscreen();
+				}
+			}
+		}
 
 
-    //menutab toggle
-    function menutabToggle(){
-    	settings.menutab = !settings.menutab;
-    	menutabToggleUpdate();
-    }
+		//cursor toggle
+		function cursorToggle(){
+			settings.canvasCursor = !settings.canvasCursor;
+			cursorToggleUpdate();
+		}
 
-    function menutabToggleUpdate(){
-    	checkToggle("menutab", settings.menutab, settingsMenutab);
-    	if(!settings.menutab){
+		function cursorToggleUpdate(){
+			checkToggle("canvasCursor", settings.canvasCursor, settingsCanvasCursor);
+			if(sketchLoaded){
+				if(!settings.canvasCursor){
+					p5f.noCursor();
+					p5frameCover.style.cursor = "none";
+				}else{
+					p5f.cursor();
+					p5frameCover.style.cursor = "crosshair";
+				}
+			}
+		}
+
+
+		//menutab toggle
+		function menutabToggle(){
+			settings.menutab = !settings.menutab;
+			menutabToggleUpdate();
+		}
+
+		function menutabToggleUpdate(){
+			checkToggle("menutab", settings.menutab, settingsMenutab);
+			if(!settings.menutab){
 				menuSwitch.style.display = "none";
-    	}else{
-    		menuSwitch.style.display = "block";
-    	}    	
-    }
+			}else{
+				menuSwitch.style.display = "block";
+			}    	
+		}
 
 
-    // checkbox function
-    function checkToggle(checkName, checkVar, checkElm){
-    	if(checkVar){
+		// checkbox function
+		function checkToggle(checkName, checkVar, checkElm){
+			if(checkVar){
 				checkElm.checked = true;
-    	}else{
+			}else{
 				checkElm.checked = false;
-    	}
-    	settings[checkName] = checkVar;
-    	updateSettings();
-    	if(settings.debugMode){console.log(checkName+": "+settings[checkName]);}
-    }
+			}
+			settings[checkName] = checkVar;
+			updateSettings();
+			if(settings.debugMode){console.log(checkName+": "+settings[checkName]);}
+		}
 
 
-    // constant frameCount (great for recompiling)
-    var fcTimer = setInterval(function(){
-	  	if(sketchLoaded){
-	  		fc = p5f.frameCount;
-	  	}
-	  }, 100);
+		// constant frameCount (great for recompiling)
+		var fcTimer = setInterval(function(){
+			if(sketchLoaded){
+				fc = p5f.frameCount;
+			}
+		}, 100);
 
 
 
-    /* TOGGLE EDITOR + [canvas] + MENU */
+		/* TOGGLE EDITOR + [canvas] + MENU */
 
-    // hide/show editor
-    function editorToggle(){
-    	if(p5editor.style.visibility != "visible"){
-        p5editor.style.visibility = "visible";
-      }else{
-        p5editor.style.visibility = "hidden";
-      }
-      editorToggleUpdate();
-    }
+		// hide/show editor
+		function editorToggle(){
+			if(p5editor.style.visibility != "visible"){
+				p5editor.style.visibility = "visible";
+			}else{
+				p5editor.style.visibility = "hidden";
+			}
+			editorToggleUpdate();
+		}
 
-    function editorToggleUpdate(){
-      if(p5editor.style.visibility != "visible"){
-        const canv = document.querySelector('canvas');
-        editor.blur();
-      }else{
-        editor.focus();
-      }
-    }
+		function editorToggleUpdate(){
+			if(p5editor.style.visibility != "visible"){
+				const canv = document.querySelector('canvas');
+				editor.blur();
+			}else{
+				editor.focus();
+			}
+		}
 
-    // hide/show canvas
-    // future usage for etherpad editing...
-    
-    /*
-    function canvasToggle(){
-    	const canv = document.querySelector('canvas');
-    	//alert(canv);
-    	if(canv.style.visibility != "visible"){
-        canv.style.visibility = "visible";
-      }else{
-        canv.style.visibility = "hidden";
-      }
-      canvasToggleUpdate();
-    }
-
-    function canvasToggleUpdate(){
-    	const canv = document.querySelector('canvas');
+		// hide/show canvas
+		// future usage for etherpad editing...
+		
+		/*
+		function canvasToggle(){
+			const canv = document.querySelector('canvas');
+			//alert(canv);
 			if(canv.style.visibility != "visible"){
-        if(sketchLoaded)
-        	noLoop();
-      }else{
-        if(sketchLoaded)
-        	loop();
-      }
-    }
-    */
+				canv.style.visibility = "visible";
+			}else{
+				canv.style.visibility = "hidden";
+			}
+			canvasToggleUpdate();
+		}
+
+		function canvasToggleUpdate(){
+			const canv = document.querySelector('canvas');
+			if(canv.style.visibility != "visible"){
+				if(sketchLoaded)
+					noLoop();
+			}else{
+				if(sketchLoaded)
+					loop();
+			}
+		}
+		*/
 
 
-    // hide/show menu
-    function menuToggle(){
-      settings.menuMode = !settings.menuMode;
-      updateSettings();
-      menuToggleUpdate();
-    }
+		// hide/show menu
+		function menuToggle(){
+			settings.menuMode = !settings.menuMode;
+			updateSettings();
+			menuToggleUpdate();
+		}
 
-    function menuToggleUpdate(){
-    	if(!settings.menuMode){
-        menuPanel.style.marginRight = "-250px";
-        menuSwitch.innerHTML = "«";
-      }else{
-        menuPanel.style.marginRight = "0px";
-        menuSwitch.innerHTML = "»";
-      }
-    }
+		function menuToggleUpdate(){
+			if(!settings.menuMode){
+				menuPanel.style.marginRight = "-250px";
+				menuSwitch.innerHTML = "«";
+			}else{
+				menuPanel.style.marginRight = "0px";
+				menuSwitch.innerHTML = "»";
+			}
+		}
 
-    // adjust fontsize
-    function fontSizeAdjust(newVal){
-      settings.fontSize = newVal;
-      updateSettings();
-      fontSizeUpdate();
-    }
+		// adjust fontsize
+		function fontSizeAdjust(newVal){
+			settings.fontSize = newVal;
+			updateSettings();
+			fontSizeUpdate();
+		}
 
 
-    function fontSizeUpdate(){
-    	if(settingsFontsize !== document.activeElement){
-      	settingsFontsize.value = settings.fontSize;
-    	}
+		function fontSizeUpdate(){
+			if(settingsFontsize !== document.activeElement){
+				settingsFontsize.value = settings.fontSize;
+			}
 			p5code.style.fontSize = settings.fontSize + "vw";
-      //editor.setFontSize(settings.fontSize);
-    }
+			//editor.setFontSize(settings.fontSize);
+		}
 
 
 
 		/* LOAD VARIOUS SKETCHES */
 
-    function loadDefault(){
-    		settings.fileName = 'default'; //editor.setValue("hi"); // p5template.value
-        localStorage.setItem(settings.fileName, p5template);
-        editor.setValue(p5template, 1);
-        editor.gotoLine(7, 1, false);
-        editor.focus();
-        updateMenu();
-        setTimeout(function(){ recompile(); }, 100);
-    }
+		function loadDefault(){
+				settings.fileName = 'default'; //editor.setValue("hi"); // p5template.value
+				localStorage.setItem(settings.fileName, p5template);
+				editor.setValue(p5template, 1);
+				editor.gotoLine(7, 1, false);
+				editor.focus();
+				updateMenu();
+				setTimeout(function(){ recompile(); }, 100);
+			}
 
-    function loadAbout(){
-    	settings.fileName = 'p5liveabout'; //editor.setValue("hi"); // p5template.value
-      localStorage.setItem(settings.fileName, p5liveabout);
-      editor.setValue(p5liveabout, 1);
-      editor.focus();
-      updateMenu();
-      setTimeout(function(){ recompile(); }, 100);
-    }
+			function loadAbout(){
+			settings.fileName = 'p5liveabout'; //editor.setValue("hi"); // p5template.value
+			localStorage.setItem(settings.fileName, p5liveabout);
+			editor.setValue(p5liveabout, 1);
+			editor.focus();
+			updateMenu();
+			setTimeout(function(){ recompile(); }, 100);
+		}
 
-    function loadNew(newName){
-    	if(newName != ''){
-	    	settings.fileName = newName;
-	    	if (settings.sketches.indexOf(settings.fileName) === -1) {
-    			settings.sketches.unshift(settings.fileName);
-    			updateSketches();
-	          if(editor.getValue().length > 86){ // 86 = template length
-	          	localStorage[settings.fileName] = editor.getValue();
-	          }else{
-	          	editor.setValue(p5template, 1);
-	          }
-	      }else{
-	        editor.setValue(localStorage[settings.fileName], 1);
-	      }
-	      editor.focus(); 
-	      updateSettings();
-	    }
-    }
-    	
+		function loadNew(newName){
+			if(newName != ''){
+				settings.fileName = newName;
+				if (settings.sketches.indexOf(settings.fileName) === -1) {
+					settings.sketches.unshift(settings.fileName);
+					updateSketches();
+						if(editor.getValue().length > 86){ // 86 = template length
+							localStorage[settings.fileName] = editor.getValue();
+						}else{
+							editor.setValue(p5template, 1);
+						}
+					}else{
+						editor.setValue(localStorage[settings.fileName], 1);
+					}
+					editor.focus(); 
+					updateSettings();
+				}
+			}
+			
 
-    // create typed in sketch
-    function loadType(){
-    	if(event.keyCode === 13) {
-    		var fn = menuNewSketch.value;
-    		loadNew(fn);
-    		document.title = 'P5LIVE - ' + settings.fileName;
-        recompile();
-        event.preventDefault();
-    	}
-    }
-
-
-
-    /* PROMPT SKETCH SWITCHER */
-
-    function switchSketch() {
-      settings.fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + getSketches(), '');
-      if(settings.fileName == '') { 
-        loadDefault();
-      }else{
-	      loadNew(settings.fileName);
-    	}
-
-      document.title = 'P5LIVE - ' + settings.fileName;
-      updateMenu();
-      recompile();
-    };
+		// create typed in sketch
+		function loadType(){
+			if(event.keyCode === 13) {
+				var fn = menuNewSketch.value;
+				loadNew(fn);
+				document.title = 'P5LIVE - ' + settings.fileName;
+				recompile();
+				event.preventDefault();
+			}
+		}
 
 
 
-    /* iFrame magic */
+		/* PROMPT SKETCH SWITCHER */
 
-    // pass mouse events down
-    // ** check if needed still?
-    /*
-    function bindIFrameMousemove(iframe){
+		function switchSketch() {
+			settings.fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + getSketches(), '');
+			if(settings.fileName == '') { 
+				loadDefault();
+			}else{
+				loadNew(settings.fileName);
+			}
+
+			document.title = 'P5LIVE - ' + settings.fileName;
+			updateMenu();
+			recompile();
+		};
+
+
+
+		/* iFrame magic */
+
+		// pass mouse events down
+		// ** check if needed still?
+		/*
+		function bindIFrameMousemove(iframe){
 			iframe.contentWindow.addEventListener('mousemove', function(event) {
-		  	var clRect = iframe.getBoundingClientRect();
-		  	var evt = new CustomEvent('mousemove', {bubbles: true, cancelable: false});
+				var clRect = iframe.getBoundingClientRect();
+				var evt = new CustomEvent('mousemove', {bubbles: true, cancelable: false});
 				evt.clientX = event.clientX + clRect.left;
 				evt.clientY = event.clientY + clRect.top;
 				iframe.dispatchEvent(evt);
@@ -1509,7 +1510,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		};
 
 		bindIFrameMousemove(document.getElementById('p5-frame'));
-	*/
+		*/
 
 		// get mouse clicks on top
 		// *** crazy magic, inspired from here:
@@ -1519,35 +1520,35 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		window.addEventListener('mousedown', function(){passMouseClick(event)});
 		
 		var fields = ['pageX','pageY','screenX', 'screenY', 'clientX', 
-									'clientY','ctrlKey', 'altKey', 'shiftKey', 'metaKey',
-									'button', 'buttons', 'relatedTarget', 'region'];
+		'clientY','ctrlKey', 'altKey', 'shiftKey', 'metaKey',
+		'button', 'buttons', 'relatedTarget', 'region'];
 		
 		var pass = false;
 		function passMouse(e){
 			pass = !pass;
 			if (pass) {
-			    
-			    var opts = {};
-			    fields.forEach(function(f) {
-			    	if (f in e) {
-			      	opts[f] = e[f];
-			      }
-			    });
-			    var copy = new MouseEvent(e.type, opts);
-			    p5f.dispatchEvent(copy);
-		    }
+
+				var opts = {};
+				fields.forEach(function(f) {
+					if (f in e) {
+						opts[f] = e[f];
+					}
+				});
+				var copy = new MouseEvent(e.type, opts);
+				p5f.dispatchEvent(copy);
+			}
 		};
 
 		function passMouseClick(e){
-			   
-			    var opts = {};
-			    fields.forEach(function(f) {
-			    	if (f in e) {
-			      	opts[f] = e[f];
-			      }
-			    });
-			    var copy = new MouseEvent(e.type, opts);
-			    p5f.dispatchEvent(copy);  
+
+			var opts = {};
+			fields.forEach(function(f) {
+				if (f in e) {
+					opts[f] = e[f];
+				}
+			});
+			var copy = new MouseEvent(e.type, opts);
+			p5f.dispatchEvent(copy);  
 		};
 
 
@@ -1563,17 +1564,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function sendKey(type, ev, elm){
 			var e = new Event(type); 
-					e.key=ev.key; 
-					e.keyCode=ev.keyCode; 
-					e.which=ev.keyCode; 
-					e.altKey=ev.altKey; 
-					e.ctrlKey=ev.ctrlKey; 
-					e.shiftKey=ev.shiftKey; 
-					e.metaKey=ev.metaKey; 
-					e.code=ev.code; 
+			e.key=ev.key; 
+			e.keyCode=ev.keyCode; 
+			e.which=ev.keyCode; 
+			e.altKey=ev.altKey; 
+			e.ctrlKey=ev.ctrlKey; 
+			e.shiftKey=ev.shiftKey; 
+			e.metaKey=ev.metaKey; 
+			e.code=ev.code; 
 					// e.bubbles=ev.bubbles;  
 					elm.dispatchEvent(e);
-		}
+				}
 
 
 	// pass sketch into p5frame
@@ -1583,38 +1584,38 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		var iFrameHead = p5f.document.getElementsByTagName("head")[0];
 		// loadScripts(iFrameHead); // eventually dynamic script load
 		var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.innerHTML = editor.getValue() + p5custom.value + 'new p5(); sketchStatus();';
-				iFrameHead.appendChild(s);
+		s.type = "text/javascript";
+		s.innerHTML = editor.getValue() + p5custom.value + 'new p5(); sketchStatus();';
+		iFrameHead.appendChild(s);
 	}
 
 	/* View in fullscreen */
 	function openFullscreen() {
 		var elem = document.body;
 		if (elem.requestFullscreen) {
-		elem.requestFullscreen();
+			elem.requestFullscreen();
 		} else if (elem.mozRequestFullScreen) { /* Firefox */
-		elem.mozRequestFullScreen();
+			elem.mozRequestFullScreen();
 		} else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
-		elem.webkitRequestFullscreen();
+			elem.webkitRequestFullscreen();
 		} else if (elem.msRequestFullscreen) { /* IE/Edge */
-		elem.msRequestFullscreen();
+			elem.msRequestFullscreen();
 		}
 	}
 
 	/* Close fullscreen */
 	function closeFullscreen() {
-	  if (document.exitFullscreen) {
-	    document.exitFullscreen();
-	  } else if (document.mozCancelFullScreen) { /* Firefox */
-	    document.mozCancelFullScreen();
-	  } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
-	    document.webkitExitFullscreen();
-	  } else if (document.msExitFullscreen) { /* IE/Edge */
-	    document.msExitFullscreen();
-	  }
+		if (document.exitFullscreen) {
+			document.exitFullscreen();
+		} else if (document.mozCancelFullScreen) { /* Firefox */
+			document.mozCancelFullScreen();
+		} else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+			document.webkitExitFullscreen();
+		} else if (document.msExitFullscreen) { /* IE/Edge */
+			document.msExitFullscreen();
+		}
 	}
 
-  </script>
+</script>
 </body>
 </html>
