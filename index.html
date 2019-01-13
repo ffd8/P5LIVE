@@ -635,7 +635,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
         menuSketches = document.getElementById('menu-sketches'),
         menuSettings = document.getElementById('menu-settings'),
         settingsFontsize = document.getElementById('menu-settings-fontsize'),
-        //settingsErrorMode = document.getElementById('settings-strictcompile'),
         settingsAutoMode = document.getElementById('settings-autocompile'),
         settingsFullscreen = document.getElementById('settings-fullscreen'),
         settingsEcoMode = document.getElementById('settings-ecorender'),
@@ -664,7 +663,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	showPrintMargin: false,
     	animatedScroll: false,
     	displayIndentGuides: false,
-    	useWorker: true, // investigate
+    	useWorker: true,
     	showLineNumbers: false,
     	showGutter: false,
     	tabSize: 4, useSoftTabs: false,
@@ -690,60 +689,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
  			if(validCode){
  				removeMarkers();
  			}
-
- 			// if(settings.autoCompile){
-    //   	// only refresh if new content typed
-    //   	var cLen = editor.getValue().length;
-    //   	console.log(cLen +" / "+ pLen);
-    //   	if(cLen != pLen){
-    //   		pLen = cLen;
-    //   		recompile();
-    //   	}
-    //   }
-
     });
 
     editor.getSession().on("update", function(){
     	console.log(results);
     	});
-
-    // editor.getSession().on("jslint", function(lin){
-    // 	console.log(lint);
-    // 	});
-
-
-    // editor.session.on('changeMode', function(e, session){
-    //   if ("ace/mode/javascript" === session.getMode().$id) {
-    //       if (!!session.$worker) {
-              
-		  //   session.$worker.on('jslint', function(lint) {
-		  //     var messages = lint.data, types;
-		  //     if (!messages.length) return ok();
-		  //     types = messages.map(function(item) {
-		  //       return item.type;
-		  //     });
-		  //     types.indexOf('error') !== -1 ? ko() : ok();
-		  //   });
-		  
-
-		  // function ok(){
-		  // 	console.log("OK");
-		  // }
-
-		  // function ko(){
-		  // 	console.log("KOOOO");
-		  // }
-
-    //       }
-    //    }
-    // }); 
-
-
-    //lint(editor.getValue());
-    // editor.getSession().$worker.send("setOptions", [ { "-W095": false, "-W025": false }])
-
-		  
-
 
 		function addMarker(n){
 			var elementPos = markerID.map(function(x) {return x.line; }).indexOf(n);
@@ -759,23 +709,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
  			markerID = [];
     }
 
-    // function validateCode(){
-    // 	var annot = editor.getSession().getAnnotations();
- 			// //console.log(annot[0].type);
- 			// validCode = true;
- 			// for(var i=0; i < annot.length; i++){
- 			// 	if(annot[i].type === "error"){
- 			// 		validCode = false;
- 			// 	}
- 			// }
- 			// console.log(validCode);
-    // }
 
-    // CMD-KEYS (remove key conflicts)
+    /* CMD-KEYS (remove key conflicts) */
     editor.commands.removeCommands(["gotoright","movelinesup", "movelinesdown", "gotolinestart", "splitline", "gotolineend", "golineup", "jumptomatching", "golinedown", "transposeletters"]);
 
    // replace backspace w/o ctrl + h
-   editor.commands.addCommand({
+   	editor.commands.addCommand({
     name: "backspace",
     bindKey: { win: "Shift-Backspace|Backspace", mac: "Ctrl-Backspace|Shift-Backspace|Backspace" },
     exec: function(e) { e.remove("left") },
@@ -783,7 +722,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     scrollIntoView: "cursor"
    });
 
-   //replace gotoright w/o ctrl + f
+   // replace gotoright w/o ctrl + f
    editor.commands.addCommand({
     name: "gotoright",
     bindKey: { win: "Right", mac: "Right" },
@@ -793,7 +732,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     readOnly:!0
    });
 
-   //replace golineup w/o ctrl + p
+   // replace golineup w/o ctrl + p
    editor.commands.addCommand({
     name: "golineup",
     bindKey: { win: "Up", mac: "Up" },
@@ -803,7 +742,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     readOnly:!0
    });
 
-   //replace golinedown w/o ctrl + n
+   // replace golinedown w/o ctrl + n
    editor.commands.addCommand({
     name: "golinedown",
     bindKey: { win: "Down", mac: "Down" },
@@ -905,7 +844,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     // react to settings once gathered
     function loadSettings(){
     	fontSizeUpdate();
-    	//strictCompileUpdate();
     	autoCompileUpdate();
     	fullscreenUpdate();
     	menuToggleUpdate();
@@ -931,7 +869,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
     // set sketches list to localstorage
     function updateSketches(){
-      //localStorage.setItem("sketches", sketches.join(", ")); 
       updateSettings();
       updateMenu();
     }
@@ -1000,7 +937,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     		}
     	}
     }
-
 
 
     /* IMPORT/EXPORT SKETCHES */
@@ -1085,7 +1021,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     /* LIST SKETCHES IN MENU */
 
     function updateMenu(){
-      //var sketchesSplit = localStorage.getItem("sketches").split(', ');
       var menuSketchesHTML = '';
       var selSelected = false;
       for(var i=0; i < settings.sketches.length; i++){
@@ -1112,20 +1047,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		Sortable.create(menuSketches, {
 			group: "sketchOrder",//"localStorage-example",
 			store: {
-				/**
-				 * Get the order of elements. Called once during initialization.
-				 * @param   {Sortable}  sortable
-				 * @returns {Array}
-				 */
 				get: function (sortable) {
 					var order = settings.sketches;
 					return order;// ? order.split('|') : [];
 				},
 
-				/**
-				 * Save the order of elements. Called onEnd (when the item is dropped).
-				 * @param {Sortable}  sortable
-				 */
 				set: function (sortable) {
 					var order = sortable.toArray();
 					settings.sketches = order;
@@ -1133,8 +1059,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			}
 		})
-
-    
 
 
 
@@ -1187,7 +1111,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     		validCode = true;
     		if(settings.autoCompile){
 	    		var cLen = editor.getValue().length;
-	      	// if(settings.debugMode){console.log(cLen +" / "+ pLen)};
 	      	if(cLen != pLen){
 	      		pLen = cLen;
 	      		recompile();
@@ -1245,6 +1168,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		});
 
 
+
     /* COMPILE CODE */
 
     function recompile(){
@@ -1267,6 +1191,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	        ps.src = scriptPath;
     	return ps;
     }
+
 
 
     /* SETTINGS TOGGLES */
@@ -1317,6 +1242,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     function ecoRenderUpdate(){
     	checkToggle("ecoRender", settings.ecoRender, settingsEcoMode);
     }
+
 
     // loop/noLoop on window blur
     window.onblur = function () { 
@@ -1373,6 +1299,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     	}
     }
 
+
     //menutab toggle
     function menutabToggle(){
     	settings.menutab = !settings.menutab;
@@ -1391,7 +1318,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
     // checkbox function
     function checkToggle(checkName, checkVar, checkElm){
-    	//checkVar = !checkVar;
     	if(checkVar){
 				checkElm.checked = true;
     	}else{
@@ -1409,6 +1335,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	  		fc = p5f.frameCount;
 	  	}
 	  }, 100);
+
 
 
     /* TOGGLE EDITOR + [canvas] + MENU */
@@ -1433,9 +1360,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
     }
 
     // hide/show canvas
-    /*
     // future usage for etherpad editing...
-
+    
+    /*
     function canvasToggle(){
     	const canv = document.querySelector('canvas');
     	//alert(canv);
@@ -1458,6 +1385,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
       }
     }
     */
+
 
     // hide/show menu
     function menuToggle(){
@@ -1526,21 +1454,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	      updateSettings();
 	    }
     }
-    	// if(localStorage[settings.fileName] != ''){ 
-    	// 	if (sketches.indexOf(settings.fileName) === -1) {
-    	// 		sketches.unshift(settings.fileName);
-    	// 		updateSketches();
-	    //       if(editor.getValue().length > 86){ // 86 = template length
-	    //       	localStorage[settings.fileName] = editor.getValue();
-	    //       }else{
-	    //       	editor.setValue(p5template, 1);
-	    //       }
-	    //     }else{
-	    //     	editor.setValue(localStorage[settings.fileName], 1);
-	    //     }
-	    //     editor.focus(); 
-	    //   }
-	    // }
+    	
 
     // create typed in sketch
     function loadType(){
@@ -1552,6 +1466,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
         event.preventDefault();
     	}
     }
+
 
 
     /* PROMPT SKETCH SWITCHER */
@@ -1568,6 +1483,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
       updateMenu();
       recompile();
     };
+
 
 
     /* iFrame magic */
