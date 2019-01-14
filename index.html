@@ -1147,14 +1147,18 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else if(event.keyCode == 78 && event.ctrlKey){ // n = new
 				loadDefault();
 				event.preventDefault();
-			}if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 0-9 = preset sketches
+			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 0-9 = preset sketches
 				var keySketch = event.keyCode - 49;
 				if(keySketch == -1){keySketch = 9;}
 				loadSketch(settings.sketches[keySketch]);
 				event.preventDefault();
-			}if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
+			}else if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
 				// test function here
 				event.preventDefault();
+			}else if(event.keyCode == 8){ // DELETE = prevent back navigation
+				if(!p5code.focus()){
+					event.preventDefault();
+				}
 			}
 		}
 
@@ -1515,39 +1519,39 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// get mouse clicks on top
 		// *** crazy magic, inspired from here:
 		// https://stackoverflow.com/a/44143731/10885535
-		window.addEventListener('mousemove', function(){passMouse(event)});
-		window.addEventListener('mouseup', function(){passMouseClick(event)});
-		window.addEventListener('mousedown', function(){passMouseClick(event)});
+		window.addEventListener('mousemove', passMouse);
+		window.addEventListener('mouseup', passMouseClick);
+		window.addEventListener('mousedown', passMouseClick);
 		
 		var fields = ['pageX','pageY','screenX', 'screenY', 'clientX', 
 		'clientY','ctrlKey', 'altKey', 'shiftKey', 'metaKey',
 		'button', 'buttons', 'relatedTarget', 'region'];
 		
 		var pass = false;
-		function passMouse(e){
+		function passMouse(event){
 			pass = !pass;
 			if (pass) {
 
 				var opts = {};
 				fields.forEach(function(f) {
-					if (f in e) {
-						opts[f] = e[f];
+					if (f in event) {
+						opts[f] = event[f];
 					}
 				});
-				var copy = new MouseEvent(e.type, opts);
+				var copy = new MouseEvent(event.type, opts);
 				p5f.dispatchEvent(copy);
 			}
 		};
 
-		function passMouseClick(e){
+		function passMouseClick(event){
 
 			var opts = {};
 			fields.forEach(function(f) {
-				if (f in e) {
-					opts[f] = e[f];
+				if (f in event) {
+					opts[f] = event[f];
 				}
 			});
-			var copy = new MouseEvent(e.type, opts);
+			var copy = new MouseEvent(event.type, opts);
 			p5f.dispatchEvent(copy);  
 		};
 
