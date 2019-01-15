@@ -215,6 +215,8 @@ body {
 }
 #menu-sketches-new{
 	background:#222;
+		position:relative;
+
 }
 #menu-sketch-new{
 	outline:none;
@@ -230,7 +232,9 @@ body {
 	cursor:text;
 }
 #menu-sketch-new-save{
-	float:right;
+	position:absolute;
+	right:0;
+	top:0;
 	background:#222;
 	padding:4px 8px 2px 8px;
 	display:none;

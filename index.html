@@ -740,7 +740,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!selSelected){
 				selClass = 'sketch-selected';
 			}
-			var menuSketchesNew = '<div class="menu-sketch-holder '+selClass+'"><input type="" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onfocus="document.getElementById(\'menu-sketch-new-save\').style.display=\'block\';" onblur="setTimeout(function(){document.getElementById(\'menu-sketch-new-save\').style.display=\'none\';}, 200)"><div id="menu-sketch-new-save" onclick="loadType();">SAVE</div></div>';
+			var menuSketchesNew = '<div class="menu-sketch-holder '+selClass+'"><input type="text" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onfocus="document.getElementById(\'menu-sketch-new-save\').style.display=\'block\';" onblur="setTimeout(function(){document.getElementById(\'menu-sketch-new-save\').style.display=\'none\';}, 200)"><div id="menu-sketch-new-save" onclick="loadType();">SAVE</div></div>';
 			menuSketches.innerHTML = menuSketchesHTML;
 			document.getElementById('menu-sketches-new').innerHTML = menuSketchesNew;
 			menuNewSketch = document.getElementById('menu-sketch-new');
@@ -854,6 +854,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				if(!p5code.focus() && event.target.tagName.toUpperCase() != "INPUT"){
 					event.preventDefault();
 				}
+			}else if(document.activeElement == menuNewSketch && event.keyCode == 13){ // ENTER, new sketch
+				loadType();
+				event.preventDefault();
 			}
 			//adjustLines();
 		}
@@ -866,13 +869,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				return confirmationMessage;                            //Webkit, Safari, Chrome
 			}
 		});
-
-		menuNewSketch.onkeydown = function(event){
-			if(event.keyCode == 13){ // DELETE = prevent back navigation
-				loadType();
-				event.preventDefault();
-			}
-		}
 
 
 		/* COMPILE CODE */
@@ -1191,8 +1187,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			localStorage.setItem(settings.fileName, p5template);
 			editor.setValue(p5template, 1);
 			editor.gotoLine(7, 1, false);
-			editor.focus();
 			updateMenu();
+			editor.focus();
 			setTimeout(function(){ recompile(); }, 100);
 		}
 
@@ -1217,13 +1213,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						}else{
 							editor.setValue(p5template, 1);
 						}
-					}else{
-						editor.setValue(localStorage[settings.fileName], 1);
-					}
-					editor.focus(); 
-					updateSettings();
+				}else{
+					editor.setValue(localStorage[settings.fileName], 1);
 				}
+				editor.focus(); 
+				updateSettings();
 			}
+		}
 			
 
 		// create typed in sketch
