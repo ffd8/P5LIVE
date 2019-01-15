@@ -30,7 +30,7 @@
     },
     {
       "sketchName": "textToPoints",
-      "sketchCode": "/*\ttextToPoints // cc teddavis.org 2019\t*/\n\nvar font, myText = \"P5L\";\nvar points = [];\n\n// function preload() {\n// \tfont = loadFont('includes/fonts/RobotoMono-Regular.ttf');\n// }\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tstroke(255);\n\tfont = loadFont('includes/fonts/RobotoMono-Regular.ttf', getPoints);\n\t//getPoints();\n\trectMode(CENTER);\n}\n\nfunction draw() {\n\tbackground(0);\n\ttranslate(width / 4, height * .7);\n\tfor(var i = 0; i < points.length; i++) {\n\t\tvar pt = points[i];\n\t\tpush();\n\t\ttranslate(pt.x, pt.y);\n\t\trotate(radians(sin(frameCount * i * 0.00003) * 180));\n\t\tvar w = dist(mouseX, mouseY, pt.x + width / 4, pt.y + height * .7) / 3;\n\t\tline(0, 0, w, w);\n\t\tpop();\n\t}\n}\n\nfunction getPoints() {\n\tvar s = width / myText.length;\n\tpoints = font.textToPoints(myText, 0, 0, s);\n\ttextFont(font);\n\n}\n\nfunction keyPressed() {\n\tif(keyCode == 8) {\n\t\tmyText = \"\";\n\t} else if(key.length == 1) {\n\t\tmyText += key + \"\";\n\t}\n\tgetPoints();\n}"
+      "sketchCode": "/*\ttextToPoints // cc teddavis.org 2019\t*/\n\nvar font, myText = \"P5L\";\nvar points = [];\n\n// function preload() {\n// \tfont = loadFont('includes/fonts/RobotoMono-Regular.ttf');\n// }\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tstroke(255);\n\tfont = loadFont('includes/fonts/RobotoMono-Regular.ttf', getPoints);\n\t//getPoints();\n\trectMode(CENTER);\n}\n\nfunction draw() {\n\tbackground(0);\n\ttranslate(width / 4, height * .7);\n\tfor(var i = 0; i < points.length; i++) {\n\t\tvar pt = points[i];\n\t\tpush();\n\t\ttranslate(pt.x, pt.y);\n\t\trotate(radians(sin(frameCount * i * 0.00003) * 180));\n\t\tvar w = dist(mouseX, mouseY, pt.x + width / 4, pt.y + height * .7) / 3;\n\t\tline(0, 0, w, w);\n\t\tpop();\n\t}\n}\n\nfunction getPoints() {\n\tvar s = width / myText.length;\n\tpoints = font.textToPoints(myText, 0, 0, s);\n\ttextFont(font);\n\n}\n\n"
     },
     {
       "sketchName": "basel.codes",
@@ -43,7 +43,7 @@
   ],
   "settings": {
     "welcome": false,
-    "fontSize": 15,
+    "fontSize": 12.5,
     "autoCompile": false,
     "ecoRender": true,
     "canvasCursor": true,
