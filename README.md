@@ -3,6 +3,11 @@ P5LIVE
 cc [teddavis.org](http://teddavis.org) 2019  
 p5.js live-coding vj environment!
 
+INSTALL
+-------------------------------
+- Online: [https://teddavis.org/p5live](https://teddavis.org/p5live)
+- Offline: Clone/download and view on localserver (ie. MAMP).
+
 
 GETTING STARTED
 -------------------------------
@@ -58,7 +63,8 @@ SHORTCUTS
 
 FUNCTIONS
 -------------------------------
-- `ease(inVal, outVal, easeVal);` // use to smooth values
+- `ease(inVal, outVal, easeVal);` use to smooth values.
+- `frameCount` is continous per loaded sketch.
 
 
 FUTURE
