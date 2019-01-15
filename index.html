@@ -82,7 +82,6 @@
 			color:#fff;
 			margin: 0;
 			will-change: opacity;
-			/*-webkit-font-smoothing: antialiased;*/
 		}
 		.p5-ta{
 			padding: 15px;      
@@ -90,7 +89,6 @@
 		#p5-editor{
 			top:0;
 			height:100vh;
-			mix-blend-mode:difference;
 			visibility:visible;
 		}
 		#p5-code {
@@ -107,6 +105,14 @@
 			position:fixed;
 			background:rgba(200,0,0,0.25);
 			z-index:20
+		}
+		.ace_line_bg{
+		}
+		.ace_line_bg_bright{
+			background:#666;
+		}
+		.ace_line_bg_dark{
+			background:#fff;
 		}
 		
 		/* MENU */
@@ -192,7 +198,7 @@
 			width:100%;
 			height:20px;
 		}
-		.menu-sketches-buttons button{
+		.menu-button{
 			color:#fff;
 			background:#666;
 			margin:0px;
@@ -207,13 +213,14 @@
 			width:25%;
 			float:left;
 			height:20px;
+			opacity:.75;
 		}
-		.menu-sketches-buttons button:last-child{
+		.menu-button:last-child{
 			border-right:none;
 		}
-		.menu-sketches-buttons button:hover{
-			background:#444;
+		.menu-button:hover{
 			color:#fff;
+			opacity: 1;
 		}
 		#menu-sketches{
 			height:100%;
@@ -248,7 +255,6 @@
 			padding:0;
 			height:25px;
 			cursor:pointer;
-			//overflow: hidden;
 			box-sizing: border-box;
 		}
 		.menu-sketch-holder:hover{
@@ -297,6 +303,15 @@
 		}
 		#menu-settings{
 			line-height:1.6em;
+		}
+		#menu-settings-theme{
+			width:50%;
+		}
+		#menu-settings-bg{
+			width:5em;
+			text-transform: uppercase;
+			outline:none;
+			border:1px solid #222;
 		}
 		#menu-settings-fontsize{
 			width:2em;
@@ -353,6 +368,7 @@
 	<script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
+	<script src="includes/js/jscolor.js"></script>
 </head>
 <body>
 
@@ -372,20 +388,20 @@
 			<div class="menu-section">
 				<div class="menu-header">P5LIVE</div>
 				<div class="menu-sketches-buttons">
-					<button onclick="loadAbout();" title="The more you know...">ABOUT</button>
-					<button onclick="resetP5();" title="Totally reset P5Live">RESET</button>
-					<button onclick="loadDemo();" title="Load P5LIVE demos">DEMOS</button>
+					<button class="menu-button" onclick="loadAbout();" title="The more you know...">ABOUT</button>
+					<button class="menu-button" onclick="resetP5();" title="Totally reset P5Live">RESET</button>
+					<button class="menu-button" onclick="loadDemo();" title="Load P5LIVE demos">DEMOS</button>
 				</div>
 			</div>
 		
 			<div class="menu-section">
 				<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
 				<div class="menu-sketches-buttons">
-					<button onclick="loadDefault();" title="CTRL + N » Create new sketch">NEW</button>
-					<button onclick="document.getElementById('file-input').click();" title="Import sketch(es)">IMPORT</button>
+					<button class="menu-button" onclick="loadDefault();" title="CTRL + N » Create new sketch">NEW</button>
+					<button class="menu-button" onclick="document.getElementById('file-input').click();" title="Import sketch(es)">IMPORT</button>
 					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="sketchesImport(this.files);" />
-					<button onclick="sketchesExport();" title="Export all sketches">EXPORT</button>
-					<button onclick="sketchesClear();" title="Clear entire sketches list">CLEAR</button>
+					<button class="menu-button" onclick="sketchesExport();" title="Export all sketches">EXPORT</button>
+					<button class="menu-button" onclick="sketchesClear();" title="Clear entire sketches list">CLEAR</button>
 				</div>
 
 				<div id="menu-sketches-new"></div>
@@ -397,6 +413,15 @@
 			<div class="menu-section">
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
+					<div>
+						Theme: <select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
+							<optgroup label="Bright"><option value="ace/theme/chrome">Chrome</option><option value="ace/theme/clouds">Clouds</option><option value="ace/theme/crimson_editor">Crimson Editor</option><option value="ace/theme/dawn">Dawn</option><option value="ace/theme/dreamweaver">Dreamweaver</option><option value="ace/theme/eclipse">Eclipse</option><option value="ace/theme/github">GitHub</option><option value="ace/theme/iplastic">IPlastic</option><option value="ace/theme/solarized_light">Solarized Light</option><option value="ace/theme/textmate">TextMate</option><option value="ace/theme/tomorrow">Tomorrow</option><option value="ace/theme/xcode">XCode</option><option value="ace/theme/kuroir">Kuroir</option><option value="ace/theme/katzenmilch">KatzenMilch</option><option value="ace/theme/sqlserver">SQL Server</option></optgroup><optgroup label="Dark"><option value="ace/theme/ambiance">Ambiance</option><option value="ace/theme/chaos">Chaos</option><option value="ace/theme/clouds_midnight">Clouds Midnight</option><option value="ace/theme/dracula">Dracula</option><option value="ace/theme/cobalt">Cobalt</option><option value="ace/theme/gruvbox">Gruvbox</option><option value="ace/theme/gob">Green on Black</option><option value="ace/theme/idle_fingers">idle Fingers</option><option value="ace/theme/kr_theme">krTheme</option><option value="ace/theme/merbivore">Merbivore</option><option value="ace/theme/merbivore_soft">Merbivore Soft</option><option value="ace/theme/mono_industrial">Mono Industrial</option><option value="ace/theme/monokai">Monokai</option><option value="ace/theme/pastel_on_dark">Pastel on dark</option><option value="ace/theme/solarized_dark">Solarized Dark</option><option value="ace/theme/terminal">Terminal</option><option value="ace/theme/tomorrow_night">Tomorrow Night</option><option value="ace/theme/tomorrow_night_blue">Tomorrow Night Blue</option><option value="ace/theme/tomorrow_night_bright">Tomorrow Night Bright</option><option value="ace/theme/tomorrow_night_eighties">Tomorrow Night 80s</option><option value="ace/theme/twilight">Twilight</option><option value="ace/theme/vibrant_ink">Vibrant Ink</option></optgroup>
+						</select>
+					</div>
+					<div>
+					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false,
+    borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+					</div>
 					<div>
 						Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
@@ -621,9 +646,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			"debugMode": false,
 			"sketches": [],
 			"sketchesSortable": '',
-			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"] 
+			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"],
+			"theme": "ace/theme/twilight",
+			"themeBG": "052544",
 		}
-
+	
 		// init vars
 		var p5editor = document.getElementById('p5-editor'),
 		p5code = document.getElementById('p5-code'),
@@ -637,6 +664,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5script = document.getElementById("holdscript"),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSettings = document.getElementById('menu-settings'),
+		menuBG = document.getElementById('menu-bg'),
 		settingsFontsize = document.getElementById('menu-settings-fontsize'),
 		settingsAutoMode = document.getElementById('settings-autocompile'),
 		settingsFullscreen = document.getElementById('settings-fullscreen'),
@@ -646,6 +674,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuNewSketch = document.getElementById('menu-sketch-new'),
 		menuPanel = document.getElementById('menu'),
 		menuSwitch = document.getElementById('menu-switch'),
+		menuTheme = document.getElementById("menu-settings-theme"),
+		settingsBG = document.getElementById("menu-settings-bg"),
 		settings = getSettings(),
 		validCode = true, 
 		sketchLoaded = false,
@@ -661,7 +691,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// init editor 
 		var Range = ace.require('ace/range').Range;
 		var editor = ace.edit("p5-code");
-		editor.setTheme("ace/theme/twilight");
+		editor.setTheme(settings.theme);
 		editor.session.setMode("ace/mode/javascript");
 		editor.setOptions({
 			showPrintMargin: false,
@@ -706,6 +736,20 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				editor.session.removeMarker(markerID[i].id);
 			}
 			markerID = [];
+		}
+
+		// set editor BG
+		editor.renderer.on("afterRender", function(){
+			adjustLines();
+		});
+
+		function adjustLines(){
+			var pcode = document.getElementsByClassName("ace_line");
+			for(var i=0; i < pcode.length; i++){
+				var pitem = pcode[i];
+				var pcontents = pitem.innerHTML;
+				pitem.innerHTML = '<span class="ace_line_bg" style="background:#'+settings.themeBG+'">' + pcontents + '</span>';
+			}
 		}
 
 
@@ -847,6 +891,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			ecoRenderUpdate();
 			cursorToggleUpdate();
 			menutabToggleUpdate();
+			loadTheme();
+			loadBG();
 			if(settings.welcome){
 				loadAbout();
 				settings.welcome = false;
@@ -1021,7 +1067,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					selSelected = true;
 				}
 				var marq = "";
-				if(settings.sketches[i].length > 15){marq = "marq";}
+				if(settings.sketches[i] != null && settings.sketches[i].length > 15){marq = "marq";}
 				menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'" data-id="'+settings.sketches[i]+'"><div class="menu-sketch-nav"><a class="menu-sketch-button" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch">id</a><a class="menu-sketch-button" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch">↓</a><a class="menu-sketch-button" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch">x</a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
 			}
 			var selClass = "";
@@ -1077,7 +1123,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5code.onkeyup = function(event) {
 			localStorage[settings.fileName] = editor.getValue();
 			clearTimeout(errorTimer);
-			errorTimer = setTimeout(function(){checkErrors();}, 500);
+			errorTimer = setTimeout(function(){checkErrors();}, 500);			
 		};
 
 		function checkErrors(){
@@ -1143,6 +1189,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					event.preventDefault();
 				}
 			}
+			//adjustLines();
 		}
 
 		// prevent lost work in default
@@ -1200,7 +1247,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(settings.autoCompile){
 				editor.setTheme("ace/theme/gob");
 			}else{
-				editor.setTheme("ace/theme/twilight");
+				editor.setTheme(settings.theme);
 			}
 		}
 
@@ -1374,6 +1421,84 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				menuPanel.style.marginRight = "0px";
 				menuSwitch.innerHTML = "»";
 			}
+		}
+
+
+		// load theme
+		function loadTheme(){
+			for(var i=0; i < menuTheme.options.length; i++){
+				var opt = menuTheme.options[i];
+				if(settings.theme == opt.value){
+					menuTheme.selectedIndex = i;
+				}
+			}
+		}
+
+		// set theme
+		function setTheme(sel){
+			// var optgroup = menuTheme.options[sel].closest("optgroup").label;
+			editor.setTheme(menuTheme.value);
+			settings.theme = menuTheme.value;
+			updateSettings();
+		}
+
+
+		// load themeBG 
+		function loadBG(){
+			settingsBG.value = settings.themeBG;
+			//menuBG.style.backgroundColor = "#" + settings.themeBG;
+
+		}
+
+		// set themeBG
+		function setBG(val){
+			if(settings.themeBG != val){
+				settings.themeBG = val+"";
+				updateSettings();
+				editor.renderer.updateFull();
+				//menuBG.style.backgroundColor = "#" + settings.themeBG;
+				//styleMenu();
+			}
+		}
+
+		// paused for launch.. to visit in future!
+		function styleMenu(){
+			// buttons
+			setStyle("class", "menu-button", "backgroundColor", ColorLuminance(settings.themeBG, .4));
+		}
+
+		function setStyle(styleType, styleElm, styleAttribute, styleChange){
+			var elms;
+			if(styleType == "class"){
+				elms = document.getElementsByClassName(styleElm);
+			}else if(styleType == "tag"){
+				elms = document.getElementsByTagName(styleElm);
+			}else if(styleType == "id"){
+				elms = document.getElementById(styleElm);
+			}
+			for(var i=0; i < elms.length; i++){
+				elms[i].style[styleAttribute] = styleChange;
+			}
+		}
+
+		// https://www.sitepoint.com/javascript-generate-lighter-darker-color/
+		function ColorLuminance(hex, lum) {
+			// validate hex string
+			hex = String(hex).replace(/[^0-9a-f]/gi, '');
+			if (hex.length < 6) {
+				hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+			}
+			lum = lum || 0;
+
+			// convert to decimal and change luminosity
+			var rgb = "#", c, i;
+			for (i = 0; i < 3; i++) {
+				c = parseInt(hex.substr(i*2,2), 16);
+				c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
+				rgb += ("00"+c).substr(c.length);
+			}
+
+			return rgb;
 		}
 
 		// adjust fontsize
