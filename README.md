@@ -12,15 +12,15 @@ GETTING STARTED
   
 - Sketches Menu:  
   NEW, new sketch.  
-  IMPORT, select JSON file from export (all or single sketch).  
-  EXPORT, download entire sketch list as JSON for import.  
+  IMPORT, select JSON files from export (all or single sketches).  
+  EXPORT, download entire sketches list as JSON for import.  
   CLEAR, erase entire sketches list.
   
 - Sketches List:  
   Load, click on sketch name.  
   Rename, click 'id' and type new name.  
-  Export, click '↓' to download JSON file for import.  
-  Remove, click 'x' and comfirm removal.  
+  Export, click '↓' to download sketch as JSON file.  
+  Remove, click 'x' and confirm removal.  
   Sort, click and drag to desired order.  
   
 - Settings:  
@@ -63,15 +63,16 @@ FUNCTIONS
 
 FUTURE
 -------------------------------
+- [ ] audio variables (easedAudio, fft bands)
 - [ ] etherpad-like collaborative editing (firepad?)
 - [ ] custom code/functions header
 - [ ] api (get request for sketch + settings)
 - [ ] mobile optimization
 - [ ] additional js libs (via settings)
-- [ ] audio variables (avg amp, fft)
 - [ ] export image [video?]
 - [ ] tree structure for sketches
 - [ ] export as HTML for website usage
+- [ ] autocomplete w/ p5.js functions
     
 
 THANKS

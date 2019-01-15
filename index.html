@@ -383,7 +383,7 @@
 				<div class="menu-sketches-buttons">
 					<button onclick="loadDefault();" title="CTRL + N » Create new sketch">NEW</button>
 					<button onclick="document.getElementById('file-input').click();" title="Import sketch(es)">IMPORT</button>
-					<input id="file-input" type="file" name="name" style="display: none;" onchange="sketchesImport(this.files[0]);" />
+					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="sketchesImport(this.files);" />
 					<button onclick="sketchesExport();" title="Export all sketches">EXPORT</button>
 					<button onclick="sketchesClear();" title="Clear entire sketches list">CLEAR</button>
 				</div>
@@ -398,26 +398,26 @@
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
 					<div>
-						Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="2" onkeyup="fontSizeAdjust(this.value);"> pt
+						Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
 					<div style="cursor:help;" title="CTRL + A » Compiles code on each keypress">
-						<span>Auto Compile:</span> 
+						Auto Compile: 
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();">
 					</div>
 					<div style="cursor:help;" title="CTRL + F » Toggle fullscreen mode">
-						<span>Fullscreen:</span> 
+						Fullscreen: 
 						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();">
 					</div>
 					<div style="cursor:help;" title="Only render if window is active (focused)">
-						<span>Eco Render:</span> 
+						Eco Render:
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();">
 					</div>
 					<div style="cursor:help;" title="CTRL + C » Display mouse cursor when editor is hidden">
-						<span>Cursor:</span> 
+						Cursor: 
 						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();">
 					</div>
-					<div style="cursor:help;" title="CTRL + M » If unchecked, can only view menu via ctrl+m">
-						<span>Menu Tab:</span> 
+					<div style="cursor:help;" title="CTRL + M » If unchecked, can only view menu via shortcut">
+						Menu Tab: 
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
 					</div>
 					<div style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
@@ -472,15 +472,15 @@ Save As, same as above while editing existing sketch.
 
 - Sketches Menu:
 NEW, new sketch.
-IMPORT, select JSON file from export (all or single sketch).
-EXPORT, download entire sketch list as JSON for import.
+IMPORT, select JSON files from export (all or single sketches).
+EXPORT, download entire sketches list as JSON for import.
 CLEAR, erase entire sketches list.
 
 - Sketches List:
 Load, click on sketch name.
 Rename, click 'id' and type new name.
-Export, click '↓' to download JSON file for import.
-Remove, click 'x' and comfirm removal.
+Export, click '↓' to download sketch as JSON file.
+Remove, click 'x' and confirm removal.
 Sort, click and drag to desired order.
 
 - Settings:
@@ -522,15 +522,16 @@ FUNCTIONS
 
 FUTURE
 -------------------------------
+- audio variables (easedAudio, fft bands)
 - etherpad-like collaborative editing (firepad? codepile?)
 - custom code/functions header
 - api (get for sketch + settings)
 - mobile optimization
 - additional js libs (via settings)
-- audio variables (avg amp, fft)
 - export image [video?]
 - tree structure for sketches
 - export as HTML for website usage
+- autocomplete w/ p5.js functions
 
 
 THANKS
@@ -600,7 +601,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		if(reset){localStorage.clear();}
 
 		function resetP5(){
-			var doubleCheck = confirm("Are you sure you want to completely reset P5LIVE?");
+			var doubleCheck = confirm("Completely reset P5LIVE?");
 			if(doubleCheck){
 				localStorage.clear();
 				location.reload();
@@ -954,17 +955,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// import sketches from JSON
 		function sketchesImport(data){
-			var reader = new FileReader();
-			reader.onload = function(data) {
-				var jsonObj = JSON.parse(event.target.result);
-				parseSketches(jsonObj);
+			for(var i=0; i < data.length; i++){
+				var reader = new FileReader();
+				reader.onload = function(data) {
+					var jsonObj = JSON.parse(event.target.result);
+					parseSketches(jsonObj);
+				}
+				reader.readAsText(data[i]);
 			}
-			reader.readAsText(data);
 		}
 
 		// load demos
 		function loadDemo(){
-			var doubleCheck = confirm("Are you sure you want to add demos to sketches list?");
+			var doubleCheck = confirm("Add demos to sketches list?");
 			if(doubleCheck){
 				var demosPath = "includes/demos/P5L_demos.json";
 				var request = new XMLHttpRequest();
@@ -993,7 +996,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// clear all sketches
 		function sketchesClear(){
-			var doubleCheck = confirm("Are you sure you want to clear (remove) ALL skeches?");
+			var doubleCheck = confirm("Clear (remove) ALL skeches?");
 			if(doubleCheck){
 				for(var i=0; i < settings.sketches.length; i++){
 					localStorage.removeItem(settings.sketches[i]);
@@ -1386,7 +1389,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				settingsFontsize.value = settings.fontSize;
 			}
 			p5code.style.fontSize = settings.fontSize + "pt";
-			//editor.setFontSize(settings.fontSize);
 		}
 
 
@@ -1409,6 +1411,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			editor.setValue(p5liveabout, 1);
 			editor.focus();
 			updateMenu();
+			updateSettings();
 			setTimeout(function(){ recompile(); }, 100);
 		}
 

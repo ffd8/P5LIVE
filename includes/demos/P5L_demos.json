@@ -1,12 +1,12 @@
 {
   "sketches": [
     {
-      "sketchName": "dragEllipse",
-      "sketchCode": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\n}\n\nfunction draw() {\n\tvar s = random(10, 20)\n\tif(!mouseIsPressed){\n\t\tbackground(0)\n\t}else{\n\t\ts = random(50, 150)\n\t}\n\t\n\tellipse(mouseX, mouseY, s, s)\n}"
+      "sketchName": "aboutsketch",
+      "sketchCode": "/*\taboutsketch // cc teddavis.org 2019\t*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoStroke();\n\tmouseX = width/2;\n\tmouseY = height/2;\n}\n\nfunction draw() {\n\tbackground(0);\n\ttri(0, 0, mouseX, mouseY, 0, height, 100);\n\ttri(0, 0, mouseX, mouseY, width, 0, 200);\n\ttri(width, height, mouseX, mouseY, 0, height, 0);\n\ttri(width, height, mouseX, mouseY, width, 0, 255);\n}\n\nfunction tri(x1, y1, x2, y2, x3, y3, fc){\n\tvar v = 0.002;\n\tfill(abs(sin(fc+(frameCount*v)))*255);\n\tbeginShape();\n\tvertex(x1, y1);\n\tvertex(x2, y2);\n\tvertex(x3, y3);\n\tendShape();\n}"
     },
     {
-      "sketchName": "aboutsketch",
-      "sketchCode": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoStroke();\n\tmouseX = width/2;\n\tmouseY = height/2;\n}\n\nfunction draw() {\n\tbackground(0);\n\ttri(0, 0, mouseX, mouseY, 0, height, 100);\n\ttri(0, 0, mouseX, mouseY, width, 0, 200);\n\ttri(width, height, mouseX, mouseY, 0, height, 0);\n\ttri(width, height, mouseX, mouseY, width, 0, 255);\n}\n\nfunction tri(x1, y1, x2, y2, x3, y3, fc){\n\tvar v = 0.002;\n\tfill(abs(sin(fc+(frameCount*v)))*255);\n\tbeginShape();\n\tvertex(x1, y1);\n\tvertex(x2, y2);\n\tvertex(x3, y3);\n\tendShape();\n}"
+      "sketchName": "bwEllipse",
+      "sketchCode": "/*\tbwEllipse // cc teddavis.org 2019\t*/\n\nfunction setup() { \n\tcreateCanvas(windowWidth, windowHeight);\n\tpixelDensity(1);\n}\n\nfunction draw() {\n\t// background(0)\n\tfill(255);\n\tstroke(255);\n\tif(frameCount%2==0)\n\tstroke(0);\n\tstrokeWeight(15);\n\tvar oscX = sin(frameCount*0.01)*width*.4;\n\tvar oscY = sin(frameCount*0.045)*height*.4;\n\tvar s = sin(frameCount*0.02)*150;\n\ttranslate(width/2, height/2);\n\tellipse(oscX, oscY, s, s);\n}"
     },
     {
       "sketchName": "minSyntax",
@@ -14,15 +14,15 @@
     },
     {
       "sketchName": "easeFunction",
-      "sketchCode": "/*\teaseFunction // cc teddavis.org 2019\t*/\n\nvar x=0, y=0, e=0.05;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tfill(255);\n}\n\nfunction draw() {\n\tbackground(200);\n\t// built-in ease(inVal, outVal, easeVal) for smoothing values\n\tx = ease(mouseX, x, e);\n\ty = ease(mouseY, y, e);\n\tellipse(x, y, 150, 150);\n\ttext(nf(x, 3,1) + \" / \" + nf(y, 3,1), 0, height);\n\n}\n"
+      "sketchCode": "/*\teaseFunction // cc teddavis.org 2019\t*/\n\nvar x=0, y=0, e=0.05;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tfill(255);\n}\n\nfunction draw() {\n\tbackground(200);\n\t\n\t// built-in ease(inVal, outVal, easeVal) for smoothing values\n\tx = ease(mouseX, x, e);\n\ty = ease(mouseY, y, e);\n\t\n\tellipse(x, y, 150, 150);\n\ttext(nf(x, 3,1) + \" / \" + nf(y, 3,1), 0, height);\n\n}\n"
     },
     {
       "sketchName": "sinStrings",
-      "sketchCode": "/*\tsinStrings // cc teddavis.org 2019\t*/\n\nfunction setup() {\n    createCanvas(windowWidth, windowHeight);\n    mouseX = width*0.4;\n}\n\nfunction draw() {\n    background(200); \n    var lc = 50;\n    fill(0);\n    for(var i=0; i < lc; i++){\n        var x = map(i, 0, lc-1, 0, width);\n        var osc = sin((frameCount*.01)+i*map(mouseX, 0, width, 0, 5));\n        var y = height/2 + osc*abs(mouseY-height/2);\n        var s = width/lc;\n        stroke(150);\n        strokeWeight(2.1-(osc*2));\n        line(x, y, x, 0);\n        noStroke();\n        ellipse(x, y, s, s);\n    }\n}"
+      "sketchCode": "/*\tsinStrings // cc teddavis.org 2019\t*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tmouseX = width * 0.4;\n\tpixelDensity(1);\n}\n\nfunction draw() {\n\tbackground(200);\n\tvar lc = 40;\n\tfill(0);\n\tfor(var i = 0; i < lc; i++) {\n\t\tvar s = width / lc;\n\t\tvar x = map(i, 0, lc - 1, 0, width);\n\t\tvar osc = sin((frameCount * .01) + i * map(mouseX, 0, width, 0, 5));\n\t\tvar y = height / 2 + osc * abs(mouseY - height / 2);\n\t\tstroke(150);\n\t\tstrokeWeight(2.1 - (osc * 2));\n\t\tline(x, y, x, 0);\n\t\tnoStroke();\n\t\tellipse(x, y, s, s);\n\t}\n}"
     },
     {
       "sketchName": "wanderingWorm",
-      "sketchCode": "/*\twanderingWorm // cc teddavis.org 2019\t*/\n\nvar s = 50.0;\nvar sMin = 25;\nvar sg = 2;\nvar x = 0.0;\nvar y = 0.0;\nvar nx = 0.0;\nvar ny = 0.0;\nvar nxv = 0.006;\nvar nyv = 0.005;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoCursor();\n\tnx = random(width);\n\tny = random(height);\n\tbackground(20);\n}\n\nfunction draw() {\n\tx = noise(nx)*width;\n\ty = noise(ny)*height;\n\tfill(255);\n\tif(mouseIsPressed){\n\t\ts += sg;\n\t}else{\n\t\ts -= sg;\n\t\tif(s < sMin)\n\t\t\ts = sMin;\n\t}\n\t\n\ttranslate(x, y);\n\trotate(s*0.03);\n\tellipse(0, 0, s, s);\n\n\tnx += nxv;\n\tny += nyv;\n}\n\nfunction keyPressed(){\n\tif(keyCode == 8)\n\t\tbackground(0);\n}"
+      "sketchCode": "/*\twanderingWorm // cc teddavis.org 2019\t*/\n\nvar s = 50.0;\nvar sMin = 25;\nvar sg = 2;\nvar x = 0.0;\nvar y = 0.0;\nvar nx = 0.0;\nvar ny = 0.0;\nvar nxv = 0.006;\nvar nyv = 0.005;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoCursor();\n\tnx = random(width);\n\tny = random(height);\n\tbackground(20);\n\tpixelDensity(1);\n}\n\nfunction draw() {\n\tx = floor(noise(nx)*width);\n\ty = floor(noise(ny)*height);\n\tfill(255);\n\tif(mouseIsPressed){\n\t\ts += sg;\n\t}else{\n\t\ts -= sg;\n\t\tif(s < sMin)\n\t\t\ts = sMin;\n\t}\n\t\n\tellipse(x, y, s, s);\n\n\tnx += nxv;\n\tny += nyv;\n}\n\nfunction keyPressed(){\n\tif(keyCode == 8)\n\t\tbackground(0);\n}"
     },
     {
       "sketchName": "typeScale",
@@ -30,11 +30,11 @@
     },
     {
       "sketchName": "typeWobble",
-      "sketchCode": "/*\ttypeWobble // cc teddavis.org 2019\t*/\n/*\tSHIFT + DELETE » erase all\t*/\n\nvar myText = \"hello world\";\nvar shifted = false;\nvar b = 15;\n\nfunction setup() {\n  createCanvas(windowWidth, windowHeight);\n  background(0);\n}\n\nfunction draw() {\n  fill(0, 20);\n  noStroke();\n  rect(0, 0, width, height);\n  fill(255, 80);\n  //stroke(255);\n  textFont(\"Monaco\");\n  textSize(50);\n  var rv = 2;\n  var rx = random(-rv, rv);\n  var ry = random(-rv, rv);\n  text(myText, b+rx, b+ry, width-b*2, height-b*2);\n  \n}\n\nfunction keyPressed(){\n    if(keyCode == 8){\n        if(shifted){\n            myText = \"\";\n            background(0);\n        }else{\n            myText = myText.substring(0, myText.length-1);\n            background(0);\n        }\n    }else if(keyCode == 16){\n        shifted = true;\n    }else if(keyCode != 18 && keyCode != 91 && keyCode != 93 && keyCode != 17  && keyCode != 16 && keyCode != 17){\n        if(key == \"Enter\")\n        \tkey = \"\\n\";\n        myText += key + \"\";\n    }\n}\n\nfunction keyReleased(){\n    if(keyCode == 16){\n        shifted = false;\n    }\n}"
+      "sketchCode": "/*\ttypeWobble // cc teddavis.org 2019\t*/\n/*\tSHIFT + DELETE » erase all\t*/\n\nvar myText = \"hello world\";\nvar shifted = false;\nvar b = 15;\n\nfunction setup() {\n  createCanvas(windowWidth, windowHeight);\n  background(0);\n}\n\nfunction draw() {\n  fill(0, 20);\n  noStroke();\n  rect(0, 0, width, height);\n  fill(255, 80);\n  //stroke(255);\n  textFont(\"Monaco\");\n  textSize(100);\n  var rv = 2;\n  var rx = random(-rv, rv);\n  var ry = random(-rv, rv);\n  text(myText, b+rx, b+ry, width-b*2, height-b*2);\n  \n}\n\nfunction keyPressed(){\n    if(keyCode == 8){\n        if(shifted){\n            myText = \"\";\n            background(0);\n        }else{\n            myText = myText.substring(0, myText.length-1);\n            background(0);\n        }\n    }else if(keyCode == 16){\n        shifted = true;\n    }else if(keyCode != 18 && keyCode != 91 && keyCode != 93 && keyCode != 17  && keyCode != 16 && keyCode != 17){\n        if(key == \"Enter\")\n        \tkey = \"\\n\";\n        myText += key + \"\";\n    }\n}\n\nfunction keyReleased(){\n    if(keyCode == 16){\n        shifted = false;\n    }\n}"
     },
     {
       "sketchName": "this is a really long name",
-      "sketchCode": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbackground(0);\n}\n\nfunction draw() {\n\tfill(255);\n\ttextSize(200);\n\ttext(\"yup, that is a really long sketch name\", 0, 0, width, height);\n}"
+      "sketchCode": "/*\tthis is a really long name // cc teddavis.org 2019\t*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbackground(0);\n}\n\nfunction draw() {\n\tfill(255);\n\ttextSize(200);\n\ttext(\"yup... \\nthat's a really long name\", 0, 0, width, height);\n}"
     },
     {
       "sketchName": "basel.codes",
@@ -42,15 +42,15 @@
     },
     {
       "sketchName": "webgl_rotRect",
-      "sketchCode": "/*\twebgl_rotRect // cc teddavis.org 2019\t*/\n\nfunction setup() {\n  createCanvas(windowWidth, windowHeight, WEBGL);\n  background(0);\n}\n\nfunction draw() {\n\tif(frameCount%20==0){\n\t\tbackground(0);\n\t}\n  stroke(255);\n  noFill();\n  rotateY(radians(frameCount*0.5));\n  rotateX(radians(frameCount*1));\n  var s = abs(sin(frameCount*0.003))*height;\n  rect(-s/2, -s/2, s, s);\n}"
+      "sketchCode": "/*\twebgl_rotRect // cc teddavis.org 2019\t*/\n\nfunction setup() {\n  createCanvas(windowWidth, windowHeight, WEBGL);\n  background(0);\n}\n\nfunction draw() {\n\tif(frameCount%20==0){\n\t\tbackground(0);\n\t}\n  stroke(255);\n  noFill();\n  rotateY(radians(frameCount*0.5));\n  rotateX(radians(frameCount*1));\n  var s = abs(sin(frameCount*0.003))*height;\n  rect(-s/2, -s/2, s, s);\n }"
     },
     {
       "sketchName": "webgl_sphereBox",
-      "sketchCode": "/*\twebgl_sphereBox // cc teddavis.org 2019\t*/\n\nvar lc = 8;\n\nfunction setup() {\n    createCanvas(windowWidth, windowHeight, WEBGL);\n    noCursor();\n}\n\nfunction draw() {\n    ortho();\n    background(0);\n    for(var i=0; i< lc; i++){\n        for(var j=0; j< lc; j++){\n            var mx = map(i, 0, lc-1, -width/2, width/2);\n            var my = map(j, 0, lc-1, -height/2, height/2);\n                \n            boxsphere(mx, my);\n        }\n    }\n}\n\nfunction boxsphere(x, y){\n    push();\n    translate(x, y);\n    var mmx = map(mouseX, 0, width, -width/2, width/2);\n    var mmy = map(mouseY, 0, height, -height/2, height/2);\n    var roff = -dist(mmx, mmy, x, y)/2;\n    rotateY(radians(frameCount+mouseX));\n    rotateX(radians(mouseY));\n    noFill();\n    strokeWeight(2);\n    fill(255);\n    stroke(255);\n    var s = (width/lc/2) + roff;\n    box(s);\n    fill(0);\n    stroke(0)\n    sphere(s*0.65);\n    pop();\n}"
+      "sketchCode": "/*\twebgl_sphereBox // cc teddavis.org 2019\t*/\n\nvar lc = 8;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL);\n\tnoCursor();\n}\n\nfunction draw() {\n\tortho();\n\tbackground(0);\n\tfor(var i = 0; i < lc; i++) {\n\t\tfor(var j = 0; j < lc; j++) {\n\t\t\tvar mx = map(i, 0, lc - 1, -width / 2, width / 2);\n\t\t\tvar my = map(j, 0, lc - 1, -height / 2, height / 2);\n\n\t\t\tboxsphere(mx, my);\n\t\t}\n\t}\n}\n\nfunction boxsphere(x, y) {\n\tpush();\n\ttranslate(x, y);\n\tvar mmx = map(mouseX, 0, width, -width / 2, width / 2);\n\tvar mmy = map(mouseY, 0, height, -height / 2, height / 2);\n\tvar roff = -dist(mmx, mmy, x, y) / 2;\n\trotateY(radians(frameCount + mouseX));\n\trotateX(radians(mouseY));\n\tnoFill();\n\tstrokeWeight(2);\n\tfill(255);\n\tstroke(255);\n\tif(mouseIsPressed) {\n\t\tfill(0);\n\t\tstroke(0);\n\t}\n\tvar s = (width / lc / 2) + roff;\n\tbox(s);\n\tfill(0);\n\tstroke(0);\n\tif(mouseIsPressed) {\n\t\tfill(255);\n\t\tstroke(255);\n\t}\n\tsphere(s * 0.65);\n\tpop();\n}"
     },
     {
       "sketchName": "audioTest",
-      "sketchCode": "/*\taudioTest // cc teddavis.org 2019\t*/\n/*\tcoming soon\t*/\n\nvar mic;\nvar pause = false;\n \nfunction setup() {\n  createCanvas(windowWidth, windowHeight);\n  mic = new p5.AudioIn();    \n  mic.start();\n}\n\nfunction draw(){\n  background(255);\n  fill(0);\n  textSize(50);\n  var audio = mic.getLevel()*1000;\n  text(\"mic: \"+audio, 0, height-10);\n  rect(0, height-110, map(audio, 0, 100, 0, width), 50);\n}\n\nfunction keyPressed(){\n\tif(keyCode == 32){\n\t\tpause = !pause;\n\t\tif(pause){\n\t\t\tmic.stop();\n\t\t}else{\n\t\t\tmic.start();      \n\t\t}    \n \t} \n\t\n} "
+      "sketchCode": "/*\taudioTest // cc teddavis.org 2019\t*/\n/*\tcoming soon\t*/\n\nvar mic;\nvar pause = false;\n \nfunction setup() {\n  createCanvas(windowWidth, windowHeight);\n  mic = new p5.AudioIn();    \n  mic.start();\n}\n\nfunction draw(){\n  noStroke();\n  fill(255, 10);\n  rect(0, 0, width, height);\n  \n  fill(255);\n  rect(0, height-50, width, 50);\n  fill(0);\n  textSize(50);\n  var audio = mic.getLevel()*1000;\n  text(\"mic: \"+audio, 0, height-10);\n  rect(0, height-50, map(audio, 0, 500, 0, width), -50);\n}\n\nfunction keyPressed(){\n\tif(keyCode == 32){\n\t\tpause = !pause;\n\t\tif(pause){\n\t\t\tmic.stop();\n\t\t}else{\n\t\t\tmic.start();      \n\t\t}    \n \t} \n\t\n} "
     },
     {
       "sketchName": "audioSphere",
@@ -59,18 +59,18 @@
   ],
   "settings": {
     "welcome": false,
-    "fontSize": 1.5,
+    "fontSize": 15,
     "autoCompile": false,
     "ecoRender": true,
     "canvasCursor": true,
     "fullscreenMode": false,
-    "fileName": "minSyntax",
+    "fileName": "audioSphere",
     "menuMode": true,
     "menutab": true,
     "debugMode": false,
     "sketches": [
-      "dragEllipse",
       "aboutsketch",
+      "bwEllipse",
       "minSyntax",
       "easeFunction",
       "sinStrings",
