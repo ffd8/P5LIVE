@@ -1,0 +1,353 @@
+@font-face {
+	font-family: 'roboto_mono';
+	src: url('includes/fonts/robotomono-regular-webfont.woff2') format('woff2'),
+	url('includes/fonts/robotomono-regular-webfont.woff') format('woff');
+	font-weight: 400;
+	font-style: normal;
+}
+@font-face {
+	font-family: 'roboto_mono';
+	src: url('includes/fonts/robotomono-light-webfont.woff2') format('woff2'),
+	url('includes/fonts/robotomono-light-webfont.woff') format('woff');
+	font-weight: 200;
+	font-style: normal;
+}
+* {
+	box-sizing: border-box;
+}
+::selection {
+	background-color: #fff;
+}
+html {
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+	font-family: 'roboto_mono', 'Monaco', monospace;
+	font-weight: 200;
+}
+body {
+	margin: 0;
+	padding: 0;
+	width: 100vw;
+	height: 100vh;
+	color: #839496;
+	background: #000;
+	position: relative;
+	background:#000;
+}
+#p5-frame, #p5-frame-cover{
+	outline:none;
+	border:none;
+	margin:0;
+	background:#000;
+	position:fixed;
+	top:0;
+	left:0;
+	width:100vw;
+	height:100vh;
+	z-index:-1;
+}
+#p5-frame-cover{
+	background:none;
+	z-index:0;
+	cursor:none;
+}
+
+/* EDITOR */
+.p5-ta, #p5-editor{
+	font-family: 'roboto_mono', monospace;
+	font-weight: 400;
+	position:fixed;
+	z-index:1;
+	font-size:20pt;
+	width:100vw;
+	background: none;
+	outline:none;
+	border:none;
+	border-bottom:1px dashed #000;
+	box-sizing: border-box;
+	color:#fff;
+	margin: 0;
+	will-change: opacity;
+}
+.p5-ta{
+	padding: 15px;      
+}
+#p5-editor{
+	top:0;
+	height:100vh;
+	visibility:visible;
+}
+#p5-code {
+	height:100vh;
+	top:0vh;
+}
+#p5-console{
+	height:5vh;
+	top:95vh;
+	font-size:10pt;
+	resize:none;
+}
+.myMarker {
+	position:fixed;
+	background:rgba(200,0,0,0.25);
+	z-index:20
+}
+.ace_line_bg{
+}
+.ace_line_bg_bright{
+	background:#666;
+}
+.ace_line_bg_dark{
+	background:#fff;
+}
+
+/* MENU */
+#menu, #menu-sketch-new{
+	font-size:10pt;
+}
+#menu{
+	position:fixed;
+	top:0;
+	right:0;
+	margin-right:-250px;
+	height:100vh;
+	width:250px;
+	color:#fff;
+	z-index:101;
+	transition: margin-right .4s linear;
+}
+#menu-switch{
+	position:absolute;
+	font-size:50px;
+	top:0;
+	left:-30px;
+	height:100%;
+	cursor:pointer;
+	color:#fff;
+	opacity:.1;
+	transition: opacity .5s linear;
+	z-index:1000;
+	background:#222;
+}
+#menu-switch:hover{
+	opacity:.5;
+}
+#menu-bg{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background:#333;
+	z-index:-1;
+	opacity: .5;
+}
+#menu-sections{
+	position:absolute;
+	left:0;
+	top:0;
+	width:100%;
+	height:100%;
+	box-sizing: border-box;
+	padding:15px;
+	overflow-y:auto;
+}
+.menu-section{
+	position:relative;
+	margin:0 0 25px 0;
+	border:1px solid #888;
+}
+.menu-header{
+	font-size:14pt;
+	color:#fff;
+	border-bottom:1px solid #fff;
+	margin:0px 0 5px 0;
+	padding-left:5px;
+	font-weight:700;
+}
+.menu-contents{
+	padding-left:5px;
+	padding-bottom:5px;
+}
+#menu-sketches-holder{
+	color:#fff;
+	height:30vh;
+	overflow:hidden;
+	overflow-y:auto;
+}
+.menu-sketches-buttons{
+	padding-left:0px;
+	margin-bottom: 0px;
+	margin-top:-5px;
+	font-size:8pt;
+	position:relative;
+	width:100%;
+	height:20px;
+}
+.menu-button{
+	color:#fff;
+	background:#666;
+	margin:0px;
+	padding:0px;
+	border:1px solid #888;
+	border-left:none;
+	border-top:none;
+	outline:none;
+	cursor:pointer;
+	font-family: 'roboto_mono', 'Monaco', monospace;
+	font-weight: 400;
+	width:25%;
+	float:left;
+	height:20px;
+	opacity:.75;
+}
+.menu-button:last-child{
+	border-right:none;
+}
+.menu-button:hover{
+	color:#fff;
+	opacity: 1;
+}
+#menu-sketches{
+	height:100%;
+}
+#menu-sketches-new{
+	background:#222;
+}
+#menu-sketch-new{
+	outline:none;
+	border:none;
+	background:none;
+	color:#fff;
+	padding-top:4px;
+	padding-left:5px;
+	height:auto;
+	margin:0;
+	font-family: 'roboto_mono', 'Monaco', monospace;
+	font-weight: 200;
+	cursor:text;
+}
+#menu-sketch-new-save{
+	float:right;
+	background:#222;
+	padding:4px 8px 2px 8px;
+	display:none;
+}
+#menu-sketch-new-save:hover{
+	background:#888;
+}
+.menu-sketch-holder{
+	margin:0px;
+	padding:0;
+	height:25px;
+	cursor:pointer;
+	box-sizing: border-box;
+}
+.menu-sketch-holder:hover{
+	background:#666;
+}
+.menu-sketch-holder:hover .menu-sketch-nav{
+	display:block;
+}
+.menu-sketch{
+	position: relative;
+	width: 67%;
+	height:100%;
+	float:none;
+	padding:2px 5px;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.marq:hover{
+	animation: marquee 5s linear infinite;
+}
+@keyframes marquee {
+	0%   { text-indent: 0em }
+	100% { text-indent: -20em }
+}
+.sketch-selected{
+	background:#444;
+}
+.sketch-selected .menu-sketch-nav{
+	display:block;
+}
+.menu-sketch-nav{
+	float:right;
+	width:33%;
+	height:100%;
+	display:none;
+	z-index:101;
+}
+.menu-sketch-button{
+	font-size:7pt;
+	height:100%;
+	color:#fff;
+	padding:5px 8px 5px 8px;
+}
+.menu-sketch-button:hover{
+	background:#555;
+}
+#menu-settings{
+	line-height:1.6em;
+}
+#menu-settings-theme{
+	width:50%;
+}
+#menu-settings-bg{
+	width:5em;
+	text-transform: uppercase;
+	outline:none;
+	border:1px solid #222;
+}
+#menu-settings-fontsize{
+	width:2em;
+	font-size:10pt;
+	text-align:center;
+	color:#fff;
+	border:none;
+	outline:none;
+	background:none;
+	border-bottom:1px solid #444;
+	font-family: 'roboto_mono', 'Monaco', monospace;
+	font-weight: 200;
+}
+#settings-libs{
+	outline:none;
+	background:none;
+	border:none;
+	border-bottom:1px solid #444;
+	color:#fff;
+}
+
+/* 
+##Device = Tablets, Ipads (landscape)
+##Screen = B/w 768px to 1024px
+*/
+
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
+	
+	
+	
+}
+
+/* MOBILE */
+@media (max-width: 767px) {
+	#menu-bg{
+		opacity:1;
+	}
+	.menu-header{
+		//font-size:2.5vh;
+	}
+	#menu{
+		//font-size:2vh;
+	}
+	#menu-switch{
+		//font-size:40px;
+		top:0;
+		left:-24px;
+		opacity:1;
+		background:#222;
+	}
+}
