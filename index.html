@@ -1018,7 +1018,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// constant frameCount (great for recompiling)
 		var fcTimer = setInterval(function(){
-			if(sketchLoaded){
+			if(sketchLoaded && p5f.frameCount != undefined){
 				fc = p5f.frameCount;
 			}
 		}, 100);

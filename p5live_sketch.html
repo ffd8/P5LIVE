@@ -53,11 +53,15 @@
 			window.parent.document.dispatchEvent(event);
 		}
 
+		var statusTimer; 
 		function sketchStatus(){
-			if(p5.instance){
+			if(p5.instance._setupDone){
+				clearTimeout(statusTimer);
 				var myCustomData = {'status': true};
 				var event = new CustomEvent('myEvent', { detail: myCustomData });
 				window.parent.document.dispatchEvent(event);
+			}else{
+				statusTimer = setTimeout(function(){sketchStatus();}, 50);
 			}
 		}
 
