@@ -604,7 +604,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// rename sketch
 		function renameSketch(sketch){
-			var newName = prompt('Please enter a new name for "'+sketch+'":');
+			var newName = prompt('Please enter a new name for "'+sketch+'":').replace(/["']/g, "");
 			if(newName != ''){
 				localStorage.setItem(newName, localStorage[sketch]);
 				var index = settings.sketches.indexOf(sketch);
@@ -1230,7 +1230,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// create typed in sketch
 		function loadType(){
-			var fn = menuNewSketch.value;
+			var fn = menuNewSketch.value.replace(/["']/g, "");
 			if(fn == ''){
 				fn = new Date().toISOString().replace(/-|:/g, "").replace("T", "_").split(".")[0];
 			}
@@ -1240,11 +1240,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 
-
 		/* PROMPT SKETCH SWITCHER */
 
 		function switchSketch() {
-			settings.fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + settings.sketches, '');
+			settings.fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + settings.sketches, '').replace(/["']/g, "");
 			if(settings.fileName == '') { 
 				loadDefault();
 			}else{
