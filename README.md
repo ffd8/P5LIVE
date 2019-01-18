@@ -6,35 +6,60 @@ p5.js live-coding vj environment!
 INSTALL
 -------------------------------
 - Online: [https://teddavis.org/p5live](https://teddavis.org/p5live)
-- Offline: Clone/download and view on localserver (ie. MAMP).
+- Offline: Clone and view on localserver (ie. MAMP).
+
+
+SHORTCUTS
+-------------------------------
+- CTRL + N » new sketch
+- CTRL + ENTER » compile
+- CTRL + A » autocompile toggle
+- CTRL + E » editor toggle
+- CTRL + F » fullscreen toggle
+- CTRL + M » menu toggle
+- CTRL + C » cursor toggle
+- CTRL + T » tidy code
+- CTRL + - » decrease fontsize
+- CTRL + + » increase fontsize
+- CTRL + O » open sketch prompt
+- CTRL + 1,2,3...0 » load first 10 sketches
 
 
 GETTING STARTED
 -------------------------------
 - Create, New Sketch + start coding!  
-  Save, Type a name into 'Save Sketch As...' and hit Return.  
-  Save As, same as above while editing existing sketch.
+Run, CTRL + ENTER to compile new code.  
+Save, Type name into 'Save Sketch As...' and hit Enter.  
+Save As, same as above while editing existing sketch.
   
-- Sketches Menu:  
+- P5LIVE Buttons:  
+	ABOUT, what you're reading now.  
+	RESET, re-initialize P5LIVE.  
+	DEMOS, load presets to learn from.
+  
+- SKETCHES Menu:  
   NEW, new sketch.  
   IMPORT, select JSON files from export (all or single sketches).  
   EXPORT, download entire sketches list as JSON for import.  
   CLEAR, erase entire sketches list.
   
-- Sketches List:  
+- SKETCHES List:  
   Load, click on sketch name.  
   Rename, click 'id' and type new name.  
   Export, click '↓' to download sketch as JSON file.  
   Remove, click 'x' and confirm removal.  
   Sort, click and drag to desired order.  
   
-- Settings:  
-  Font Size, adjust size of editor text.  
-  Strict Compile, avoid bugs as only valid code will compiple.  
-  Auto Compile, live-coding mode, refreshes on keyup.  
-  Fullscreen, toggle fullScreen(), ideal for VJing  
-  Eco Render, toggle loop()/noLoop() when browser   window is out of focus.
-  Cursor, toggle visible cursor when hiding editor
+- SETTINGS:  
+  Theme, change color coding of code.  
+	Background, set color of each line of code.  
+	Font Size, adjust size of editor text.  
+	Auto Compile, live-coding mode, refreshes on keyup.  
+	Fullscreen, toggle fullScreen(), ideal for VJing.  
+	Eco Render, toggle loop()/noLoop() if browser window is inactive.  
+	Cursor, toggle visible cursor when hiding editor (ctrl + e).  
+	Menu Tab, toggles menu tab.  
+	Hide if VJ'ing (don't forget CTRL + M for menu).
   
 - Note that all settings/sketches are stored in localStorage.  
   Clearing browser cache/storage = will probably erase sketches.   
@@ -43,22 +68,6 @@ GETTING STARTED
 - Write ES5 JS code (var), due to recompiling issues with let/const.
 
 - Fan going nuts? Set `pixelDensity(1);` in `setup()` if on a retina display.
-  
-
-SHORTCUTS
--------------------------------
-- CTRL + N » new sketch
-- CTRL + ENTER » recompile
-- CTRL + A » autocompile toggle
-- CTRL + E » editor toggle
-- CTRL + F » fullscreen toggle
-- CTRL + M » menu toggle
-- CTRL + O » open sketch prompt
-- CTRL + C » cursor toggle
-- CTRL + T » tidy code
-- CTRL + - » decrease fontsize
-- CTRL + + » increase fontsize
-- CTRL + 1,2,3...0 » load first 10 sketches
 
 
 FUNCTIONS
@@ -75,6 +84,7 @@ FUTURE
 - [ ] api (get request for sketch + settings)
 - [ ] mobile optimization
 - [ ] additional js libs (via settings)
+- [ ] additional assets
 - [ ] export image [video?]
 - [ ] tree structure for sketches
 - [ ] export as HTML for website usage
@@ -97,4 +107,4 @@ INSPIRATION
 
 SOURCE
 -------------------------------
-[github](https://github.com/ffd8/p5live)
+- [github](https://github.com/ffd8/p5live)
