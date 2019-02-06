@@ -97,7 +97,9 @@ body {
 .ace_marker-layer{
 	z-index:9999!important;
 }
-
+#editor, #p5-code, .ace_scroller{
+	cursor:cell !important;
+}
 
 /* MENU */
 #menu, #menu-sketch-new{
@@ -211,8 +213,7 @@ body {
 }
 #menu-sketches-new{
 	background:#222;
-		position:relative;
-
+	position:relative;
 }
 #menu-sketch-new{
 	outline:none;

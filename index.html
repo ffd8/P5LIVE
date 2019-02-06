@@ -35,8 +35,78 @@
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
 	<script src="includes/js/jscolor.js"></script>
+	<style type="text/css">
+		#p5-snippets{
+			position:fixed;
+			background:#000;
+			right:0;
+			height:100%;
+			z-index:9999;
+			padding:10px;
+			display:none;
+		}
+		.p5-snippet{
+			color:#fff;
+			font-size:18pt;
+		}
+		.p5-snippet textarea{
+			position:relative;
+			height:10vh;
+		}
+		#editor, #p5-code, .ace_scroller{
+			/*cursor:url(icon.png), auto !important;*/
+			cursor:cell !important;
+		}
+	</style>
 </head>
 <body>
+	<div id="p5-snippets">
+		<div class="p5-snippet">
+			global (top):<br>
+			<textarea id="p5-snippet-global">
+var mic, wave, fft, amp = 0, ampEase = 0;
+var numSamples = 1024;
+var numBands = 16;
+			</textarea>
+		</div>
+		<div class="p5-snippet">
+			setup():<br>
+			<textarea id="p5-snippet-setup">
+mic = new p5.AudioIn();
+mic.start();
+wave = new p5.FFT(0.5, numSamples);
+fft = new p5.FFT(0.75, numBands);
+wave.setInput(mic);
+fft.setInput(mic);
+			</textarea>
+		</div>
+		<div class="p5-snippet">
+			draw (top):<br>
+			<textarea id="p5-snippet-drawtop">
+			</textarea>
+		</div>
+		<div class="p5-snippet">
+			draw (bottom):<br>
+			<textarea id="p5-snippet-drawbottom">
+/* waveform */
+// var spectrum = wave.waveform(); // from -1, 1
+// for(var i = 0; i < spectrum.length; i++) {
+//
+// }
+
+/* fft */
+// var spectrum = fft.analyze(); // from 0, 255
+// for(var i = 0; i < spectrum.length; i++) {
+//
+// }
+
+/* amplitude */
+// amp = mic.getLevel() * 1000; // check levels
+// ampEase = ease(mic.getLevel() * 5, ampEase, 0.075); // check levels
+			</textarea>
+		</div>
+		
+	</div>
 
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
@@ -79,7 +149,7 @@
 			<div class="menu-section">
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
-					<div>
+					<div  style="cursor:help;" title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
 						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
 							<option value="ace/theme/dawn">Dawn</option>
@@ -92,11 +162,11 @@
 							<option value="ace/theme/twilight">Twilight</option>
 						</select>
 					</div>
-					<div>
+					<div  style="cursor:help;" title="Set code background color">
 					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false,
     borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
 					</div>
-					<div>
+					<div  style="cursor:help;" title="CTRL + +/- » Adjust font-size">
 						Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
 					<div style="cursor:help;" title="CTRL + A » Compiles code on each keypress">
@@ -293,10 +363,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/*
 			TODO
-			- reimplement manifest for offline use?
-			- FB/share details
-			- split css/js or single page = benefit?
-			*/
+			- make console click-through
+			- fix editor cursor (block?)
+			- 
+		*/
 
 
 
@@ -318,7 +388,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		var initSettings = {
 			"welcome":true,
 			"fontSize":15, 
-			"autoCompile":false, 
+			"autoCompile":true, 
 			"ecoRender": true,
 			"canvasCursor": true,
 			"fullscreenMode":false,
@@ -366,6 +436,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		markerID = [],
 		errorTimer, 
 		fc = 0;
+
+		// audio-reactive code snippet
+		var audioSnippet = {
+			"global":"var mic, wave, fft, amp = 0, ampEase = 0;\nvar numSamples = 1024;\nvar numBands = 16;",
+			"setup":"mic = new p5.AudioIn();\nmic.start();\nwave = new p5.FFT(0.5, numSamples);\nfft = new p5.FFT(0.75, numBands);\nwave.setInput(mic);\nfft.setInput(mic);",
+			"drawtop":"",
+			"drawbottom":"/* waveform */\n// var spectrum = wave.waveform(); // from -1, 1\n// for(var i = 0; i < spectrum.length; i++) {\n//\n// }\n\n/* fft */\n// var spectrum = fft.analyze(); // from 0, 255\n// for(var i = 0; i < spectrum.length; i++) {\n//\n// }\n\n/* amplitude */\n// amp = mic.getLevel() * 1000; // check levels\n// ampEase = ease(mic.getLevel() * 5, ampEase, 0.075); // check levels",
+		}
 
 		// force off
 		settings.debugMode = false;
@@ -796,8 +874,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				autoCompileToggle();
 				event.preventDefault();
 			}else if(event.keyCode == 84 && event.ctrlKey){ // t = tidy code
-				var tempCode = js_beautify(editor.getValue(), beautifyOptions);
-				editor.setValue(tempCode, 1);
+				tidyCode();
 				event.preventDefault();
 			}
 		}
@@ -857,17 +934,18 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else if(event.keyCode == 78 && event.ctrlKey){ // n = new
 				loadDefault();
 				event.preventDefault();
-			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 0-9 = preset sketches
+			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 	0-9 = preset sketches
 				var keySketch = event.keyCode - 49;
 				if(keySketch == -1){keySketch = 9;}
 				loadSketch(settings.sketches[keySketch]);
 				event.preventDefault();
 			}else if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
 				// test function here
+				addSnippet(audioSnippet);
 				event.preventDefault();
 			}else if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
-				var rx = /INPUT|SELECT|TEXTAREA/i;
-				if(!p5code.focus() && event.target.tagName.toUpperCase() != "INPUT"){
+				var eTarget = event.target.tagName.toLowerCase();
+				if(!p5code.focus() && eTarget != "input" && eTarget != "textarea"){
 					event.preventDefault();
 				}
 			}else if(document.activeElement == menuNewSketch && event.keyCode == 13){ // ENTER, new sketch
@@ -890,8 +968,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* COMPILE CODE */
 
 		function recompile(){
-			if(validCode || !settings.strictCompile){
-				p5frame.src = "p5live_sketch.html";
+			var currline = editor.getSelectionRange().start.row;
+			var currCode = editor.session.getLine(currline);
+			if(currCode.search("for") == -1 && currCode.search("while") == -1){
+				if(validCode || !settings.strictCompile){
+					p5frame.src = "p5live_sketch.html";
+				}
 			}
 		}
 
@@ -909,6 +991,67 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			ps.src = scriptPath;
 			return ps;
 		}
+
+		function tidyCode(){
+			var tempCode = js_beautify(editor.getValue(), beautifyOptions);
+			editor.setValue(tempCode, 1);
+		}
+
+		/* SNIPPETS */
+		function addSnippet(loadSnippet){
+			var addGlobal = loadSnippet.global;
+			var addSetup = loadSnippet.setup;
+			var addDrawTop = loadSnippet.drawtop;
+			var addDrawBottom = loadSnippet.drawbottom;
+
+			var curCode = editor.getValue();			
+			var codeGlobal = addGlobal + "\n" + curCode;
+			var codeSetup = addCode(codeGlobal, addSetup, "setup", "bottom");
+			var codeDrawTop = addCode(codeSetup, addDrawTop, "draw", "top");
+			var codeDrawBottom = addCode(codeDrawTop, addDrawBottom, "draw", "bottom");
+
+			editor.setValue(codeDrawBottom, 1);
+			tidyCode();
+		}
+
+		function addCode(codeBase, codeInsert, funName, codePos){
+			var tempCode, tempPos = addPosition(codeBase, funName);
+			if(codePos === "bottom"){
+				tempCode = [codeBase.slice(0, tempPos[1]), "\n"+codeInsert+"\n", codeBase.slice(tempPos[1])].join('');
+			}else if(codePos === "top"){
+				tempCode = [codeBase.slice(0, tempPos[0]), codeInsert+"\n", codeBase.slice(tempPos[0])].join('');
+			}
+			return tempCode;
+		}
+
+		// grab start/end of function, modded for position only
+		// https://stackoverflow.com/a/49240267/10885535
+		function addPosition(content, functionName) {
+		  // Find function
+		  const indexOfFunc = content.indexOf(`function ${functionName}`);
+
+		  if (indexOfFunc < 0) {
+		    return content;
+		  }
+
+		  const openingBrace = content.indexOf('{', indexOfFunc);
+
+		  const startPos = openingBrace + 1;
+		  let endPos = startPos;
+		  let bracesToBalance = 1;
+
+		  while (true) {
+		    if (content[endPos] === '{') {
+		      bracesToBalance++;
+		    } else if (content[endPos] === '}') {
+		      bracesToBalance--;
+		      if (bracesToBalance === 0) break;
+		    }
+		    endPos++;
+		  }
+
+		  return [startPos, endPos];
+		};
 
 
 
@@ -1115,7 +1258,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// set theme
 		function setTheme(sel){
 			// var optgroup = menuTheme.options[sel].closest("optgroup").label;
-			editor.setTheme(menuTheme.value);
+			if(!settings.autoCompile){
+				editor.setTheme(menuTheme.value);
+			}
 			settings.theme = menuTheme.value;
 			updateSettings();
 		}
