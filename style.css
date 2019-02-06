@@ -114,7 +114,7 @@ body {
 	width:250px;
 	color:#fff;
 	z-index:101;
-	transition: margin-right .4s linear;
+	transition: margin-right .5s ease;
 }
 #menu-switch{
 	position:absolute;
@@ -303,7 +303,7 @@ body {
 	border:1px solid #222;
 }
 #menu-settings-fontsize{
-	width:2em;
+	width:4em;
 	font-size:10pt;
 	text-align:center;
 	color:#fff;

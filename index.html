@@ -78,26 +78,6 @@
 			<div class="menu-section">
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
-					<div  style="cursor:help;" title="Set theme (ignored in Auto Compile mode)">
-						Theme: 
-						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
-							<option value="ace/theme/dawn">Dawn</option>
-							<option value="ace/theme/kuroir">Kuroir</option>
-							<option value="ace/theme/ambiance">Ambiance</option>
-							<option value="ace/theme/cobalt">Cobalt</option>
-							<option value="ace/theme/mono_industrial">Mono Industrial</option>
-							<option value="ace/theme/pastel_on_dark">Pastel on dark</option>
-							<option value="ace/theme/solarized_dark">Solarized Dark</option>
-							<option value="ace/theme/twilight">Twilight</option>
-						</select>
-					</div>
-					<div  style="cursor:help;" title="Set code background color">
-					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false,
-    borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
-					</div>
-					<div  style="cursor:help;" title="CTRL + +/- » Adjust font-size">
-						Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
-					</div>
 					<div style="cursor:help;" title="CTRL + A » Compiles code on each keypress">
 						Auto Compile: 
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();">
@@ -114,13 +94,33 @@
 						Cursor: 
 						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();">
 					</div>
-					<div style="cursor:help;" title="CTRL + M » If unchecked, can only view menu via shortcut">
+					<div style="cursor:help;" title="*** If unchecked, can only toggle menu via shortcut, CTRL + M">
 						Menu Tab: 
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
 					</div>
 					<div style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
+					</div>
+					<div  style="cursor:help;" title="CTRL + +/- » Adjust font-size">
+						Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
+					</div>
+					<div  style="cursor:help;" title="Set theme (ignored in Auto Compile mode)">
+						Theme: 
+						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
+							<option value="ace/theme/dawn">Dawn</option>
+							<option value="ace/theme/kuroir">Kuroir</option>
+							<option value="ace/theme/ambiance">Ambiance</option>
+							<option value="ace/theme/cobalt">Cobalt</option>
+							<option value="ace/theme/mono_industrial">Mono Industrial</option>
+							<option value="ace/theme/pastel_on_dark">Pastel on dark</option>
+							<option value="ace/theme/solarized_dark">Solarized Dark</option>
+							<option value="ace/theme/twilight">Twilight</option>
+						</select>
+					</div>
+					<div  style="cursor:help;" title="Set code background color">
+					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false,
+    borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
 					</div>
 				</div>
 			</div>
@@ -204,14 +204,19 @@ Remove, click 'x' and confirm removal.
 Sort, click and drag to desired order.
 
 - SETTINGS:
-Theme, change color coding of code.
-Background, set color of each line of code.
-Font Size, adjust size of editor text.
 Auto Compile, live-coding mode, refreshes on keyup.
 Fullscreen, toggle fullScreen(), ideal for VJing
 Eco Render, toggle loop()/noLoop() when browser window is out of focus.
 Cursor, toggle visible cursor when hiding editor (ctrl + e).
 Menu Tab, toggles menu tab. Hide if VJ'ing (don't forget CTRL + M for menu).
+Font Size, adjust size of editor text.
+Theme, set code syntax coloring (ignored in Auto Compile mode).
+Background, set color behind each line of code.
+
+- SNIPPETS:
+Add them to 'includes/demos/P5L_snippets.json'.
+Load them via shortcut, CTRL + SHIFT + #
+ie. CTRL + SHIFT + 1, for audio-reactive visualizations.
 
 - Note that all settings/sketches are stored in localStorage only.
 Clearing browser cache/storage = will likely erase all sketches. 
@@ -833,6 +838,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		window.onkeydown = function(event) {
+			console.log(event);
 			if(event.keyCode == 69 && event.ctrlKey){ // e = editor toggle
 				editorToggle();
 				event.preventDefault();
@@ -857,14 +863,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else if(event.keyCode == 78 && event.ctrlKey){ // n = new
 				loadDefault();
 				event.preventDefault();
-			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey){ // 	0-9 = preset sketches
+			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey && !event.shiftKey){ // 	0-9 = preset sketches
 				var keySketch = event.keyCode - 49;
 				if(keySketch == -1){keySketch = 9;}
 				loadSketch(settings.sketches[keySketch]);
 				event.preventDefault();
-			}else if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
-				// test function here
-				addSnippet("audio");
+			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey && event.shiftKey){ // shift = TEST KEY
+				var keySketch = event.keyCode - 48;
+				addSnippet(keySketch);
 				event.preventDefault();
 			}else if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
 				var eTarget = event.target.tagName.toLowerCase();
@@ -933,7 +939,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function addSnippet(loadSnippet){
-			var snippetIndex = snippets.map(function(d) { return d['id']; }).indexOf(loadSnippet);
+			var snippetIndex = snippets.map(function(d) { return d['key']; }).indexOf(loadSnippet);
 			if(snippetIndex == -1){
 				return false;
 			}

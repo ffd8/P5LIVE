@@ -51,15 +51,20 @@ Save As, same as above while editing existing sketch.
   Sort, click and drag to desired order.  
   
 - SETTINGS:  
-  Theme, change color coding of code.  
-	Background, set color of each line of code.  
-	Font Size, adjust size of editor text.  
 	Auto Compile, live-coding mode, refreshes on keyup.  
 	Fullscreen, toggle fullScreen(), ideal for VJing.  
 	Eco Render, toggle loop()/noLoop() if browser window is inactive.  
 	Cursor, toggle visible cursor when hiding editor (ctrl + e).  
 	Menu Tab, toggles menu tab.  
-	Hide if VJ'ing (don't forget CTRL + M for menu).
+	Hide if VJ'ing (don't forget CTRL + M for menu).  
+	Font Size, adjust size of editor text.  
+	Theme, set code syntax coloring (ignored in Auto Compile mode).  
+	Background, set color behind each line of code.
+	
+- SNIPPETS:  
+Add custom snippets to '/includes/demos/P5L_snippets.json'.  
+Load snippets via shortcut, CTRL + SHIFT + #  
+ie. CTRL + SHIFT + 1, for audio-reactive visualizations.
   
 - Note that all settings/sketches are stored in localStorage.  
   Clearing browser cache/storage = will probably erase sketches.   

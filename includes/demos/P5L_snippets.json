@@ -16,6 +16,7 @@
 
 		{
 			"id":"audio",
+			"key": 1,
 			"code":{
 				"global":"var mic, wave, fft, amp = 0, ampEase = 0;\nvar numSamples = 1024;\nvar numBands = 16;",
 				"setup":"mic = new p5.AudioIn();\nmic.start();\nwave = new p5.FFT(0.5, numSamples);\nfft = new p5.FFT(0.75, numBands);\nwave.setInput(mic);\nfft.setInput(mic);",
