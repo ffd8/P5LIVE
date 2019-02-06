@@ -35,79 +35,8 @@
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
 	<script src="includes/js/jscolor.js"></script>
-	<style type="text/css">
-		#p5-snippets{
-			position:fixed;
-			background:#000;
-			right:0;
-			height:100%;
-			z-index:9999;
-			padding:10px;
-			display:none;
-		}
-		.p5-snippet{
-			color:#fff;
-			font-size:18pt;
-		}
-		.p5-snippet textarea{
-			position:relative;
-			height:10vh;
-		}
-		#editor, #p5-code, .ace_scroller{
-			/*cursor:url(icon.png), auto !important;*/
-			cursor:cell !important;
-		}
-	</style>
 </head>
 <body>
-	<div id="p5-snippets">
-		<div class="p5-snippet">
-			global (top):<br>
-			<textarea id="p5-snippet-global">
-var mic, wave, fft, amp = 0, ampEase = 0;
-var numSamples = 1024;
-var numBands = 16;
-			</textarea>
-		</div>
-		<div class="p5-snippet">
-			setup():<br>
-			<textarea id="p5-snippet-setup">
-mic = new p5.AudioIn();
-mic.start();
-wave = new p5.FFT(0.5, numSamples);
-fft = new p5.FFT(0.75, numBands);
-wave.setInput(mic);
-fft.setInput(mic);
-			</textarea>
-		</div>
-		<div class="p5-snippet">
-			draw (top):<br>
-			<textarea id="p5-snippet-drawtop">
-			</textarea>
-		</div>
-		<div class="p5-snippet">
-			draw (bottom):<br>
-			<textarea id="p5-snippet-drawbottom">
-/* waveform */
-// var spectrum = wave.waveform(); // from -1, 1
-// for(var i = 0; i < spectrum.length; i++) {
-//
-// }
-
-/* fft */
-// var spectrum = fft.analyze(); // from 0, 255
-// for(var i = 0; i < spectrum.length; i++) {
-//
-// }
-
-/* amplitude */
-// amp = mic.getLevel() * 1000; // check levels
-// ampEase = ease(mic.getLevel() * 5, ampEase, 0.075); // check levels
-			</textarea>
-		</div>
-		
-	</div>
-
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
 		<textarea id="p5-console" class="p5-ta" disabled></textarea>
@@ -434,7 +363,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		pLen = 0, 
 		paused = false,
 		markerID = [],
-		errorTimer, 
+		errorTimer,
+		snippets, 
 		fc = 0;
 
 		// audio-reactive code snippet
@@ -653,6 +583,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			menutabToggleUpdate();
 			loadTheme();
 			loadBG();
+			loadSnippets();
 			if(settings.welcome){
 				loadAbout();
 				settings.welcome = false;
@@ -941,7 +872,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				event.preventDefault();
 			}else if(event.keyCode == 16 && event.ctrlKey){ // shift = TEST KEY
 				// test function here
-				addSnippet(audioSnippet);
+				addSnippet("audio");
 				event.preventDefault();
 			}else if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
 				var eTarget = event.target.tagName.toLowerCase();
@@ -997,12 +928,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			editor.setValue(tempCode, 1);
 		}
 
+
+
 		/* SNIPPETS */
+		function loadSnippets(){
+			var snippetsPath = "includes/demos/P5L_snippets.json";
+			var request = new XMLHttpRequest();
+			request.open("GET", snippetsPath, false);
+			request.send(null)
+			var jsonObj = JSON.parse(request.responseText);
+			snippets = jsonObj.snippets;
+		}
+
 		function addSnippet(loadSnippet){
-			var addGlobal = loadSnippet.global;
-			var addSetup = loadSnippet.setup;
-			var addDrawTop = loadSnippet.drawtop;
-			var addDrawBottom = loadSnippet.drawbottom;
+			var snippetIndex = snippets.map(function(d) { return d['id']; }).indexOf(loadSnippet);
+			if(snippetIndex == -1){
+				return false;
+			}
+			var snippetCode = snippets[snippetIndex].code;
+			var addGlobal = snippetCode.global;
+			var addSetup = snippetCode.setup;
+			var addDrawTop = snippetCode.draw.top;
+			var addDrawBottom = snippetCode.draw.bottom;
 
 			var curCode = editor.getValue();			
 			var codeGlobal = addGlobal + "\n" + curCode;
