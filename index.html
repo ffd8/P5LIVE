@@ -367,14 +367,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		snippets, 
 		fc = 0;
 
-		// audio-reactive code snippet
-		var audioSnippet = {
-			"global":"var mic, wave, fft, amp = 0, ampEase = 0;\nvar numSamples = 1024;\nvar numBands = 16;",
-			"setup":"mic = new p5.AudioIn();\nmic.start();\nwave = new p5.FFT(0.5, numSamples);\nfft = new p5.FFT(0.75, numBands);\nwave.setInput(mic);\nfft.setInput(mic);",
-			"drawtop":"",
-			"drawbottom":"/* waveform */\n// var spectrum = wave.waveform(); // from -1, 1\n// for(var i = 0; i < spectrum.length; i++) {\n//\n// }\n\n/* fft */\n// var spectrum = fft.analyze(); // from 0, 255\n// for(var i = 0; i < spectrum.length; i++) {\n//\n// }\n\n/* amplitude */\n// amp = mic.getLevel() * 1000; // check levels\n// ampEase = ease(mic.getLevel() * 5, ampEase, 0.075); // check levels",
-		}
-
 		// force off
 		settings.debugMode = false;
 		
