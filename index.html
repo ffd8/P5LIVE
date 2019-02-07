@@ -218,6 +218,10 @@ Add them to 'includes/demos/P5L_snippets.json'.
 Load them via shortcut, CTRL + SHIFT + #
 ie. CTRL + SHIFT + 1, for audio-reactive visualizations.
 
+- Want custom assets (fonts/images)? 
+Clone/download from github and host locally using MAMP server. 
+Drop files into folder and link relatively, ('data/fish.png')
+
 - Note that all settings/sketches are stored in localStorage only.
 Clearing browser cache/storage = will likely erase all sketches. 
 Be sure to export often.
@@ -227,7 +231,8 @@ Be sure to export often.
 
 FUNCTIONS
 -------------------------------
-- ease(inVal, outVal, easeVal); // use to smooth values
+- `ease(inVal, outVariable, easeVal)` // smooth values
+- `frameCount` is continous per loaded sketch.
 
 
 FUTURE
@@ -298,7 +303,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/*
 			TODO
 			- make console click-through
-			- fix editor cursor (block?)
+			- custom assets guide
 			- 
 		*/
 

@@ -1,6 +1,6 @@
 {
 	"snippets": [
-		
+
 		{
 			"id":"template",
 			"code":{
@@ -11,22 +11,22 @@
 					"bottom":""
 				}
 			}
-			
+
 		},
 
 		{
 			"id":"audio",
 			"key": 1,
 			"code":{
-				"global":"var mic, wave, fft, amp = 0.0, ampEase = 0.0;\nvar numSamples = 1024;\nvar numBands = 16;",
+				"global":"var mic, wave, fft, waveVals = [], fftVals = [], amp = 0.0,  ampEase = 0.0, numSamples = 1024, numBands = 16;",
 				"setup":"mic = new p5.AudioIn();\nmic.start();\nwave = new p5.FFT(0.5, numSamples);\nfft = new p5.FFT(0.75, numBands);\nwave.setInput(mic);\nfft.setInput(mic);",
 				"draw":{
-					"top":"",
-					"bottom":"/* waveform */\n// var spectrum = wave.waveform(); // from -1, 1\n// for(var i = 0; i < spectrum.length; i++) {\n//\n// }\n\n/* fft */\n// var spectrum = fft.analyze(); // from 0, 255\n// for(var i = 0; i < spectrum.length; i++) {\n//\n// }\n\n/* amplitude */\n// amp = mic.getLevel() * 1000; // check levels\n// ampEase = ease(amp, ampEase, 0.075); // activate amp + check easing"
+					"top":"/* AUDIO VARS */\n// amp = mic.getLevel() * 1000; // AVG AUDIO, adjust gain\n// ampEase = ease(amp, ampEase, 0.075); // uses amp, adjust easing\n// waveVals = wave.waveform(); // WAVEFORM, array of values from -1, 1\n// fftVals = fft.analyze(); // FFT, array of values from 0, 255",
+					"bottom":"/* LOOP WAVEVALS DEMO  */\n// beginShape();\n// for(var i = 0; i < waveVals.length; i++) {\n// var x = map(i, 0, waveVals.length, 0, width);\n// vertex(x, (height / 2) + waveVals[i] * 100)\n// }\n// endShape();\n\n/* MAP WAVEVALS INTO OTHER LOOP */\n// var waveSel = floor(map(i, 0, *loopSize*, 0, waveVals.length));\n// var waveMap = map(waveVals[waveSel], -1, 1, 0, 100);"
+					}
 				}
-			}
-			
-		}
 
-	]
+			}
+
+		]
 }

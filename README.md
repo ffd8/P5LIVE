@@ -65,6 +65,11 @@ Save As, same as above while editing existing sketch.
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
 Load snippets via shortcut, CTRL + SHIFT + #  
 ie. CTRL + SHIFT + 1, for audio-reactive visualizations.
+
+- Want custom assets (fonts/images)?   
+Clone/download from github and host locally using MAMP server.  
+Drop files into folder and link relatively, ('data/fish.png')
+
   
 - Note that all settings/sketches are stored in localStorage.  
   Clearing browser cache/storage = will probably erase sketches.   
@@ -77,7 +82,7 @@ ie. CTRL + SHIFT + 1, for audio-reactive visualizations.
 
 FUNCTIONS
 -------------------------------
-- `ease(inVal, outVal, easeVal);` use to smooth values.
+- `ease(inVal, outVariable, easeVal)` // smooth values
 - `frameCount` is continous per loaded sketch.
 
 
