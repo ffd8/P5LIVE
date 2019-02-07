@@ -88,6 +88,7 @@ body {
 	top:95vh;
 	font-size:10pt;
 	resize:none;
+	pointer-events: none;
 }
 .myMarker {
 	position:fixed;
