@@ -3,6 +3,7 @@
 
 		{
 			"id":"template",
+			"key": 0,
 			"code":{
 				"global":"",
 				"setup":"",
@@ -11,7 +12,6 @@
 					"bottom":""
 				}
 			}
-
 		},
 
 		{
@@ -23,10 +23,9 @@
 				"draw":{
 					"top":"/* AUDIO VARS */\n// amp = mic.getLevel() * 1000; // AVG AUDIO, adjust gain\n// ampEase = ease(amp, ampEase, 0.075); // uses amp, adjust easing\n// waveVals = wave.waveform(); // WAVEFORM, array of values from -1, 1\n// fftVals = fft.analyze(); // FFT, array of values from 0, 255",
 					"bottom":"/* LOOP WAVEVALS DEMO  */\n// beginShape();\n// for(var i = 0; i < waveVals.length; i++) {\n// var x = map(i, 0, waveVals.length, 0, width);\n// vertex(x, (height / 2) + waveVals[i] * 100)\n// }\n// endShape();\n\n/* MAP WAVEVALS INTO OTHER LOOP */\n// var waveSel = floor(map(i, 0, *loopSize*, 0, waveVals.length));\n// var waveMap = map(waveVals[waveSel], -1, 1, 0, 100);"
-					}
 				}
-
 			}
+		}
 
 		]
 }
