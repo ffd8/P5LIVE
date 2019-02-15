@@ -45,6 +45,11 @@
 	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" src="p5live_sketch.html" onLoad="injectJS()";></iframe>
 	<div id="p5-frame-cover"></div>
 
+	<div id="refholder">
+		<div id="ref"></div>
+		<div id="ref-close" onclick="closeRef();">X</div>
+	</div>
+
 	<div id="menu">
 		<div id="menu-bg"></div>
 		<div id="menu-switch" onclick="menuToggle();">X</div>
@@ -56,6 +61,8 @@
 					<button class="menu-button" onclick="loadAbout();" title="The more you know...">ABOUT</button>
 					<button class="menu-button" onclick="resetP5();" title="Totally reset P5Live">RESET</button>
 					<button class="menu-button" onclick="loadDemo();" title="Load P5LIVE demos">DEMOS</button>
+					<button class="menu-button" onclick="showRef();" title="View p5.js reference">REF</button>
+
 				</div>
 			</div>
 		
@@ -135,8 +142,7 @@ function setup() {
 
 function draw() {
 	
-}
-	</textarea>
+}</textarea>
 	<textarea style="display:none;" id="p5-custom">
 // readjust if window-resized
 function windowResized() {
@@ -295,8 +301,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	vertex(x2, y2);
 	vertex(x3, y3);
 	endShape();
-}
-	</textarea>
+}</textarea>
 	<script type="text/javascript">
 		'use strict'
 
@@ -362,6 +367,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsEcoMode = document.getElementById('settings-ecorender'),
 		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
 		settingsMenutab = document.getElementById('settings-menutab'),
+		refHolder = document.getElementById('refholder'),
+		ref = document.getElementById('ref'),
 		menuNewSketch = document.getElementById('menu-sketch-new'),
 		menuPanel = document.getElementById('menu'),
 		menuSwitch = document.getElementById('menu-switch'),
@@ -374,8 +381,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		paused = false,
 		markerID = [],
 		errorTimer,
-		snippets, 
-		fc = 0;
+		snippets,
+		forceRecompile = false,
+		p5vars = {"frameCount":0, "mouseX":0, "mouseY":0},
+		refList = [];
 
 		// force off
 		settings.debugMode = false;
@@ -549,9 +558,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 			// sketchloaded
 			if(e.detail.status){
-				p5f.frameCount = fc;
+				p5f.frameCount = p5vars.frameCount;
+				p5f.mouseX = p5vars.mouseX;
+				p5f.mouseY = p5vars.mouseY;
+
 				p5f.background(0);
-				fc = 0;
+				p5varsReset();
 				sketchLoaded = true;
 			}else{
 				sketchLoaded = false;
@@ -586,10 +598,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			loadTheme();
 			loadBG();
 			loadSnippets();
+			loadRef();
+
 			if(settings.welcome){
 				loadAbout();
 				settings.welcome = false;
 				updateSettings();
+			}else if(window.location.hash){
+				if(window.location.hash.substring(1) === 'new'){
+					loadDefault();
+				}else{
+					getRef();
+					loadSketch(settings.fileName);
+				}
 			}else{
 				loadSketch(settings.fileName);
 			}
@@ -615,7 +636,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				pLen = editor.getValue().length;
 				updateMenu();
 				updateSettings();
-				setTimeout(function(){fc = 0;recompile();}, 100);
+				setTimeout(function(){p5varsReset();recompile();}, 100);
 				editor.getSession().setUndoManager(new ace.UndoManager());
 				editor.focus();
 			}else{
@@ -793,26 +814,102 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* EDITOR KEY-CMDS */
 
+		
+		var map = [];
+		window.onkeydown = function(event) {
+			//console.log(event);
+			map[event.keyCode] = event.type == 'keydown';
+			
+			if(map[16] && map[17]){
+					addSnippet(event.key);
+					event.preventDefault();
+			}else if(!map[16] && map[17]){ // check !shift and √control
+				if(event.keyCode == 69){ // e = editor toggle
+					editorToggle();
+					event.preventDefault();
+				}else if(event.keyCode == 67){ // c = editor toggle
+					cursorToggle();
+					event.preventDefault();
+				}else if(event.keyCode == 79){ // o = open
+					switchSketch();
+					event.preventDefault();
+				}else if(event.keyCode == 77){ // m = menu
+					menuToggle();
+					event.preventDefault();
+				}else if(event.keyCode == 70){ // f = fullscreen
+					fullscreenToggle();
+					event.preventDefault();
+				}else if(event.keyCode == 13){ // enter = recompile
+					forceRecompile = true;
+					recompile();
+					event.preventDefault();
+				}else if(event.keyCode == 80){ // p = pause
+					pauseSketch();
+					event.preventDefault();
+				}else if(event.keyCode == 78){ // n = new
+					loadDefault();
+					event.preventDefault();
+				}else if(event.keyCode == 82){ // r = ref
+					if(refHolder.style.display == "block"){
+						closeRef();
+					}else{
+						showRef();						
+					}
+					event.preventDefault();
+				}else if((event.keyCode >= 48 && event.keyCode <= 57)){ // 	0-9 = preset sketches
+					var keySketch = event.keyCode - 49;
+					if(keySketch == -1){keySketch = 9;}
+					loadSketch(settings.sketches[keySketch]);
+					event.preventDefault();
+				}else if(event.key == 'i'){
+					pop720(); // IG window size
+				}
+			}
+
+			if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
+				var eTarget = event.target.tagName.toLowerCase();
+				if(!p5code.focus() && eTarget != "input" && eTarget != "textarea"){
+					event.preventDefault();
+				}
+			}else if(document.activeElement == menuNewSketch && event.keyCode == 13){ // ENTER, new sketch
+				loadType();
+				event.preventDefault();
+			}
+
+		}
+
+		window.onkeyup = function(event) {
+			map[event.keyCode] = event.type == 'keydown';
+		}
+
+
+
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
+			map[event.keyCode] = event.type == 'keydown';
+			
 			pLen = editor.getValue().length; // len of editor
 			if(settings.debugMode){console.log(event);}
-			if((event.key == '+' || event.key == '=' )&& event.ctrlKey){ // up arrow = bigger font
-				fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
-				event.preventDefault();
-			}else if((event.key == '-') && event.ctrlKey){ // down arrow = smaller font
-				fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
-				event.preventDefault();
-			}else if(event.keyCode == 65 && event.ctrlKey){ // a = auto compile
-				autoCompileToggle();
-				event.preventDefault();
-			}else if(event.keyCode == 84 && event.ctrlKey){ // t = tidy code
-				tidyCode();
-				event.preventDefault();
+
+			if(!map[16] && map[17]){ // check for !shift + √control
+				if((event.key == '+' || event.key == '=' )){ // up arrow = bigger font
+					fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
+					event.preventDefault();
+				}else if((event.key == '-')){ // down arrow = smaller font
+					fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
+					event.preventDefault();
+				}else if(event.keyCode == 65){ // a = auto compile
+					autoCompileToggle();
+					event.preventDefault();
+				}else if(event.keyCode == 84){ // t = tidy code
+					tidyCode();
+					event.preventDefault();
+				}
 			}
 		}
 
 		p5code.onkeyup = function(event) {
+			map[event.keyCode] = event.type == 'keydown';
 			localStorage[settings.fileName] = editor.getValue();
 			clearTimeout(errorTimer);
 			errorTimer = setTimeout(function(){checkErrors();}, 500);			
@@ -842,53 +939,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(settings.debugMode){console.log("validCode: " + validCode);}
 		}
 
-		window.onkeydown = function(event) {
-			console.log(event);
-			if(event.keyCode == 69 && event.ctrlKey){ // e = editor toggle
-				editorToggle();
-				event.preventDefault();
-			}if(event.keyCode == 67 && event.ctrlKey){ // c = editor toggle
-				cursorToggle();
-				event.preventDefault();
-			}else if(event.keyCode == 79 && event.ctrlKey){ // o = open
-				switchSketch();
-				event.preventDefault();
-			}else if(event.keyCode == 77 && event.ctrlKey){ // m = menu
-				menuToggle();
-				event.preventDefault();
-			}else if(event.keyCode == 70 && event.ctrlKey){ // f = fullscreen
-				fullscreenToggle();
-				event.preventDefault();
-			}else if(event.keyCode == 13 && event.ctrlKey){ // enter = recompile
-				recompile();
-				event.preventDefault();
-			}else if(event.keyCode == 80 && event.ctrlKey){ // p = pause
-				pauseSketch();
-				event.preventDefault();
-			}else if(event.keyCode == 78 && event.ctrlKey){ // n = new
-				loadDefault();
-				event.preventDefault();
-			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey && !event.shiftKey){ // 	0-9 = preset sketches
-				var keySketch = event.keyCode - 49;
-				if(keySketch == -1){keySketch = 9;}
-				loadSketch(settings.sketches[keySketch]);
-				event.preventDefault();
-			}else if((event.keyCode >= 48 && event.keyCode <= 57) && event.ctrlKey && event.shiftKey){ // shift = TEST KEY
-				var keySketch = event.keyCode - 48;
-				addSnippet(keySketch);
-				event.preventDefault();
-			}else if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
-				var eTarget = event.target.tagName.toLowerCase();
-				if(!p5code.focus() && eTarget != "input" && eTarget != "textarea"){
-					event.preventDefault();
-				}
-			}else if(document.activeElement == menuNewSketch && event.keyCode == 13){ // ENTER, new sketch
-				loadType();
-				event.preventDefault();
-			}
-			//adjustLines();
-		}
-
 		// prevent lost work in default
 		window.addEventListener("beforeunload", function (e) {
 			if(settings.fileName == "default"){
@@ -904,11 +954,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function recompile(){
 			var currline = editor.getSelectionRange().start.row;
 			var currCode = editor.session.getLine(currline);
-			if(currCode.search("for") == -1 && currCode.search("while") == -1){
+			if((currCode.search("for") == -1 && currCode.search("while") == -1) || forceRecompile){
 				if(validCode || !settings.strictCompile){
 					p5frame.src = "p5live_sketch.html";
 				}
 			}
+			forceRecompile = false;
 		}
 
 		function loadScripts(elm){
@@ -938,9 +989,29 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var snippetsPath = "includes/demos/P5L_snippets.json";
 			var request = new XMLHttpRequest();
 			request.open("GET", snippetsPath, false);
-			request.send(null)
+			request.send(null);
 			var jsonObj = JSON.parse(request.responseText);
 			snippets = jsonObj.snippets;
+			var dropCommands = [];
+			var cmds = editor.commands;
+			for(var i=0; i < snippets.length; i++){
+				var snippetKey = snippets[i].key+"";
+				var findCommand = cmds.commandKeyBinding["ctrl-shift-"+snippetKey.toLowerCase()];
+				if(findCommand != undefined){
+					dropCommands.push(findCommand.name);
+				}
+			}
+			editor.commands.removeCommands(dropCommands);
+			//console.log(editor.commands.commands);
+			// var inputLetter = "a";
+			// var cmdPurge = cmds.commandKeyBinding["ctrl-shift-"+inputLetter.toLowerCase()];
+			// var cmds = editor.commands;
+			// 	var findCommand = cmds.commandKeyBinding["ctrl-shift-"+snippets[i].key.toLowerCase()];
+
+			// // var snippetIndex = cmds.map(function(d) { return d['bindKey']; }).indexOf("Ctrl-Shift-"+inputLetter.toUpperCase());
+			// console.log(cmdPurge.name);
+			
+			// editor.commands.removeCommand("selecttolinestart");
 		}
 
 		function addSnippet(loadSnippet){
@@ -1122,10 +1193,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// constant frameCount (great for recompiling)
 		var fcTimer = setInterval(function(){
 			if(sketchLoaded && p5f.frameCount != undefined){
-				fc = p5f.frameCount;
+				p5vars.frameCount = p5f.frameCount;
+				p5vars.mouseX = p5f.mouseX;
+				p5vars.mouseY = p5f.mouseY;
 			}
 		}, 100);
 
+		function p5varsReset(){
+			p5vars = {"frameCount":0, "mouseX":0, "mouseY":0};
+		}
 
 
 		/* TOGGLE EDITOR + [canvas] + MENU */
@@ -1299,6 +1375,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			editor.setValue(p5template, 1);
 			editor.gotoLine(7, 1, false);
 			updateMenu();
+			updateSettings();
 			editor.focus();
 			setTimeout(function(){ recompile(); }, 100);
 		}
@@ -1358,6 +1435,207 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateMenu();
 			recompile();
 		};
+
+
+		
+		/* p5.js REFERENCE */
+
+		window.onhashchange = getRef;
+
+		function showRef(){
+			refHolder.style.display = 'block';
+			getRef();
+		}
+
+		function getRef(){
+			if(location.hash != undefined && location.hash.length > 1){
+				var refPieces = location.hash.split("/");
+				var grabRef = "";
+				if(refPieces.length == 3){
+					 ref.innerHTML = '';
+					grabRef = location.hash.split("/")[2];
+				}else{
+					allRef();
+					window.location = window.location.hash;
+				}
+
+				var snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(grabRef);
+				var ex = refList[snippetIndex];
+				console.log(ex);
+				
+				var paramsCollect = [];
+				var paramsDesc = [];
+				if(ex.overloads != undefined || ex.params != undefined){
+					ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
+					if(ex.overloads != undefined){
+						ex.overloads.forEach(function(ol){
+							var params = [];
+							ol.params.forEach(function(param){
+								if(param.optional){
+									params.push("["+param.name+"]");
+								}else{
+									params.push(param.name);
+								}
+								
+								if(paramsCollect.indexOf(param.name) === -1){
+									paramsCollect.push(param.name);
+									var paramHTML = '<div class="param"><div class="param-name">'+ param.name +"</div> "+ param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
+									paramsDesc.push(paramHTML);
+								}
+
+							})
+							ref.innerHTML += '<div class="param-code">' + ex.name + "(" + params.join(", ") + ")</div>";
+						})
+					}else{
+						var params = [];
+							ex.params.forEach(function(param){
+								if(paramsCollect.indexOf(param.name) === -1){
+									if(param.optional){
+										params.push("["+param.name+"]");
+									}else{
+										params.push(param.name);
+									}
+									var paramHTML = '<div class="param"><div class="param-name">'+ param.name +"</div> "+ param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
+									paramsDesc.push(paramHTML);
+									paramsCollect.push(param.name);
+								}
+							})
+							if(ex.module != "Constants"){
+								ref.innerHTML += '<div class="param-code">' + ex.name + "(" + params.join(", ") + ")</div>";
+							}
+					}
+				
+				}else{
+					ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
+				}
+
+				var desc = "";
+				if(ex.descriptionHTML != undefined){
+					desc = ex.descriptionHTML;
+				}
+				ref.innerHTML += '<br><div class="params"'+ paramsDesc.join("") +"</div><br>"+ desc; // ex.example +
+
+			}else{
+				allRef();
+			}
+		}
+
+		function allRef(){
+			ref.innerHTML = '<div class="ref-title">p5.js reference</div><br>';
+			var all = [];
+			var grouped = groupBy(refList, (c) => c.module);
+			Object.keys(grouped).forEach(function(k){
+			    var modHTML = '<div class="module" name="'+k+'" id="'+k+'"><div class="module-name">'+k+'</div>';
+			    var modAll = [];
+			    grouped[k].forEach(function(ci){
+					 if(ci.name != ''){
+					 	var title = "";
+					 	var desc = "";
+					 	title += ci.code.join('\n') + '\n\n';
+					 	var params = [];
+					 	ci.params.forEach(function(cip){
+					 		params.push(cip.name + ' - ' + cip.description);
+					 	});
+					 	title += params.join('\n') + '\n\n';
+					 	if(ci.description != ''){
+					 		desc = ci.description;
+					 	}
+					 	title += desc;
+					 	modAll.push('<a href="#/p5/'+ci.name+'" title="'+title+'">'+ci.name+'</a><br>');
+					 }
+				});
+				modHTML += modAll.join("");
+				modHTML += '</div>';
+				all.push(modHTML);
+			});
+
+			ref.innerHTML += '<div id="showall">' + all.join("") + '</div>';
+			return false;
+		}
+
+		function loadRef(){
+			var refPath = "includes/p5/data.js";
+			var request = new XMLHttpRequest();
+			request.open("GET", refPath, false);
+			request.send(null)
+			var jsonObj = JSON.parse(request.responseText.replace("referenceData = ", "")).classitems;
+			var grouped = groupBy(jsonObj, (c) => c.module);
+			
+			// filter to own needs
+			Object.keys(grouped).forEach(function(k){
+			    grouped[k].forEach(function(ci){
+			    	var classItem = {};
+					classItem.module = k;
+					if(ci.name != undefined){
+						classItem.name = ci.name;
+					}else{
+						classItem.name = '';
+					}
+					if(ci.description != undefined){
+						classItem.description = ci.description.replace(/<(?:.|\n)*?>/gm, '').replace(/\n/gi, ' ');
+						classItem.descriptionHTML = ci.description;
+					}else{
+						classItem.description = '';
+					}
+					var classCode = [];
+					var classParams = [];
+					var paramsCollect = [];
+
+					 if(ci.overloads != undefined || ci.params != undefined){
+						if(ci.overloads != undefined){
+							ci.overloads.forEach(function(ol){
+								var params = [];
+								ol.params.forEach(function(param){
+									if(param.optional){
+										params.push("["+param.name+"]");
+									}else{
+										params.push(param.name);
+									}
+									
+									if(paramsCollect.indexOf(param.name) === -1){
+										paramsCollect.push(param.name);						
+										var paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+										classParams.push({"name":param.name, "description": paramDesc});
+									}
+								})
+								classCode.push(ci.name + '(' + params.join(', ') + ')');
+							})
+						}else{
+							var params = [];
+								ci.params.forEach(function(param){
+									if(paramsCollect.indexOf(param.name) === -1){
+										if(param.optional){
+											params.push("["+param.name+"]");
+										}else{
+											params.push(param.name);
+										}
+										paramsCollect.push(param.name);
+										var paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+										classParams.push({"name":param.name, "description": paramDesc});
+									}
+								})
+								classCode.push(ci.name + '(' + params.join(', ') + ')');
+						}
+					}
+					classItem.code = classCode;
+					classItem.params = classParams;
+					refList.push(classItem);
+					
+				});
+			});
+			allRef();
+		}
+
+		// close references
+		function closeRef(){
+			window.location.hash = '#';
+			refHolder.style.display='none';
+		}
+
+		// group references
+		function groupBy(xs, f) {
+			return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
+		}
 
 
 
@@ -1462,6 +1740,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			} else if (document.msExitFullscreen) { /* IE/Edge */
 				document.msExitFullscreen();
 			}
+		}
+
+		function pop720(){
+			window.open (window.location.href, "mywindow", "menubar=0,resizable=0,width=720,height=748");
 		}
 	</script>
 </body>

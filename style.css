@@ -323,6 +323,88 @@ body {
 	color:#fff;
 }
 
+/* REFERENCES */
+#refholder{
+	position:fixed;
+	z-index:9999;
+	right:0;
+	background:#000;
+	color:#fff;
+	overflow:auto;
+	width:250px;
+	height:100vh;
+	font-size:8pt;
+	float:right;
+	display:none;
+}
+#ref{
+	padding:5px;
+	padding-left:15px;
+}
+#ref a{
+	cursor:pointer;
+}
+#ref-close{
+	position:fixed;
+	top:0px;
+	right:0px;
+	font-size:16pt;
+	cursor:pointer;
+	color:#aaa;
+	padding:5px;
+}
+#ref-close:hover{
+	color:#fff;
+	text-decoration: underline;
+}
+.ref-title{
+	font-size:16pt;
+}
+#ref a{
+	text-decoration:none;
+	color:#aaa;
+}
+#ref a:hover{
+	text-decoration:underline;
+	color:#fff;
+}
+#showall{
+	display: flex;
+	font-size:10pt;
+	flex-wrap: wrap;
+}
+.param {
+	margin-top:15px;
+}
+.param-title{
+	font-size:16pt;
+	margin-left:-15px;
+
+}
+.param-name{
+	border:1px solid #999;
+	min-width:30px;
+	text-align:center;
+	padding:2px 5px 2px 5px;
+	float:left;
+	margin-right:10px;
+}
+.param-code{
+	font-style:italic;
+}
+.module{
+	width:140px;
+	margin:0 15px 25px 0;
+	position:relative;
+	line-height:1.2em;
+}
+.module-name{
+	font-size:12pt;
+	text-decoration:underline;
+	color:#fff;
+	margin-bottom:5px;
+}
+
 /* 
 ##Device = Tablets, Ipads (landscape)
 ##Screen = B/w 768px to 1024px
