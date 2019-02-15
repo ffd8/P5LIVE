@@ -17,6 +17,7 @@ SHORTCUTS
 - CTRL + E » editor toggle
 - CTRL + F » fullscreen toggle
 - CTRL + M » menu toggle
+- CTRL + R » references toggle
 - CTRL + C » cursor toggle
 - CTRL + T » tidy code
 - CTRL + - » decrease fontsize
@@ -63,8 +64,8 @@ Save As, same as above while editing existing sketch.
 	
 - SNIPPETS:  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
-Load snippets via shortcut, CTRL + SHIFT + #  
-ie. CTRL + SHIFT + 1, for audio-reactive visualizations.
+Load snippets via shortcut, CTRL + SHIFT + _  
+ie. CTRL + SHIFT + A, for audio-reactive visualizations.
 
 - Want custom assets (fonts/images)?   
 Clone/download from github and host locally using MAMP server.  
