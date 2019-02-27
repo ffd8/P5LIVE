@@ -14,24 +14,24 @@
 	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
 
 	 <!-- Facebook -->
-    <meta property="og:url" content="https://teddavis.org/p5live">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="P5LIVE">
-    <meta property="og:description" content="p5.js live-coding vj environment!">
-    <meta property="og:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
+	<meta property="og:url" content="https://teddavis.org/p5live">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="P5LIVE">
+	<meta property="og:description" content="p5.js live-coding vj environment!">
+	<meta property="og:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:site" content="P5LIVE">
-    <meta name="twitter:creator" content="teddavis.org">
-    <meta name="twitter:title" content="P5LIVE">
-    <meta name="twitter:description" content="p5.js live-coding vj environment!">
-    <meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:site" content="P5LIVE">
+	<meta name="twitter:creator" content="teddavis.org">
+	<meta name="twitter:title" content="P5LIVE">
+	<meta name="twitter:description" content="p5.js live-coding vj environment!">
+	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
-    <!-- Style -->
-    <link rel="stylesheet" type="text/css" media="all" href="style.css">
+	<!-- Style -->
+	<link rel="stylesheet" type="text/css" media="all" href="style.css">
 
-    <!-- Scripts -->
+	<!-- Scripts -->
 	<script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
@@ -39,7 +39,15 @@
 	<script src="includes/js/jscolor.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
-
+	<script src="includes/js/markdown.min.js"></script>
+	<style type="text/css">
+		hr{
+			width:80%;
+			border:0px;
+			border-bottom:1px solid #888;
+			outline:none;
+		}
+	</style>
 </head>
 <body>
 	<div id="p5-editor">
@@ -61,6 +69,7 @@
 		<div id="menu-sections">
 		
 			<div class="menu-section">
+				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE</div>
 				<div class="menu-sketches-buttons">
 					<button class="menu-button tippy" onclick="loadAbout();" title="About P5LIVE">
@@ -72,13 +81,14 @@
 					<button class="menu-button tippy" onclick="showRef();" title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button style="display:none;" class="menu-button tippy" onclick="cocoding();" title="CoCoding! <br>Collaborative Coding">
+					<!-- <button style="display:none;" class="menu-button tippy" onclick="cocoding();" title="CoCoding! <br>Collaborative Coding">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-					</button>
+					</button> -->
 				</div>
 			</div>
 		
 			<div class="menu-section">
+				<div class="menu-section-bg"></div>
 				<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
 				<div class="menu-sketches-buttons">
 					<button class="menu-button tippy" onclick="loadDefault();" title="New Sketch<div class='shortcut'>CTRL + N</div>">
@@ -106,36 +116,38 @@
 			</div>
 			
 			<div class="menu-section">
+				<div class="menu-section-bg"></div>
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
 					<div class="tippy-left" style="cursor:help;" title="Toggle Live-Coding<div class='shortcut'>CTRL + A</div>">
-						Auto Compile: 
-						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();">
+						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();"> 
+						Auto Compile
 					</div>
 					<div class="tippy-left" style="cursor:help;" title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>">
-						Fullscreen: 
-						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();">
+						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();"> 
+						Fullscreen
 					</div>
 					<div class="tippy-left" style="cursor:help;" title="noLoop() if window loses focus">
-						Eco Render:
-						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();">
+						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();"> 
+						Eco Render
 					</div>
 					<div class="tippy-left" style="cursor:help;" title="Toggle Cursor<div class='shortcut'>CTRL + C</div>">
-						Cursor: 
-						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();">
+						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();"> 
+						Cursor
 					</div>
 					<div class="tippy-left" style="cursor:help;" title="Toggle Menu-Tab <br>*if unchecked, MUST use shortcut<div class='shortcut'>CTRL + M</div>">
-						Menu Tab: 
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
+						Menu Tab
 					</div>
+					<hr>
 					<div class="tippy-left" style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
-					<div class="tippy-left"  style="cursor:help;" title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
-						Font Size: <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
+					<div class="tippy-left" style="cursor:help;" title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
+						Font Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
-					<div class="tippy-left"  style="cursor:help;display:none;" title="Set theme (ignored in Auto Compile mode)">
+					<div class="tippy-left" style="cursor:help;display:none;" title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
 						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
 							<option value="ace/theme/dawn">Dawn</option>
@@ -148,9 +160,8 @@
 							<option value="ace/theme/twilight">Twilight</option>
 						</select>
 					</div>
-					<div class="tippy-left"  style="cursor:help;" title="Code lines">
-					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false,
-    borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+					<div class="tippy-left" style="cursor:help;" title="Code lines">
+					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
 					</div>
 				</div>
 			</div>
@@ -185,126 +196,6 @@ function println(msg){
 }
 	</textarea>
 	<textarea style="display:none;" id="p5live-about">
-/*
-P5LIVE v 1.0.2
-cc teddavis.org 2019
-p5.js live-coding vj environment!
-
-
-SHORTCUTS
--------------------------------
-CTRL + N » new sketch
-CTRL + ENTER » compile
-CTRL + A » autocompile toggle
-CTRL + E » editor toggle
-CTRL + F » fullscreen toggle
-CTRL + M » menu toggle
-CTRL + R » references toggle
-CTRL + C » cursor toggle
-CTRL + T » tidy code
-CTRL + - » decrease fontsize
-CTRL + + » increase fontsize
-CTRL + O » open sketch prompt
-CTRL + 1,2,3...0 » load first 10 sketches
-
-
-LOCALSTORAGE
--------------------------------
-Sketches are only stored in your browser's localStorage.
-Clearing browser history/data will surely erase all sketches. 
-Export all sketches often.
-
-
-GETTING STARTED
--------------------------------
-Create, New Sketch + start coding! 
-Run, CTRL + ENTER to compile new code, or activate auto-compile.
-Save, Type name into 'Save Sketch As...' and hit Enter.
-Save As, same as above while editing existing sketch.
-
-- P5LIVE Buttons:
-ABOUT, what you're reading now.
-RESET, re-initialize P5LIVE.
-DEMOS, load presets to learn from.
-
-- SKETCHES Buttons:
-NEW, new sketch.
-IMPORT, select JSON files from export (all or single sketches).
-EXPORT, download entire sketches list as JSON for import.
-CLEAR, erase entire sketches list.
-
-- SKETCHES List:
-Load, click on sketch name.
-Rename, click 'id' and type new name.
-Export, click '↓' to download sketch as JSON file.
-Remove, click 'x' and confirm removal.
-Sort, click and drag to desired order.
-
-- SETTINGS:
-Auto Compile, live-coding mode, refreshes on keyup.
-Fullscreen, toggle fullScreen(), ideal for VJing
-Eco Render, toggle loop()/noLoop() when browser window is out of focus.
-Cursor, toggle visible cursor when hiding editor (ctrl + e).
-Menu Tab, toggles menu tab. Hide if VJ'ing (don't forget CTRL + M for menu).
-Font Size, adjust size of editor text.
-Theme, set code syntax coloring (ignored in Auto Compile mode).
-Background, set color behind each line of code.
-
-- SNIPPETS:
-Add them to 'includes/demos/P5L_snippets.json'.
-Load them via shortcut, CTRL + SHIFT + _
-ie. CTRL + SHIFT + A, for audio-reactive visualizations.
-
-- Want custom assets (fonts/images)? 
-Clone/download from github and host locally using MAMP server. 
-Drop files into folder and link relatively, ('data/fish.png')
-
-- Fan going nuts? Set pixelDensity(1); within setup() if on a retina display.
-
-
-FUNCTIONS
--------------------------------
-- `ease(inVal, outVariable, easeVal)` // smooth values
-- `frameCount` is continous per loaded sketch.
-
-
-FUTURE
--------------------------------
-- audio variables (easedAudio, fft bands)
-- etherpad-like collaborative editing (firepad? codepile?)
-- custom code/functions header
-- api (get for sketch + settings)
-- mobile optimization
-- additional js libs (via settings)
-- additional assets
-- export image [video?]
-- tree structure for sketches
-- export as HTML for website usage
-- autocomplete w/ p5.js functions
-
-
-THANKS
--------------------------------
-p5.js » https://p5js.org (magic)
-ace editor » https://ace.c9.io (editor)
-tinkerpad » https://github.com/tomhodgins/tinkerpad (localstorage idea)
-Roboto Mono » https://github.com/google/roboto (font)
-Feather Icons » https://feathericons.com (gui icons)
-
-
-INSPIRATION
--------------------------------
-- cyril » https://github.com/cyrilcode/cyril
-- Hydra » https://github.com/ojack/hydra
-
-
-SOURCE
--------------------------------
-github » https://github.com/ffd8/p5live
-
-
-*/
-
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	noStroke();
@@ -384,7 +275,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5frame = document.getElementById('p5-frame'),
 		p5frameCover = document.getElementById('p5-frame-cover'),
 		p5f = p5frame.contentWindow,
-		p5liveabout = document.getElementById('p5live-about').value,
+		p5liveaboutSketch = document.getElementById('p5live-about').value,
 		p5script = document.getElementById("holdscript"),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSettings = document.getElementById('menu-settings'),
@@ -558,7 +449,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			console.log(cmds);
 		 }
 
-		// check storageKeys    
+		// check storageKeys
 		function getKeys(){
 			var k = [];
 			for (var key in localStorage){
@@ -816,10 +707,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!selSelected){
 				selClass = 'sketch-selected';
 			}
-			var menuSketchesNew = '<div class="menu-sketch-holder '+selClass+'"><input type="text" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onfocus="document.getElementById(\'menu-sketch-new-save\').style.display=\'block\';" onblur="setTimeout(function(){document.getElementById(\'menu-sketch-new-save\').style.display=\'none\';}, 200)"><button id="menu-sketch-new-save" onclick="loadType();" class="tippy" title="Save Sketch<br> <div class=\'shortcut\'>ENTER</div>"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-small feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button></div>';
+			var menuSketchesNew = '<div class="menu-sketch-new '+selClass+'"><input type="text" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onfocus="document.getElementById(\'menu-sketch-new-save\').style.display=\'block\';" onblur="setTimeout(function(){document.getElementById(\'menu-sketch-new-save\').style.display=\'none\';}, 200)"><button id="menu-sketch-new-save" onclick="loadType();" class="tippy" title="Save Sketch<br> <div class=\'shortcut\'>ENTER</div>"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-small feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button></div>';
 			menuSketches.innerHTML = menuSketchesHTML;
 			document.getElementById('menu-sketches-new').innerHTML = menuSketchesNew;
 			menuNewSketch = document.getElementById('menu-sketch-new');
+			loadTippy();
 		}
 
 		// SortableJS for sketcheslist
@@ -971,8 +863,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		window.addEventListener("beforeunload", function (e) {
 			if(settings.fileName == "default"){
 				var confirmationMessage = "\o/";
-				(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-				return confirmationMessage;                            //Webkit, Safari, Chrome
+				(e || window.event).returnValue = confirmationMessage; 	//Gecko + IE
+				return confirmationMessage;								//Webkit, Safari, Chrome
 			}
 		});
 
@@ -1076,30 +968,30 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// grab start/end of function, modded for position only
 		// https://stackoverflow.com/a/49240267/10885535
 		function addPosition(content, functionName) {
-		  // Find function
-		  const indexOfFunc = content.indexOf(`function ${functionName}`);
+			// Find function
+			const indexOfFunc = content.indexOf(`function ${functionName}`);
 
-		  if (indexOfFunc < 0) {
-		    return content;
-		  }
+			if (indexOfFunc < 0) {
+			return content;
+			}
 
-		  const openingBrace = content.indexOf('{', indexOfFunc);
+			const openingBrace = content.indexOf('{', indexOfFunc);
 
-		  const startPos = openingBrace + 1;
-		  let endPos = startPos;
-		  let bracesToBalance = 1;
+			const startPos = openingBrace + 1;
+			let endPos = startPos;
+			let bracesToBalance = 1;
 
-		  while (true) {
-		    if (content[endPos] === '{') {
-		      bracesToBalance++;
-		    } else if (content[endPos] === '}') {
-		      bracesToBalance--;
-		      if (bracesToBalance === 0) break;
-		    }
-		    endPos++;
-		  }
+			while (true) {
+			if (content[endPos] === '{') {
+				bracesToBalance++;
+			} else if (content[endPos] === '}') {
+				bracesToBalance--;
+				if (bracesToBalance === 0) break;
+			}
+			endPos++;
+			}
 
-		  return [startPos, endPos];
+			return [startPos, endPos];
 		};
 
 
@@ -1201,7 +1093,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				menuSwitch.style.display = "none";
 			}else{
 				menuSwitch.style.display = "block";
-			}    	
+			}	
 		}
 
 
@@ -1410,12 +1302,47 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function loadAbout(){
 			settings.fileName = 'p5liveabout'; //editor.setValue("hi"); // p5template.value
+
+			var demosPath = "README.md";
+			var request = new XMLHttpRequest();
+			request.open("GET", demosPath, false);
+			request.send(null);
+			var ptContent = htmlToText(markdown.toHTML( request.responseText ));
+
+
+			var p5liveabout = '/*\n\n' + ptContent + '*/\n\n' + p5liveaboutSketch;
 			localStorage.setItem(settings.fileName, p5liveabout);
 			editor.setValue(p5liveabout, 1);
 			editor.focus();
 			updateMenu();
 			updateSettings();
 			setTimeout(function(){ recompile(); }, 100);
+		}
+
+		// HTML to TXT
+		function htmlToText(html){
+			//remove code brakes and tabs
+			html = html.replace(/\n/g, "");
+			html = html.replace(/\t/g, "");
+
+			//keep html brakes and tabs
+			html = html.replace(/<\/td>/g, "\t");
+			html = html.replace(/<\/table>/g, "\n");
+			html = html.replace(/<\/tr>/g, "\n");
+			html = html.replace(/<\/p>/g, "\n\n\n");
+			html = html.replace(/<\/li>/g, "\n");
+			html = html.replace(/<\/ul>/g, "\n\n");
+			html = html.replace(/<\/div>/g, "\n");
+			html = html.replace(/<\/h.>/g, "\n----------------\n");
+			html = html.replace(/<br>/g, "\n"); html = html.replace(/<br( )*\/>/g, "\n");
+
+			//parse html into text
+			var dom = (new DOMParser()).parseFromString('<!doctype html><body>' + html, 'text/html');
+			var links = dom.querySelectorAll('a');
+			for(var i=0; i < links.length; ++i){
+				links[i].innerHTML = links[i].href;
+			}
+			return dom.body.textContent;
 		}
 
 		function loadNew(newName){
@@ -1465,33 +1392,35 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		};
 
 		// Tooltips via tippy
-		tippy('.tippy', {
-		  content(reference) {
-		    const title = reference.getAttribute('title')
-		    reference.removeAttribute('title')
-		    return title
-		  },
-		  placement:"bottom",
-		  arrow:true,
-		  delay:0,
-		  duration:0,
-		  arrowType:"round"
-		});
+		function loadTippy(){
+			tippy('.tippy', {
+				content(reference) {
+					const title = reference.getAttribute('title')
+					reference.removeAttribute('title')
+					return title
+				},
+				placement:"bottom",
+				arrow:true,
+				delay:0,
+				duration:0,
+				arrowType:"round"
+			});
 
-		tippy('.tippy-left', {
-		  content(reference) {
-		    const title = reference.getAttribute('title')
-		    reference.removeAttribute('title')
-		    return title
-		  },
-		  placement:"left",
-		  arrow:true,
-		  delay:0,
-		  duration:0,
-		  zIndex:9999,
-		  boundary:"window",
-		  arrowType:"round"
-		});
+			tippy('.tippy-left', {
+				content(reference) {
+					const title = reference.getAttribute('title')
+					reference.removeAttribute('title')
+					return title
+				},
+				placement:"left",
+				arrow:true,
+				delay:0,
+				duration:0,
+				zIndex:9999,
+				boundary:"window",
+				arrowType:"round"
+			});
+		}
 
 
 		
@@ -1582,9 +1511,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var all = [];
 			var grouped = groupBy(refList, (c) => c.module);
 			Object.keys(grouped).forEach(function(k){
-			    var modHTML = '<div class="module" name="'+k+'" id="'+k+'"><div class="module-name">'+k+'</div>';
-			    var modAll = [];
-			    grouped[k].forEach(function(ci){
+				var modHTML = '<div class="module" name="'+k+'" id="'+k+'"><div class="module-name">'+k+'</div>';
+				var modAll = [];
+				grouped[k].forEach(function(ci){
 					 if(ci.name != ''){
 					 	var title = "";
 					 	var desc = "";
@@ -1620,8 +1549,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			
 			// filter to own needs
 			Object.keys(grouped).forEach(function(k){
-			    grouped[k].forEach(function(ci){
-			    	var classItem = {};
+				grouped[k].forEach(function(ci){
+					var classItem = {};
 					classItem.module = k;
 					if(ci.name != undefined){
 						classItem.name = ci.name;
@@ -1732,7 +1661,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			});
 			var copy = new MouseEvent(event.type, opts);
-			p5f.dispatchEvent(copy);  
+			p5f.dispatchEvent(copy);
 		};
 
 

@@ -31,7 +31,7 @@ LOCALSTORAGE
 -------------------------------
 Sketches are only stored in your browser's localStorage.  
 Clearing browser history/data will surely erase all sketches.  
-Export all sketches often.
+Export sketches often.
 
 
 GETTING STARTED
@@ -111,7 +111,7 @@ FUTURE
 
 THANKS
 -------------------------------
-- [p5.js](https://p5js.org) (magic)
+- [p5.js](https://p5js.org) (magic – v0.7.3)
 - [ace editor](https://ace.c9.io) (editor)
 - [tinkerpad](https://github.com/tomhodgins/tinkerpad) (localstorage idea)
 - [Roboto Mono](https://github.com/google/roboto) (font)
