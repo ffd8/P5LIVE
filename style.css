@@ -36,6 +36,12 @@ body {
 	position: relative;
 	background:#000;
 }
+hr{
+	width:80%;
+	border:0px;
+	border-bottom:1px solid #888;
+	outline:none;
+}
 #p5-frame, #p5-frame-cover{
 	outline:none;
 	border:none;
