@@ -36,20 +36,20 @@ Export sketches often.
 
 GETTING STARTED
 -------------------------------
-![menu-sketches-save](includes/images/menu-sketches-save.png)
+![menu-sketches-save](includes/images/menu-sketches-save.png)  
 Start New Sketch `CTRL + N` and start coding!  
 Live-coding mode by default, `CTRL + ENTER` to force recompile.  
 Save Type name into 'Save Sketch As...' and hit Enter.  
 Save As, same as above while editing existing sketch.
   
 #### P5LIVE NAV  
-![menu-p5live-nav](includes/images/menu-p5live-nav.png)
+![menu-p5live-nav](includes/images/menu-p5live-nav.png)  
 - About, what you're reading now.  
 - Reset, re-initialize P5LIVE (erases sketches/settings).  
 - Reference, toggle p5.js reference list.
   
 #### SKETCHES NAV 
-![menu-sketches-nav](includes/images/menu-sketches-nav.png)
+![menu-sketches-nav](includes/images/menu-sketches-nav.png)  
 - New sketch.  
 - Import, select JSON file from export (all or single sketches).  
 - Export, download entire sketches list as JSON for import.  
@@ -57,7 +57,7 @@ Save As, same as above while editing existing sketch.
 - Clear, erase sketches list.
   
 #### SKETCHES LIST  
-![menu-sketches-list](includes/images/menu-sketches-list.png)
+![menu-sketches-list](includes/images/menu-sketches-list.png)  
 Load, click on sketch name.  
 Rename, click pencil icon and type new name.  
 Export, click download icon to download sketch as JSON file.  
