@@ -47,7 +47,8 @@ Save As, same as above while editing existing sketch.
 ![menu-p5live-nav](includes/images/menu-p5live-nav.png)  
 - About, what you're reading now.  
 - Reset, re-initialize P5LIVE (erases sketches/settings).  
-- Reference, toggle p5.js reference list.
+- Reference, toggle p5.js reference list.  
+- Save, export timestamped PNG
   
 #### SKETCHES NAV 
 ![menu-sketches-nav](includes/images/menu-sketches-nav.png)  
