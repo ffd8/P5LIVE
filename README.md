@@ -24,6 +24,7 @@ SHORTCUTS
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
 - `CTRL + O` » open sketch prompt
+- `CTRL + S` » save png
 - `CTRL + 1,2,3...0` » load first 10 sketches
 
 
