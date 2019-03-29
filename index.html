@@ -40,6 +40,13 @@
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
 	<script src="includes/js/markdown.min.js"></script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="/ace.js"></script> -->
+    <script src="includes/js/url.min.js"></script>
+    <script src="includes/js/rga.js"></script>
+    <!-- <script src="includes/js/editor.js"></script> -->
+
 </head>
 <body>
 	<div id="p5-editor">
@@ -76,9 +83,19 @@
 					<button class="menu-button tippy" onclick="savePNG();" title="Save PNG">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
-					<!-- <button class="menu-button tippy" onclick="cocoding();" title="CoCoding! <br>Collaborative Coding">
+					<button class="menu-button tippy" id="menu-cocoding" onclick="cocodingInit();" title="CoCoding! <br>Collaborative Coding">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-					</button> -->
+					</button>
+				</div>
+			</div>
+
+			<div class="menu-section">
+				<div class="menu-section-bg"></div>
+				<div class="menu-header">CO-CODING</div>
+				<div class="menu-sketches-buttons">
+					<button class="menu-button tippy" id="login" onclick="" title="login">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+					</button>
 				</div>
 			</div>
 		
@@ -256,6 +273,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			"debugMode": false,
 			"sketches": [],
 			"sketchesSortable": '',
+			"cocoding": {"active":false, "username":"", "userid":"", "namespace":"","filename":""},
 			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"],
 			"theme": "ace/theme/twilight",
 			"themeBG": "052544",
@@ -288,6 +306,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuSwitch = document.getElementById('menu-switch'),
 		menuTheme = document.getElementById("menu-settings-theme"),
 		settingsBG = document.getElementById("menu-settings-bg"),
+		menuCocoding = document.getElementById('menu-cocoding'),
 		settings = getSettings(),
 		validCode = true, 
 		sketchLoaded = false,
@@ -298,7 +317,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		snippets,
 		forceRecompile = false,
 		p5vars = {"frameCount":0, "mouseX":0, "mouseY":0},
-		refList = [];
+		refList = [],
+		chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
+		editorId, userid, usernick
+		;
+
 
 		// force off
 		settings.debugMode = false;
@@ -513,8 +536,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			loadBG();
 			loadSnippets();
 			loadRef();
+			settings.cocoding.active = false;
 
-			if(settings.welcome){
+			if(Url.queryString("cc") != undefined){
+				editorId = Url.queryString("cc") || "_";
+				settings.cocoding.active = true;
+				settings.fileName = editorId;
+				settings.cocoding.namespace = editorId;
+				settings.cocoding.filename = editorId;
+				loadNew(settings.fileName);
+				if(settings.cocoding.userid == undefined || settings.cocoding.userid == ""){
+					settings.cocoding.userid = makeid(12);
+				}
+				if(settings.cocoding.username == undefined || settings.cocoding.username == ""){
+					settings.cocoding.username = settings.cocoding.userid;
+				}
+				updateSettings();
+				cocoding();
+		  		//alert(editorId);
+			}else if(settings.welcome){
 				loadAbout();
 				settings.welcome = false;
 				updateSettings();
@@ -545,8 +585,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// load sketch
 		function loadSketch(sketch){
 			if(localStorage.hasOwnProperty(sketch)){
-				settings.fileName = sketch;
-				editor.setValue(localStorage[settings.fileName], 1);
+				if(settings.cocoding.active){
+					editor.setValue(localStorage[sketch], 1);
+				}else{
+					settings.fileName = sketch;
+					editor.setValue(localStorage[settings.fileName], 1);
+				}
 				pLen = editor.getValue().length;
 				updateMenu();
 				updateSettings();
@@ -829,11 +873,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5code.onkeyup = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
 			localStorage[settings.fileName] = editor.getValue();
-			clearTimeout(errorTimer);
-			errorTimer = setTimeout(function(){checkErrors();}, 500);			
+			checkErrors();			
 		};
 
 		function checkErrors(){
+			clearTimeout(errorTimer);
+			errorTimer = setTimeout(function(){checkErrorsWorker();}, 500);	
+		}
+
+		function checkErrorsWorker(){
 			var annos = editor.getSession().getAnnotations();
 			if(settings.debugMode){console.log(annos)};
 			var errorsFound = false;
@@ -844,11 +892,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 			if(errorsFound){
 				validCode = false; 
+				checkErrors();
 			}else{
+				clearTimeout(errorTimer);
 				validCode = true;
 				if(settings.autoCompile){
 					var cLen = editor.getValue().length;
-					if(cLen != pLen){
+					if(cLen != pLen || settings.cocoding.active){
 						pLen = cLen;
 						recompile();
 					}
@@ -875,6 +925,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if((currCode.search("for") == -1 && currCode.search("while") == -1) || forceRecompile){
 				if(validCode || !settings.strictCompile){
 					p5frame.src = "p5live_sketch.html";
+					// if(settings.cocoding.active){
+					// 	socket.emit('recompile', true);
+					// }
 				}
 			}
 			forceRecompile = false;
@@ -1357,8 +1410,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}else{
 					editor.setValue(localStorage[settings.fileName], 1);
 				}
+
+				/*
+				else if(!localStorage.hasOwnProperty(settings.fileName)){
+					localStorage[settings.fileName] = editor.getValue();
+				}
+				*/
 				editor.focus(); 
 				updateSettings();
+				updateSketches();
 			}
 		}
 			
@@ -1739,16 +1799,101 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 
-		/*	CoCoding	*/
-		function cocoding(){
-			// coming soooooon...
-		}
-
-
 		/*	MISC	*/
 		function pop720(){
 			window.open (window.location.href, "mywindow", "menubar=0,resizable=0,width=720,height=748");
 		}
+
+
+
+		/*	CoCoding	*/
+		function makeid(charCount){
+	    	var text = "";
+		    for( var i=0; i < charCount; i++ )
+		        text += chars.charAt(Math.floor(Math.random() * chars.length));
+		    return text;
+	    }
+
+		function cocodingInit(){
+			// coming soooooon...
+			// menuCocoding.style.background = "#00FF00";
+			var sessID = makeid(5);
+		    //editorId = sessID;
+		    // var uid = makeid(12);//Math.random().toString();
+		    // settings.cocoding.username = uid;
+			settings.cocoding.active = true;
+			updateSettings();
+			document.location.search = 'cc='+ sessID;
+			//insertParam('cc', sessID);
+		}
+
+		function cocoding(){
+			console.log("init cocoding!");
+			//settings.cocoding.active = true;
+			// var uid = makeid(12);//Math.random().toString();
+			// if(settings.cocoding.username != undefined){
+			// 	uid = settings.cocoding.username;
+			// }else{
+			// 	settings.cocoding.username = uid;
+			// }
+			console.log("uid: "+settings.cocoding.userid);
+			updateSettings();
+	        menuCocoding.style.backgroundColor = "#00FF00";
+
+	        connectClient();
+
+	        // socket io
+			// var socket = io('/'+editorId);
+
+			//socket.emit('setID', settings.cocoding.userid);
+
+		}
+
+		function connectClient(){
+			var socket = "";
+			socket = io('localhost:5000/' + settings.cocoding.namespace);
+
+			console.log("editorid: " + settings.cocoding.filename);
+
+			let rga
+
+			socket.downstream = socket.emit.bind(socket, "change")
+			socket.on('init', ({ id, history }) => {
+			  if (!rga || rga == undefined) {
+			    editor.setWrapBehavioursEnabled(false)
+			    rga = new RGA.AceEditorRGA(id, editor)
+
+			    rga.subscribe(socket)
+			    socket.on('change', rga.applyOperation.bind(rga))
+			  }
+			  // console.log(history);
+
+			  rga.applyHistory(history);
+			  if(history.length == 0){
+			  	setTimeout(function(){editor.setValue(p5template, 1);}, 100);
+			  }
+			  userid = makeid(12);
+			  usernick = makeid(4);
+			  socket.emit('login', userid, userid);
+			  socket.emit('login', userid, usernick);
+			  // socket.emit('nick', userid, usernick);
+			  editor.focus()
+			});
+
+			socket.on('change', function(){
+				localStorage[settings.fileName] = editor.getValue();
+				checkErrors();	
+			})
+
+			// socket.on('recompile', function(){
+			// 	recompile();
+			// });
+
+		}
+
+
+
+		
 	</script>
 </body>
 </html>

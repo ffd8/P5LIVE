@@ -4,3 +4,7 @@
 /sandbox
 /_bu
 /packages
+/node_modules
+/package.json
+/package-lock.json
+/lib
