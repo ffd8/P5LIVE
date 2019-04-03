@@ -9,10 +9,6 @@ const express = require('express')
 	, url = require('url')
 
 
-// app.use(express.static('lib'))
-// app.use(express.static('fonts'))
-// app.use(express.static('includes'))
-
 let cc = {}; // store rooms
 
 app.get('/', function (req, res) {

@@ -42,10 +42,8 @@
 	<script src="includes/js/markdown.min.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
-    <!-- <script src="/ace.js"></script> -->
     <script src="includes/js/url.min.js"></script>
     <script src="includes/js/rga.js"></script>
-    <!-- <script src="includes/js/editor.js"></script> -->
 
 </head>
 <body>
@@ -1851,7 +1849,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function connectClient(){
 			var socket = "";
-			socket = io('localhost:5000/' + settings.cocoding.namespace);
+			socket = io('/' + settings.cocoding.namespace);
 
 			console.log("editorid: " + settings.cocoding.filename);
 
