@@ -317,10 +317,10 @@ hr{
 }
 .menu-sketch{
 	position: relative;
-	width: 67%;
+	width: 65%;
 	height:100%;
 	float:none;
-	padding:2px 5px;
+	padding:2px 5px 5px 0;
 	overflow: hidden;
 	white-space: nowrap;
 }
@@ -343,7 +343,7 @@ hr{
 }
 .menu-sketch-nav{
 	float:right;
-	width:33%;
+	width:35%;
 	height:100%;
 	display:none;
 	z-index:101;

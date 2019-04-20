@@ -44,7 +44,91 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="includes/js/url.min.js"></script>
     <script src="includes/js/rga.js"></script>
+    <style type="text/css">
+    	.item-folder{
+			position:relative;
+			height:auto;
+			overflow:hidden;
+			display:block;
+			background:#333;
+			margin:1px 0 1px 0;
+			padding:0px 0 0px 0;
+			min-height:2px;
+		}
+		.item-sketch{
+			height:22px;
+			/*background:#444;*/
+			margin-bottom:1px;
+			list-style-type:none;
+			padding:0;
+		}
+		li{
+			padding:0;
+		}
+		.item-folder svg, .item-sketch svg{
+			padding:0;
+			padding-top:4px;
+			height:16px;
+		}
+		.item-folder > .item-sketch{
+			margin-left:20px;
+			display:none;
+		}
+		.item-folder > .item-folder{
+			margin-left:20px;
+			display:none;
+		}
+		.expand > .item-sketch{
+			display:block;
+		}
+		.item-folder .collapse{
+			display:none;
+		}
+		.foldertitle{
+			//z-index:0;
+			//display: block;
+		}
 
+		.foldertitle:hover .nav-settings, .item-sketch:hover .nav-settings{
+			display:block;
+		}
+		.toggle{
+			position:relative;
+			z-index:999;
+			cursor:pointer;
+		}
+		.sortable-drag{
+			background:#003300;
+			border:1px solid green;
+		}
+		.sortable-ghost{
+			background:#003300;
+			border:1px solid green;
+			opacity: .5;
+		}
+		.selsetting{
+			background:#444;
+		}
+		.foldertitle:hover > .menu-sketch-nav {
+		  display: inline-block;
+		}
+		.item-sketch:hover > .menu-sketch-nav {
+		  display: inline-block;
+		}
+		.menu-sketch-nav{
+			float:right;
+			/*margin-right:15px;*/
+			display:none;
+			color:#ddd;
+		}
+		.sortable-placeholder{
+			width:100%;
+			height:1px;
+			list-style-type:none;
+			background:none;
+			/*pointer-events: none;*/
+		}
+    </style>
 </head>
 <body>
 	<div id="p5-editor">
@@ -104,6 +188,9 @@
 					<button class="menu-button tippy" onclick="loadDefault();" title="New Sketch<div class='shortcut'>CTRL + N</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 					</button>
+					<button class="menu-button tippy" onclick="addFolder();" title="New Folder">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
+					</button>
 					<button class="menu-button tippy" onclick="document.getElementById('file-input').click();" title="Import Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
 					</button>
@@ -111,10 +198,10 @@
 					<button class="menu-button tippy" onclick="sketchesExport();" title="Export Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="loadDemo();" title="Load Demos">
+					<button style="display:none;" class="menu-button tippy" onclick="loadDemo();" title="Load Demos">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
 					</button>
-					<button class="menu-button tippy" onclick="sketchesClear();" title="Clear Sketches">
+					<button style="display:none;" class="menu-button tippy" onclick="sketchesClear();" title="Clear Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
 					</button>
 				</div>
@@ -259,6 +346,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		var initSettings = {
+			"version":"1.1.0",
 			"welcome":true,
 			"fontSize":15, 
 			"autoCompile":true, 
@@ -341,6 +429,39 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		
 		p5editor.style.visibility = "visible";
 
+		// ICONS!
+		var iconFolderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
+
+		var iconFolderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+
+		var iconFolderExpand = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+
+		var iconFileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+
+		var iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
+
+		var iconRename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
+
+		var iconExport = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+
+		var iconRemove = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+
+		const options = {
+			group: {name: 'sketches'},
+			animation: 300,
+			emptyInsertThreshold: 10,
+			dragClass: "sortable-drag",
+			ghostClass: "sortable-ghost",
+			draggable: ['li', 'ul'],
+			swapInvert:true,
+			// swapThreshold:0.65,
+			store: {
+				set: function (sortable) {
+					getOrder();
+				}
+			}
+		}
+		var sortableFolders, sortableMainFolder;
 
 
 		/* FANCY EDITOR FUNCTIONS */
@@ -534,6 +655,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			loadBG();
 			loadSnippets();
 			loadRef();
+			//settings.sketches = ["meta_layers_bw", "meta_cocoding_bw", "thanks"];
+			legacySettings(); // update from 1.0.2
 			settings.cocoding.active = false;
 
 			if(Url.queryString("cc") != undefined){
@@ -577,7 +700,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// set sketches list to localstorage
 		function updateSketches(){
 			updateSettings();
-			updateMenu();
+			initSortable();
+			//updateMenu();
 		}
 
 		// load sketch
@@ -590,8 +714,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					editor.setValue(localStorage[settings.fileName], 1);
 				}
 				pLen = editor.getValue().length;
-				updateMenu();
-				updateSettings();
+				updateSketches();
+				// updateSettings();
 				setTimeout(function(){p5varsReset();recompile();}, 100);
 				editor.getSession().setUndoManager(new ace.UndoManager());
 				editor.focus();
@@ -601,17 +725,51 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		// rename sketch
-		function renameSketch(sketch){
-			var newName = prompt('Please enter a new name for "'+sketch+'":', sketch).replace(/["']/g, "");
-			if(newName != '' && newName != sketch){
-				localStorage.setItem(newName, localStorage[sketch]);
-				var index = settings.sketches.indexOf(sketch);
-				if (index !== -1) {
-					settings.sketches[index] = newName;
+		// function renameItem(itemName, itemType){
+		// 	//console.log(itemName);
+		// 	var sketchesFlat = JSON.stringify(settings.sketches);
+		// 	if( sketchesFlat.indexOf(itemName) > -1 ) {
+		// 		var sketchesFixed = sketchesFlat.replace(itemName, "yupyup");
+		// 		var testout = JSON.parse(sketchesFixed);
+		// 		console.log(testout);
+		// 	    //console.log("Key Found");
+		// 	}
+		// 	else{
+		// 	    console.log("Key not Found");
+		// 	}
+		// }
+
+		function renameItem(itemName, itemType){
+			// update from PROMPT to own window.. for checking of existing name??
+			var newName = prompt('Please enter a new name for "'+itemName+'":', itemName).replace(/["']/g, "");
+			if(newName != '' && newName != itemName){
+				// don't do recursive...!
+				// settings.sketches.map(function (s) {
+				//   if (s.name == itemName) {
+				//   	s.name = newName;
+				//   }
+				// });
+
+				var sketchesFlat = JSON.stringify(settings.sketches);
+				if( sketchesFlat.indexOf(itemName) > -1 ) {
+					if( sketchesFlat.indexOf('"'+newName+'"') == -1 ) {
+						var sketchesFixed = sketchesFlat.replace(itemName, newName);
+						settings.sketches = JSON.parse(sketchesFixed);
+					}else{
+						alert("\""+newName +"\" already exists. Pick a new name");
+						return false;
+					}
 				}
-				localStorage.removeItem(sketch);
-				updateSketches();
-				setTimeout(function(){ loadSketch(newName); }, 100);
+
+				updateSettings();
+				initSortable();
+				if(itemType == 'sketch'){
+					settings.fileName = newName;
+					localStorage.setItem(newName, localStorage[itemName]);
+					localStorage.removeItem(itemName);
+					setTimeout(function(){ loadSketch(newName); }, 100);
+				}
+				
 			}
 		}
 
@@ -651,8 +809,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var jsonExport = {};
 			jsonExport.sketches = [];
 			jsonExport.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
-			var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-			p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+dateStamp+'.json');
+			p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp()+'.json');
 			if(settings.debugMode){console.log(jsonExport);}
 		}
 
@@ -664,8 +821,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				jsonExport.sketches.push({"sketchName":settings.sketches[i], "sketchCode":localStorage.getItem(settings.sketches[i])});
 			}
 			jsonExport.settings = settings;
-			var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-			p5f.saveJSON(jsonExport, 'P5L_sketches_'+dateStamp+'.json');
+			p5f.saveJSON(jsonExport, 'P5L_sketches_'+timeStamp()+'.json');
 			if(settings.debugMode){console.log(jsonExport);}
 		}
 
@@ -728,6 +884,37 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* LIST SKETCHES IN MENU */
 
 		function updateMenu(){
+			//console.log(typeof settings.sketches[0])
+
+			// if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
+			// 	//console.log('hi')
+			// 	getOrder();
+			// 	initSortable();
+			// }else{
+			// 	var order = settings.sketches;
+			// 	var newOrder = [];
+			// 	order.forEach(function(o){
+			// 		newOrder.push({"name":o, "type":"sketch"});
+			// 	});
+			// 	settings.sketches = newOrder;
+			// 	updateSettings();
+			// }
+		}
+
+		function legacySettings(){
+			if(typeof settings.sketches[0] != 'object'){
+				var order = settings.sketches;
+				var newOrder = [];
+				order.forEach(function(o){
+					newOrder.push({"name":o, "type":"sketch"});
+				});
+				settings.sketches = newOrder;
+				updateSettings();
+			}
+		}
+
+		/*
+		function updateMenu(){
 			var menuSketchesHTML = '';
 			var selSelected = false;
 			for(var i=0; i < settings.sketches.length; i++){
@@ -750,7 +937,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			menuNewSketch = document.getElementById('menu-sketch-new');
 			loadTippy();
 		}
+		*/
 
+		/*
 		// SortableJS for sketcheslist
 		Sortable.create(menuSketches, {
 			group: "sketchOrder",//"localStorage-example",
@@ -766,6 +955,208 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			}
 		})
+		*/
+
+		
+
+		function getOrder() {
+			if(menuSketches.childNodes.length >0){
+				const traverse = function(dir, result = []) {
+					dir.childNodes.forEach((node) => {
+
+						let nodeName = '';
+						if(node.dataset != undefined && (node.dataset.type == 'folder' || node.dataset.type == 'sketch')){
+							nodeName = node.dataset.id;
+						}else{
+							return traverse(node, result)
+						}
+
+						const nodeStats = { name: nodeName };
+
+						if (node.dataset.type == 'folder') {
+							nodeStats.type = 'folder';
+							nodeStats.toggle = node.dataset.toggle;
+							nodeStats.contents = [];
+							result.push(nodeStats);
+							return traverse(node, nodeStats.contents)
+						}
+						if(node.dataset.type == 'sketch'){
+							nodeStats.type = 'sketch';
+							result.push(nodeStats);
+						}
+					});
+					return result;
+				};
+
+				let recursiveSortable = traverse(menuSketches);
+				//console.log(recursiveSortable);
+
+				settings.sketches = recursiveSortable;
+				updateSettings();
+				//localStorage.setItem("order", JSON.stringify(recursiveSortable));
+				initSortable();
+			}
+		}
+
+		
+
+		// initialize sortable 
+		function initSortable(){
+			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
+				var selSelected = false;
+				var htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches );
+				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
+				initFolders(menuSketches);
+
+				function recurse(data) {
+					var html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
+					for (var key in data) { 
+						var d = data[key];
+						if(d.type == 'sketch'){
+							var selClass = "";
+							if(d.name == settings.fileName){
+								selClass = 'sketch-selected';
+								selSelected = true;
+							}
+							var marq = "";
+							if(d.name.length > 15){marq = "marq";}
+							html +='<li class="item-sketch menu-sketch-holder '+selClass+'" data-type="sketch" data-id="'+d.name+'" onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>'; //  
+						}else if(d.type == 'folder'){
+							var icon = iconFolderExpand;
+							if(d.toggle == 'expand'){
+								icon = iconFolderCollapse;
+							}
+
+							if(d.contents.length == 0){
+								icon = iconFolderEmpty;
+								d.toggle = 'collapse';
+							}
+							html += '<ul class="item-folder '+d.toggle+'" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" ondrop="dragEnd(this)" ondragout="dragEnd(this)" >';
+							html += '<div class="foldertitle" onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"><a class="toggle" onclick="toggle(this);">'+icon+'</a>' +d.name + '<div class="menu-sketch-nav"></div></div> ';
+							html += recurse(d.contents);
+							html += '</ul>';
+						}
+					};
+					html += '';    
+					return( html );
+				}
+
+				// main folder
+				//console.log(menuSketches);
+
+				// all folders
+				document.querySelectorAll('.item-folder').forEach((s) => {
+					sortableFolders = Sortable.create(s, options);
+				});
+				sortableMainFolder = Sortable.create(menuSketches, options); 
+				// document.querySelectorAll('.item-sketch').forEach((s) => {
+				// 	Sortable.create(s, options);
+				// });
+				loadTippy();
+			}
+		}
+
+		initSortable();
+
+		function dragOver(elm){
+			elm.style.minHeight='30px';
+		}
+
+		function dragEnd(elm){
+		}
+
+		// load sortable, restore expanded/collapsed
+		function initFolders(elm){
+			elm.childNodes.forEach(function(node){
+				if(node.dataset != undefined && node.dataset.type == 'folder'){
+					node.style.display = "block";
+					if(node.dataset.toggle == 'expand'){
+						node.childNodes.forEach((k) => {
+							if(k.tagName == 'UL' || k.tagName == 'LI'){
+								k.style.display = "block";
+								if(k.dataset.type == 'folder' && k.dataset.toggle == 'expand'){
+									initFolders(k);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+
+		// expand/collapse folders
+		function toggle(elm){
+			var divFolder = elm.parentNode.parentNode;
+			if(divFolder.dataset.toggle == 'expand'){
+				divFolder.dataset.toggle = 'collapse';
+				elm.innerHTML = iconFolderExpand;
+				divFolder.childNodes.forEach((k) => {
+					if(k.tagName == 'UL' || k.tagName == 'LI')
+						k.style.display = "none";
+				});
+
+			}else{
+				divFolder.dataset.toggle = 'expand';
+				elm.innerHTML = iconFolderCollapse;
+				divFolder.childNodes.forEach((k) => {
+					if(k.tagName == 'UL' || k.tagName == 'LI')
+						k.style.display = "block";
+				});
+			}
+			getOrder();
+		}
+
+		function showNav(elm, elmID, elmType){
+			elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" title="Remove">'+iconRemove+'</a>';
+		}
+
+		function hideNav(elm){
+			elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '';
+		}
+
+		function addSketch(){
+			var newID = 'sketch ' + Math.floor(Math.random()*99);
+			var newSketch = '<li class="item-sketch"  data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
+			var tempHTML = menuSketches.innerHTML;
+			localStorage.setItem(newID, "CODECODECODE");
+			menuSketches.innerHTML = newSketch + tempHTML;
+			getOrder();
+			// initSortable();
+		}
+
+		function addFolder(){
+			var newID = 'folder ' + Math.floor(Math.random()*99);
+			var newFolder = '<ul class="item-folder" ondragover="dragOver(this)" ondrop="dragEnd(this)" ondragleave="dragEnd(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
+			var tempHTML = menuSketches.innerHTML;
+			menuSketches.innerHTML = newFolder + tempHTML;
+			getOrder();
+			// initSortable();
+		}
+
+		// taking out the trash
+		function removeItem(dataID, elmType){
+			var doubleCheck = confirm("Are you sure you want to delete: " +dataID+" ?");
+			if(doubleCheck){
+				
+
+				var selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
+				selElm.querySelectorAll('[data-id]').forEach(function(k){
+					localStorage.removeItem(k.dataset.id);
+					k.remove();
+				});
+
+				localStorage.removeItem(dataID);
+				selElm.remove();
+
+				//updateSketches();
+				getOrder();
+				// initSortable();
+				if(dataID === settings.fileName){
+					setTimeout(function(){ loadDefault(); }, 100);
+				}
+			}
+		}
+
 
 
 
@@ -774,7 +1165,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		
 		var map = [];
 		window.onkeydown = function(event) {
-			console.log(event);
+			//console.log(event);
 			map[event.keyCode] = event.type == 'keydown';
 			
 			if(map[16] && map[17]){
@@ -1339,13 +1730,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* LOAD VARIOUS SKETCHES */
 
 		function loadDefault(){
-			settings.fileName = 'default'; //editor.setValue("hi"); // p5template.value
+			
+			var newID = 'sketch_' + timeStamp();
+			var newSketch = '<li class="item-sketch"  data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
+			var tempHTML = menuSketches.innerHTML;
+			// localStorage.setItem(newID, "CODECODECODE");
+			menuSketches.innerHTML = newSketch + tempHTML;
+			
+			
+			settings.fileName = newID; //editor.setValue("hi"); // p5template.value
 			localStorage.setItem(settings.fileName, p5template);
 			editor.setValue(p5template, 1);
 			editor.gotoLine(7, 1, false);
-			updateMenu();
+			//updateMenu();
 			updateSettings();
 			editor.focus();
+			getOrder();
+			// initSortable();
 			setTimeout(function(){ recompile(); }, 100);
 		}
 
@@ -1425,7 +1826,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function loadType(){
 			var fn = menuNewSketch.value.replace(/["']/g, "");
 			if(fn == ''){
-				fn = new Date().toISOString().replace(/-|:/g, "").replace("T", "_").split(".")[0];
+				fn = timeStamp();
 			}
 			loadNew(fn);
 			document.title = 'P5LIVE - ' + settings.fileName;
@@ -1484,9 +1885,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function savePNG(){
 			if(sketchLoaded){
-				var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-				p5f.save('P5L_'+settings.fileName+'_'+dateStamp+'.png');
+				p5f.save('P5L_'+settings.fileName+'_'+timeStamp()+'.png');
 			}
+		}
+
+		function timeStamp(){
+			return (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
 		}
 
 
