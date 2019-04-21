@@ -300,7 +300,6 @@ hr{
 	opacity:.75;
 	border-top:1px solid transparent;
 	border-bottom:1px solid transparent;
-	margin-top:-1px;
 	outline:0;
 }
 .menu-sketch-new{
@@ -317,7 +316,7 @@ hr{
 }
 .menu-sketch{
 	position: relative;
-	width: 65%;
+	width:calc(100% - 78px);
 	height:100%;
 	float:none;
 	padding:2px 5px 5px 0;
@@ -332,7 +331,8 @@ hr{
 	100% { text-indent: -20em }
 }
 .sketch-selected{
-	background:#444;
+	color:#/*00FF00*/;
+	background:#006600;
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
@@ -344,9 +344,11 @@ hr{
 .menu-sketch-nav{
 	float:right;
 	width:35%;
+	min-width:75px;
 	height:100%;
 	display:none;
 	z-index:101;
+	text-align:right;
 }
 .menu-sketch-button{	
 	color:#fff;
