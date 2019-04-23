@@ -206,7 +206,7 @@ hr{
 	border-radius:5px;
 	color:#fff;
 }
-#menu-sketches-holder{
+.menu-sketches-holder{
 	color:#fff;
 	height:30vh;
 	overflow:hidden;
@@ -246,7 +246,7 @@ hr{
 	opacity: 1;
 	background:#444;
 }
-#menu-sketches{
+.menu-sketches{
 	height:100%;
 }
 #menu-sketches-new{
@@ -349,6 +349,7 @@ hr{
 	display:none;
 	z-index:101;
 	text-align:right;
+	cursor:pointer;
 }
 .menu-sketch-button{	
 	color:#fff;

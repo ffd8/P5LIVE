@@ -134,6 +134,14 @@
 		.buffer{
 			height:20px;
 		}
+
+		#menu-cocode-sketches-holder{
+			height:20vh;
+
+		}
+		#menu-cocode{
+			//display:none;
+		}
     </style>
 </head>
 <body>
@@ -171,20 +179,28 @@
 					<button class="menu-button tippy" onclick="savePNG();" title="Save PNG">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
-					<button class="menu-button tippy" id="menu-cocoding" onclick="cocodingInit();" title="CoCoding! <br>Collaborative Coding">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-					</button>
+					
 				</div>
 			</div>
 
-			<div class="menu-section">
+			<div class="menu-section" id="menu-cocode">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">CO-CODING</div>
 				<div class="menu-sketches-buttons">
+					<button class="menu-button tippy" id="menu-cocoding" onclick="cocodingInit();" title="CoCoding! <br>Collaborative Coding">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+					</button>
+					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Fork Sketch">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+					</button>
 					<button class="menu-button tippy" id="login" onclick="" title="login">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
 					</button>
 				</div>
+				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder">
+					<div id="menu-cocode-sketches" class="menu-sketches"></div>
+				</div>
+				<pre style="display:none" id="p5-cocode" class="p5-ta"></pre>
 			</div>
 		
 			<div class="menu-section">
@@ -194,13 +210,16 @@
 					<button class="menu-button tippy" onclick="loadDefault();" title="New Sketch<div class='shortcut'>CTRL + N</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 					</button>
+					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Fork Sketch">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+					</button>
 					<button class="menu-button tippy" onclick="addFolder();" title="New Folder">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
 					</button>
+					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="sketchesImport(this.files);" />
 					<button class="menu-button tippy" onclick="document.getElementById('file-input').click();" title="Import Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
 					</button>
-					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="sketchesImport(this.files);" />
 					<button class="menu-button tippy" onclick="sketchesExport();" title="Export Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 					</button>
@@ -213,8 +232,8 @@
 				</div>
 
 				<!-- <div id="menu-sketches-new"></div> -->
-				<div id="menu-sketches-holder" >
-					<div id="menu-sketches"></div>
+				<div id="menu-sketches-holder" class="menu-sketches-holder">
+					<div id="menu-sketches" class="menu-sketches"></div>
 				</div>
 			</div>
 			
@@ -377,7 +396,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			"debugMode": false,
 			"sketches": [],
 			"sketchesSortable": '',
-			"cocoding": {"active":false, "username":"", "userid":"", "namespace":"","filename":""},
+			"cocoding": {"active":false, "username":"", "userid":"", "namespace":"","fileName":""},
 			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"],
 			"theme": "ace/theme/twilight",
 			"themeBG": "052544",
@@ -394,6 +413,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5f = p5frame.contentWindow,
 		p5liveaboutSketch = document.getElementById('p5live-about').value,
 		p5script = document.getElementById("holdscript"),
+		menuCocode = document.getElementById('menu-cocode'),
+		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSettings = document.getElementById('menu-settings'),
 		menuBG = document.getElementById('menu-bg'),
@@ -423,7 +444,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5vars = {"frameCount":0, "mouseX":0, "mouseY":0},
 		refList = [],
 		chars = "abcdefghijklmnopqrstuvwxyz0123456789", // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		editorId, userid, usernick
+		cocode, editorId, userid, usernick
 		;
 
 
@@ -433,6 +454,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// init editor 
 		var Range = ace.require('ace/range').Range;
 		var editor = ace.edit("p5-code");
+		var editorCocode = ace.edit("p5-cocode")
 		editor.setTheme(settings.theme);
 		editor.session.setMode("ace/mode/javascript");
 		editor.setOptions({
@@ -487,6 +509,91 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 		var sortableFolders, sortableMainFolder;
 
+		 class CocodeApp{
+			constructor(namespace) {
+				this.socket = "";
+				this.namespace = namespace;
+				this.socket = io('/' + this.namespace);
+				this.rgaConnect();
+				editor.setWrapBehavioursEnabled(false);
+				editor.getSession().on("change", function(){
+					checkErrors();
+				});
+
+				//this.rga;
+				// this.socket.downstream = this.socket.emit.bind(this.socket, "change");
+				this.userid = makeid(12);
+			  	this.usernick = makeid(4);
+				this.login();
+				// this.socketConnect();
+				// this.socket.on('change', function(){
+				// 	//localStorage[settings.cocoding.fileName] = editor.getValue();
+
+				// 	checkErrors();	
+				// })
+
+				this.socket.on('init', () => {
+					setTimeout(function(){editor.setValue(p5template, 1);}, 100);
+				});
+
+				this.socket.on('lockdown', (lockMode)=>{
+					if(lockMode){
+						editor.setReadOnly(true);
+					}else{
+						editor.setReadOnly(false);
+					}
+				});
+
+				this.socket.on('users', (usersRaw) => {
+					var userList = JSON.parse(usersRaw);
+					menuCocodeSketches.innerHTML = '';
+					var usersHTML = '<li class="item-sketch menu-sketch-holder" onclick="cocode.rename();">'+this.usernick+'</li>';
+					for (var key in userList) {
+						if(userList[key].nick != this.usernick){
+							var active = '';
+							if(userList[key].status == 'blur'){
+								active = 'style="color:red;"';
+							}
+							usersHTML += '<li class="item-sketch menu-sketch-holder" '+active+'>'+userList[key].nick+'</li>';
+						}
+					}
+					menuCocodeSketches.innerHTML = usersHTML;
+					// this.buildUsers(userList);
+					//console.log(userList);
+				});
+			}
+
+
+			socketConnect(){
+				this.socket.on('init', ({ id, history }) => {
+					// if (!this.rga || this.rga == undefined) {
+					// 	this.rgaConnect(id, history);	
+					// }
+				});
+			}
+
+			rgaConnect(){
+				RGA.AceEditorRGA.setup(editor, this.socket);
+			}
+
+			rgaDisconnect(){
+				RGA.AceEditorRGA.setup(editorCocode, this.socket);
+			}
+
+			rename(){
+				var newName = prompt('Please enter a new name for "'+this.usernick+'":', this.usernick).replace(/["']/g, "");
+				if(newName != '' && newName != this.usernick){
+					this.usernick = newName;
+					this.login();
+				}
+			}
+
+			login(){
+			  	this.socket.emit('login', this.usernick);
+			  	//this.socket.emit('login', this.userid, this.usernick, this.namespace);
+			}
+		};
+
 
 		/* FANCY EDITOR FUNCTIONS */
 
@@ -501,6 +608,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			}
 			if(validCode){
+				// *** Q: should undo be removed??
+				if(settings.cocoding.active){
+					editor.getSession().setUndoManager(new ace.UndoManager());
+				}
 				removeMarkers();
 			}
 		});
@@ -682,14 +793,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			//settings.sketches = ["meta_layers_bw", "meta_cocoding_bw", "thanks"];
 			legacySettings(); // update from 1.0.2
 			settings.cocoding.active = false;
+			updateSketches();
 
 			if(Url.queryString("cc") != undefined){
 				editorId = Url.queryString("cc") || "_";
 				settings.cocoding.active = true;
+				menuCocode.style.display = "block";
 				settings.fileName = editorId;
 				settings.cocoding.namespace = editorId;
-				settings.cocoding.filename = editorId;
-				loadNew(settings.fileName);
+				settings.cocoding.fileName = editorId;
+				// updateSketches(); // just render sketches
+				loadCocode(settings.fileName);
 				if(settings.cocoding.userid == undefined || settings.cocoding.userid == ""){
 					settings.cocoding.userid = makeid(12);
 				}
@@ -717,6 +831,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// set settings to localstorage
 		function updateSettings(){
+			// var tempSettings = iterationCopy(settings);
+			// tempSettings.cocoding.app = null;
 			localStorage.setItem('settings', JSON.stringify(settings));
 			if(settings.debugMode){console.log(getSettings());}
 		}
@@ -730,18 +846,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load sketch
 		function loadSketch(sketch){
-			if(localStorage.hasOwnProperty(sketch)){
-				if(settings.cocoding.active){
-					// switch rooms too...
-					editor.setValue(localStorage[sketch], 1);
+			if(settings.cocoding.active){
+					// *** switch rooms too...
+				if(sketch != settings.cocoding.fileName){
+					console.log("changed sketch")
+					// RGA.AceEditorRGA.setup(editorCocode, cocode.socket);
+					if(localStorage.hasOwnProperty(sketch)){
+						settings.fileName = sketch;
+						editor.setValue(localStorage[sketch], 1);
+					}
 				}else{
-					settings.fileName = sketch;
-					editor.setValue(localStorage[settings.fileName], 1);
+					// RGA.AceEditorRGA.setup(editor, cocode.socket);
+					settings.fileName = settings.cocoding.fileName;
 				}
+			}else if(localStorage.hasOwnProperty(sketch)){
+			
+				settings.fileName = sketch;
+				editor.setValue(localStorage[settings.fileName], 1);
+				
 				pLen = editor.getValue().length;
 				updateSketches();
 				// updateSettings();
-				setTimeout(function(){p5varsReset();recompile();}, 100);
+				setTimeout(function(){p5varsReset();recompile();}, 200);
 				editor.getSession().setUndoManager(new ace.UndoManager());
 				editor.focus();
 			}else{
@@ -889,10 +1015,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for(var i=0; i < jsonSketches.length; i++){
 				var sketchName = jsonSketches[i].sketchName;
 				var sketchCode = jsonSketches[i].sketchCode;
-				localStorage.setItem(sketchName, sketchCode);
-				if (settings.sketches.indexOf(sketchName) === -1) {
-					settings.sketches.unshift(sketchName);
+				localStorage.setItem(sketchName, sketchCode); // overwriting... make fork instead??
+				// update parse
+				var sketchesFlat = JSON.stringify(settings.sketches);
+				if( sketchesFlat.indexOf('"'+sketchName+'"') == -1 ) {
+					// didn't exist
+					settings.sketches.unshift({"type":"sketch", "name":sketchName});
 				}
+				// if (settings.sketches.indexOf(sketchName) === -1) {
+				// 	settings.sketches.unshift(sketchName);
+				// }
 				if(sketchName == settings.fileName){
 					loadSketch(sketchName);
 				}
@@ -1036,7 +1168,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// initialize sortable 
 		function initSortable(){
-			console.log("initSortable");
+			// console.log("initSortable");
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
 				var selSelected = false;
 				var htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches );
@@ -1146,9 +1278,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function showNav(elm, elmID, elmType){
-			if(settings.cocoding.active){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="forkSketch(\''+elmID+'\')" title="Fork">'+iconCopy+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a>';
-			}else{
+			// if(settings.cocoding.active){
+			// 	elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="forkSketch(\''+elmID+'\')" title="Fork">'+iconCopy+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a>';
+			// }else 
+
+			if(elmType == 'folder'){
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" title="Remove">'+iconRemove+'</a>'; // <a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a>
+			}else if(elmType == 'sketch'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" title="Remove">'+iconRemove+'</a>';
 			}
 			loadTippy();
@@ -1198,8 +1334,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				//updateSketches();
 				getOrder();
 				// initSortable();
+				// auto rebuild new sketch.. nooo
 				if(dataID === settings.fileName){
-					setTimeout(function(){ loadDefault(); }, 100);
+					settings.fileName = 'default';
+					editor.setValue('// removed active sketch...\n// start a New Sketch or load one.');
+					//setTimeout(function(){ loadDefault(); }, 100);
 				}
 			}
 		}
@@ -1361,10 +1500,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var currCode = editor.session.getLine(currline);
 			if((currCode.search("for") == -1 && currCode.search("while") == -1) || forceRecompile){
 				if(validCode || !settings.strictCompile){
-					p5frame.src = "p5live_sketch.html";
-					// if(settings.cocoding.active){
-					// 	socket.emit('recompile', true);
-					// }
+					if(editor.getValue().indexOf('function setup()') != -1){
+						p5frame.src = "p5live_sketch.html";
+					}
+					
 				}
 			}
 			forceRecompile = false;
@@ -1514,14 +1653,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		// loop/noLoop on window blur
+
 		window.onblur = function () { 
+			if(settings.cocoding.active){
+				cocode.socket.emit('blur');
+			}
 			if(settings.ecoRender && sketchLoaded){
 				if(document.activeElement !== p5frame){
 					p5f.noLoop();
 				}
 			}
+
+
 		}
 		window.onfocus = function () { 
+			if(settings.cocoding.active){
+				cocode.socket.emit('focus');
+			}
 			if(sketchLoaded){
 				p5f.loop();
 			}
@@ -1778,7 +1926,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* LOAD VARIOUS SKETCHES */
 
 		function loadDefault(){
-			
+			//getOrder();
+			//console.log('loading default!');
 			var newID = 'sketch_' + timeStamp();
 			var newSketch = '<li class="item-sketch"  data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
 			var tempHTML = menuSketches.innerHTML;
@@ -1843,6 +1992,41 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			return dom.body.textContent;
 		}
 
+		function loadCocode(newName){
+			if(newName != ''){
+				if(settings.cocoding.active){
+					if(!searchSketch('coco-'+editorId)){
+						//addFolder('coco-'+editorId);
+					}		
+				}
+				settings.fileName = newName;
+				if (!searchSketch(settings.fileName)) {
+
+					//settings.sketches.unshift({"type":"folder", "toggle":"expand", "name":"coco-"+settings.fileName, "contents":[{"type":"sketch", "name":settings.fileName}]});
+					// settings.sketches.unshift({"type":"sketch", "name":settings.fileName});
+					settings.cocoding.fileName = settings.fileName;
+					
+						if(editor.getValue().length > 86 || settings.cocoding.active){ // 86 = template length
+							localStorage[settings.fileName] = editor.getValue();
+						}else{
+							editor.setValue(p5template, 1);
+						}
+				}else{
+					editor.setValue(localStorage[settings.fileName], 1);
+				}
+				updateSketches();
+				/*
+				else if(!localStorage.hasOwnProperty(settings.fileName)){
+					localStorage[settings.fileName] = editor.getValue();
+				}
+				*/
+				// 
+				editor.focus(); 
+				//updateSettings();
+				//updateSketches();
+			}
+		}
+
 		function loadNew(newName){
 			if(newName != ''){
 				if(settings.cocoding.active){
@@ -1853,8 +2037,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				settings.fileName = newName;
 				if (!searchSketch(settings.fileName)) {
 
-					settings.sketches.unshift({"type":"folder", "toggle":"expand", "name":"coco-"+settings.fileName, "contents":[{"type":"sketch", "name":settings.fileName}]});
-					//settings.sketches.unshift({"type":"sketch", "name":settings.fileName});
+					//settings.sketches.unshift({"type":"folder", "toggle":"expand", "name":"coco-"+settings.fileName, "contents":[{"type":"sketch", "name":settings.fileName}]});
+					settings.sketches.unshift({"type":"sketch", "name":settings.fileName});
 					updateSketches();
 						if(editor.getValue().length > 86 || settings.cocoding.active){ // 86 = template length
 							localStorage[settings.fileName] = editor.getValue();
@@ -1874,6 +2058,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				//updateSettings();
 				//updateSketches();
 			}
+		}
+
+		function sketchSaveAs(){
+			var forkName = settings.fileName;
+			settings.fileName = forkName+"_"+timeStamp();
+			settings.sketches.unshift({"type":"sketch", "name":settings.fileName});
+			updateSketches();
+			localStorage[settings.fileName] = editor.getValue();
+			// settings.sketches.map(function (s) {
+			//   if (s.name == forkName) {
+			//   	s.contents.push({"type":"sketch", "name":settings.fileName});
+			//   	updateSketches();
+			//   	localStorage[settings.fileName] = editor.getValue();
+			//   	//console.log(s);
+			//   	//s.name = newName;
+			//   }
+			// });
+			editor.focus(); 
+			//console.log(settings.sketches.search('forkName'));
 		}
 
 		function forkSketch(forkName){
@@ -2303,6 +2506,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
+
+
 		function cocoding(){
 			console.log("init cocoding!");
 			//settings.cocoding.active = true;
@@ -2316,7 +2521,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateSettings();
 	        menuCocoding.style.backgroundColor = "#00FF00";
 
-	        connectClient();
+	        //connectClient();
+
+	       
+
+	        cocode = new CocodeApp(settings.cocoding.namespace);
 
 	        // socket io
 			// var socket = io('/'+editorId);
@@ -2325,48 +2534,56 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		}
 
+		
+
+		/*
 		function connectClient(){
-			var socket = "";
-			socket = io('/' + settings.cocoding.namespace);
+			// var socket = "";
+			// socket = io('/' + settings.cocoding.namespace);
 
-			console.log("editorid: " + settings.cocoding.filename);
+			// console.log("editorid: " + settings.cocoding.fileName);
 
-			let rga
+			// let rga
 
-			socket.downstream = socket.emit.bind(socket, "change")
+			// socket.downstream = socket.emit.bind(socket, "change")
 			socket.on('init', ({ id, history }) => {
 			  if (!rga || rga == undefined) {
-			    editor.setWrapBehavioursEnabled(false)
-			    rga = new RGA.AceEditorRGA(id, editor)
+			    // editor.setWrapBehavioursEnabled(false)
+			    // rga = new RGA.AceEditorRGA(id, editor)
 
-			    rga.subscribe(socket)
-			    socket.on('change', rga.applyOperation.bind(rga))
+			    // if(settings.filename == settings.cocoding.fileName){}
+			    // rga.subscribe(socket)
+			    // if(settings.filename == settings.cocoding.fileName){
+			    // 	console.log('sync');
+			    // }
+			    // socket.on('change', rga.applyOperation.bind(rga))
 			  }
 			  // console.log(history);
+			  //if(settings.fileName == settings.cocoding.fileName){}
 
-			  rga.applyHistory(history);
-			  if(history.length == 0){
-			  	setTimeout(function(){editor.setValue(p5template, 1);}, 100);
-			  }
-			  userid = makeid(12);
-			  usernick = makeid(4);
-			  socket.emit('login', userid, userid);
-			  socket.emit('login', userid, usernick);
+			  // rga.applyHistory(history);
+			  // if(history.length == 0){
+			  // 	setTimeout(function(){editor.setValue(p5template, 1);}, 100);
+			  // }
+			  // userid = makeid(12);
+			  // usernick = makeid(4);
+			  // socket.emit('login', userid, userid);
+			  // socket.emit('login', userid, usernick);
 			  // socket.emit('nick', userid, usernick);
-			  editor.focus()
+			  // editor.focus()
 			});
 
-			socket.on('change', function(){
-				localStorage[settings.fileName] = editor.getValue();
-				checkErrors();	
-			})
+			// socket.on('change', function(){
+			// 	localStorage[settings.cocoding.fileName] = editor.getValue();
+			// 	checkErrors();	
+			// })
 
 			// socket.on('recompile', function(){
 			// 	recompile();
 			// });
 
 		}
-
+*/
 
 
 		

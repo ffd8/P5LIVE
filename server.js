@@ -9,18 +9,17 @@ const express = require('express')
 	, url = require('url')
 
 
-let cc = {}; // store rooms
+let cc = {}; // store namespaces
 
 app.get('/', function (req, res) {
 	//res.sendFile(__dirname);
 	res.sendFile(__dirname + "/index.html");
 	//static_files.serve(req, res);
-	console.log('hi')
-	var ccRaw = url.parse(req.url, true).query.cc; // get room
+	var ccRaw = url.parse(req.url, true).query.cc; // get namespaces
 	if(ccRaw != null){
 		console.log("REQUEST : " +ccRaw);
 		if(cc[ccRaw] === undefined || cc[ccRaw] === null){
-			cc[ccRaw] = new Room(ccRaw, io);
+			cc[ccRaw] = new Namespace(ccRaw, io);
 		}		 
 	}
 })
@@ -31,38 +30,87 @@ app.use(express.static('./'))
 
 // tip for using socket in class!
 // https://stackoverflow.com/q/42998568/10885535
-class Room {
+class Namespace {
   constructor(name, io) {
     this.name = name;
     this.users = {};
+    this.people = {};
     this.namespace = io.of('/' + name);
     this.rga = new RGA(0);
     this.userId = 0;
-    this.test = [];
-    this.listenOnRoom(this.users);
+    this.lockdown = true;
+    this.listenOnNamespace(this.users, this.people, this.name);
   }
 
-  listenOnRoom(users) {
+  listenOnNamespace(users, people, namespace) {
     this.namespace.on('connection', (socket) => {
 		this.userId++;
-		this.test.push(this.userId);
-		//console.log(this.test);
-		console.log("joined: " + this.name);
+		this.people[socket.id] = {"nick":this.userId, "status":"focus"};
+		io.of(namespace).emit("users", JSON.stringify(people)) // update users for all
+
+		this.namespace.clients((error, clients) => {
+		     if (error) throw error;
+		     users = clients;
+		     //console.log(clients); // => [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
+		});
+		//console.log(this.people);
+
+		socket.on('disconnect', function() {
+			delete people[socket.id];
+			io.of(namespace).emit("users", JSON.stringify(people)) // ALL in namespace
+			//console.log('removed: '+socket.id)
+			//console.log(people);
+			//this.clients[socket.id].remove();
+	      //console.log('Got disconnect!');
+
+	      //var i = this.clients.indexOf(socket);
+	      //this.clients.splice(i, 1);
+	   });
+
+		//console.log("joined: " + this.name);
+		//socket.join(this.name); // .to(socket.room)
 		//console.log("connected: " + this.userId);
 
-		socket.emit("init", {id: this.userId, history: this.rga.history()})
+		socket.emit("welcome", {id: this.userId, history: this.rga.history()})
+		
+		if(this.userId == 1){
+			socket.emit('init')
+		}
 
-		socket.downstream = socket.emit.bind(socket, "change")
-		this.rga.subscribe(socket)
+		if(this.lockdown){
+			if(Object.keys(people).length == 1){
+				socket.emit('lockdown', false)
+			}else{
+				socket.emit('lockdown', true)
+			}
+		}
 
-		socket.on('change', op => { this.rga.downstream(op, socket) })
+		//socket.downstream = socket.emit.bind(socket, "change")
+		// this.rga.subscribe(socket)
+		// socket.on('change', op => { this.rga.downstream(op, socket) })
 
-		socket.on('login', function(newid, newnick){
-			// this.userId = newid;
-			// console.log("newuser: " + this.userId);
-			users[newid] = {"id":newid, "nick":newnick};
-			console.log("user " + users[newid].id + " is now known as " + users[newid].nick);
+		RGA.tieToSocket(this.rga, socket);
+
+		socket.on('login', function(newid){
+			people[socket.id].nick = newid;
+			console.log(people);
+			io.of(namespace).emit("users", JSON.stringify(people)) // ALL in namespace
+			//socket.broadcast.emit("users", JSON.stringify(people))  // all except sender
+			//this.sendUsers();
+			//console.log('myname = '+this.name);
+			
+			//console.log("user " + users[newid].id + " is now known as " + users[newid].nick);
 			// console.log(this.userId +" / "+ users);
+		})
+
+		socket.on('blur', function(){
+			people[socket.id].status = "blur";
+			io.of(namespace).emit("users", JSON.stringify(people))
+		})
+
+		socket.on('focus', function(){
+			people[socket.id].status = "focus";
+			io.of(namespace).emit("users", JSON.stringify(people))
 		})
 
 
@@ -72,9 +120,13 @@ class Room {
 		// })
 
     });
+
+    // this.namespace.on('disconnect', (socket) => {
+    // 	users[this.]
+    // });
   }
 }
-module.exports = Room;
+module.exports = Namespace;
 
 
 server.listen(port, function () {
