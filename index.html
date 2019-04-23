@@ -396,7 +396,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			"debugMode": false,
 			"sketches": [],
 			"sketchesSortable": '',
-			"cocoding": {"active":false, "username":"", "userid":"", "namespace":"","fileName":""},
+			"cocoding": {"active":false, "nick":"", "namespace":"", "fileName":"" , "lockdown":false},
 			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"],
 			"theme": "ace/theme/twilight",
 			"themeBG": "052544",
@@ -515,6 +515,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.namespace = namespace;
 				this.socket = io('/' + this.namespace);
 				this.rgaConnect();
+				this.users = {};
 				editor.setWrapBehavioursEnabled(false);
 				editor.getSession().on("change", function(){
 					checkErrors();
@@ -522,8 +523,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				//this.rga;
 				// this.socket.downstream = this.socket.emit.bind(this.socket, "change");
-				this.userid = makeid(12);
-			  	this.usernick = makeid(4);
+				// this.userid = makeid(12);
+			  	// this.usernick = makeid(4);
 				this.login();
 				// this.socketConnect();
 				// this.socket.on('change', function(){
@@ -538,26 +539,39 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				this.socket.on('lockdown', (lockMode)=>{
 					if(lockMode){
+						settings.cocoding.lockdown = true;
 						editor.setReadOnly(true);
 					}else{
+						settings.cocoding.lockdown = false;
 						editor.setReadOnly(false);
 					}
+					updateSettings();
+				});
+
+				this.socket.on('rename', (nick)=>{
+					settings.cocoding.nick = nick;
+					updateSettings();
 				});
 
 				this.socket.on('users', (usersRaw) => {
-					var userList = JSON.parse(usersRaw);
+					this.users = JSON.parse(usersRaw);
 					menuCocodeSketches.innerHTML = '';
-					var usersHTML = '<li class="item-sketch menu-sketch-holder" onclick="cocode.rename();">'+this.usernick+'</li>';
-					for (var key in userList) {
-						if(userList[key].nick != this.usernick){
+					var activeSelf = '';
+					var usersHTML = '';
+					for (var key in this.users) {
+						if(this.users[key].nick != settings.cocoding.nick){
 							var active = '';
-							if(userList[key].status == 'blur'){
+							if(this.users[key].status == 'blur'){
 								active = 'style="color:red;"';
 							}
-							usersHTML += '<li class="item-sketch menu-sketch-holder" '+active+'>'+userList[key].nick+'</li>';
+							usersHTML += '<li class="item-sketch menu-sketch-holder" '+active+'>'+this.users[key].nick+'</li>';
+						}else{
+							if(this.users[key].status == 'blur'){
+								activeSelf = 'style="color:red;"';
+							}
 						}
 					}
-					menuCocodeSketches.innerHTML = usersHTML;
+					menuCocodeSketches.innerHTML = '<li class="item-sketch menu-sketch-holder" onclick="cocode.rename();" '+activeSelf+'>'+settings.cocoding.nick+'</li>' + usersHTML;
 					// this.buildUsers(userList);
 					//console.log(userList);
 				});
@@ -581,17 +595,21 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 
 			rename(){
-				var newName = prompt('Please enter a new name for "'+this.usernick+'":', this.usernick).replace(/["']/g, "");
-				if(newName != '' && newName != this.usernick){
-					this.usernick = newName;
+				var newName = prompt('Please enter a new name for "'+settings.cocoding.nick+'":', settings.cocoding.nick).replace(/["']/g, "");
+				if(newName != '' && newName != settings.cocoding.nick){
+					settings.cocoding.nick = newName;
+					updateSettings();
 					this.login();
 				}
 			}
 
 			login(){
-			  	this.socket.emit('login', this.usernick);
+				//console.log(this.users);
+				
+			  	this.socket.emit('login', settings.cocoding.nick);
 			  	//this.socket.emit('login', this.userid, this.usernick, this.namespace);
 			}
+
 		};
 
 
@@ -804,11 +822,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				settings.cocoding.fileName = editorId;
 				// updateSketches(); // just render sketches
 				loadCocode(settings.fileName);
-				if(settings.cocoding.userid == undefined || settings.cocoding.userid == ""){
-					settings.cocoding.userid = makeid(12);
-				}
-				if(settings.cocoding.username == undefined || settings.cocoding.username == ""){
-					settings.cocoding.username = settings.cocoding.userid;
+				// if(settings.cocoding.userid == undefined || settings.cocoding.userid == ""){
+				// 	settings.cocoding.userid = makeid(12);
+				// }
+				if(settings.cocoding.nick == undefined || settings.cocoding.nick == ""){
+					settings.cocoding.nick = makeid(6);
 				}
 				updateSettings();
 				cocoding();
@@ -2491,102 +2509,22 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function cocodingInit(){
 			// coming soooooon...
-			// menuCocoding.style.background = "#00FF00";
 			if(settings.cocoding.active){
 				document.location.search = '';
 			}else{
 				var sessID = makeid(5);
-			    //editorId = sessID;
-			    // var uid = makeid(12);//Math.random().toString();
-			    // settings.cocoding.username = uid;
 				settings.cocoding.active = true;
 				updateSettings();
 				document.location.search = 'cc='+ sessID;
-				//insertParam('cc', sessID);
 			}
 		}
 
-
-
 		function cocoding(){
-			console.log("init cocoding!");
-			//settings.cocoding.active = true;
-			// var uid = makeid(12);//Math.random().toString();
-			// if(settings.cocoding.username != undefined){
-			// 	uid = settings.cocoding.username;
-			// }else{
-			// 	settings.cocoding.username = uid;
-			// }
-			console.log("uid: "+settings.cocoding.userid);
-			updateSettings();
+			// updateSettings();
 	        menuCocoding.style.backgroundColor = "#00FF00";
-
-	        //connectClient();
-
-	       
-
 	        cocode = new CocodeApp(settings.cocoding.namespace);
-
-	        // socket io
-			// var socket = io('/'+editorId);
-
-			//socket.emit('setID', settings.cocoding.userid);
-
 		}
 
-		
-
-		/*
-		function connectClient(){
-			// var socket = "";
-			// socket = io('/' + settings.cocoding.namespace);
-
-			// console.log("editorid: " + settings.cocoding.fileName);
-
-			// let rga
-
-			// socket.downstream = socket.emit.bind(socket, "change")
-			socket.on('init', ({ id, history }) => {
-			  if (!rga || rga == undefined) {
-			    // editor.setWrapBehavioursEnabled(false)
-			    // rga = new RGA.AceEditorRGA(id, editor)
-
-			    // if(settings.filename == settings.cocoding.fileName){}
-			    // rga.subscribe(socket)
-			    // if(settings.filename == settings.cocoding.fileName){
-			    // 	console.log('sync');
-			    // }
-			    // socket.on('change', rga.applyOperation.bind(rga))
-			  }
-			  // console.log(history);
-			  //if(settings.fileName == settings.cocoding.fileName){}
-
-			  // rga.applyHistory(history);
-			  // if(history.length == 0){
-			  // 	setTimeout(function(){editor.setValue(p5template, 1);}, 100);
-			  // }
-			  // userid = makeid(12);
-			  // usernick = makeid(4);
-			  // socket.emit('login', userid, userid);
-			  // socket.emit('login', userid, usernick);
-			  // socket.emit('nick', userid, usernick);
-			  // editor.focus()
-			});
-
-			// socket.on('change', function(){
-			// 	localStorage[settings.cocoding.fileName] = editor.getValue();
-			// 	checkErrors();	
-			// })
-
-			// socket.on('recompile', function(){
-			// 	recompile();
-			// });
-
-		}
-*/
-
-
-		
 	</script>
 </body>
 </html>

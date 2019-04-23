@@ -92,8 +92,16 @@ class Namespace {
 		RGA.tieToSocket(this.rga, socket);
 
 		socket.on('login', function(newid){
+			// check existing name
+			var flatUsers = JSON.stringify(people);
+			if(flatUsers.indexOf('"'+newid+'"') > -1 ){
+				var suffix = Math.floor(Math.random()*99);
+				// console.log("renaming: "+newid+" to: "+suffix)
+				newid += "_"+suffix;
+				socket.emit('rename', newid);
+			}
 			people[socket.id].nick = newid;
-			console.log(people);
+			// console.log(people);
 			io.of(namespace).emit("users", JSON.stringify(people)) // ALL in namespace
 			//socket.broadcast.emit("users", JSON.stringify(people))  // all except sender
 			//this.sendUsers();
