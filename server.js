@@ -17,7 +17,7 @@ app.get('/', function (req, res) {
 	//static_files.serve(req, res);
 	var ccRaw = url.parse(req.url, true).query.cc; // get namespaces
 	if(ccRaw != null){
-		console.log("REQUEST : " +ccRaw);
+		//console.log("REQUEST : " +ccRaw);
 		if(cc[ccRaw] === undefined || cc[ccRaw] === null){
 			cc[ccRaw] = new Namespace(ccRaw, io);
 		}		 
@@ -38,7 +38,7 @@ class Namespace {
     this.namespace = io.of('/' + name);
     this.rga = new RGA(0);
     this.userId = 0;
-    this.lockdown = true;
+    this.lockdown = false;
     this.listenOnNamespace(this.users, this.people, this.name);
   }
 
@@ -80,8 +80,10 @@ class Namespace {
 		if(this.lockdown){
 			if(Object.keys(people).length == 1){
 				socket.emit('lockdown', false)
+				socket.emit('updateSatus', 'admin')
 			}else{
 				socket.emit('lockdown', true)
+				socket.emit('updateSatus', 'user')
 			}
 		}
 
@@ -109,6 +111,14 @@ class Namespace {
 			
 			//console.log("user " + users[newid].id + " is now known as " + users[newid].nick);
 			// console.log(this.userId +" / "+ users);
+		})
+
+		socket.on('lockdown', function(lockMode){
+			if(lockMode){
+				io.of(namespace).emit('lockdown', true);
+			}else{
+				io.of(namespace).emit('lockdown', false);
+			}
 		})
 
 		socket.on('blur', function(){

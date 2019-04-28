@@ -40,6 +40,12 @@
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
 	<script src="includes/js/markdown.min.js"></script>
+	<script src='includes/js/download.js'></script>
+	<!-- <script src="includes/js/dom-to-image.min.js" /> -->
+	<script src="includes/js/vex/js/vex.combined.min.js"></script>
+	<script>vex.defaultOptions.className = 'vex-theme-plain'</script>
+	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
+	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="includes/js/url.min.js"></script>
@@ -142,12 +148,16 @@
 		#menu-cocode{
 			//display:none;
 		}
+		.cocoding-active:hover{
+			background:red;
+		}
     </style>
 </head>
 <body>
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
 		<textarea id="p5-console" class="p5-ta" disabled></textarea>
+		<div id="p5-code-img" style="display:none;"></div>
 	</div>
 
 	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" src="p5live_sketch.html" onLoad="injectJS()";></iframe>
@@ -179,6 +189,9 @@
 					<button class="menu-button tippy" onclick="savePNG();" title="Save PNG">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
+					<button class="menu-button tippy" onclick="saveHTML();" title="Save HTML">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+					</button>
 					
 				</div>
 			</div>
@@ -186,18 +199,23 @@
 			<div class="menu-section" id="menu-cocode">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">CO-CODING</div>
-				<div class="menu-sketches-buttons">
-					<button class="menu-button tippy" id="menu-cocoding" onclick="cocodingInit();" title="CoCoding! <br>Collaborative Coding">
+				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
+					<button class="menu-button tippy cocoding-active" id="menu-cocoding" onclick="cocodingInit();" title="Leave CoCoding">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Fork Sketch">
+					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
-					<button class="menu-button tippy" id="login" onclick="" title="login">
+					<button class="menu-button tippy" id="lockdown" onclick="toggleLockdown()" title="lockdown" style="display:none;">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
 					</button>
 				</div>
-				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder">
+				<div class="menu-sketches-buttons" id="cocoding-buttons-inactive">
+					<button class="menu-button tippy" id="menu-cocoding" onclick="cocodingInit();" title="CoCoding! <br>Collaborative Coding">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+					</button>
+				</div>
+				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;">
 					<div id="menu-cocode-sketches" class="menu-sketches"></div>
 				</div>
 				<pre style="display:none" id="p5-cocode" class="p5-ta"></pre>
@@ -210,7 +228,7 @@
 					<button class="menu-button tippy" onclick="loadDefault();" title="New Sketch<div class='shortcut'>CTRL + N</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Fork Sketch">
+					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
 					<button class="menu-button tippy" onclick="addFolder();" title="New Folder">
@@ -375,11 +393,24 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		if(reset){localStorage.clear();}
 
 		function resetP5(){
-			var doubleCheck = confirm("Completely reset P5LIVE?");
-			if(doubleCheck){
-				localStorage.clear();
-				location.reload();
-			}
+
+			vex.dialog.confirm({
+			    message: "Completely reset P5LIVE?",
+			    callback: function (value) {
+			        if (value) {
+			            localStorage.clear();
+						location.reload();
+			        } else {
+			            //console.log('Chicken.')
+			        }
+			    }
+			})
+
+			// var doubleCheck = confirm("Completely reset P5LIVE?");
+			// if(doubleCheck){
+			// 	localStorage.clear();
+			// 	location.reload();
+			// }
 		}
 
 		var initSettings = {
@@ -396,7 +427,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			"debugMode": false,
 			"sketches": [],
 			"sketchesSortable": '',
-			"cocoding": {"active":false, "nick":"", "namespace":"", "fileName":"" , "lockdown":false},
+			"cocoding": {"active":false, "nick":"", "namespace":"", "fileName":"" , "lockdown":false, "status":""},
 			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"],
 			"theme": "ace/theme/twilight",
 			"themeBG": "052544",
@@ -415,6 +446,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5script = document.getElementById("holdscript"),
 		menuCocode = document.getElementById('menu-cocode'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
+		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSettings = document.getElementById('menu-settings'),
 		menuBG = document.getElementById('menu-bg'),
@@ -507,6 +539,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			}
 		}
+
+	
 		var sortableFolders, sortableMainFolder;
 
 		 class CocodeApp{
@@ -537,8 +571,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					setTimeout(function(){editor.setValue(p5template, 1);}, 100);
 				});
 
+				this.socket.on('updateSatus', (statusMode)=>{
+					settings.cocoding.status = statusMode;
+					console.log(statusMode);
+					updateSettings();
+					if(statusMode != 'admin'){
+						document.getElementById('lockdown').style.display = "none";
+					}
+				});
+
 				this.socket.on('lockdown', (lockMode)=>{
-					if(lockMode){
+					if(lockMode && settings.cocoding.status != 'admin'){
 						settings.cocoding.lockdown = true;
 						editor.setReadOnly(true);
 					}else{
@@ -595,12 +638,31 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 
 			rename(){
+				vex.dialog.prompt({
+				    message: 'Nickname:',
+				    value: settings.cocoding.nick, // placeholder
+				    callback: function (value) {
+				    	if(value){
+					    	var newName = value.replace(/["']/g, "");
+					    	if(newName != '' && newName != settings.cocoding.nick){
+								settings.cocoding.nick = newName;
+								updateSettings();
+								cocode.login();
+							}
+						}
+				    },
+				    afterOpen: function(){
+				    	document.getElementsByClassName("vex-dialog-prompt-input")[0].select();
+				    }
+				})
+				/*
 				var newName = prompt('Please enter a new name for "'+settings.cocoding.nick+'":', settings.cocoding.nick).replace(/["']/g, "");
 				if(newName != '' && newName != settings.cocoding.nick){
 					settings.cocoding.nick = newName;
 					updateSettings();
 					this.login();
 				}
+				*/
 			}
 
 			login(){
@@ -628,7 +690,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(validCode){
 				// *** Q: should undo be removed??
 				if(settings.cocoding.active){
-					editor.getSession().setUndoManager(new ace.UndoManager());
+					//editor.getSession().setUndoManager(new ace.UndoManager());
 				}
 				removeMarkers();
 			}
@@ -812,7 +874,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			legacySettings(); // update from 1.0.2
 			settings.cocoding.active = false;
 			updateSketches();
-
 			if(Url.queryString("cc") != undefined){
 				editorId = Url.queryString("cc") || "_";
 				settings.cocoding.active = true;
@@ -831,6 +892,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				updateSettings();
 				cocoding();
 		  		//alert(editorId);
+			}else if(Url.queryString("sk") != undefined){
+				settings.fileName = Url.queryString("sk");
+				loadSketch(settings.fileName);
+
 			}else if(settings.welcome){
 				loadAbout();
 				settings.welcome = false;
@@ -866,6 +931,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function loadSketch(sketch){
 			if(settings.cocoding.active){
 					// *** switch rooms too...
+					// *** disabled for now...
+					/*
 				if(sketch != settings.cocoding.fileName){
 					console.log("changed sketch")
 					// RGA.AceEditorRGA.setup(editorCocode, cocode.socket);
@@ -877,19 +944,48 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					// RGA.AceEditorRGA.setup(editor, cocode.socket);
 					settings.fileName = settings.cocoding.fileName;
 				}
-			}else if(localStorage.hasOwnProperty(sketch)){
-			
-				settings.fileName = sketch;
-				editor.setValue(localStorage[settings.fileName], 1);
-				
-				pLen = editor.getValue().length;
-				updateSketches();
-				// updateSettings();
-				setTimeout(function(){p5varsReset();recompile();}, 200);
-				editor.getSession().setUndoManager(new ace.UndoManager());
-				editor.focus();
-			}else{
-				loadDefault();
+				*/
+
+				vex.dialog.confirm({
+				    message: "Exit CO-CODING?",
+				    callback: function (value) {
+				        if (value) {
+				            settings.fileName = sketch;
+							settings.cocoding = {};
+							updateSettings;
+							loadSketch(setings.fileName);
+							//document.location.search = 'sk='+settings.fileName;
+				        } else {
+				            //console.log('Chicken.')
+				        }
+				    }
+				})
+
+				// var doubleCheck = confirm("Exit CO-CODING?");
+
+				// if(doubleCheck && localStorage.hasOwnProperty(sketch)){
+				// 	//console.log(sketch);
+				// 	settings.fileName = sketch;
+				// 	settings.cocoding = {};
+				// 	updateSettings;
+				// 	document.location.search = 'sk='+settings.fileName;
+				// }
+
+			}else {
+				if(localStorage.hasOwnProperty(sketch)){
+					settings.fileName = sketch;
+					console.log(settings.fileName);
+					editor.setValue(localStorage[settings.fileName], 1);
+					
+					pLen = editor.getValue().length;
+					updateSketches();
+					// updateSettings();
+					setTimeout(function(){p5varsReset();recompile();}, 200);
+					editor.getSession().setUndoManager(new ace.UndoManager());
+					editor.focus();
+				}else{
+					loadDefault();
+				}
 			}
 		}
 
@@ -909,6 +1005,44 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// }
 
 		function renameItem(itemName, itemType){
+
+			vex.dialog.prompt({
+			    message: 'Rename:',
+			    value: itemName, // placeholder
+			    // buttons[0].text = 'Okiedokie',
+			    callback: function (value) {
+			    	if(value){
+				    	var newName = value.replace(/["']/g, "");
+				    	if(newName != '' && newName != itemName){
+							var sketchesFlat = JSON.stringify(settings.sketches);
+							if( sketchesFlat.indexOf('"'+itemName+'"') > -1 ) {
+								if( sketchesFlat.indexOf('"'+newName+'"') == -1 ) {
+									var sketchesFixed = sketchesFlat.replace('"'+itemName+'"', '"'+newName+'"');
+									settings.sketches = JSON.parse(sketchesFixed);
+								}else{
+									alert("\""+newName +"\" already exists. Pick a new name");
+									return false;
+								}
+							}
+
+							updateSettings();
+							initSortable();
+							if(itemType == 'sketch'){
+								settings.fileName = newName;
+								localStorage.setItem(newName, localStorage[itemName]);
+								localStorage.removeItem(itemName);
+								setTimeout(function(){ loadSketch(newName); }, 100);
+							}
+						}
+					}
+			    },
+			    afterOpen: function(){
+			    	console.log(this);
+			    	document.getElementsByClassName("vex-dialog-prompt-input")[0].select();
+			    }
+			})
+
+			/*
 			// update from PROMPT to own window.. for checking of existing name??
 			var newName = prompt('Please enter a new name for "'+itemName+'":', itemName).replace(/["']/g, "");
 			if(newName != '' && newName != itemName){
@@ -940,6 +1074,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 				
 			}
+			*/
 		}
 
 		function searchSketch(sketchName){
@@ -1340,6 +1475,35 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// taking out the trash
 		function removeItem(dataID, elmType){
+
+			vex.dialog.confirm({
+			    message: "Are you sure you want to delete: " +dataID+" ?",
+			    callback: function (value) {
+			        if (value) {
+			            var selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
+						selElm.querySelectorAll('[data-id]').forEach(function(k){
+							localStorage.removeItem(k.dataset.id);
+							k.remove();
+						});
+
+						localStorage.removeItem(dataID);
+						selElm.remove();
+
+						//updateSketches();
+						getOrder();
+						// initSortable();
+						// auto rebuild new sketch.. nooo
+						if(dataID === settings.fileName){
+							settings.fileName = 'default';
+							editor.setValue('// removed active sketch...\n// start a New Sketch or load one.');
+							//setTimeout(function(){ loadDefault(); }, 100);
+						}
+			        } else {
+			            //console.log('Chicken.')
+			        }
+			    }
+			})
+			/*
 			var doubleCheck = confirm("Are you sure you want to delete: " +dataID+" ?");
 			if(doubleCheck){
 				
@@ -1363,6 +1527,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					//setTimeout(function(){ loadDefault(); }, 100);
 				}
 			}
+			*/
 		}
 
 
@@ -1470,7 +1635,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		p5code.onkeyup = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
-			localStorage[settings.fileName] = editor.getValue();
+			if(!settings.cocoding.active){
+				localStorage[settings.fileName] = editor.getValue();
+			}
 			checkErrors();			
 		};
 
@@ -1523,12 +1690,41 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if((currCode.search("for") == -1 && currCode.search("while") == -1) || forceRecompile){
 				if(validCode || !settings.strictCompile){
 					if(editor.getValue().indexOf('function setup()') != -1){
+						//** swap BG heree?
+						updateBackground();
 						p5frame.src = "p5live_sketch.html";
 					}
 					
 				}
 			}
 			forceRecompile = false;
+		}
+
+
+		function updateBackground(){
+			var bgReg = /background\(([^)]+)\)/;
+			var nonComments = editor.getValue();
+			nonComments = nonComments.replace(/\s*\/\/.*\n/g, '\n').replace(/\s*\/\*[\s\S]*?\*\//g, '');
+			var bgMatches = bgReg.exec(nonComments);
+			if(bgMatches != null){
+				var newBG = '';
+				if(bgMatches[1].includes('#')){
+				    newBG = bgMatches[1].replace(/["']/g, "");
+				}else{
+					var cols = bgMatches[1].split(',');
+					if(cols.length > 1){
+						newBG = rgb2hex(cols[0].trim(), cols[1].trim(), cols[2].trim());
+					}else{
+						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
+					}
+				}
+				document.body.style.background = newBG;//'#fff';//'\''+newBG+'\'';
+			}
+		}
+		
+		function rgb2hex(red, green, blue) {
+			var rgb = blue | (green << 8) | (red << 16);
+			return '#' + (0x1000000 + rgb).toString(16).slice(1)
 		}
 
 		function loadScripts(elm){
@@ -2028,13 +2224,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					// settings.sketches.unshift({"type":"sketch", "name":settings.fileName});
 					settings.cocoding.fileName = settings.fileName;
 					
-						if(editor.getValue().length > 86 || settings.cocoding.active){ // 86 = template length
-							localStorage[settings.fileName] = editor.getValue();
-						}else{
-							editor.setValue(p5template, 1);
-						}
+						// if(editor.getValue().length > 86 || settings.cocoding.active){ // 86 = template length
+						// 	localStorage[settings.fileName] = editor.getValue();
+						// }else{
+						// 	editor.setValue(p5template, 1);
+						// }
 				}else{
-					editor.setValue(localStorage[settings.fileName], 1);
+					// editor.setValue(localStorage[settings.fileName], 1);
 				}
 				updateSketches();
 				/*
@@ -2148,7 +2344,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			tippy('.tippy', {
 				content(reference) {
 					const title = reference.getAttribute('title')
-					reference.removeAttribute('title')
+					//reference.removeAttribute('title') // seems ok to leave there...
 					return title
 				},
 				placement:"bottom",
@@ -2161,7 +2357,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			tippy('.tippy-left', {
 				content(reference) {
 					const title = reference.getAttribute('title')
-					reference.removeAttribute('title')
+					//reference.removeAttribute('title')
 					return title
 				},
 				placement:"left",
@@ -2182,6 +2378,21 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(sketchLoaded){
 				p5f.save('P5L_'+settings.fileName+'_'+timeStamp()+'.png');
 			}
+		}
+
+		function saveHTML(){
+			var tempPath = "p5live_template.html";
+			var request = new XMLHttpRequest();
+			request.open("GET", tempPath, false);
+			request.send(null);
+			var el = document.createElement( 'html' );
+			el.innerHTML = request.responseText;
+
+			var s = document.createElement("script");
+			s.type = "text/javascript";
+			s.innerHTML = editor.getValue() + p5custom.value;
+			el.getElementsByTagName("head")[0].appendChild(s);
+			download(el.innerHTML, "P5L_"+settings.fileName+"_"+timeStamp()+".html", "text/html");
 		}
 
 		function timeStamp(){
@@ -2512,9 +2723,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	    }
 
 		function cocodingInit(){
-			// coming soooooon...
 			if(settings.cocoding.active){
-				document.location.search = '';
+				vex.dialog.confirm({
+				    message: "Exit CO-CODING?",
+				    callback: function (value) {
+				        if (value) {
+				        	var topSketch = menuSketches.querySelectorAll('.item-sketch')[0].dataset.id;
+				            cocodingExit(topSketch);
+				        }
+				    }
+				})
 			}else{
 				var sessID = makeid(5);
 				settings.cocoding.active = true;
@@ -2523,11 +2741,55 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
+		function cocodingExit(sketch){
+			// *** better exit code...
+			settings.cocoding = {}; // really trash all?
+			settings.cocoding.active = false;
+			settings.fileName = sketch;
+			updateSettings;
+			loadSketch(settings.fileName);
+			window.history.replaceState(null, null, window.location.pathname);
+			window.location = window.location.pathname;
+		}
+
 		function cocoding(){
 			// updateSettings();
+			menuCocodeHolder.style.display = "block";
 	        menuCocoding.style.backgroundColor = "#00FF00";
 	        cocode = new CocodeApp(settings.cocoding.namespace);
+	        document.getElementById('cocoding-buttons-inactive').innerHTML = document.getElementById('cocoding-buttons-active').innerHTML;
+	        document.getElementById('cocoding-buttons-active').innerHTML = '';
+	        loadTippy();
 		}
+
+
+
+		// function captureCode(){			
+		// 	domtoimage.toPng(p5code)
+		// 	    .then(function (dataUrl) {
+		// 	        var img = new Image();
+		// 	        img.src = dataUrl;
+		// 	        img.id = 'codeimg';
+		// 	        img.style="display:none;";
+		// 	        document.body.appendChild(img);
+		// 	    })
+		// 	    .catch(function (error) {
+		// 	        console.error('oops, something went wrong!', error);
+		// 	    });
+		// }
+
+		// function pixelCode(){
+		// 	domtoimage.toPixelData(node)
+		//     .then(function (pixels) {
+		//         for (var y = 0; y < node.scrollHeight; ++y) {
+		//           for (var x = 0; x < node.scrollWidth; ++x) {
+		//             pixelAtXYOffset = (4 * y * node.scrollHeight) + (4 * x);
+		//             /* pixelAtXY is a Uint8Array[4] containing RGBA values of the pixel at (x, y) in the range 0..255 */
+		//             pixelAtXY = pixels.slice(pixelAtXYOffset, pixelAtXYOffset + 4);
+		//           }
+		//         }
+		//     });
+		// }
 
 	</script>
 </body>

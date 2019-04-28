@@ -32,7 +32,7 @@ body {
 	width: 100vw;
 	height: 100vh;
 	color: #839496;
-	background: #000;
+	/*background: #000;*/
 	position: relative;
 	background:#000;
 }
@@ -46,7 +46,8 @@ hr{
 	outline:none;
 	border:none;
 	margin:0;
-	background:#000;
+	/*background:#000;*/
+	background:none;
 	position:fixed;
 	top:0;
 	left:0;
