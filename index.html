@@ -57,7 +57,7 @@
 			overflow:hidden;
 			display:block;
 			background:#333;
-			margin:1px 0 1px 0;
+			margin:0px 0 0px 0;
 			padding:0px 0 0px 0;
 			min-height:2px;
 		}
@@ -72,19 +72,25 @@
 			padding:0;
 		}
 		.item-folder svg, .item-sketch svg{
-			padding:0;
-			padding-top:4px;
+			padding:2px 1px 0px 1px;
+			//padding-top:4px;
 			height:16px;
 		}
+		.menu-sketch-nav svg{
+			/*width:24px;*/
+			padding:4px 1px 0 1px;
+			width:24px;
+		}
 		.item-folder > .item-sketch{
-			margin-left:20px;
+			margin-left:15px;
 			display:none;
 		}
 		.item-folder > .item-sketch .menu-sketch{
-			width:calc(100% - 75px);
+			//width:calc(100% - 78px);
 		}
+
 		.item-folder > .item-folder{
-			margin-left:20px;
+			margin-left:15px;
 			display:none;
 		}
 		.expand > .item-sketch{
@@ -105,6 +111,7 @@
 			position:relative;
 			z-index:999;
 			cursor:pointer;
+			float:left;
 		}
 		.sortable-drag{
 			background:#003300;
@@ -140,16 +147,21 @@
 		.buffer{
 			height:20px;
 		}
-
 		#menu-cocode-sketches-holder{
 			height:20vh;
-
+			max-height:20vh;
 		}
 		#menu-cocode{
 			//display:none;
 		}
+		.cocoding-inactive:hover{
+			background:#00CC00;
+		}
+		.cocoding-active{
+			background:#00CC00;
+		}
 		.cocoding-active:hover{
-			background:red;
+			background:#662222;
 		}
     </style>
 </head>
@@ -176,20 +188,20 @@
 			<div class="menu-section">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE</div>
-				<div class="menu-sketches-buttons">
-					<button class="menu-button tippy" onclick="loadAbout();" title="About P5LIVE">
+				<div class="menu-sketches-buttons" id="p5live-buttons">
+					<button class="menu-button tippy" onclick="loadAbout();" data-title="About P5LIVE">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="resetP5();" title="Reset P5LIVE">
+					<button class="menu-button tippy" onclick="resetP5();" data-title="Reset P5LIVE">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-slash"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="showRef();" title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
+					<button class="menu-button tippy" onclick="showRef();" data-title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button class="menu-button tippy" onclick="savePNG();" title="Save PNG">
+					<button class="menu-button tippy" onclick="savePNG();" data-title="Save PNG">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
-					<button class="menu-button tippy" onclick="saveHTML();" title="Save HTML">
+					<button class="menu-button tippy" onclick="saveHTML();" data-title="Save HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
 					
@@ -198,20 +210,20 @@
 
 			<div class="menu-section" id="menu-cocode">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header">CO-CODING</div>
+				<div class="menu-header" id="menu-cocode-header">COCODING</div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
-					<button class="menu-button tippy cocoding-active" id="menu-cocoding" onclick="cocodingInit();" title="Leave CoCoding">
+					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop Collaborative Coding">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Clone Sketch">
+					<button class="menu-button tippy" onclick="sketchSaveAs();" data-title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
-					<button class="menu-button tippy" id="lockdown" onclick="toggleLockdown()" title="lockdown" style="display:none;">
+					<button class="menu-button tippy" id="lockdown" onclick="toggleLockdown()" data-title="lockdown" style="display:none;">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
 					</button>
 				</div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-inactive">
-					<button class="menu-button tippy" id="menu-cocoding" onclick="cocodingInit();" title="CoCoding! <br>Collaborative Coding">
+					<button class="menu-button tippy cocoding-inactive" id="menu-cocoding" onclick="cocodingInit();" data-title="Start Collaborative Coding!">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
 				</div>
@@ -225,26 +237,26 @@
 				<div class="menu-section-bg"></div>
 				<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
 				<div class="menu-sketches-buttons">
-					<button class="menu-button tippy" onclick="loadDefault();" title="New Sketch<div class='shortcut'>CTRL + N</div>">
+					<button class="menu-button tippy" onclick="loadDefault();" data-title="New Sketch<div class='shortcut'>CTRL + N</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="sketchSaveAs();" title="Clone Sketch">
+					<button class="menu-button tippy" onclick="sketchSaveAs();" data-title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
-					<button class="menu-button tippy" onclick="addFolder();" title="New Folder">
+					<button class="menu-button tippy" onclick="addFolder();" data-title="New Folder">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
 					</button>
-					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="sketchesImport(this.files);" />
-					<button class="menu-button tippy" onclick="document.getElementById('file-input').click();" title="Import Sketches">
+					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="importSketches(this.files);" onclick="this.value=null;" />
+					<button class="menu-button tippy" onclick="document.getElementById('file-input').click();" data-title="Import Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="sketchesExport();" title="Export Sketches">
+					<button class="menu-button tippy" onclick="exportAllSketches();" data-title="Export Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 					</button>
-					<button style="display:none;" class="menu-button tippy" onclick="loadDemo();" title="Load Demos">
+					<button style="display:none;" class="menu-button tippy" onclick="loadDemo();" data-title="Load Demos">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
 					</button>
-					<button style="display:none;" class="menu-button tippy" onclick="sketchesClear();" title="Clear Sketches">
+					<button style="display:none;" class="menu-button tippy" onclick="sketchesClear();" data-title="Clear Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
 					</button>
 				</div>
@@ -259,49 +271,47 @@
 				<div class="menu-section-bg"></div>
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
-					<div class="tippy-left" style="cursor:help;" title="Toggle Live-Coding<div class='shortcut'>CTRL + A</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Auto-Compiling<div class='shortcut'>CTRL + A</div>">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();"> 
-						Auto Compile
+						Live Coding
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>">
 						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();"> 
 						Fullscreen
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="noLoop() if window loses focus">
+					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus">
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();"> 
 						Eco Render
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Toggle Cursor<div class='shortcut'>CTRL + C</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Cursor<div class='shortcut'>CTRL + C</div>">
 						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();"> 
 						Cursor
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Toggle Menu-Tab <br>*if unchecked, MUST use shortcut<div class='shortcut'>CTRL + M</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Menu-Tab <br>IF unchecked, MUST use shortcut<div class='shortcut'>CTRL + M</div>">
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
 						Menu Tab
 					</div>
 					<hr>
-					<div class="tippy-left" style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
+					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
 						Font Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
-					<div class="tippy-left" style="cursor:help;display:none;" title="Set theme (ignored in Auto Compile mode)">
+					
+					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
+					Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();"> <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
 						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
-							<option value="ace/theme/dawn">Dawn</option>
-							<option value="ace/theme/kuroir">Kuroir</option>
+							<option value="ace/theme/gob">Green on Black</option>
 							<option value="ace/theme/ambiance">Ambiance</option>
 							<option value="ace/theme/cobalt">Cobalt</option>
-							<option value="ace/theme/mono_industrial">Mono Industrial</option>
 							<option value="ace/theme/pastel_on_dark">Pastel on dark</option>
-							<option value="ace/theme/solarized_dark">Solarized Dark</option>
 							<option value="ace/theme/twilight">Twilight</option>
 						</select>
-					</div>
-					<div class="tippy-left" style="cursor:help;" title="Code lines">
-					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
 					</div>
 				</div>
 			</div>
@@ -393,28 +403,20 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		if(reset){localStorage.clear();}
 
 		function resetP5(){
-
 			vex.dialog.confirm({
-			    message: "Completely reset P5LIVE?",
-			    callback: function (value) {
-			        if (value) {
-			            localStorage.clear();
+				message: "Completely reset P5LIVE?",
+				callback: function (value) {
+					if (value) {
+						localStorage.clear();
 						location.reload();
-			        } else {
-			            //console.log('Chicken.')
-			        }
-			    }
+					}
+				}
 			})
-
-			// var doubleCheck = confirm("Completely reset P5LIVE?");
-			// if(doubleCheck){
-			// 	localStorage.clear();
-			// 	location.reload();
-			// }
 		}
 
 		var initSettings = {
 			"version":"1.1.0",
+			"versionNumber":"",
 			"welcome":true,
 			"fontSize":15, 
 			"autoCompile":true, 
@@ -431,6 +433,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"],
 			"theme": "ace/theme/twilight",
 			"themeBG": "052544",
+			"themeBGactive": true
 		}
 	
 		// init vars
@@ -456,6 +459,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsEcoMode = document.getElementById('settings-ecorender'),
 		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
 		settingsMenutab = document.getElementById('settings-menutab'),
+		settingsBGactive = document.getElementById('settings-usebg'),
 		refHolder = document.getElementById('refholder'),
 		ref = document.getElementById('ref'),
 		// menuNewSketch = document.getElementById('menu-sketch-new'),
@@ -463,7 +467,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuSwitch = document.getElementById('menu-switch'),
 		menuTheme = document.getElementById("menu-settings-theme"),
 		settingsBG = document.getElementById("menu-settings-bg"),
-		menuCocoding = document.getElementById('menu-cocoding'),
+		menuCocoding = document.getElementById('menu-cocode-header'),
 		settings = getSettings(),
 		validCode = true, 
 		sketchLoaded = false,
@@ -614,7 +618,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							}
 						}
 					}
-					menuCocodeSketches.innerHTML = '<li class="item-sketch menu-sketch-holder" onclick="cocode.rename();" '+activeSelf+'>'+settings.cocoding.nick+'</li>' + usersHTML;
+					menuCocodeSketches.innerHTML = '<li class="item-sketch menu-sketch-holder tippy" data-title="Click to Rename" onclick="cocode.rename();" '+activeSelf+'>'+settings.cocoding.nick+'</li>' + usersHTML;
+					loadTippy();
 					// this.buildUsers(userList);
 					//console.log(userList);
 				});
@@ -655,21 +660,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				    	document.getElementsByClassName("vex-dialog-prompt-input")[0].select();
 				    }
 				})
-				/*
-				var newName = prompt('Please enter a new name for "'+settings.cocoding.nick+'":', settings.cocoding.nick).replace(/["']/g, "");
-				if(newName != '' && newName != settings.cocoding.nick){
-					settings.cocoding.nick = newName;
-					updateSettings();
-					this.login();
-				}
-				*/
 			}
 
-			login(){
-				//console.log(this.users);
-				
+			login(){				
 			  	this.socket.emit('login', settings.cocoding.nick);
-			  	//this.socket.emit('login', this.userid, this.usernick, this.namespace);
 			}
 
 		};
@@ -720,7 +714,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for(var i=0; i < pcode.length; i++){
 				var pitem = pcode[i];
 				var pcontents = pitem.innerHTML;
-				pitem.innerHTML = '<span class="ace_line_bg" style="background:#'+settings.themeBG+'">' + pcontents + '</span>';
+				if(settings.themeBGactive){
+					pitem.innerHTML = '<span class="ace_line_bg" style="background:#'+settings.themeBG+'">' + pcontents + '</span>';
+				}
 			}
 		}
 
@@ -868,6 +864,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			menutabToggleUpdate();
 			loadTheme();
 			loadBG();
+			themeBGactiveToggleUpdate();
 			loadSnippets();
 			loadRef();
 			//settings.sketches = ["meta_layers_bw", "meta_cocoding_bw", "thanks"];
@@ -924,7 +921,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function updateSketches(){
 			updateSettings();
 			initSortable();
-			//updateMenu();
 		}
 
 		// load sketch
@@ -950,31 +946,20 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				    message: "Exit CO-CODING?",
 				    callback: function (value) {
 				        if (value) {
-				            settings.fileName = sketch;
-							settings.cocoding = {};
-							updateSettings;
-							loadSketch(setings.fileName);
+				        	cocodingExit(sketch);
+				   //          settings.fileName = sketch;
+							// settings.cocoding = {};
+							// updateSettings;
+							// loadSketch(setings.fileName);
 							//document.location.search = 'sk='+settings.fileName;
-				        } else {
-				            //console.log('Chicken.')
 				        }
 				    }
 				})
 
-				// var doubleCheck = confirm("Exit CO-CODING?");
-
-				// if(doubleCheck && localStorage.hasOwnProperty(sketch)){
-				// 	//console.log(sketch);
-				// 	settings.fileName = sketch;
-				// 	settings.cocoding = {};
-				// 	updateSettings;
-				// 	document.location.search = 'sk='+settings.fileName;
-				// }
-
 			}else {
 				if(localStorage.hasOwnProperty(sketch)){
 					settings.fileName = sketch;
-					console.log(settings.fileName);
+					//console.log(settings.fileName);
 					editor.setValue(localStorage[settings.fileName], 1);
 					
 					pLen = editor.getValue().length;
@@ -1020,7 +1005,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 									var sketchesFixed = sketchesFlat.replace('"'+itemName+'"', '"'+newName+'"');
 									settings.sketches = JSON.parse(sketchesFixed);
 								}else{
-									alert("\""+newName +"\" already exists. Pick a new name");
+									vex.dialog.alert({
+										message:"\""+newName +"\" already exists. Pick a new name",
+										callback: function(){renameItem(itemName, itemType)}
+									})
 									return false;
 								}
 							}
@@ -1041,43 +1029,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			    	document.getElementsByClassName("vex-dialog-prompt-input")[0].select();
 			    }
 			})
-
-			/*
-			// update from PROMPT to own window.. for checking of existing name??
-			var newName = prompt('Please enter a new name for "'+itemName+'":', itemName).replace(/["']/g, "");
-			if(newName != '' && newName != itemName){
-				// don't do recursive...!
-				// settings.sketches.map(function (s) {
-				//   if (s.name == itemName) {
-				//   	s.name = newName;
-				//   }
-				// });
-
-				var sketchesFlat = JSON.stringify(settings.sketches);
-				if( sketchesFlat.indexOf('"'+itemName+'"') > -1 ) {
-					if( sketchesFlat.indexOf('"'+newName+'"') == -1 ) {
-						var sketchesFixed = sketchesFlat.replace('"'+itemName+'"', '"'+newName+'"');
-						settings.sketches = JSON.parse(sketchesFixed);
-					}else{
-						alert("\""+newName +"\" already exists. Pick a new name");
-						return false;
-					}
-				}
-
-				updateSettings();
-				initSortable();
-				if(itemType == 'sketch'){
-					settings.fileName = newName;
-					localStorage.setItem(newName, localStorage[itemName]);
-					localStorage.removeItem(itemName);
-					setTimeout(function(){ loadSketch(newName); }, 100);
-				}
-				
-			}
-			*/
 		}
 
-		function searchSketch(sketchName){
+		function searchSketches(sketchName){
 			var sketchesFlat = JSON.stringify(settings.sketches);
 			if( sketchesFlat.indexOf('"'+sketchName+'"') > -1 ) {
 				return true;
@@ -1086,21 +1040,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		// remove sketch
-		function removeSketch(sketch){
-			var doubleCheck = confirm("Are you sure you want to delete: " +sketch+" ?");
-			if(doubleCheck){
-				localStorage.removeItem(sketch);
-				var index = settings.sketches.indexOf(sketch);
-				if (index !== -1) {
-					settings.sketches.splice(index, 1);
-				}
-				if(sketch === settings.fileName){
-					setTimeout(function(){ loadDefault(); }, 100);
-				}
-				updateSketches();
-			}
+		function jsonSearch(obj, key, value) {
+		  return obj.filter(
+		      function(obj){return obj[key] == value}
+		  );
 		}
+
 
 		// pause sketch on demand
 		function pauseSketch(){
@@ -1126,28 +1071,136 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(settings.debugMode){console.log(jsonExport);}
 		}
 
-		// export all sketches to JSON
-		function sketchesExport(){
-			var jsonExport = {};
-			jsonExport.sketches = [];
-			for(var i=0; i < settings.sketches.length; i++){
-				jsonExport.sketches.push({"sketchName":settings.sketches[i], "sketchCode":localStorage.getItem(settings.sketches[i])});
-			}
-			jsonExport.settings = settings;
-			p5f.saveJSON(jsonExport, 'P5L_sketches_'+timeStamp()+'.json');
-			if(settings.debugMode){console.log(jsonExport);}
+		function exportFolder(folder){
+			var folderObj = jsonSearch(settings.sketches, 'name', folder);
+			// console.log(folderObj);
+			var tempSketches = {};
+			tempSketches.version = settings.version;
+			tempSketches.structure = folderObj;
+			tempSketches.sketches = [];
+			listSketches(folderObj).forEach(function (sketch){
+				if(localStorage.hasOwnProperty(sketch)){
+					tempSketches.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
+				}
+			});
+			p5f.saveJSON(tempSketches, 'P5L_FOLDER_'+folder+'_'+timeStamp()+'.json');
 		}
 
+		// export all sketches to JSON
+		function exportAllSketches(){
+			var tempSketches = {};
+			tempSketches.version = settings.version;
+			tempSketches.structure = settings.sketches;
+			tempSketches.sketches = [];
+			listSketches(settings.sketches).forEach(function (sketch){
+				if(localStorage.hasOwnProperty(sketch)){
+					tempSketches.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
+				}
+			});
+			p5f.saveJSON(tempSketches, 'P5L_SKETCHES_'+timeStamp()+'.json');
+
+			//console.log(JSON.stringify(settings.sketches));
+			// var jsonExport = {};
+			// jsonExport.sketches = [];
+			// for(var i=0; i < settings.sketches.length; i++){
+			// 	jsonExport.sketches.push({"sketchName":settings.sketches[i], "sketchCode":localStorage.getItem(settings.sketches[i])});
+			// }
+			// jsonExport.settings = settings;
+			// p5f.saveJSON(jsonExport, 'P5L_sketches_'+timeStamp()+'.json');
+			// if(settings.debugMode){console.log(jsonExport);}
+		}
+
+		function listSketches(obj){
+			return findValues(obj, 'type', 'sketch', 'name');
+		}
+
+		function findValues(obj, key, filter, saveKey){
+			return findValuesHelper(obj, key, filter, saveKey, []);
+		}
+
+		function findValuesHelper(obj, key, filter, saveKey, list) {
+		  if (!obj) return list;
+		  if (obj instanceof Array) {
+		    for (var i in obj) {
+		        list = list.concat(findValuesHelper(obj[i], key, filter, saveKey, []));
+		    }
+		    return list;
+		  }
+		  if (obj[key] && obj[key] == filter) list.push(obj[saveKey]);
+
+		  if ((typeof obj == "object") && (obj !== null) ){
+			  var children = Object.keys(obj);
+			  if (children.length > 0){
+			  	for (i = 0; i < children.length; i++ ){
+			        list = list.concat(findValuesHelper(obj[children[i]], key, filter, saveKey, []));
+			  	}
+			  }
+		  }
+		  return list;
+		}
+
+
 		// import sketches from JSON
-		function sketchesImport(data){
+		function importSketches(data){
 			for(var i=0; i < data.length; i++){
 				var reader = new FileReader();
 				reader.onload = function(data) {
 					var jsonObj = JSON.parse(event.target.result);
-					parseSketches(jsonObj);
+					if(jsonObj.hasOwnProperty('structure')){
+						// foreach folder/sketch check duplicates and give unique names
+						recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
+
+						// add structure to top of sketches list
+						//settings.sketches.unshift(jsonObj.structure);
+						settings.sketches.unshift({"type":"folder", "name":jsonObj.structure[0].name, "toggle":jsonObj.structure[0].toggle, "contents":jsonObj.structure[0].contents});
+
+						updateSettings();
+						initSortable();
+						//updateSketches();
+
+						// import structure as folder..
+						parseSketches(jsonObj);
+					}else{
+						parseSketches(jsonObj);
+					}
+					
 				}
 				reader.readAsText(data[i]);
 			}
+			// document.getElementById('file-input').attr("value", "");
+		}
+
+		// recursively check for duplicate names when importing
+		function recursiveNamecheck(objStructure, objSketches) { // obj
+			for (var key in objStructure) { 
+				var dup = false;
+				var pName = objStructure[key].name;
+
+				// if duplicate, give unique name
+				if(searchSketches(objStructure[key].name)){
+					objStructure[key].name += '_' + timeStamp();
+					dup = true;
+				}
+
+				// if duplciate + sketch, update sketches name too
+				if(dup && objStructure[key].type == 'sketch'){
+					fixNamecheck(objSketches, pName, objStructure[key].name);
+				}
+
+				// if folder, recurse deeper
+				if(objStructure[key].type == 'folder'){
+					recursiveNamecheck(objStructure[key].contents, objSketches);
+				}
+			};
+		}
+
+		// fix any duplicate names
+		function fixNamecheck(obj, oldName, newName){
+			for (let i = 0; i < obj.length; i++) {
+		        if (obj[i]['sketchName'] === oldName) {
+		            obj[i]['sketchName'] = newName;
+		        }
+		    }
 		}
 
 		// load demos
@@ -1170,8 +1223,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				var sketchCode = jsonSketches[i].sketchCode;
 				localStorage.setItem(sketchName, sketchCode); // overwriting... make fork instead??
 				// update parse
-				var sketchesFlat = JSON.stringify(settings.sketches);
-				if( sketchesFlat.indexOf('"'+sketchName+'"') == -1 ) {
+
+				// if(searchSketches(sketchName)){
+				// 	sketchName += '_' + timeStamp();
+				// }
+
+				//var sketchesFlat = JSON.stringify(settings.sketches);
+				if(!searchSketches(sketchName)) {
 					// didn't exist
 					settings.sketches.unshift({"type":"sketch", "name":sketchName});
 				}
@@ -1185,40 +1243,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateSketches();
 		}
 
-		// clear all sketches
-		function sketchesClear(){
-			var doubleCheck = confirm("Clear (remove) ALL skeches?");
-			if(doubleCheck){
-				for(var i=0; i < settings.sketches.length; i++){
-					localStorage.removeItem(settings.sketches[i]);
-				}
-				localStorage.removeItem("sketches");
-				settings.sketches = [];
-				updateSketches();
-			}
-		}
-
 
 
 		/* LIST SKETCHES IN MENU */
-
-		function updateMenu(){
-			//console.log(typeof settings.sketches[0])
-
-			// if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
-			// 	//console.log('hi')
-			// 	getOrder();
-			// 	initSortable();
-			// }else{
-			// 	var order = settings.sketches;
-			// 	var newOrder = [];
-			// 	order.forEach(function(o){
-			// 		newOrder.push({"name":o, "type":"sketch"});
-			// 	});
-			// 	settings.sketches = newOrder;
-			// 	updateSettings();
-			// }
-		}
 
 		function legacySettings(){
 			if(typeof settings.sketches[0] != 'object'){
@@ -1235,52 +1262,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				updateSettings();
 			}
 		}
-
-		/*
-		function updateMenu(){
-			var menuSketchesHTML = '';
-			var selSelected = false;
-			for(var i=0; i < settings.sketches.length; i++){
-				var selClass = "";
-				if(settings.sketches[i] == settings.fileName){
-					selClass = 'sketch-selected';
-					selSelected = true;
-				}
-				var marq = "";
-				if(settings.sketches[i] != null && settings.sketches[i].length > 15){marq = "marq";}
-				menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'" data-id="'+settings.sketches[i]+'"><div class="menu-sketch-nav"><a class="menu-sketch-button tippy" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></a><a class="menu-sketch-button tippy" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
-			}
-			var selClass = "";
-			if(!selSelected){
-				selClass = 'sketch-selected';
-			}
-			var menuSketchesNew = '<div class="menu-sketch-new '+selClass+'"><input type="text" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onfocus="document.getElementById(\'menu-sketch-new-save\').style.display=\'block\';" onblur="setTimeout(function(){document.getElementById(\'menu-sketch-new-save\').style.display=\'none\';}, 200)"><button id="menu-sketch-new-save" onclick="loadType();" class="tippy" title="Save Sketch<br> <div class=\'shortcut\'>ENTER</div>"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-small feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button></div>';
-			menuSketches.innerHTML = menuSketchesHTML;
-			document.getElementById('menu-sketches-new').innerHTML = menuSketchesNew;
-			menuNewSketch = document.getElementById('menu-sketch-new');
-			loadTippy();
-		}
-		*/
-
-		/*
-		// SortableJS for sketcheslist
-		Sortable.create(menuSketches, {
-			group: "sketchOrder",//"localStorage-example",
-			store: {
-				get: function (sortable) {
-					var order = settings.sketches;
-					return order;// ? order.split('|') : [];
-				},
-				set: function (sortable) {
-					var order = sortable.toArray();
-					settings.sketches = order;
-					updateSettings();
-				}
-			}
-		})
-		*/
-
-		
 
 		function getOrder() {
 			if(menuSketches.childNodes.length >0){
@@ -1336,14 +1317,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					var html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
 					for (var key in data) { 
 						var d = data[key];
+						var marq = "";
+						if(d.name.length > 15){marq = "marq";}
 						if(d.type == 'sketch'){
 							var selClass = "";
 							if(d.name == settings.fileName){
 								selClass = 'sketch-selected';
 								selSelected = true;
 							}
-							var marq = "";
-							if(d.name.length > 15){marq = "marq";}
 							html +='<li class="item-sketch menu-sketch-holder '+selClass+'" data-type="sketch" data-id="'+d.name+'" onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>'; //  
 						}else if(d.type == 'folder'){
 							var icon = iconFolderExpand;
@@ -1356,7 +1337,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								d.toggle = 'collapse';
 							}
 							html += '<ul class="item-folder '+d.toggle+'" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" ondrop="dragEnd(this)" ondragout="dragEnd(this)" >';
-							html += '<div class="foldertitle" onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"><a class="toggle" onclick="toggle(this);">'+icon+'</a>' +d.name + '<div class="menu-sketch-nav"></div></div> ';
+							html += '<div class="foldertitle" onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'">'+icon+'' +d.name + '</div></div> ';
 							html += recurse(d.contents);
 							html += '</ul>';
 						}
@@ -1374,6 +1355,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					//sortableFolders = Sortable.create(s, options);
 					new Sortable(s, options);
 				});
+
+				// var svgs = document.getElementsByTagName("svg");
+				// for(var i=0; i<svgs.length;i++){
+				// 	var svg = svgs[i];
+				// 	var bbox = svg.getBBox();
+				// 	console.log(bbox);
+				// 	var viewBox = [bbox.x, bbox.y, bbox.width, bbox.height].join(" ");
+				// 	svg.setAttribute("viewBox", viewBox);
+				// }
+			
+				
 
 
 				//sortableMainFolder = Sortable.create(menuSketches, options); 
@@ -1439,16 +1431,18 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			// 	elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="forkSketch(\''+elmID+'\')" title="Fork">'+iconCopy+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a>';
 			// }else 
 
+			elm.style.width='calc(100%-78px)';
 			if(elmType == 'folder'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" title="Remove">'+iconRemove+'</a>'; // <a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a>
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>'; // 
 			}else if(elmType == 'sketch'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" title="Remove">'+iconRemove+'</a>';
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
 			}
 			loadTippy();
 		}
 
 		function hideNav(elm){
 			elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '';
+			elm.style.width='calc(100%-5px)';
 		}
 
 		function addSketch(){
@@ -1475,7 +1469,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// taking out the trash
 		function removeItem(dataID, elmType){
-
 			vex.dialog.confirm({
 			    message: "Are you sure you want to delete: " +dataID+" ?",
 			    callback: function (value) {
@@ -1489,45 +1482,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						localStorage.removeItem(dataID);
 						selElm.remove();
 
-						//updateSketches();
 						getOrder();
-						// initSortable();
-						// auto rebuild new sketch.. nooo
 						if(dataID === settings.fileName){
 							settings.fileName = 'default';
 							editor.setValue('// removed active sketch...\n// start a New Sketch or load one.');
-							//setTimeout(function(){ loadDefault(); }, 100);
+							pauseSketch();
 						}
-			        } else {
-			            //console.log('Chicken.')
 			        }
 			    }
 			})
-			/*
-			var doubleCheck = confirm("Are you sure you want to delete: " +dataID+" ?");
-			if(doubleCheck){
-				
-
-				var selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
-				selElm.querySelectorAll('[data-id]').forEach(function(k){
-					localStorage.removeItem(k.dataset.id);
-					k.remove();
-				});
-
-				localStorage.removeItem(dataID);
-				selElm.remove();
-
-				//updateSketches();
-				getOrder();
-				// initSortable();
-				// auto rebuild new sketch.. nooo
-				if(dataID === settings.fileName){
-					settings.fileName = 'default';
-					editor.setValue('// removed active sketch...\n// start a New Sketch or load one.');
-					//setTimeout(function(){ loadDefault(); }, 100);
-				}
-			}
-			*/
 		}
 
 
@@ -1690,9 +1653,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if((currCode.search("for") == -1 && currCode.search("while") == -1) || forceRecompile){
 				if(validCode || !settings.strictCompile){
 					if(editor.getValue().indexOf('function setup()') != -1){
-						//** swap BG heree?
-						updateBackground();
 						p5frame.src = "p5live_sketch.html";
+						updateBackground();
 					}
 					
 				}
@@ -1712,16 +1674,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				    newBG = bgMatches[1].replace(/["']/g, "");
 				}else{
 					var cols = bgMatches[1].split(',');
-					if(cols.length > 1){
+					if(cols.length > 2){
 						newBG = rgb2hex(cols[0].trim(), cols[1].trim(), cols[2].trim());
 					}else{
 						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
 					}
 				}
-				document.body.style.background = newBG;//'#fff';//'\''+newBG+'\'';
+				// document.body.style.background = newBG;//'#fff';//'\''+newBG+'\'';
+				p5frame.style.background = newBG;//'#fff';//'\''+newBG+'\'';
 			}
 		}
-		
+
 		function rgb2hex(red, green, blue) {
 			var rgb = blue | (green << 8) | (red << 16);
 			return '#' + (0x1000000 + rgb).toString(16).slice(1)
@@ -1851,11 +1814,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function autoCompileUpdate(){
 			checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
-			if(settings.autoCompile){
-				editor.setTheme("ace/theme/gob");
-			}else{
-				editor.setTheme(settings.theme);
-			}
+
+			// leave theme's alone...
+			// if(settings.autoCompile){
+			// 	editor.setTheme("ace/theme/gob");
+			// }else{
+			// 	editor.setTheme(settings.theme);
+			// }
 		}
 
 
@@ -1948,6 +1913,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else{
 				menuSwitch.style.display = "block";
 			}	
+		}
+
+		//BGactive toggle
+		function themeBGactiveToggle(){
+			settings.themeBGactive = !settings.themeBGactive;
+			themeBGactiveToggleUpdate();
+		}
+
+		function themeBGactiveToggleUpdate(){
+			checkToggle("themeBGactive", settings.themeBGactive, settingsBGactive);
+			editor.renderer.updateFull();
 		}
 
 
@@ -2058,9 +2034,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// set theme
 		function setTheme(sel){
 			// var optgroup = menuTheme.options[sel].closest("optgroup").label;
-			if(!settings.autoCompile){
-				editor.setTheme(menuTheme.value);
-			}
+			// if(!settings.autoCompile){
+			// 	editor.setTheme(menuTheme.value);
+			// }
+			editor.setTheme(menuTheme.value);
 			settings.theme = menuTheme.value;
 			updateSettings();
 		}
@@ -2157,7 +2134,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			localStorage.setItem(settings.fileName, p5template);
 			editor.setValue(p5template, 1);
 			editor.gotoLine(7, 1, false);
-			//updateMenu();
 			updateSettings();
 			editor.focus();
 			getOrder();
@@ -2179,7 +2155,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			localStorage.setItem(settings.fileName, p5liveabout);
 			editor.setValue(p5liveabout, 1);
 			editor.focus();
-			updateMenu();
 			updateSettings();
 			setTimeout(function(){ recompile(); }, 100);
 		}
@@ -2213,12 +2188,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function loadCocode(newName){
 			if(newName != ''){
 				if(settings.cocoding.active){
-					if(!searchSketch('coco-'+editorId)){
+					if(!searchSketches('coco-'+editorId)){
 						//addFolder('coco-'+editorId);
 					}		
 				}
 				settings.fileName = newName;
-				if (!searchSketch(settings.fileName)) {
+				if (!searchSketches(settings.fileName)) {
 
 					//settings.sketches.unshift({"type":"folder", "toggle":"expand", "name":"coco-"+settings.fileName, "contents":[{"type":"sketch", "name":settings.fileName}]});
 					// settings.sketches.unshift({"type":"sketch", "name":settings.fileName});
@@ -2248,12 +2223,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function loadNew(newName){
 			if(newName != ''){
 				if(settings.cocoding.active){
-					if(!searchSketch('coco-'+editorId)){
+					if(!searchSketches('coco-'+editorId)){
 						//addFolder('coco-'+editorId);
 					}		
 				}
 				settings.fileName = newName;
-				if (!searchSketch(settings.fileName)) {
+				if (!searchSketches(settings.fileName)) {
 
 					//settings.sketches.unshift({"type":"folder", "toggle":"expand", "name":"coco-"+settings.fileName, "contents":[{"type":"sketch", "name":settings.fileName}]});
 					settings.sketches.unshift({"type":"sketch", "name":settings.fileName});
@@ -2325,25 +2300,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 
-		/* PROMPT SKETCH SWITCHER */
 
-		function switchSketch() {
-			settings.fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + settings.sketches, '').replace(/["']/g, "");
-			if(settings.fileName == '') { 
-				loadDefault();
-			}else{
-				loadNew(settings.fileName);
-			}
-			document.title = 'P5LIVE - ' + settings.fileName;
-			updateMenu();
-			recompile();
-		};
 
 		// Tooltips via tippy
 		function loadTippy(){
 			tippy('.tippy', {
 				content(reference) {
-					const title = reference.getAttribute('title')
+					const title = reference.getAttribute('data-title')
 					//reference.removeAttribute('title') // seems ok to leave there...
 					return title
 				},
@@ -2356,7 +2319,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			tippy('.tippy-left', {
 				content(reference) {
-					const title = reference.getAttribute('title')
+					const title = reference.getAttribute('data-title')
 					//reference.removeAttribute('title')
 					return title
 				},
@@ -2743,7 +2706,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function cocodingExit(sketch){
 			// *** better exit code...
-			settings.cocoding = {}; // really trash all?
+			// settings.cocoding = {}; // really trash all?
 			settings.cocoding.active = false;
 			settings.fileName = sketch;
 			updateSettings;
@@ -2755,7 +2718,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function cocoding(){
 			// updateSettings();
 			menuCocodeHolder.style.display = "block";
-	        menuCocoding.style.backgroundColor = "#00FF00";
+	        // menuCocoding.style.backgroundColor = "#00FF00";
 	        cocode = new CocodeApp(settings.cocoding.namespace);
 	        document.getElementById('cocoding-buttons-inactive').innerHTML = document.getElementById('cocoding-buttons-active').innerHTML;
 	        document.getElementById('cocoding-buttons-active').innerHTML = '';

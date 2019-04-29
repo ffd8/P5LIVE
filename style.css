@@ -15,8 +15,8 @@
 * {
 	box-sizing: border-box;
 }
-::selection {
-	background-color: #fff;
+#p5-code::selection {
+	background:#fff;
 }
 html {
 	margin: 0;
@@ -104,6 +104,10 @@ hr{
 }
 .ace_marker-layer{
 	z-index:9999!important;
+}
+.ace-gob .ace_cursor{
+	background:none;
+	border-width:3px;
 }
 #editor, #p5-code, .ace_scroller{
 	cursor:cell !important;
@@ -223,6 +227,7 @@ hr{
 	position:relative;
 	width:100%;
 	height:30px;
+
 }
 .menu-button{
 	color:#fff;
@@ -231,6 +236,7 @@ hr{
 	padding:3px;
 	border:0;
 	border-right:1px solid #888;
+	border-bottom:1px solid #888;
 	outline:none;
 	cursor:pointer;
 	font-weight: 400;
@@ -238,6 +244,9 @@ hr{
 	height:30px;
 	opacity:.75;
 	flex: 1;
+}
+#p5live-buttons .menu-button{
+	border-bottom:none;
 }
 .menu-button:last-child{
 	border-right:none;
@@ -315,14 +324,21 @@ hr{
 .menu-sketch-holder#menu-sketches-new:hover{
 	background:#fff;
 }
-.menu-sketch{
+.menu-sketch, .menu-folder{
 	position: relative;
-	width:calc(100% - 78px);
+	//width:calc(100% - 5px);
 	height:100%;
 	float:none;
 	padding:2px 5px 5px 0;
 	overflow: hidden;
 	white-space: nowrap;
+	cursor:pointer;
+}
+.menu-folder{
+	text-transform: uppercase;
+}
+.menu-sketch:hover, .menu-folder:hover{
+	//width:calc(100% - 78px);
 }
 .marq:hover{
 	animation: marquee 5s linear infinite;
@@ -369,6 +385,7 @@ hr{
 }
 #menu-settings-theme{
 	width:50%;
+	margin-left:40px;
 }
 #menu-settings-bg{
 	width:50px;
