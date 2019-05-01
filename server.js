@@ -1,78 +1,90 @@
 "use strict";
 
 const express = require('express')
-	, app = express()
-	, server = require('http').Server(app)
-	, io = require('socket.io')(server)
-	, RGA = require('./includes/js/rga.js')
-	, port = Number(process.env.PORT) || 5000
-	, url = require('url')
+, app = express()
+, server = require('http').Server(app)
+, io = require('socket.io')(server)
+, RGA = require('./includes/js/rga.js')
+, port = process.env.PORT || 5000
 
-
+const maxSpaces = 20; // check memory for number of spaces...
+const purgeCounter = 5; // sec
 let cc = {}; // store namespaces
 
+
 app.get('/', function (req, res) {
-	//res.sendFile(__dirname);
 	res.sendFile(__dirname + "/index.html");
-	//static_files.serve(req, res);
-	var ccRaw = url.parse(req.url, true).query.cc; // get namespaces
-	if(ccRaw != null){
-		//console.log("REQUEST : " +ccRaw);
+
+	let ccRaw = req.query.cc; // get namespaces
+	if(ccRaw != null && ccRaw.length == 5){
 		if(cc[ccRaw] === undefined || cc[ccRaw] === null){
-			cc[ccRaw] = new Namespace(ccRaw, io);
+			//console.log("rooms: "+(Object.keys(cc).length+1)); // check rooms #
+			if(Object.keys(cc).length <= maxSpaces){
+				cc[ccRaw] = new Namespace(ccRaw, io);
+			}else{
+				// report rooms are full
+				io.of('/' + ccRaw).on('connection', function(socket){
+				  socket.emit("full");
+				});
+			}
 		}		 
 	}
 })
 
 // must be after app.get()!
-app.use(express.static('./'))
+app.use(express.static('./'));
 
+// *** remove RGA / data
+function purgeNamespace(nsp){
+	delete cc[nsp];
+	cc[nsp] = undefined;
+}
 
 // tip for using socket in class!
 // https://stackoverflow.com/q/42998568/10885535
 class Namespace {
-  constructor(name, io) {
-    this.name = name;
-    this.users = {};
-    this.people = {};
-    this.namespace = io.of('/' + name);
-    this.rga = new RGA(0);
-    this.userId = 0;
-    this.lockdown = false;
-    this.listenOnNamespace(this.users, this.people, this.name);
-  }
+	constructor(name, io) {
+		this.name = name;
+		this.users = {};
+		this.people = {};
+		this.namespace = io.of('/' + name);
+		this.rga = new RGA(0);
+		this.userId = 0;
+		this.lockdown = false;
+		this.purgeTimer = null;
+		this.listenOnNamespace(this.users, this.people, this.name, this.purgeTimer);
+	}
 
-  listenOnNamespace(users, people, namespace) {
-    this.namespace.on('connection', (socket) => {
-		this.userId++;
-		this.people[socket.id] = {"nick":this.userId, "status":"focus"};
+	listenOnNamespace(users, people, namespace, purgeTimer) {
+		this.namespace.on('connection', (socket) => {
+			this.userId++;
+			this.people[socket.id] = {"nick":this.userId, "status":"focus"};
 		io.of(namespace).emit("users", JSON.stringify(people)) // update users for all
 
+		// save if quick return
+		if(purgeTimer != null){
+			clearTimeout(purgeTimer);
+		}
+
 		this.namespace.clients((error, clients) => {
-		     if (error) throw error;
-		     users = clients;
-		     //console.log(clients); // => [PZDoMHjiu8PYfRiKAAAF, Anw2LatarvGVVXEIAAAD]
+			if (error) throw error;
+			users = clients;
 		});
-		//console.log(this.people);
 
 		socket.on('disconnect', function() {
 			delete people[socket.id];
+			if(Object.keys(people).length == 0){
+				// set timer to trash room... 
+				purgeTimer = setTimeout(function(){
+					purgeNamespace(namespace);
+				}, (1000 * purgeCounter));
+			}
 			io.of(namespace).emit("users", JSON.stringify(people)) // ALL in namespace
-			//console.log('removed: '+socket.id)
-			//console.log(people);
-			//this.clients[socket.id].remove();
-	      //console.log('Got disconnect!');
-
-	      //var i = this.clients.indexOf(socket);
-	      //this.clients.splice(i, 1);
-	   });
-
-		//console.log("joined: " + this.name);
-		//socket.join(this.name); // .to(socket.room)
-		//console.log("connected: " + this.userId);
+		});
 
 		socket.emit("welcome", {id: this.userId, history: this.rga.history()})
-		
+		socket.emit("cocodeReady");
+
 		if(this.userId == 1){
 			socket.emit('init')
 		}
@@ -87,30 +99,19 @@ class Namespace {
 			}
 		}
 
-		//socket.downstream = socket.emit.bind(socket, "change")
-		// this.rga.subscribe(socket)
-		// socket.on('change', op => { this.rga.downstream(op, socket) })
-
 		RGA.tieToSocket(this.rga, socket);
 
 		socket.on('login', function(newid){
-			// check existing name
+			// check existing name, add random id if so
 			var flatUsers = JSON.stringify(people);
 			if(flatUsers.indexOf('"'+newid+'"') > -1 ){
 				var suffix = Math.floor(Math.random()*99);
-				// console.log("renaming: "+newid+" to: "+suffix)
 				newid += "_"+suffix;
 				socket.emit('rename', newid);
 			}
 			people[socket.id].nick = newid;
-			// console.log(people);
 			io.of(namespace).emit("users", JSON.stringify(people)) // ALL in namespace
 			//socket.broadcast.emit("users", JSON.stringify(people))  // all except sender
-			//this.sendUsers();
-			//console.log('myname = '+this.name);
-			
-			//console.log("user " + users[newid].id + " is now known as " + users[newid].nick);
-			// console.log(this.userId +" / "+ users);
 		})
 
 		socket.on('lockdown', function(lockMode){
@@ -130,23 +131,13 @@ class Namespace {
 			people[socket.id].status = "focus";
 			io.of(namespace).emit("users", JSON.stringify(people))
 		})
+	});
 
-
-		// socket.on('nick', function(uid, newnick){
-		// 	users[uid].nick = newnick;
-		// 	console.log("user " + users[uid].id + "is now known as" + users[uid].nick);
-		// })
-
-    });
-
-    // this.namespace.on('disconnect', (socket) => {
-    // 	users[this.]
-    // });
-  }
+	}
 }
 module.exports = Namespace;
 
 
-server.listen(port, function () {
-	console.log('listening on *:' + port);
-})
+const listener = server.listen(port, function() {
+  console.log('Your app is listening on port ' + listener.address().port);
+});

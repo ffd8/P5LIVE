@@ -91,11 +91,13 @@ hr{
 	top:0vh;
 }
 #p5-console{
-	height:5vh;
-	top:95vh;
-	font-size:10pt;
+	height:auto;
+	min-height:10px;
+	bottom:0;
+	font-size:9pt;
+	padding:5px 5px 5px 10px;
 	resize:none;
-	pointer-events: none;
+	/*pointer-events: none;*/
 }
 .myMarker {
 	position:fixed;
@@ -216,6 +218,7 @@ hr{
 	height:30vh;
 	overflow:hidden;
 	overflow-y:auto;
+	position:relative;
 }
 .menu-sketches-buttons{
 	display: flex;
@@ -326,7 +329,6 @@ hr{
 }
 .menu-sketch, .menu-folder{
 	position: relative;
-	//width:calc(100% - 5px);
 	height:100%;
 	float:none;
 	padding:2px 5px 5px 0;
@@ -338,7 +340,6 @@ hr{
 	text-transform: uppercase;
 }
 .menu-sketch:hover, .menu-folder:hover{
-	//width:calc(100% - 78px);
 }
 .marq:hover{
 	animation: marquee 5s linear infinite;
@@ -383,9 +384,15 @@ hr{
 	position:relative;
 	line-height:1.6em;
 }
+#menu-settings div{
+	outline:none;
+}
 #menu-settings-theme{
 	width:50%;
 	margin-left:40px;
+	font-size:8pt;
+	border:1px solid #888;
+	outline:none;
 }
 #menu-settings-bg{
 	width:50px;
@@ -423,6 +430,129 @@ hr{
 }
 .tippy-roundarrow{
 	fill:#fafafa;
+}
+.item-folder{
+	position:relative;
+	height:auto;
+	overflow:hidden;
+	display:block;
+	background:#333;
+	margin:0px 0 0px 0;
+	padding:0px 0 0px 0;
+	min-height:2px;
+}
+.item-sketch{
+	height:22px;
+	margin-bottom:1px;
+	list-style-type:none;
+	padding:0;
+}
+li{
+	padding:0;
+}
+.item-folder svg, .item-sketch svg{
+	padding:2px 1px 0px 1px;
+	height:16px;
+}
+
+.item-folder > .item-sketch{
+	margin-left:15px;
+	display:none;
+}
+.item-folder > .item-sketch .menu-sketch{
+}
+
+.item-folder > .item-folder{
+	margin-left:15px;
+	display:none;
+}
+.expand > .item-sketch{
+	display:block;
+}
+.item-folder .collapse{
+	display:none;
+}
+.foldertitle:hover .nav-settings, .item-sketch:hover .nav-settings{
+	display:block;
+}
+.toggle{
+	position:relative;
+	z-index:999;
+	cursor:pointer;
+	float:left;
+}
+.menu-sketch-nav svg{
+	padding:4px 1px 0 1px;
+	width:24px;
+}
+.selsetting{
+	background:#444;
+}
+.foldertitle:hover > .menu-sketch-nav {
+	display: inline-block;
+}
+.item-sketch:hover > .menu-sketch-nav {
+	display: inline-block;
+}
+.menu-sketch-nav{
+	float:right;
+	display:none;
+	color:#ddd;
+}
+.sortable-drag{
+	background:#003300;
+	border:1px solid green;
+}
+.sortable-ghost{
+	background:#003300;
+	border:1px solid green;
+	opacity: .5;
+}
+.sortable-placeholder{
+	width:100%;
+	height:1px;
+	list-style-type:none;
+	background:none;
+}
+.buffer{
+	height:20px;
+}
+
+#menu-cocode-sketches-holder{
+	height:20vh;
+	max-height:20vh;
+}
+#menu-cocode{
+}
+.cocoding-inactive:hover{
+	background:#00CC00;
+}
+.cocoding-active{
+	background:#00CC00;
+}
+.cocoding-active:hover{
+	background:#662222;
+}
+
+/* custom scrollbar for sketches */
+/* width */
+.menu-sketches-holder::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.menu-sketches-holder::-webkit-scrollbar-track {
+  background: #444; 
+}
+
+/* Handle */
+.menu-sketches-holder::-webkit-scrollbar-thumb {
+  background: #aaa; 
+}
+
+/* Handle on hover */
+.menu-sketches-holder::-webkit-scrollbar-thumb:hover {
+  background: #aaa; 
 }
 
 /* REFERENCES */

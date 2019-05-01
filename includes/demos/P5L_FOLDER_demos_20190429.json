@@ -1,4 +1,54 @@
 {
+  "version": "1.1.0",
+  "structure": [
+    {
+      "name": "demos",
+      "type": "folder",
+      "toggle": "collapse",
+      "contents": [
+        {
+          "name": "aboutsketch",
+          "type": "sketch"
+        },
+        {
+          "name": "bwEllipse",
+          "type": "sketch"
+        },
+        {
+          "name": "easeFunction",
+          "type": "sketch"
+        },
+        {
+          "name": "sinStrings",
+          "type": "sketch"
+        },
+        {
+          "name": "wanderingWorm",
+          "type": "sketch"
+        },
+        {
+          "name": "audioAnalysis",
+          "type": "sketch"
+        },
+        {
+          "name": "webgl_sphereBox",
+          "type": "sketch"
+        },
+        {
+          "name": "textToPoints",
+          "type": "sketch"
+        },
+        {
+          "name": "basel.codes",
+          "type": "sketch"
+        },
+        {
+          "name": "this is a really long name",
+          "type": "sketch"
+        }
+      ]
+    }
+  ],
   "sketches": [
     {
       "sketchName": "aboutsketch",
@@ -6,7 +56,7 @@
     },
     {
       "sketchName": "bwEllipse",
-      "sketchCode": "/*\tbwEllipse // cc teddavis.org 2019\t*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n}\n\nfunction draw() {\n\tfill(255);\n\tstroke(255);\n\tif(frameCount % 2 == 0)\n\t\tstroke(0);\n\tstrokeWeight(15);\n\tvar oscX = sin(frameCount * 0.01) * width * .4;\n\tvar oscY = sin(frameCount * 0.045) * height * .4;\n\tvar s = sin(frameCount * 0.02) * 150;\n\ttranslate(width / 2, height / 2);\n\tellipse(oscX, oscY, s, s);\n}"
+      "sketchCode": "/*\tbwEllipse // cc teddavis.org 2019\t*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbackground(0);\n}\n\nfunction draw() {\n\tfill(255);\n\tstroke(255);\n\tif(frameCount % 2 == 0)\n\t\tstroke(0);\n\tstrokeWeight(15);\n\tvar oscX = sin(frameCount * 0.01) * width * .4;\n\tvar oscY = sin(frameCount * 0.045) * height * .4;\n\tvar s = sin(frameCount * 0.02) * 150;\n\ttranslate(width / 2, height / 2);\n\tellipse(oscX, oscY, s, s);\n}"
     },
     {
       "sketchName": "easeFunction",
@@ -40,37 +90,5 @@
       "sketchName": "this is a really long name",
       "sketchCode": "/*\tthis is a really long name // cc teddavis.org 2019\t*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbackground(0);\n}\n\nfunction draw() {\n\tfill(255);\n\ttextSize(200);\n\ttext(\"yup... \\nthat's a really long name\", 0, 0, width, height);\n}"
     }
-  ],
-  "settings": {
-    "welcome": false,
-    "fontSize": 12.5,
-    "autoCompile": false,
-    "ecoRender": true,
-    "canvasCursor": true,
-    "fullscreenMode": false,
-    "fileName": "this is a really long name",
-    "menuMode": true,
-    "menutab": true,
-    "debugMode": false,
-    "sketches": [
-      "aboutsketch",
-      "bwEllipse",
-      "easeFunction",
-      "sinStrings",
-      "wanderingWorm",
-      "audioAnalysis",
-      "webgl_sphereBox",
-      "textToPoints",
-      "basel.codes",
-      "this is a really long name"
-    ],
-    "sketchesSortable": "",
-    "scripts": [
-      "includes/p5/addons/p5.dom.min.js",
-      "includes/p5/p5.min.js",
-      "includes/p5/addons/p5.sound.min.js"
-    ],
-    "theme": "ace/theme/twilight",
-    "themeBG": "052544"
-  }
+  ]
 }
