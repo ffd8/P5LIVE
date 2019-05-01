@@ -38,14 +38,14 @@ app.use(express.static('./'));
 function purgeNamespace(nsp){
 	delete cc[nsp];
 	cc[nsp] = undefined;
-	console.log("removed: " + nsp);
+	//console.log("removed: " + nsp);
 }
 
 // tip for using socket in class!
 // https://stackoverflow.com/q/42998568/10885535
 class Namespace {
 	constructor(name, io) {
-		console.log("creating: "+name);
+		//console.log("creating: "+name);
 
 		this.name = name;
 		this.users = {};
@@ -80,7 +80,7 @@ class Namespace {
 
 				// set timer to trash namespace... 
 				if(Object.keys(people).length == 0){
-					console.log('purging: ' + namespace);
+					//console.log('purging: ' + namespace);
 					purgeTimer = setTimeout(function(){
 						for(let i=0; i<Object.keys(rga); i++){
 							Object.keys(rga)[i] = null;
