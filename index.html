@@ -13,7 +13,7 @@
 	<meta name="apple-mobile-web-app-title" content="P5LIVE">
 	<meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1">
 
-	 <!-- Facebook -->
+	<!-- Facebook -->
 	<meta property="og:url" content="https://teddavis.org/p5live">
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="P5LIVE">
@@ -30,18 +30,9 @@
 
 	<!-- Style -->
 	<link rel="stylesheet" type="text/css" media="all" href="style.css">
-
-	<!-- Scripts -->
-	<script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
-	<script src="includes/js/Sortable.js"></script>
-	<script src="includes/js/beautify.js"></script>
-	<script src="includes/js/jscolor.js"></script>
-	<script src="includes/js/popper.min.js"></script>
-	<script src="includes/js/tippy.all.js"></script>
-	<script src="includes/js/markdown.min.js"></script>
 </head>
 <body>
+
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
 		<textarea id="p5-console" class="p5-ta" disabled></textarea>
@@ -59,54 +50,84 @@
 		<div id="menu-bg"></div>
 		<div id="menu-switch" onclick="menuToggle();">X</div>
 		<div id="menu-sections">
-		
+
 			<div class="menu-section">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE</div>
-				<div class="menu-sketches-buttons">
-					<button class="menu-button tippy" onclick="loadAbout();" title="About P5LIVE">
+				<div class="menu-sketches-buttons" id="p5live-buttons">
+					<button class="menu-button tippy" onclick="loadAbout();" data-title="About P5LIVE">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="resetP5();" title="Reset P5LIVE">
+					<button class="menu-button tippy" onclick="resetP5();" data-title="Reset P5LIVE">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-slash"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="showRef();" title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
+					<button class="menu-button tippy" onclick="showRef();" data-title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button class="menu-button tippy" onclick="savePNG();" title="Save PNG">
+					<button class="menu-button tippy" onclick="savePNG();" data-title="Save PNG">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
-					<!-- <button class="menu-button tippy" onclick="cocoding();" title="CoCoding! <br>Collaborative Coding">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
-					</button> -->
+					<button class="menu-button tippy" onclick="saveHTML();" data-title="Save HTML">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+					</button>
+					
 				</div>
 			</div>
-		
+
+			<div class="menu-section" id="menu-cocode">
+				<div class="menu-section-bg"></div>
+				<div class="menu-header" id="menu-cocode-header">COCODING</div>
+				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
+					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop Collaborative Coding">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+					</button>
+					<button class="menu-button tippy" onclick="copyLink(this);" data-title="Copy URL to Clipboard">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+					</button>
+					<button class="menu-button tippy" onclick="cloneSketch();" data-title="Clone Sketch">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+					</button>
+					<button class="menu-button tippy" onclick="cocodeLayers();" data-title="Load cocodeLayers">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+					</button>
+					<button class="menu-button tippy" id="lockdown" onclick="toggleLockdown()" data-title="lockdown" style="display:none;">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+					</button>
+				</div>
+				<div class="menu-sketches-buttons" id="cocoding-buttons-inactive">
+					<button class="menu-button tippy cocoding-inactive" id="menu-cocoding" onclick="cocodingInit();" data-title="Start Collaborative Coding!">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+					</button>
+				</div>
+				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;">
+					<div id="menu-cocode-sketches" class="menu-sketches"></div>
+				</div>
+			</div>
+
 			<div class="menu-section">
 				<div class="menu-section-bg"></div>
 				<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
 				<div class="menu-sketches-buttons">
-					<button class="menu-button tippy" onclick="loadDefault();" title="New Sketch<div class='shortcut'>CTRL + N</div>">
+					<button class="menu-button tippy" onclick="loadDefault();" data-title="New Sketch<div class='shortcut'>CTRL + N</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="document.getElementById('file-input').click();" title="Import Sketches">
+					<button class="menu-button tippy" onclick="cloneSketch();" data-title="Clone Sketch">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+					</button>
+					<button class="menu-button tippy" onclick="addFolder();" data-title="New Folder">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
+					</button>
+					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="importSketches(this.files);" onclick="this.value=null;" />
+					<button class="menu-button tippy" onclick="document.getElementById('file-input').click();" data-title="Import Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
 					</button>
-					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="sketchesImport(this.files);" />
-					<button class="menu-button tippy" onclick="sketchesExport();" title="Export Sketches">
+					<button class="menu-button tippy" onclick="exportAllSketches();" data-title="Export All Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-					</button>
-					<button class="menu-button tippy" onclick="loadDemo();" title="Load Demos">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-					</button>
-					<button class="menu-button tippy" onclick="sketchesClear();" title="Clear Sketches">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
 					</button>
 				</div>
 
-				<div id="menu-sketches-new"></div>
-				<div id="menu-sketches-holder" >
-					<div id="menu-sketches"></div>
+				<div id="menu-sketches-holder" class="menu-sketches-holder">
+					<div id="menu-sketches" class="menu-sketches"></div>
 				</div>
 			</div>
 			
@@ -114,65 +135,68 @@
 				<div class="menu-section-bg"></div>
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
-					<div class="tippy-left" style="cursor:help;" title="Toggle Live-Coding<div class='shortcut'>CTRL + A</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Auto-Compiling<div class='shortcut'>CTRL + A</div>" onclick="autoCompileToggle();">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();"> 
-						Auto Compile
+						Live Coding
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>" onclick="fullscreenToggle();">
 						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();"> 
 						Fullscreen
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="noLoop() if window loses focus">
+					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus" onclick="ecoRenderToggle();">
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();"> 
 						Eco Render
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Toggle Cursor<div class='shortcut'>CTRL + C</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Sketch Cursor<div class='shortcut'>CTRL + C</div>" onclick="cursorToggle();">
 						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();"> 
 						Cursor
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Toggle Menu-Tab <br>*if unchecked, MUST use shortcut<div class='shortcut'>CTRL + M</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Console" onclick="consoleToggle();">
+						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console" onchange="consoleToggle();"> 
+						Console
+					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Menu-Tab <br>IF unchecked, MUST use shortcut<div class='shortcut'>CTRL + M</div>" onclick="menutabToggle();">
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
 						Menu Tab
 					</div>
 					<hr>
-					<div class="tippy-left" style="display:none;cursor:help;" title="Add extra libs to your sketches, will be added on each compile">
+					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
-					<div class="tippy-left" style="cursor:help;" title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
 						Font Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
-					<div class="tippy-left" style="cursor:help;display:none;" title="Set theme (ignored in Auto Compile mode)">
+
+					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
+						Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();"> <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
 						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
-							<option value="ace/theme/dawn">Dawn</option>
-							<option value="ace/theme/kuroir">Kuroir</option>
+							<option value="ace/theme/gob">Green on Black</option>
 							<option value="ace/theme/ambiance">Ambiance</option>
 							<option value="ace/theme/cobalt">Cobalt</option>
-							<option value="ace/theme/mono_industrial">Mono Industrial</option>
 							<option value="ace/theme/pastel_on_dark">Pastel on dark</option>
-							<option value="ace/theme/solarized_dark">Solarized Dark</option>
 							<option value="ace/theme/twilight">Twilight</option>
 						</select>
-					</div>
-					<div class="tippy-left" style="cursor:help;" title="Code lines">
-					Background: <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
 					</div>
 				</div>
 			</div>
 
 		</div>
 	</div>
-	<textarea style="display:none;" id="p5-template">
+<textarea style="display:none;" id="p5-template">
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	
 }
 
 function draw() {
-	
+
 }</textarea>
-	<textarea style="display:none;" id="p5-custom">
+<textarea style="display:none;" id="p5-custom">
+/* CUSTOM FUNCTIONS FOR P5LIVE */
 // readjust if window-resized
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
@@ -189,8 +213,8 @@ function ease(iVal, oVal, eVal){
 function println(msg){
 	print(msg);
 }
-	</textarea>
-	<textarea style="display:none;" id="p5live-about">
+</textarea>
+<textarea style="display:none;" id="p5live-about">
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 	noStroke();
@@ -216,53 +240,70 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	vertex(x3, y3);
 	endShape();
 }</textarea>
+
+	<!-- Scripts -->
+	<script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/Sortable.js"></script>
+	<script src="includes/js/beautify.js"></script>
+	<script src="includes/js/jscolor.js"></script>
+	<script src="includes/js/popper.min.js"></script>
+	<script src="includes/js/tippy.all.js"></script>
+	<script src="includes/js/markdown.min.js"></script>
+	<script src='includes/js/download.js'></script>
+	<script src="includes/js/vex/js/vex.combined.min.js"></script>
+	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
+	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
+
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="includes/js/rga.js"></script>
 	<script type="text/javascript">
 		'use strict'
 
-		/*
-			TODO
-			- custom assets guide
-			- set toggle for console
-			- 
-		*/
 
 
+		/* INIT */
 
-		/* INIT THINGS */
-
-		// init localStorage
-		var reset = false;
-
-		if(reset){localStorage.clear();}
+		// resetP5(); // manual reset
 
 		function resetP5(){
-			var doubleCheck = confirm("Completely reset P5LIVE?");
-			if(doubleCheck){
-				localStorage.clear();
-				location.reload();
-			}
+			vex.dialog.confirm({
+				message: 'Completely reset P5LIVE?',
+				callback: function (value) {
+					if (value) {
+						localStorage.clear();
+						location.reload();
+					}
+				}
+			})
 		}
 
-		var initSettings = {
-			"welcome":true,
-			"fontSize":15, 
-			"autoCompile":true, 
-			"ecoRender": true,
-			"canvasCursor": true,
-			"fullscreenMode":false,
-			"fileName": '',
-			"menuMode": true,
-			"menutab":true,
-			"debugMode": false,
-			"sketches": [],
-			"sketchesSortable": '',
-			"scripts": ["includes/p5/addons/p5.dom.min.js", "includes/p5/p5.min.js", "includes/p5/addons/p5.sound.min.js"],
-			"theme": "ace/theme/twilight",
-			"themeBG": "052544",
+		// settings
+		let initSettings = {
+			'version':'1.1.0',
+			'revision':3,
+			'welcome':true,
+			'fontSize':15, 
+			'autoCompile':true, 
+			'ecoRender': true,
+			'canvasCursor': true,
+			'console': true,
+			'fullscreenMode':false,
+			'fileName': '',
+			'menuMode': true,
+			'menutab':true,
+			'debugMode': false,
+			'safeMode': false,
+			'sketches': [],
+			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'status':''},
+			'scripts': ['includes/p5/addons/p5.dom.min.js', 'includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
+			'theme': 'ace/theme/gob',
+			'themeBG': '052544',
+			'themeBGactive': true
 		}
-	
+
 		// init vars
-		var p5editor = document.getElementById('p5-editor'),
+		let p5editor = document.getElementById('p5-editor'),
 		p5code = document.getElementById('p5-code'),
 		p5console = document.getElementById('p5-console'),
 		p5custom = document.getElementById('p5-custom'),
@@ -271,7 +312,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5frameCover = document.getElementById('p5-frame-cover'),
 		p5f = p5frame.contentWindow,
 		p5liveaboutSketch = document.getElementById('p5live-about').value,
-		p5script = document.getElementById("holdscript"),
+		p5script = document.getElementById('holdscript'),
+		menuCocode = document.getElementById('menu-cocode'),
+		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
+		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSettings = document.getElementById('menu-settings'),
 		menuBG = document.getElementById('menu-bg'),
@@ -280,14 +324,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsFullscreen = document.getElementById('settings-fullscreen'),
 		settingsEcoMode = document.getElementById('settings-ecorender'),
 		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
+		settingsConsole = document.getElementById('settings-console'),
 		settingsMenutab = document.getElementById('settings-menutab'),
+		settingsBGactive = document.getElementById('settings-usebg'),
 		refHolder = document.getElementById('refholder'),
 		ref = document.getElementById('ref'),
-		menuNewSketch = document.getElementById('menu-sketch-new'),
 		menuPanel = document.getElementById('menu'),
 		menuSwitch = document.getElementById('menu-switch'),
-		menuTheme = document.getElementById("menu-settings-theme"),
-		settingsBG = document.getElementById("menu-settings-bg"),
+		menuTheme = document.getElementById('menu-settings-theme'),
+		settingsBG = document.getElementById('menu-settings-bg'),
+		menuCocoding = document.getElementById('menu-cocode-header'),
 		settings = getSettings(),
 		validCode = true, 
 		sketchLoaded = false,
@@ -297,17 +343,21 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		errorTimer,
 		snippets,
 		forceRecompile = false,
-		p5vars = {"frameCount":0, "mouseX":0, "mouseY":0},
-		refList = [];
+		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
+		refList = [],
+		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+		cocode, editorId
+		;
+
 
 		// force off
 		settings.debugMode = false;
 		
 		// init editor 
 		var Range = ace.require('ace/range').Range;
-		var editor = ace.edit("p5-code");
+		var editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
-		editor.session.setMode("ace/mode/javascript");
+		editor.session.setMode('ace/mode/javascript');
 		editor.setOptions({
 			showPrintMargin: false,
 			animatedScroll: false,
@@ -318,23 +368,175 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			tabSize: 4, useSoftTabs: false,
 		});
 		
-		p5editor.style.visibility = "visible";
+		p5editor.style.visibility = 'visible';
 
+		// ICONS!
+		var iconFolderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
+
+		var iconFolderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+
+		var iconFolderExpand = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+
+		var iconFileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+
+		var iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
+
+		var iconRename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
+
+		var iconExport = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+
+		var iconRemove = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+
+		var iconCopy ='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+
+		var options = {
+			group: {name: 'sketches'},
+			animation: 200,
+			filter:'.sortable-placeholder',
+			// forceFallback: true,
+		 //    fallbackOnBody: true,
+		 emptyInsertThreshold: 0,
+		 dragClass: 'sortable-drag',
+		 ghostClass: 'sortable-ghost',
+		 draggable: ['li', 'ul'],
+			// fallbackOnBody = true,
+			swapInvert:true,
+			// swapThreshold:0.65,
+			store: {
+				set: function (sortable) {
+					getOrder();
+				}
+			}
+		}
+
+
+		class CocodeApp{
+			constructor(namespace) {
+				this.socket = '';
+				this.namespace = namespace;
+				this.socket = io('/' + this.namespace);
+				this.rgaConnect();
+				this.users = {};
+				editor.setWrapBehavioursEnabled(false);
+				editor.getSession().on('change', function(){
+					checkErrors();
+				});
+
+				this.login();
+
+				this.socket.on('init', () => {
+					setTimeout(function(){editor.setValue(p5template, 1);}, 100);
+				});
+
+				this.socket.on('cocodeReady', () =>{
+					document.getElementById('cocoding-buttons-inactive').innerHTML = document.getElementById('cocoding-buttons-active').innerHTML;
+					document.getElementById('cocoding-buttons-active').innerHTML = '';
+					loadTippy();
+				});
+
+				this.socket.on('full', () =>{
+					vex.dialog.alert({
+						message:'Sorry COCODING is full at the moment.',
+						callback: function(){cocodingExit(loadLatest());}
+					})
+				});
+
+				this.socket.on('updateSatus', (statusMode)=>{
+					settings.cocoding.status = statusMode;
+					console.log(statusMode);
+					updateSettings();
+					if(statusMode != 'admin'){
+						document.getElementById('lockdown').style.display = 'none';
+					}
+				});
+
+				this.socket.on('lockdown', (lockMode)=>{
+					if(lockMode && settings.cocoding.status != 'admin'){
+						settings.cocoding.lockdown = true;
+						editor.setReadOnly(true);
+					}else{
+						settings.cocoding.lockdown = false;
+						editor.setReadOnly(false);
+					}
+					updateSettings();
+				});
+
+				this.socket.on('rename', (nick)=>{
+					settings.cocoding.nick = nick;
+					updateSettings();
+				});
+
+				this.socket.on('users', (usersRaw) => {
+					this.users = JSON.parse(usersRaw);
+					menuCocodeSketches.innerHTML = '';
+					var activeSelf = '';
+					var usersHTML = '';
+					for (var key in this.users) {
+						if(this.users[key].nick != settings.cocoding.nick){
+							var active = '';
+							if(this.users[key].status == 'blur'){
+								active = 'style="opacity:.25;"';
+							}
+							usersHTML += '<li class="item-sketch menu-sketch-holder" '+active+'>'+this.users[key].nick+'</li>';
+						}else{
+							if(this.users[key].status == 'blur'){
+								activeSelf = 'style="opacity:.25;"';
+							}
+						}
+					}
+					menuCocodeSketches.innerHTML = '<li class="item-sketch menu-sketch-holder tippy" data-title="Click to Rename" onclick="cocode.rename();" '+activeSelf+'>'+settings.cocoding.nick+'</li>' + usersHTML;
+					loadTippy();
+				});
+			}
+
+			rgaConnect(){
+				RGA.AceEditorRGA.setup(editor, this.socket);
+			}
+
+			rename(){
+				vex.dialog.prompt({
+					message: 'Nickname:',
+					value: settings.cocoding.nick, // placeholder
+					callback: function (value) {
+						if(value){
+							var newName = value.replace(/["']/g, '');
+							if(newName != '' && newName != settings.cocoding.nick){
+								settings.cocoding.nick = newName;
+								updateSettings();
+								cocode.login();
+							}
+						}
+					},
+					afterOpen: function(){
+						document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+					}
+				})
+			}
+
+			login(){				
+				this.socket.emit('login', settings.cocoding.nick);
+			}
+
+		};
 
 
 		/* FANCY EDITOR FUNCTIONS */
 
 		// check for errors
-		editor.getSession().on("changeAnnotation", function(){
+		editor.getSession().on('changeAnnotation', function(){
 			var annot = editor.getSession().getAnnotations();
 			validCode = true;
 			for(var i=0; i < annot.length; i++){
-				if(annot[i].type === "error"){
+				if(annot[i].type === 'error'){
 					addMarker(annot[i].row);
 					validCode = false;
 				}
 			}
 			if(validCode){
+				// *** Q: should undo be removed?? = no...
+				if(settings.cocoding.active){
+					//editor.getSession().setUndoManager(new ace.UndoManager());
+				}
 				removeMarkers();
 			}
 		});
@@ -342,7 +544,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function addMarker(n){
 			var elementPos = markerID.map(function(x) {return x.line; }).indexOf(n);
 			if (elementPos === -1) {
-				markerID.push({"line":n, "id":editor.session.addMarker(new Range(n, 0, n, 7000), "myMarker", "fullLine")});
+				markerID.push({'line':n, 'id':editor.session.addMarker(new Range(n, 0, n, 7000), 'myMarker', 'fullLine')});
 			}
 		}
 
@@ -354,80 +556,82 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		// set editor BG
-		editor.renderer.on("afterRender", function(){
+		editor.renderer.on('afterRender', function(){
 			adjustLines();
 		});
 
 		function adjustLines(){
-			var pcode = document.getElementsByClassName("ace_line");
+			var pcode = document.getElementsByClassName('ace_line');
 			for(var i=0; i < pcode.length; i++){
 				var pitem = pcode[i];
 				var pcontents = pitem.innerHTML;
-				pitem.innerHTML = '<span class="ace_line_bg" style="background:#'+settings.themeBG+'">' + pcontents + '</span>';
+				if(settings.themeBGactive){
+					pitem.innerHTML = '<span class="ace_line_bg" style="background:#'+settings.themeBG+'">' + pcontents + '</span>';
+				}
 			}
 		}
 
 
 		/* CMD-KEYS (remove key conflicts) */
-		editor.commands.removeCommands(["gotoright","movelinesup", "movelinesdown", "gotolinestart", "splitline", "gotolineend", "golineup", "jumptomatching", "golinedown", "transposeletters", "find"]);
+		editor.commands.removeCommands(['gotoright','movelinesup', 'movelinesdown', 'gotolinestart', 'splitline', 'gotolineend', 'golineup', 'jumptomatching', 'golinedown', 'transposeletters', 'find']);
 
 		 // replace backspace w/o ctrl + h
 		 editor.commands.addCommand({
-			name: "backspace",
-			bindKey: { win: "Shift-Backspace|Backspace", mac: "Ctrl-Backspace|Shift-Backspace|Backspace" },
-			exec: function(e) { e.remove("left") },
-			multiSelectAction: "forEach",
-			scrollIntoView: "cursor"
+		 	name: 'backspace',
+		 	bindKey: { win: 'Shift-Backspace|Backspace', mac: 'Ctrl-Backspace|Shift-Backspace|Backspace' },
+		 	exec: function(e) { e.remove('left') },
+		 	multiSelectAction: 'forEach',
+		 	scrollIntoView: 'cursor'
 		 });
 
 		 // replace gotoright w/o ctrl + f
 		 editor.commands.addCommand({
-			name: "gotoright",
-			bindKey: { win: "Right", mac: "Right" },
-			exec: function(e,t) { e.navigateRight(t.times) },
-			multiSelectAction: "forEach",
-			scrollIntoView: "cursor",
-			readOnly:!0
+		 	name: 'gotoright',
+		 	bindKey: { win: 'Right', mac: 'Right' },
+		 	exec: function(e,t) { e.navigateRight(t.times) },
+		 	multiSelectAction: 'forEach',
+		 	scrollIntoView: 'cursor',
+		 	readOnly:!0
 		 });
 
 		 // replace golineup w/o ctrl + p
 		 editor.commands.addCommand({
-			name: "golineup",
-			bindKey: { win: "Up", mac: "Up" },
-			exec: function(e,t) { e.navigateUp(t.times) },
-			multiSelectAction: "forEach",
-			scrollIntoView: "cursor",
-			readOnly:!0
+		 	name: 'golineup',
+		 	bindKey: { win: 'Up', mac: 'Up' },
+		 	exec: function(e,t) { e.navigateUp(t.times) },
+		 	multiSelectAction: 'forEach',
+		 	scrollIntoView: 'cursor',
+		 	readOnly:!0
 		 });
 
 		 // replace golinedown w/o ctrl + n
 		 editor.commands.addCommand({
-			name: "golinedown",
-			bindKey: { win: "Down", mac: "Down" },
-			exec: function(e,t) { e.navigateDown(t.times) },
-			multiSelectAction: "forEach",
-			scrollIntoView: "cursor",
-			readOnly:!0
+		 	name: 'golinedown',
+		 	bindKey: { win: 'Down', mac: 'Down' },
+		 	exec: function(e,t) { e.navigateDown(t.times) },
+		 	multiSelectAction: 'forEach',
+		 	scrollIntoView: 'cursor',
+		 	readOnly:!0
 		 });
 
 		 // beautify!
 		 var beautifyOptions = {
-			"indent_size": "1",
-			"indent_char": "\t",
-			"max_preserve_newlines": "5",
-			"preserve_newlines": true,
-			"keep_array_indentation": false,
-			"break_chained_methods": false,
-			"indent_scripts": "normal",
-			"brace_style": "collapse",
-			"space_before_conditional": false,
-			"unescape_strings": false,
-			"jslint_happy": false,
-			"end_with_newline": false,
-			"wrap_line_length": "0",
-			"indent_inner_html": false,
-			"comma_first": false,
-			"e4x": false
+		 	'indent_size': '1',
+		 	'indent_char': '\t',
+		 	'max_preserve_newlines': '5',
+		 	'preserve_newlines': true,
+		 	'keep_array_indentation': false,
+		 	'break_chained_methods': false,
+		 	'indent_scripts': 'normal',
+		 	'brace_style': 'collapse',
+		 	'space_before_conditional': false,
+		 	'unescape_strings': false,
+		 	'jslint_happy': false,
+		 	'end_with_newline': false,
+		 	'wrap_line_length': '0',
+		 	'indent_inner_html': false,
+		 	'comma_first': false,
+		 	'e4x': false
 		 }
 
 
@@ -436,12 +640,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		 // list ace editor commands
 		 function listCommands(){
-			var cmds = editor.commands.commands;
-			var k = [];
-			for (var cmd in cmds){
-				k.push(cmd.name +" = "+ cmd.bindKey);
-			}
-			console.log(cmds);
+		 	var cmds = editor.commands.commands;
+		 	var k = [];
+		 	for (var cmd in cmds){
+		 		k.push(cmd.name + ' = ' + cmd.bindKey);
+		 	}
+		 	console.log(cmds);
 		 }
 
 		// check storageKeys
@@ -450,16 +654,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for (var key in localStorage){
 				k.push(key);
 			}
-			console.log(k.join(", "));
-		 }
+			console.log(k.join(', '));
+		}
 
 		if(settings.debugMode){
 			listCommands();
 			getKeys();
-		 }
+		}
 
 
-		 /* p5 iframe communication */
+		/* p5 iframe communication */
 
 		// mark error line
 		window.document.addEventListener('myEvent', handleEvent, false)
@@ -486,7 +690,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		
 
-		/* SETTINGS + SKETCHES */
+		/* SETTINGS */
 
 		// init settings
 		loadSettings();
@@ -508,19 +712,43 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			menuToggleUpdate();
 			ecoRenderUpdate();
 			cursorToggleUpdate();
+			consoleToggleUpdate();
 			menutabToggleUpdate();
 			loadTheme();
 			loadBG();
+			themeBGactiveToggleUpdate();
 			loadSnippets();
 			loadRef();
-
-			if(settings.welcome){
+			vex.defaultOptions.className = 'vex-theme-plain'
+			legacySettings(); // update sketches from 1.0.2
+			settings.cocoding.active = false;
+			settings.safeMode = false;
+			updateSketches();
+			if(getParam('cc') != undefined){
+				if(getParam('cc').length != 5){
+					cocodingExit(loadLatest());
+					return false;
+				}
+				settings.cocoding.active = true;
+				menuCocode.style.display = 'block';
+				settings.fileName = getParam('cc');
+				settings.cocoding.namespace = settings.fileName;
+				if(settings.cocoding.nick == undefined || settings.cocoding.nick == ''){
+					settings.cocoding.nick = makeid(6);
+				}
+				updateSettings();
+				cocoding();
+			}else if(settings.welcome){
 				loadAbout();
 				settings.welcome = false;
 				updateSettings();
 			}else if(window.location.hash){
 				if(window.location.hash.substring(1) === 'new'){
 					loadDefault();
+				}else if(window.location.hash.substring(1).toLowerCase() === 'bug'){
+					settings.safeMode = true;
+					updateSettings();
+					loadSketch(settings.fileName);
 				}else{
 					getRef();
 					loadSketch(settings.fileName);
@@ -530,6 +758,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
+		function getParam(paramSearch){
+			let params = document.location.search.substring(1).split('&');
+			for(let i=0; i<params.length; i++){
+				let keyVal = params[i].split('=');
+				if(keyVal[0] == paramSearch){
+					console.log(keyVal[1]);
+					return keyVal[1];
+				}
+			}
+		}
+
+
+		/*	SKETCHES TASKS	*/
 		// set settings to localstorage
 		function updateSettings(){
 			localStorage.setItem('settings', JSON.stringify(settings));
@@ -539,54 +780,55 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// set sketches list to localstorage
 		function updateSketches(){
 			updateSettings();
-			updateMenu();
+			initSortable();
+		}
+
+		// save skettch as...
+		function cloneSketch(){
+			var forkName = settings.fileName;
+			settings.fileName = forkName+'_'+timeStamp();
+			settings.sketches.unshift({'type':'sketch', 'name':settings.fileName});
+			updateSketches();
+			localStorage[settings.fileName] = editor.getValue();
+			editor.focus(); 
 		}
 
 		// load sketch
 		function loadSketch(sketch){
-			if(localStorage.hasOwnProperty(sketch)){
-				settings.fileName = sketch;
-				editor.setValue(localStorage[settings.fileName], 1);
-				pLen = editor.getValue().length;
-				updateMenu();
-				updateSettings();
-				setTimeout(function(){p5varsReset();recompile();}, 100);
-				editor.getSession().setUndoManager(new ace.UndoManager());
-				editor.focus();
-			}else{
-				loadDefault();
+			if(settings.cocoding.active){
+				vex.dialog.confirm({
+					message: 'Exit CO-CODING?',
+					callback: function (value) {
+						if (value) {
+							cocodingExit(sketch);
+						}
+					}
+				})
+			}else {
+				if(localStorage.hasOwnProperty(sketch)){
+					// auto expand folder (incase of short-cut selection)
+					recursiveFolderExpand(settings.sketches, sketch, '');
+					settings.fileName = sketch;
+					editor.setValue(localStorage[settings.fileName], 1);
+					
+					pLen = editor.getValue().length;
+					updateSketches();
+
+					setTimeout(function(){p5varsReset();recompile();}, 200);
+
+					// restart undo to prevent overwrite selected sketch
+					editor.getSession().setUndoManager(new ace.UndoManager());
+					editor.focus();
+				}else{
+					// start new sketch
+					loadDefault();
+				}
 			}
 		}
 
-		// rename sketch
-		function renameSketch(sketch){
-			var newName = prompt('Please enter a new name for "'+sketch+'":', sketch).replace(/["']/g, "");
-			if(newName != '' && newName != sketch){
-				localStorage.setItem(newName, localStorage[sketch]);
-				var index = settings.sketches.indexOf(sketch);
-				if (index !== -1) {
-					settings.sketches[index] = newName;
-				}
-				localStorage.removeItem(sketch);
-				updateSketches();
-				setTimeout(function(){ loadSketch(newName); }, 100);
-			}
-		}
-
-		// remove sketch
-		function removeSketch(sketch){
-			var doubleCheck = confirm("Are you sure you want to delete: " +sketch+" ?");
-			if(doubleCheck){
-				localStorage.removeItem(sketch);
-				var index = settings.sketches.indexOf(sketch);
-				if (index !== -1) {
-					settings.sketches.splice(index, 1);
-				}
-				if(sketch === settings.fileName){
-					setTimeout(function(){ loadDefault(); }, 100);
-				}
-				updateSketches();
-			}
+		// load top sketch
+		function loadLatest(){
+			return listSketches(settings.sketches)[0];
 		}
 
 		// pause sketch on demand
@@ -601,55 +843,207 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
+		function searchSketches(sketchName){
+			var sketchesFlat = JSON.stringify(settings.sketches);
+			if( sketchesFlat.indexOf('"'+sketchName+'"') > -1 ) {
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		function searchJSON(obj, key, value) {
+			return obj.filter(
+				function(obj){return obj[key] == value}
+				);
+		}
+
+
 
 		/* IMPORT/EXPORT SKETCHES */
-
 		// export single sketch to JSON
 		function exportSketch(sketch){
 			var jsonExport = {};
 			jsonExport.sketches = [];
-			jsonExport.sketches.push({"sketchName":sketch, "sketchCode":localStorage.getItem(sketch)});
-			var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-			p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+dateStamp+'.json');
+			jsonExport.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
+			p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp()+'.json');
 			if(settings.debugMode){console.log(jsonExport);}
+		}
+
+		// export folder[s] w/ sketches to JSON
+		function exportFolder(folder){
+			var folderObj = searchJSON(settings.sketches, 'name', folder);
+			// console.log(folderObj);
+			var tempSketches = {};
+			tempSketches.version = settings.version;
+			tempSketches.structure = folderObj;
+			tempSketches.sketches = [];
+			listSketches(folderObj).forEach(function (sketch){
+				if(localStorage.hasOwnProperty(sketch)){
+					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
+				}
+			});
+			p5f.saveJSON(tempSketches, 'P5L_FOLDER_' + folder + '_' + timeStamp() + '.json');
 		}
 
 		// export all sketches to JSON
-		function sketchesExport(){
-			var jsonExport = {};
-			jsonExport.sketches = [];
-			for(var i=0; i < settings.sketches.length; i++){
-				jsonExport.sketches.push({"sketchName":settings.sketches[i], "sketchCode":localStorage.getItem(settings.sketches[i])});
-			}
-			jsonExport.settings = settings;
-			var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-			p5f.saveJSON(jsonExport, 'P5L_sketches_'+dateStamp+'.json');
-			if(settings.debugMode){console.log(jsonExport);}
+		function exportAllSketches(){
+			var tempSketches = {};
+			tempSketches.version = settings.version;
+			tempSketches.structure = settings.sketches;
+			tempSketches.sketches = [];
+			listSketches(settings.sketches).forEach(function (sketch){
+				if(localStorage.hasOwnProperty(sketch)){
+					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
+				}
+			});
+			p5f.saveJSON(tempSketches, 'P5L_SKETCHES_' + timeStamp() + '.json');
 		}
 
+		function listSketches(obj){
+			return findValues(obj, 'type', 'sketch', 'name');
+		}
+
+		function findValues(obj, key, filter, saveKey){
+			return findValuesHelper(obj, key, filter, saveKey, []);
+		}
+
+		function findValuesHelper(obj, key, filter, saveKey, list) {
+			if (!obj) return list;
+			if (obj instanceof Array) {
+				for (var i in obj) {
+					list = list.concat(findValuesHelper(obj[i], key, filter, saveKey, []));
+				}
+				return list;
+			}
+			if (obj[key] && obj[key] == filter) list.push(obj[saveKey]);
+
+			if ((typeof obj == 'object') && (obj !== null) ){
+				var children = Object.keys(obj);
+				if (children.length > 0){
+					for (i = 0; i < children.length; i++ ){
+						list = list.concat(findValuesHelper(obj[children[i]], key, filter, saveKey, []));
+					}
+				}
+			}
+			return list;
+		}
+
+
 		// import sketches from JSON
-		function sketchesImport(data){
+		function importSketches(data){
 			for(var i=0; i < data.length; i++){
 				var reader = new FileReader();
 				reader.onload = function(data) {
 					var jsonObj = JSON.parse(event.target.result);
-					parseSketches(jsonObj);
+					if(jsonObj.hasOwnProperty('structure')){
+						var jsonStructureSorted = jsonObj.structure.reverse();
+						jsonStructureSorted.forEach(function(jsonItem){
+							if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
+								// foreach folder/sketch check duplicates and give unique names
+								recursiveNamecheck(jsonItem, jsonObj.sketches);
+
+								// add structure to top of sketches list
+								//settings.sketches.unshift(jsonObj.structure);
+								settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+
+								
+							}else if(jsonItem.type == 'sketch'){
+								settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name});
+							}
+						})
+						updateSettings();
+						initSortable();
+						//updateSketches();
+
+						// import structure as folder..
+						parseSketches(jsonObj);
+					}else{
+						checkDupSketches(jsonObj, 'sketchName');
+						parseSketches(jsonObj);
+					}
 				}
 				reader.readAsText(data[i]);
 			}
 		}
 
-		// load demos
-		function loadDemo(){
-			var doubleCheck = confirm("Add demos to sketches list?");
-			if(doubleCheck){
-				var demosPath = "includes/demos/P5L_demos.json";
-				var request = new XMLHttpRequest();
-				request.open("GET", demosPath, false);
-				request.send(null)
-				var jsonObj = JSON.parse(request.responseText);
-				parseSketches(jsonObj);
+		// recursively check for duplicate names when importing
+		function recursiveNamecheck(objStructure, objSketches) { // obj
+			for (var key in objStructure) { 
+				var dup = false;
+				var pName = objStructure[key].name;
+
+				// if duplicate, give unique name
+				if(searchSketches(objStructure[key].name)){
+					objStructure[key].name += '_' + timeStamp();
+					dup = true;
+				}
+
+				// if duplciate + sketch, update sketches name too
+				if(dup && objStructure[key].type == 'sketch'){
+					fixNamecheck(objSketches, pName, objStructure[key].name);
+				}
+
+				// if folder, recurse deeper
+				if(objStructure[key].type == 'folder'){
+					recursiveNamecheck(objStructure[key].contents, objSketches);
+				}
+			};
+		}
+
+		// fix any duplicate names
+		function fixNamecheck(obj, oldName, newName){
+			for (let i = 0; i < obj.length; i++) {
+				if (obj[i]['sketchName'] === oldName) {
+					obj[i]['sketchName'] = newName;
+				}
 			}
+		}
+
+		// fix any duplicates on single file imports
+		function checkDupSketches(obj, keyName){
+			let jsonSketches = obj.sketches;
+			for(let i=0; i < jsonSketches.length; i++){
+				if(searchSketches(jsonSketches[i][keyName])){
+					jsonSketches[i][keyName] += '_' + timeStamp();
+				}
+			}			
+		}
+
+		// recursively check folder containing sketch
+		function recursiveFolderExpand(objStructure, sketch, curFolder) { // obj
+			for (var key in objStructure) { 
+				// sketch, update sketches name too
+				if(objStructure[key].type == 'sketch' && objStructure[key].name == sketch){
+					if(curFolder!= '' && curFolder.toggle != 'expand'){
+						curFolder.toggle = 'expand';
+						initSortable();
+					}
+				}
+
+				// if folder, recurse deeper
+				if(objStructure[key].type == 'folder'){
+					recursiveFolderExpand(objStructure[key].contents, sketch, objStructure[key]);
+				}
+			};
+		}
+
+		// load demos
+		function loadDemos(){
+			var demosPath = 'includes/demos/P5L_FOLDER_demos_20190429.json';
+			var request = new XMLHttpRequest();
+			request.open('GET', demosPath, false);
+			request.send()
+			var jsonObj = JSON.parse(request.responseText);
+			recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
+
+			//add structure to top of sketches list
+			settings.sketches.push({'type':'folder', 'name':jsonObj.structure[0].name, 'toggle':jsonObj.structure[0].toggle, 'contents':jsonObj.structure[0].contents});
+
+			updateSettings();
+			initSortable();
+
+			parseSketches(jsonObj);
 		}
 
 		function parseSketches(jsonObj){
@@ -658,9 +1052,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				var sketchName = jsonSketches[i].sketchName;
 				var sketchCode = jsonSketches[i].sketchCode;
 				localStorage.setItem(sketchName, sketchCode);
-				if (settings.sketches.indexOf(sketchName) === -1) {
-					settings.sketches.unshift(sketchName);
+
+				// add to settings if doesn't exist
+				if(!searchSketches(sketchName)) {
+					settings.sketches.unshift({'type':'sketch', 'name':sketchName});
 				}
+				
 				if(sketchName == settings.fileName){
 					loadSketch(sketchName);
 				}
@@ -668,76 +1065,272 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateSketches();
 		}
 
-		// clear all sketches
-		function sketchesClear(){
-			var doubleCheck = confirm("Clear (remove) ALL skeches?");
-			if(doubleCheck){
-				for(var i=0; i < settings.sketches.length; i++){
-					localStorage.removeItem(settings.sketches[i]);
-				}
-				localStorage.removeItem("sketches");
-				settings.sketches = [];
-				updateSketches();
+
+
+		/* MENU » SKETCHES */
+
+		function legacySettings(){
+			if(typeof settings.sketches[0] != 'object'){
+				var order = settings.sketches;
+				var newOrder = [];
+				order.forEach(function(o){
+					newOrder.push({'name':o, 'type':'sketch'});
+				});
+				settings.sketches = newOrder;
+				updateSettings();
+			}
+
+			if(!settings.hasOwnProperty('cocoding') || typeof settings.cocoding != 'object'){
+				settings.cocoding = {};
+				updateSettings();
+			}
+
+			if(searchJSON(settings.sketches, 'name', 'demos').length == 0){			
+				loadDemos();
 			}
 		}
 
+		function getOrder() {
+			if(menuSketches.childNodes.length >0){
+				const traverse = function(dir, result = []) {
+					dir.childNodes.forEach((node) => {
 
+						let nodeName = '';
+						if(node.dataset != undefined && (node.dataset.type == 'folder' || node.dataset.type == 'sketch')){
+							nodeName = node.dataset.id;
+						}else{
+							return traverse(node, result)
+						}
 
-		/* LIST SKETCHES IN MENU */
+						const nodeStats = { name: nodeName };
 
-		function updateMenu(){
-			var menuSketchesHTML = '';
-			var selSelected = false;
-			for(var i=0; i < settings.sketches.length; i++){
-				var selClass = "";
-				if(settings.sketches[i] == settings.fileName){
-					selClass = 'sketch-selected';
-					selSelected = true;
+						if (node.dataset.type == 'folder') {
+							nodeStats.type = 'folder';
+							nodeStats.toggle = node.dataset.toggle;
+							nodeStats.contents = [];
+							result.push(nodeStats);
+							return traverse(node, nodeStats.contents)
+						}
+						if(node.dataset.type == 'sketch'){
+							nodeStats.type = 'sketch';
+							result.push(nodeStats);
+						}
+					});
+					return result;
+				};
+
+				let recursiveSortable = traverse(menuSketches);
+				settings.sketches = recursiveSortable;
+
+				updateSettings();
+				initSortable();
+			}
+		}
+
+		// initialize sortable 
+		function initSortable(){
+			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
+				var selSelected = false;
+				var htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches );
+				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
+				initFolders(menuSketches);
+
+				function recurse(data) {
+					var html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
+					for (var key in data) { 
+						var d = data[key];
+						var marq = '';
+						if(d.name.length > 15){marq = 'marq';}
+						if(d.type == 'sketch'){
+							var selClass = '';
+							if(d.name == settings.fileName){
+								selClass = 'sketch-selected';
+								selSelected = true;
+							}
+							html +='<li class="item-sketch menu-sketch-holder '+selClass+'" data-type="sketch" data-id="'+d.name+'" onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>'; //  
+						}else if(d.type == 'folder'){
+							var icon = iconFolderExpand;
+							if(d.toggle == 'expand'){
+								icon = iconFolderCollapse;
+							}
+
+							if(d.contents.length == 0){
+								icon = iconFolderEmpty;
+								d.toggle = 'collapse';
+							}
+							html += '<ul class="item-folder '+d.toggle+'" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
+							html += '<div class="foldertitle" onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'">'+icon+'' +d.name + '</div></div> ';
+							html += recurse(d.contents);
+							html += '</ul>';
+						}
+					};
+					html += '';    
+					return( html );
 				}
-				var marq = "";
-				if(settings.sketches[i] != null && settings.sketches[i].length > 15){marq = "marq";}
-				menuSketchesHTML += '<div class="menu-sketch-holder '+selClass+'" data-id="'+settings.sketches[i]+'"><div class="menu-sketch-nav"><a class="menu-sketch-button tippy" onclick="renameSketch(\''+settings.sketches[i]+'\')" title="Rename Sketch"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+settings.sketches[i]+'\')" title="Export Sketch"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg></a><a class="menu-sketch-button tippy" onclick="removeSketch(\''+settings.sketches[i]+'\')" title="Remove Sketch"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg></a></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+settings.sketches[i]+'\')">'+settings.sketches[i]+'</div></div>';
+
+				// main folder
+				new Sortable(menuSketches, options);
+
+				// all sub-folders
+				document.querySelectorAll('.item-folder').forEach((s) => {
+					new Sortable(s, options);
+				});
+
+				loadTippy();
 			}
-			var selClass = "";
-			if(!selSelected){
-				selClass = 'sketch-selected';
+		}
+
+		function dragOver(elm){
+			elm.style.minHeight='30px';
+		}
+
+		// load sortable, restore expanded/collapsed
+		function initFolders(elm){
+			elm.childNodes.forEach(function(node){
+				if(node.dataset != undefined && node.dataset.type == 'folder'){
+					node.style.display = 'block';
+					if(node.dataset.toggle == 'expand'){
+						node.childNodes.forEach((k) => {
+							if(k.tagName == 'UL' || k.tagName == 'LI'){
+								k.style.display = 'block';
+								if(k.dataset.type == 'folder' && k.dataset.toggle == 'expand'){
+									initFolders(k);
+								}
+							}
+						});
+					}
+				}
+			});
+		}
+
+		// expand/collapse folders
+		function toggle(elm){
+			var divFolder = elm.parentNode.parentNode;
+			if(divFolder.dataset.toggle == 'expand'){
+				divFolder.dataset.toggle = 'collapse';
+				elm.innerHTML = iconFolderExpand;
+				divFolder.childNodes.forEach((k) => {
+					if(k.tagName == 'UL' || k.tagName == 'LI')
+						k.style.display = 'none';
+				});
+			}else{
+				divFolder.dataset.toggle = 'expand';
+				elm.innerHTML = iconFolderCollapse;
+				divFolder.childNodes.forEach((k) => {
+					if(k.tagName == 'UL' || k.tagName == 'LI')
+						k.style.display = 'block';
+				});
 			}
-			var menuSketchesNew = '<div class="menu-sketch-new '+selClass+'"><input type="text" name="menu-sketch-new" id="menu-sketch-new" class="menu-sketch-holder" placeholder="Save Sketch As..." onfocus="document.getElementById(\'menu-sketch-new-save\').style.display=\'block\';" onblur="setTimeout(function(){document.getElementById(\'menu-sketch-new-save\').style.display=\'none\';}, 200)"><button id="menu-sketch-new-save" onclick="loadType();" class="tippy" title="Save Sketch<br> <div class=\'shortcut\'>ENTER</div>"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-small feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button></div>';
-			menuSketches.innerHTML = menuSketchesHTML;
-			document.getElementById('menu-sketches-new').innerHTML = menuSketchesNew;
-			menuNewSketch = document.getElementById('menu-sketch-new');
+			getOrder();
+		}
+
+		function showNav(elm, elmID, elmType){
+			elm.style.width='calc(100%-78px)';
+			if(elmType == 'folder'){
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+			}else if(elmType == 'sketch'){
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+			}
+
 			loadTippy();
 		}
 
-		// SortableJS for sketcheslist
-		Sortable.create(menuSketches, {
-			group: "sketchOrder",//"localStorage-example",
-			store: {
-				get: function (sortable) {
-					var order = settings.sketches;
-					return order;// ? order.split('|') : [];
-				},
-				set: function (sortable) {
-					var order = sortable.toArray();
-					settings.sketches = order;
-					updateSettings();
-				}
+		function hideNav(elm){
+			elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '';
+			elm.style.width='calc(100%-5px)';
+		}
+
+		function addFolder(folderName){
+			var newID = 'folder ' + Math.floor(Math.random()*99);
+			if(folderName != undefined){
+				newID = folderName;
 			}
-		})
+			var newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
+			var tempHTML = menuSketches.innerHTML;
+			menuSketches.innerHTML = newFolder + tempHTML;
+			getOrder();
+		}
+
+		// rename sketch/folder
+		function renameItem(itemName, itemType){
+			vex.dialog.prompt({
+				message: 'Rename:',
+				value: itemName, // placeholder
+				// buttons[0].text = 'Okiedokie',
+				callback: function (value) {
+					if(value){
+						var newName = value.replace(/["']/g, '');
+						if(newName != '' && newName != itemName){
+							var sketchesFlat = JSON.stringify(settings.sketches);
+							if( sketchesFlat.indexOf('"'+itemName+'"') > -1 ) {
+								if( sketchesFlat.indexOf('"'+newName+'"') == -1 ) {
+									var sketchesFixed = sketchesFlat.replace('"'+itemName+'"', '"'+newName+'"');
+									settings.sketches = JSON.parse(sketchesFixed);
+								}else{
+									vex.dialog.alert({
+										message:'"'+newName +'" already exists. Pick a new name',
+										callback: function(){renameItem(itemName, itemType)}
+									})
+									return false;
+								}
+							}
+
+							updateSettings();
+							initSortable();
+							if(itemType == 'sketch'){
+								settings.fileName = newName;
+								localStorage.setItem(newName, localStorage[itemName]);
+								localStorage.removeItem(itemName);
+								setTimeout(function(){ loadSketch(newName); }, 100);
+							}
+						}
+					}
+				},
+				afterOpen: function(){
+					console.log(this);
+					document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+				}
+			})
+		}
+
+		// taking out the trash
+		function removeItem(dataID, elmType){
+			vex.dialog.confirm({
+				message: 'Are you sure you want to delete: ' + dataID + ' ?',
+				callback: function (value) {
+					if (value) {
+						var selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
+						selElm.querySelectorAll('[data-id]').forEach(function(k){
+							localStorage.removeItem(k.dataset.id);
+							k.remove();
+						});
+
+						localStorage.removeItem(dataID);
+						selElm.remove();
+
+						getOrder();
+						if(dataID === settings.fileName){
+							// *** issue if trashing folder containing active sketch...
+							loadSketch(loadLatest());
+						}
+					}
+				}
+			})
+		}
+
 
 
 
 		/* EDITOR KEY-CMDS */
 
-		
 		var map = [];
 		window.onkeydown = function(event) {
-			console.log(event);
+			//console.log(event);
 			map[event.keyCode] = event.type == 'keydown';
 			
 			if(map[16] && map[17]){
-					addSnippet(event.key);
-					event.preventDefault();
+				addSnippet(event.key);
+				event.preventDefault();
 			}else if(!map[16] && map[17]){ // check !shift and √control
 				if(event.keyCode == 69){ // e = editor toggle
 					editorToggle();
@@ -768,7 +1361,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					savePNG();
 					event.preventDefault();
 				}else if(event.keyCode == 82){ // r = ref
-					if(refHolder.style.display == "block"){
+					if(refHolder.style.display == 'block'){
 						closeRef();
 					}else{
 						showRef();						
@@ -777,7 +1370,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}else if((event.keyCode >= 48 && event.keyCode <= 57)){ // 	0-9 = preset sketches
 					var keySketch = event.keyCode - 49;
 					if(keySketch == -1){keySketch = 9;}
-					loadSketch(settings.sketches[keySketch]);
+					loadSketch(listSketches(settings.sketches)[keySketch]); // FIX PRESETS
 					event.preventDefault();
 				}else if(event.key == 'i'){
 					pop720(); // IG window size
@@ -786,14 +1379,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
 				var eTarget = event.target.tagName.toLowerCase();
-				if(!p5code.focus() && eTarget != "input" && eTarget != "textarea"){
+				if(!p5code.focus() && eTarget != 'input' && eTarget != 'textarea'){
 					event.preventDefault();
 				}
-			}else if(document.activeElement == menuNewSketch && event.keyCode == 13){ // ENTER, new sketch
-				loadType();
-				event.preventDefault();
 			}
-
 		}
 
 		window.onkeyup = function(event) {
@@ -828,12 +1417,18 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		p5code.onkeyup = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
-			localStorage[settings.fileName] = editor.getValue();
-			clearTimeout(errorTimer);
-			errorTimer = setTimeout(function(){checkErrors();}, 500);			
+			if(!settings.cocoding.active){
+				localStorage[settings.fileName] = editor.getValue();
+			}
+			checkErrors();			
 		};
 
 		function checkErrors(){
+			clearTimeout(errorTimer);
+			errorTimer = setTimeout(function(){checkErrorsWorker();}, 500);	
+		}
+
+		function checkErrorsWorker(){
 			var annos = editor.getSession().getAnnotations();
 			if(settings.debugMode){console.log(annos)};
 			var errorsFound = false;
@@ -844,23 +1439,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 			if(errorsFound){
 				validCode = false; 
+				checkErrors();
 			}else{
+				clearTimeout(errorTimer);
 				validCode = true;
 				if(settings.autoCompile){
 					var cLen = editor.getValue().length;
-					if(cLen != pLen){
+					if(cLen != pLen || settings.cocoding.active){
 						pLen = cLen;
 						recompile();
 					}
 				}
 			}
-			if(settings.debugMode){console.log("validCode: " + validCode);}
+			if(settings.debugMode){console.log('validCode: ' + validCode);}
 		}
 
 		// prevent lost work in default
-		window.addEventListener("beforeunload", function (e) {
-			if(settings.fileName == "default"){
-				var confirmationMessage = "\o/";
+		window.addEventListener('beforeunload', function (e) {
+			if(settings.fileName == 'default'){
+				var confirmationMessage = '\o/';
 				(e || window.event).returnValue = confirmationMessage; 	//Gecko + IE
 				return confirmationMessage;								//Webkit, Safari, Chrome
 			}
@@ -872,12 +1469,44 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function recompile(){
 			var currline = editor.getSelectionRange().start.row;
 			var currCode = editor.session.getLine(currline);
-			if((currCode.search("for") == -1 && currCode.search("while") == -1) || forceRecompile){
+			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
 				if(validCode || !settings.strictCompile){
-					p5frame.src = "p5live_sketch.html";
+					if(editor.getValue().indexOf('function setup()') != -1){
+						p5frame.src = 'p5live_sketch.html';
+						updateBackground();
+					}
+					
 				}
 			}
 			forceRecompile = false;
+		}
+
+
+		function updateBackground(){
+			var bgReg = /background\(([^)]+)\)/;
+			var nonComments = editor.getValue();
+			nonComments = nonComments.replace(/\s*\/\/.*\n/g, '\n').replace(/\s*\/\*[\s\S]*?\*\//g, '');
+			var bgMatches = bgReg.exec(nonComments);
+			if(bgMatches != null){
+				var newBG = '';
+				if(bgMatches[1].includes('#')){
+					newBG = bgMatches[1].replace(/["']/g, '');
+				}else{
+					var cols = bgMatches[1].split(',');
+					if(cols.length > 2){
+						newBG = rgb2hex(cols[0].trim(), cols[1].trim(), cols[2].trim());
+					}else{
+						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
+					}
+				}
+				// document.body.style.background = newBG;
+				p5frame.style.background = newBG;
+			}
+		}
+
+		function rgb2hex(red, green, blue) {
+			var rgb = blue | (green << 8) | (red << 16);
+			return '#' + (0x1000000 + rgb).toString(16).slice(1)
 		}
 
 		function loadScripts(elm){
@@ -889,8 +1518,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function loadScript(scriptPath){
-			var ps = document.createElement("script");
-			ps.type = "text/javascript";
+			var ps = document.createElement('script');
+			ps.type = 'text/javascript';
 			ps.src = scriptPath;
 			return ps;
 		}
@@ -904,32 +1533,22 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* SNIPPETS */
 		function loadSnippets(){
-			var snippetsPath = "includes/demos/P5L_snippets.json";
+			var snippetsPath = 'includes/demos/P5L_snippets.json';
 			var request = new XMLHttpRequest();
-			request.open("GET", snippetsPath, false);
-			request.send(null);
+			request.open('GET', snippetsPath, false);
+			request.send();
 			var jsonObj = JSON.parse(request.responseText);
 			snippets = jsonObj.snippets;
 			var dropCommands = [];
 			var cmds = editor.commands;
 			for(var i=0; i < snippets.length; i++){
-				var snippetKey = snippets[i].key+"";
-				var findCommand = cmds.commandKeyBinding["ctrl-shift-"+snippetKey.toLowerCase()];
+				var snippetKey = snippets[i].key+'';
+				var findCommand = cmds.commandKeyBinding['ctrl-shift-'+snippetKey.toLowerCase()];
 				if(findCommand != undefined){
 					dropCommands.push(findCommand.name);
 				}
 			}
 			editor.commands.removeCommands(dropCommands);
-			//console.log(editor.commands.commands);
-			// var inputLetter = "a";
-			// var cmdPurge = cmds.commandKeyBinding["ctrl-shift-"+inputLetter.toLowerCase()];
-			// var cmds = editor.commands;
-			// 	var findCommand = cmds.commandKeyBinding["ctrl-shift-"+snippets[i].key.toLowerCase()];
-
-			// // var snippetIndex = cmds.map(function(d) { return d['bindKey']; }).indexOf("Ctrl-Shift-"+inputLetter.toUpperCase());
-			// console.log(cmdPurge.name);
-			
-			// editor.commands.removeCommand("selecttolinestart");
 		}
 
 		function addSnippet(loadSnippet){
@@ -944,10 +1563,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var addDrawBottom = snippetCode.draw.bottom;
 
 			var curCode = editor.getValue();			
-			var codeGlobal = addGlobal + "\n" + curCode;
-			var codeSetup = addCode(codeGlobal, addSetup, "setup", "bottom");
-			var codeDrawTop = addCode(codeSetup, addDrawTop, "draw", "top");
-			var codeDrawBottom = addCode(codeDrawTop, addDrawBottom, "draw", "bottom");
+			var codeGlobal = addGlobal + '\n' + curCode;
+			var codeSetup = addCode(codeGlobal, addSetup, 'setup', 'bottom');
+			var codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
+			var codeDrawBottom = addCode(codeDrawTop, addDrawBottom, 'draw', 'bottom');
 
 			editor.setValue(codeDrawBottom, 1);
 			tidyCode();
@@ -955,9 +1574,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function addCode(codeBase, codeInsert, funName, codePos){
 			var tempCode, tempPos = addPosition(codeBase, funName);
-			if(codePos === "bottom"){
+			if(codePos === 'bottom'){
 				tempCode = [codeBase.slice(0, tempPos[1]), "\n"+codeInsert+"\n", codeBase.slice(tempPos[1])].join('');
-			}else if(codePos === "top"){
+			}else if(codePos === 'top'){
 				tempCode = [codeBase.slice(0, tempPos[0]), codeInsert+"\n", codeBase.slice(tempPos[0])].join('');
 			}
 			return tempCode;
@@ -970,7 +1589,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			const indexOfFunc = content.indexOf(`function ${functionName}`);
 
 			if (indexOfFunc < 0) {
-			return content;
+				return content;
 			}
 
 			const openingBrace = content.indexOf('{', indexOfFunc);
@@ -980,13 +1599,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			let bracesToBalance = 1;
 
 			while (true) {
-			if (content[endPos] === '{') {
-				bracesToBalance++;
-			} else if (content[endPos] === '}') {
-				bracesToBalance--;
-				if (bracesToBalance === 0) break;
-			}
-			endPos++;
+				if (content[endPos] === '{') {
+					bracesToBalance++;
+				} else if (content[endPos] === '}') {
+					bracesToBalance--;
+					if (bracesToBalance === 0) break;
+				}
+				endPos++;
 			}
 
 			return [startPos, endPos];
@@ -1004,11 +1623,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function autoCompileUpdate(){
 			checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
-			if(settings.autoCompile){
-				editor.setTheme("ace/theme/gob");
-			}else{
-				editor.setTheme(settings.theme);
-			}
 		}
 
 
@@ -1024,14 +1638,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		// loop/noLoop on window blur
+
 		window.onblur = function () { 
+			if(settings.cocoding.active){
+				cocode.socket.emit('blur');
+			}
 			if(settings.ecoRender && sketchLoaded){
 				if(document.activeElement !== p5frame){
 					p5f.noLoop();
 				}
 			}
+
+
 		}
 		window.onfocus = function () { 
+			if(settings.cocoding.active){
+				cocode.socket.emit('focus');
+			}
 			if(sketchLoaded){
 				p5f.loop();
 			}
@@ -1045,7 +1668,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function fullscreenUpdate(){
-			checkToggle("fullscreenMode", settings.fullscreenMode, settingsFullscreen);
+			checkToggle('fullscreenMode', settings.fullscreenMode, settingsFullscreen);
 			if(settings.fullscreenMode){
 				if(sketchLoaded){
 					openFullscreen();
@@ -1066,18 +1689,32 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function cursorToggleUpdate(){
-			checkToggle("canvasCursor", settings.canvasCursor, settingsCanvasCursor);
+			checkToggle('canvasCursor', settings.canvasCursor, settingsCanvasCursor);
 			if(sketchLoaded){
 				if(!settings.canvasCursor){
 					p5f.noCursor();
-					p5frameCover.style.cursor = "none";
+					p5frameCover.style.cursor = 'none';
 				}else{
 					p5f.cursor();
-					p5frameCover.style.cursor = "crosshair";
+					p5frameCover.style.cursor = 'crosshair';
 				}
 			}
 		}
 
+		//console toggle
+		function consoleToggle(){
+			settings.console = !settings.console;
+			consoleToggleUpdate();
+		}
+
+		function consoleToggleUpdate(){
+			checkToggle('console', settings.console, settingsConsole);
+			if(!settings.console){
+				p5console.style.display = 'none';
+			}else{
+				p5console.style.display = 'block';
+			}
+		}
 
 		//menutab toggle
 		function menutabToggle(){
@@ -1086,12 +1723,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function menutabToggleUpdate(){
-			checkToggle("menutab", settings.menutab, settingsMenutab);
+			checkToggle('menutab', settings.menutab, settingsMenutab);
 			if(!settings.menutab){
-				menuSwitch.style.display = "none";
+				menuSwitch.style.display = 'none';
 			}else{
-				menuSwitch.style.display = "block";
+				menuSwitch.style.display = 'block';
 			}	
+		}
+
+		//BGactive toggle
+		function themeBGactiveToggle(){
+			settings.themeBGactive = !settings.themeBGactive;
+			themeBGactiveToggleUpdate();
+		}
+
+		function themeBGactiveToggleUpdate(){
+			checkToggle('themeBGactive', settings.themeBGactive, settingsBGactive);
+			editor.renderer.updateFull();
 		}
 
 
@@ -1104,7 +1752,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 			settings[checkName] = checkVar;
 			updateSettings();
-			if(settings.debugMode){console.log(checkName+": "+settings[checkName]);}
+			if(settings.debugMode){console.log(checkName+': '+settings[checkName]);}
 		}
 
 
@@ -1118,24 +1766,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}, 100);
 
 		function p5varsReset(){
-			p5vars = {"frameCount":0, "mouseX":0, "mouseY":0};
+			p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0};
 		}
+
 
 
 		/* TOGGLE EDITOR + [canvas] + MENU */
 
 		// hide/show editor
 		function editorToggle(){
-			if(p5editor.style.visibility != "visible"){
-				p5editor.style.visibility = "visible";
+			if(p5editor.style.visibility != 'visible'){
+				p5editor.style.visibility = 'visible';
 			}else{
-				p5editor.style.visibility = "hidden";
+				p5editor.style.visibility = 'hidden';
 			}
 			editorToggleUpdate();
 		}
 
 		function editorToggleUpdate(){
-			if(p5editor.style.visibility != "visible"){
+			if(p5editor.style.visibility != 'visible'){
 				const canv = document.querySelector('canvas');
 				editor.blur();
 			}else{
@@ -1150,17 +1799,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function canvasToggle(){
 			const canv = document.querySelector('canvas');
 			//alert(canv);
-			if(canv.style.visibility != "visible"){
-				canv.style.visibility = "visible";
+			if(canv.style.visibility != 'visible'){
+				canv.style.visibility = 'visible';
 			}else{
-				canv.style.visibility = "hidden";
+				canv.style.visibility = 'hidden';
 			}
 			canvasToggleUpdate();
 		}
 
 		function canvasToggleUpdate(){
 			const canv = document.querySelector('canvas');
-			if(canv.style.visibility != "visible"){
+			if(canv.style.visibility != 'visible'){
 				if(sketchLoaded)
 					noLoop();
 			}else{
@@ -1180,11 +1829,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function menuToggleUpdate(){
 			if(!settings.menuMode){
-				menuPanel.style.marginRight = "-250px";
-				menuSwitch.innerHTML = "«";
+				menuPanel.style.marginRight = '-250px';
+				menuSwitch.innerHTML = '«';
 			}else{
-				menuPanel.style.marginRight = "0px";
-				menuSwitch.innerHTML = "»";
+				menuPanel.style.marginRight = '0px';
+				menuSwitch.innerHTML = '»';
 			}
 		}
 
@@ -1201,10 +1850,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// set theme
 		function setTheme(sel){
-			// var optgroup = menuTheme.options[sel].closest("optgroup").label;
-			if(!settings.autoCompile){
-				editor.setTheme(menuTheme.value);
-			}
+			editor.setTheme(menuTheme.value);
 			settings.theme = menuTheme.value;
 			updateSettings();
 		}
@@ -1213,34 +1859,34 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// load themeBG 
 		function loadBG(){
 			settingsBG.value = settings.themeBG;
-			//menuBG.style.backgroundColor = "#" + settings.themeBG;
-
+			// menuBG.style.backgroundColor = "#" + settings.themeBG;
+			// styleMenu();
 		}
 
 		// set themeBG
 		function setBG(val){
 			if(settings.themeBG != val){
-				settings.themeBG = val+"";
+				settings.themeBG = val + '';
 				updateSettings();
 				editor.renderer.updateFull();
-				//menuBG.style.backgroundColor = "#" + settings.themeBG;
-				//styleMenu();
+				// menuBG.style.backgroundColor = "#" + settings.themeBG;
+				// styleMenu();
 			}
 		}
 
 		// paused for launch.. to visit in future!
 		function styleMenu(){
 			// buttons
-			setStyle("class", "menu-button", "backgroundColor", ColorLuminance(settings.themeBG, .4));
+			setStyle('class', 'menu-button', 'backgroundColor', ColorLuminance(settings.themeBG, .4));
 		}
 
 		function setStyle(styleType, styleElm, styleAttribute, styleChange){
 			var elms;
-			if(styleType == "class"){
+			if(styleType == 'class'){
 				elms = document.getElementsByClassName(styleElm);
-			}else if(styleType == "tag"){
+			}else if(styleType == 'tag'){
 				elms = document.getElementsByTagName(styleElm);
-			}else if(styleType == "id"){
+			}else if(styleType == 'id'){
 				elms = document.getElementById(styleElm);
 			}
 			for(var i=0; i < elms.length; i++){
@@ -1258,11 +1904,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			lum = lum || 0;
 
 			// convert to decimal and change luminosity
-			var rgb = "#", c, i;
+			var rgb = '#', c, i;
 			for (i = 0; i < 3; i++) {
 				c = parseInt(hex.substr(i*2,2), 16);
 				c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
-				rgb += ("00"+c).substr(c.length);
+				rgb += ('00'+c).substr(c.length);
 			}
 
 			return rgb;
@@ -1280,7 +1926,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(settingsFontsize !== document.activeElement){
 				settingsFontsize.value = settings.fontSize;
 			}
-			p5code.style.fontSize = settings.fontSize + "pt";
+			p5code.style.fontSize = settings.fontSize + 'pt';
 		}
 
 
@@ -1288,31 +1934,35 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* LOAD VARIOUS SKETCHES */
 
 		function loadDefault(){
-			settings.fileName = 'default'; //editor.setValue("hi"); // p5template.value
+			var newID = 'sketch_' + timeStamp();
+			var newSketch = '<li class="item-sketch"  data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
+			var tempHTML = menuSketches.innerHTML;
+			menuSketches.innerHTML = newSketch + tempHTML;
+			
+			
+			settings.fileName = newID;
 			localStorage.setItem(settings.fileName, p5template);
 			editor.setValue(p5template, 1);
 			editor.gotoLine(7, 1, false);
-			updateMenu();
 			updateSettings();
 			editor.focus();
+			getOrder();
 			setTimeout(function(){ recompile(); }, 100);
 		}
 
 		function loadAbout(){
-			settings.fileName = 'p5liveabout'; //editor.setValue("hi"); // p5template.value
+			settings.fileName = 'p5liveabout';
 
-			var demosPath = "README.md";
+			var demosPath = 'README.md';
 			var request = new XMLHttpRequest();
-			request.open("GET", demosPath, false);
-			request.send(null);
+			request.open('GET', demosPath, false);
+			request.send();
 			var ptContent = htmlToText(markdown.toHTML( request.responseText ));
-
 
 			var p5liveabout = '/*\n\n' + ptContent + '*/\n\n' + p5liveaboutSketch;
 			localStorage.setItem(settings.fileName, p5liveabout);
 			editor.setValue(p5liveabout, 1);
 			editor.focus();
-			updateMenu();
 			updateSettings();
 			setTimeout(function(){ recompile(); }, 100);
 		}
@@ -1320,19 +1970,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// HTML to TXT
 		function htmlToText(html){
 			//remove code brakes and tabs
-			html = html.replace(/\n/g, "");
-			html = html.replace(/\t/g, "");
+			html = html.replace(/\n/g, '');
+			html = html.replace(/\t/g, '');
 
 			//keep html brakes and tabs
-			html = html.replace(/<\/td>/g, "\t");
-			html = html.replace(/<\/table>/g, "\n");
-			html = html.replace(/<\/tr>/g, "\n");
-			html = html.replace(/<\/p>/g, "\n\n\n");
-			html = html.replace(/<\/li>/g, "\n");
-			html = html.replace(/<\/ul>/g, "\n\n");
-			html = html.replace(/<\/div>/g, "\n");
-			html = html.replace(/<\/h.>/g, "\n----------------\n");
-			html = html.replace(/<br>/g, "\n"); html = html.replace(/<br( )*\/>/g, "\n");
+			html = html.replace(/<\/td>/g, '\t');
+			html = html.replace(/<\/table>/g, '\n');
+			html = html.replace(/<\/tr>/g, '\n');
+			html = html.replace(/<\/p>/g, '\n\n\n');
+			html = html.replace(/<\/li>/g, '\n');
+			html = html.replace(/<\/ul>/g, '\n\n');
+			html = html.replace(/<\/div>/g, '\n');
+			html = html.replace(/<\/h.>/g, '\n----------------\n');
+			html = html.replace(/<br>/g, '\n'); html = html.replace(/<br( )*\/>/g, '\n');
 
 			//parse html into text
 			var dom = (new DOMParser()).parseFromString('<!doctype html><body>' + html, 'text/html');
@@ -1343,80 +1993,34 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			return dom.body.textContent;
 		}
 
-		function loadNew(newName){
-			if(newName != ''){
-				settings.fileName = newName;
-				if (settings.sketches.indexOf(settings.fileName) === -1) {
-					settings.sketches.unshift(settings.fileName);
-					updateSketches();
-						if(editor.getValue().length > 86){ // 86 = template length
-							localStorage[settings.fileName] = editor.getValue();
-						}else{
-							editor.setValue(p5template, 1);
-						}
-				}else{
-					editor.setValue(localStorage[settings.fileName], 1);
-				}
-				editor.focus(); 
-				updateSettings();
-			}
-		}
-			
-
-		// create typed in sketch
-		function loadType(){
-			var fn = menuNewSketch.value.replace(/["']/g, "");
-			if(fn == ''){
-				fn = new Date().toISOString().replace(/-|:/g, "").replace("T", "_").split(".")[0];
-			}
-			loadNew(fn);
-			document.title = 'P5LIVE - ' + settings.fileName;
-			recompile();
-		}
-
-
-		/* PROMPT SKETCH SWITCHER */
-
-		function switchSketch() {
-			settings.fileName = prompt('P5LIVE\nbringing p5js into a live-coding environment!\n\nDefault Sketch:\nPress \'OK\'\n\nNew Sketch:\nType name and press \'OK\'\n\nOpen Sketch:\nType name of saved sketch and press \'OK\'\n\nSaved Sketches:\n' + settings.sketches, '').replace(/["']/g, "");
-			if(settings.fileName == '') { 
-				loadDefault();
-			}else{
-				loadNew(settings.fileName);
-			}
-			document.title = 'P5LIVE - ' + settings.fileName;
-			updateMenu();
-			recompile();
-		};
-
 		// Tooltips via tippy
 		function loadTippy(){
 			tippy('.tippy', {
 				content(reference) {
-					const title = reference.getAttribute('title')
-					reference.removeAttribute('title')
+					const title = reference.getAttribute('data-title')
+					//reference.removeAttribute('title') // seems ok to leave there...
 					return title
 				},
-				placement:"bottom",
+				placement:'bottom',
 				arrow:true,
 				delay:0,
 				duration:0,
-				arrowType:"round"
+				arrowType:'round'
 			});
 
 			tippy('.tippy-left', {
 				content(reference) {
-					const title = reference.getAttribute('title')
-					reference.removeAttribute('title')
+					const title = reference.getAttribute('data-title')
+					//reference.removeAttribute('title')
 					return title
 				},
-				placement:"left",
+				placement:'left',
 				arrow:true,
 				delay:0,
 				duration:0,
 				zIndex:9999,
-				boundary:"window",
-				arrowType:"round"
+				boundary:'window',
+				arrowType:'round'
 			});
 		}
 
@@ -1426,9 +2030,27 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function savePNG(){
 			if(sketchLoaded){
-				var dateStamp = (new Date()).toISOString().replace(/[^0-9]/g, "").slice(0, -3);
-				p5f.save('P5L_'+settings.fileName+'_'+dateStamp+'.png');
+				p5f.save('P5L_' + settings.fileName + '_' + timeStamp() + '.png');
 			}
+		}
+
+		function saveHTML(){
+			var tempPath = 'p5live_savehtml_template.html';
+			var request = new XMLHttpRequest();
+			request.open('GET', tempPath, false);
+			request.send();
+			var el = document.createElement('html');
+			el.innerHTML = request.responseText;
+
+			var s = document.createElement('script');
+			s.type = 'text/javascript';
+			s.innerHTML = '\n' + editor.getValue() + p5custom.value;
+			el.getElementsByTagName('head')[0].appendChild(s);
+			download(el.innerHTML, 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
+		}
+
+		function timeStamp(){
+			return (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
 		}
 
 
@@ -1444,11 +2066,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function getRef(){
 			if(location.hash != undefined && location.hash.length > 1){
-				var refPieces = location.hash.split("/");
-				var grabRef = "";
+				var refPieces = location.hash.split('/');
+				var grabRef = '';
 				if(refPieces.length == 3){
-					 ref.innerHTML = '';
-					grabRef = location.hash.split("/")[2];
+					ref.innerHTML = '';
+					grabRef = location.hash.split('/')[2];
 				}else{
 					allRef();
 					window.location = window.location.hash;
@@ -1467,7 +2089,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							var params = [];
 							ol.params.forEach(function(param){
 								if(param.optional){
-									params.push("["+param.name+"]");
+									params.push('[' + param.name + ']');
 								}else{
 									params.push(param.name);
 								}
@@ -1479,36 +2101,36 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								}
 
 							})
-							ref.innerHTML += '<div class="param-code">' + ex.name + "(" + params.join(", ") + ")</div>";
+							ref.innerHTML += '<div class="param-code">' + ex.name + '(' + params.join(', ') + ')</div>';
 						})
 					}else{
 						var params = [];
-							ex.params.forEach(function(param){
-								if(paramsCollect.indexOf(param.name) === -1){
-									if(param.optional){
-										params.push("["+param.name+"]");
-									}else{
-										params.push(param.name);
-									}
-									var paramHTML = '<div class="param"><div class="param-name">'+ param.name +"</div> "+ param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
-									paramsDesc.push(paramHTML);
-									paramsCollect.push(param.name);
+						ex.params.forEach(function(param){
+							if(paramsCollect.indexOf(param.name) === -1){
+								if(param.optional){
+									params.push('[' + param.name + ']');
+								}else{
+									params.push(param.name);
 								}
-							})
-							if(ex.module != "Constants"){
-								ref.innerHTML += '<div class="param-code">' + ex.name + "(" + params.join(", ") + ")</div>";
+								var paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> ' + param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
+								paramsDesc.push(paramHTML);
+								paramsCollect.push(param.name);
 							}
+						})
+						if(ex.module != 'Constants'){
+							ref.innerHTML += '<div class="param-code">' + ex.name + '(' + params.join(', ') + ')</div>';
+						}
 					}
-				
+
 				}else{
 					ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
 				}
 
-				var desc = "";
+				var desc = '';
 				if(ex.descriptionHTML != undefined){
 					desc = ex.descriptionHTML;
 				}
-				ref.innerHTML += '<br><div class="params"'+ paramsDesc.join("") +"</div><br>"+ desc; // ex.example +
+				ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc;
 
 			}else{
 				allRef();
@@ -1520,40 +2142,40 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var all = [];
 			var grouped = groupBy(refList, (c) => c.module);
 			Object.keys(grouped).forEach(function(k){
-				var modHTML = '<div class="module" name="'+k+'" id="'+k+'"><div class="module-name">'+k+'</div>';
+				var modHTML = '<div class="module" name="' + k + '" id="' + k + '"><div class="module-name">' + k + '</div>';
 				var modAll = [];
 				grouped[k].forEach(function(ci){
-					 if(ci.name != ''){
-					 	var title = "";
-					 	var desc = "";
-					 	title += ci.code.join('\n') + '\n\n';
-					 	var params = [];
-					 	ci.params.forEach(function(cip){
-					 		params.push(cip.name + ' - ' + cip.description);
-					 	});
-					 	title += params.join('\n') + '\n\n';
-					 	if(ci.description != ''){
-					 		desc = ci.description;
-					 	}
-					 	title += desc;
-					 	modAll.push('<a href="#/p5/'+ci.name+'" title="'+title+'">'+ci.name+'</a><br>');
-					 }
+					if(ci.name != ''){
+						var title = '';
+						var desc = '';
+						title += ci.code.join('\n') + '\n\n';
+						var params = [];
+						ci.params.forEach(function(cip){
+							params.push(cip.name + ' - ' + cip.description);
+						});
+						title += params.join('\n') + '\n\n';
+						if(ci.description != ''){
+							desc = ci.description;
+						}
+						title += desc;
+						modAll.push('<a href="#/p5/' + ci.name + '" title="' + title + '">' + ci.name + '</a><br>');
+					}
 				});
-				modHTML += modAll.join("");
+				modHTML += modAll.join('');
 				modHTML += '</div>';
 				all.push(modHTML);
 			});
 
-			ref.innerHTML += '<div id="showall">' + all.join("") + '</div>';
+			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
 			return false;
 		}
 
 		function loadRef(){
-			var refPath = "includes/p5/data.js";
+			var refPath = 'includes/p5/data.js';
 			var request = new XMLHttpRequest();
-			request.open("GET", refPath, false);
-			request.send(null)
-			var jsonObj = JSON.parse(request.responseText.replace("referenceData = ", "")).classitems;
+			request.open('GET', refPath, false);
+			request.send()
+			var jsonObj = JSON.parse(request.responseText.replace('referenceData = ', '')).classitems;
 			var grouped = groupBy(jsonObj, (c) => c.module);
 			
 			// filter to own needs
@@ -1576,13 +2198,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					var classParams = [];
 					var paramsCollect = [];
 
-					 if(ci.overloads != undefined || ci.params != undefined){
+					if(ci.overloads != undefined || ci.params != undefined){
 						if(ci.overloads != undefined){
 							ci.overloads.forEach(function(ol){
 								var params = [];
 								ol.params.forEach(function(param){
 									if(param.optional){
-										params.push("["+param.name+"]");
+										params.push('[' + param.name + ']');
 									}else{
 										params.push(param.name);
 									}
@@ -1590,26 +2212,26 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 									if(paramsCollect.indexOf(param.name) === -1){
 										paramsCollect.push(param.name);						
 										var paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
-										classParams.push({"name":param.name, "description": paramDesc});
+										classParams.push({'name':param.name, 'description':paramDesc});
 									}
 								})
 								classCode.push(ci.name + '(' + params.join(', ') + ')');
 							})
 						}else{
 							var params = [];
-								ci.params.forEach(function(param){
-									if(paramsCollect.indexOf(param.name) === -1){
-										if(param.optional){
-											params.push("["+param.name+"]");
-										}else{
-											params.push(param.name);
-										}
-										paramsCollect.push(param.name);
-										var paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
-										classParams.push({"name":param.name, "description": paramDesc});
+							ci.params.forEach(function(param){
+								if(paramsCollect.indexOf(param.name) === -1){
+									if(param.optional){
+										params.push('[' + param.name + ']');
+									}else{
+										params.push(param.name);
 									}
-								})
-								classCode.push(ci.name + '(' + params.join(', ') + ')');
+									paramsCollect.push(param.name);
+									var paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+									classParams.push({'name':param.name, 'description':paramDesc});
+								}
+							})
+							classCode.push(ci.name + '(' + params.join(', ') + ')');
 						}
 					}
 					classItem.code = classCode;
@@ -1624,7 +2246,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// close references
 		function closeRef(){
 			window.location.hash = '#';
-			refHolder.style.display='none';
+			refHolder.style.display ='none';
 		}
 
 		// group references
@@ -1702,12 +2324,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// https://jaspreetchahal.org/how-to-inject-javascript-into-an-iframe/
 		function injectJS() {
 			sketchLoaded = false;
-			var iFrameHead = p5f.document.getElementsByTagName("head")[0];
+			var iFrameHead = p5f.document.getElementsByTagName('head')[0];
 			// loadScripts(iFrameHead); // eventually dynamic script load
-			var s = document.createElement("script");
-			s.type = "text/javascript";
+			var s = document.createElement('script');
+			s.type = 'text/javascript';
 			s.innerHTML = editor.getValue() + p5custom.value + 'new p5(); sketchStatus();';
-			iFrameHead.appendChild(s);
+			if(!settings.safeMode){
+				iFrameHead.appendChild(s);
+			}
 		}
 
 		/* View in fullscreen */
@@ -1739,16 +2363,90 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 
-		/*	CoCoding	*/
-		function cocoding(){
-			// coming soooooon...
-		}
-
-
-		/*	MISC	*/
+		/*	MISC */
 		function pop720(){
-			window.open (window.location.href, "mywindow", "menubar=0,resizable=0,width=720,height=748");
+			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=748');
 		}
+
+
+
+		/*	CoCoding */
+		function makeid(charCount){
+			var text = "";
+			for( var i=0; i < charCount; i++ )
+				text += chars.charAt(Math.floor(Math.random() * chars.length));
+			return text;
+		}
+
+		function cocodingInit(){
+			if(settings.cocoding.active){
+				vex.dialog.confirm({
+					message: 'Exit CO-CODING?',
+					callback: function (value) {
+						if (value) {
+							cocodingExit(loadLatest());
+						}
+					}
+				})
+			}else{
+				var sessID = makeid(5);
+				settings.cocoding.active = true;
+				updateSettings();
+				document.location.search = 'cc=' + sessID;
+			}
+		}
+
+		function cocodingExit(sketch){
+			settings.cocoding.active = false;
+			settings.fileName = sketch;
+			updateSettings;
+			loadSketch(settings.fileName);
+			window.history.replaceState(null, null, window.location.pathname);
+			window.location = window.location.pathname;
+		}
+
+		function cocoding(){
+			menuCocodeHolder.style.display = 'block';
+			cocode = new CocodeApp(settings.cocoding.namespace);
+			
+		}
+
+		function copyLink(elm){
+			var dummy = document.createElement('input'),
+			text = window.location.href;
+
+			document.body.appendChild(dummy);
+			dummy.value = text;
+			dummy.select();
+			document.execCommand('copy');
+			document.body.removeChild(dummy);
+			
+			// share info
+			var oldContent = elm._tippy.props.content;
+			elm._tippy.setContent('Copied!');
+			elm._tippy.show(200);
+			setTimeout(function(){
+				elm._tippy.hide();
+				elm._tippy.setContent(oldContent);
+			}, 800);
+		}
+
+		function cocodeLayers(){
+			vex.dialog.confirm({
+				message: 'Replace current code with cocodeLayers?',
+				callback: function (value) {
+					if (value) {
+						var collabPath = 'includes/demos/P5L_cocodeLayers_20190429.json';
+						var request = new XMLHttpRequest();
+						request.open('GET', collabPath, false);
+						request.send()
+						var jsonObj = JSON.parse(request.responseText);
+						editor.setValue(jsonObj.sketches[0].sketchCode, 1);
+					}
+				}
+			})
+		}
+
 	</script>
 </body>
 </html>

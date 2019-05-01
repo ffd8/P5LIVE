@@ -15,8 +15,8 @@
 * {
 	box-sizing: border-box;
 }
-::selection {
-	background-color: #fff;
+#p5-code::selection {
+	background:#fff;
 }
 html {
 	margin: 0;
@@ -32,7 +32,7 @@ body {
 	width: 100vw;
 	height: 100vh;
 	color: #839496;
-	background: #000;
+	/*background: #000;*/
 	position: relative;
 	background:#000;
 }
@@ -46,7 +46,8 @@ hr{
 	outline:none;
 	border:none;
 	margin:0;
-	background:#000;
+	/*background:#000;*/
+	background:none;
 	position:fixed;
 	top:0;
 	left:0;
@@ -90,11 +91,13 @@ hr{
 	top:0vh;
 }
 #p5-console{
-	height:5vh;
-	top:95vh;
-	font-size:10pt;
+	height:auto;
+	min-height:10px;
+	bottom:0;
+	font-size:9pt;
+	padding:5px 5px 5px 10px;
 	resize:none;
-	pointer-events: none;
+	/*pointer-events: none;*/
 }
 .myMarker {
 	position:fixed;
@@ -103,6 +106,10 @@ hr{
 }
 .ace_marker-layer{
 	z-index:9999!important;
+}
+.ace-gob .ace_cursor{
+	background:none;
+	border-width:3px;
 }
 #editor, #p5-code, .ace_scroller{
 	cursor:cell !important;
@@ -206,11 +213,12 @@ hr{
 	border-radius:5px;
 	color:#fff;
 }
-#menu-sketches-holder{
+.menu-sketches-holder{
 	color:#fff;
 	height:30vh;
 	overflow:hidden;
 	overflow-y:auto;
+	position:relative;
 }
 .menu-sketches-buttons{
 	display: flex;
@@ -222,6 +230,7 @@ hr{
 	position:relative;
 	width:100%;
 	height:30px;
+
 }
 .menu-button{
 	color:#fff;
@@ -230,6 +239,7 @@ hr{
 	padding:3px;
 	border:0;
 	border-right:1px solid #888;
+	border-bottom:1px solid #888;
 	outline:none;
 	cursor:pointer;
 	font-weight: 400;
@@ -237,6 +247,9 @@ hr{
 	height:30px;
 	opacity:.75;
 	flex: 1;
+}
+#p5live-buttons .menu-button{
+	border-bottom:none;
 }
 .menu-button:last-child{
 	border-right:none;
@@ -246,7 +259,7 @@ hr{
 	opacity: 1;
 	background:#444;
 }
-#menu-sketches{
+.menu-sketches{
 	height:100%;
 }
 #menu-sketches-new{
@@ -300,7 +313,6 @@ hr{
 	opacity:.75;
 	border-top:1px solid transparent;
 	border-bottom:1px solid transparent;
-	margin-top:-1px;
 	outline:0;
 }
 .menu-sketch-new{
@@ -315,14 +327,19 @@ hr{
 .menu-sketch-holder#menu-sketches-new:hover{
 	background:#fff;
 }
-.menu-sketch{
+.menu-sketch, .menu-folder{
 	position: relative;
-	width: 67%;
 	height:100%;
 	float:none;
-	padding:2px 5px;
+	padding:2px 5px 5px 0;
 	overflow: hidden;
 	white-space: nowrap;
+	cursor:pointer;
+}
+.menu-folder{
+	text-transform: uppercase;
+}
+.menu-sketch:hover, .menu-folder:hover{
 }
 .marq:hover{
 	animation: marquee 5s linear infinite;
@@ -332,7 +349,8 @@ hr{
 	100% { text-indent: -20em }
 }
 .sketch-selected{
-	background:#444;
+	color:#/*00FF00*/;
+	background:#006600;
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
@@ -343,15 +361,18 @@ hr{
 }
 .menu-sketch-nav{
 	float:right;
-	width:33%;
+	width:35%;
+	min-width:75px;
 	height:100%;
 	display:none;
 	z-index:101;
+	text-align:right;
+	cursor:pointer;
 }
 .menu-sketch-button{	
 	color:#fff;
 	flex:1;
-	padding:2px 0 2px 0;
+	padding:2px 0 0px 0;
 	border-left:1px solid #888;
 	opacity:.75;
 }
@@ -363,8 +384,15 @@ hr{
 	position:relative;
 	line-height:1.6em;
 }
+#menu-settings div{
+	outline:none;
+}
 #menu-settings-theme{
 	width:50%;
+	margin-left:40px;
+	font-size:8pt;
+	border:1px solid #888;
+	outline:none;
 }
 #menu-settings-bg{
 	width:50px;
@@ -402,6 +430,129 @@ hr{
 }
 .tippy-roundarrow{
 	fill:#fafafa;
+}
+.item-folder{
+	position:relative;
+	height:auto;
+	overflow:hidden;
+	display:block;
+	background:#333;
+	margin:0px 0 0px 0;
+	padding:0px 0 0px 0;
+	min-height:2px;
+}
+.item-sketch{
+	height:22px;
+	margin-bottom:1px;
+	list-style-type:none;
+	padding:0;
+}
+li{
+	padding:0;
+}
+.item-folder svg, .item-sketch svg{
+	padding:2px 1px 0px 1px;
+	height:16px;
+}
+
+.item-folder > .item-sketch{
+	margin-left:15px;
+	display:none;
+}
+.item-folder > .item-sketch .menu-sketch{
+}
+
+.item-folder > .item-folder{
+	margin-left:15px;
+	display:none;
+}
+.expand > .item-sketch{
+	display:block;
+}
+.item-folder .collapse{
+	display:none;
+}
+.foldertitle:hover .nav-settings, .item-sketch:hover .nav-settings{
+	display:block;
+}
+.toggle{
+	position:relative;
+	z-index:999;
+	cursor:pointer;
+	float:left;
+}
+.menu-sketch-nav svg{
+	padding:4px 1px 0 1px;
+	width:24px;
+}
+.selsetting{
+	background:#444;
+}
+.foldertitle:hover > .menu-sketch-nav {
+	display: inline-block;
+}
+.item-sketch:hover > .menu-sketch-nav {
+	display: inline-block;
+}
+.menu-sketch-nav{
+	float:right;
+	display:none;
+	color:#ddd;
+}
+.sortable-drag{
+	background:#003300;
+	border:1px solid green;
+}
+.sortable-ghost{
+	background:#003300;
+	border:1px solid green;
+	opacity: .5;
+}
+.sortable-placeholder{
+	width:100%;
+	height:1px;
+	list-style-type:none;
+	background:none;
+}
+.buffer{
+	height:20px;
+}
+
+#menu-cocode-sketches-holder{
+	height:20vh;
+	max-height:20vh;
+}
+#menu-cocode{
+}
+.cocoding-inactive:hover{
+	background:#00CC00;
+}
+.cocoding-active{
+	background:#00CC00;
+}
+.cocoding-active:hover{
+	background:#662222;
+}
+
+/* custom scrollbar for sketches */
+/* width */
+.menu-sketches-holder::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+.menu-sketches-holder::-webkit-scrollbar-track {
+  background: #444; 
+}
+
+/* Handle */
+.menu-sketches-holder::-webkit-scrollbar-thumb {
+  background: #aaa; 
+}
+
+/* Handle on hover */
+.menu-sketches-holder::-webkit-scrollbar-thumb:hover {
+  background: #aaa; 
 }
 
 /* REFERENCES */

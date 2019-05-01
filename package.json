@@ -1,0 +1,35 @@
+{
+  "name": "p5live",
+  "version": "1.1.0",
+  "description": "Collaborative live-coding environment for p5.js",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url_comment": "git+ssh://git@github.com/ffd8/p5live.git"
+  },
+  "keywords": [
+    "live-coding",
+    "creative-coding",
+    "p5js",
+    "visuals",
+    "CRDT",
+    "RGA",
+    "Ace",
+    "Collaborative"
+  ],
+  "author": "Ted Davis",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/ffd8/p5live/issues"
+  },
+  "homepage": "https://github.com/ffd8/p5live/",
+  "dependencies": {
+    "express": "^4.16.4",
+    "ace-builds": "^1.2.6",
+    "socket.io": "^2.2.0"
+  }
+}
