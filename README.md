@@ -144,9 +144,9 @@ P5LIVE is only possible to do these amazing open-source tools:
 - [download.js](http://danml.com/download.html), exporting html file
 - [vex](https://github.com/HubSpot/vex), custom dialog boxes
 - [markdown.js](https://github.com/cadorn/markdown-js), parsing this readme into about section
-- [Roboto Mono](https://github.com/google/roboto) (font)
-- [Feather Icons](https://feathericons.com) (gui icons)
-
+- [Roboto Mono](https://github.com/google/roboto), font
+- [Feather Icons](https://feathericons.com), gui icons  
+- [glitch.com](https://glitch.com), nodejs hosting
 
 
 INSPIRATION
