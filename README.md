@@ -110,6 +110,9 @@ Drop files into folder and link relatively, ('data/fish.png')
 Fan going nuts?  
 Set `pixelDensity(1);` in `setup()` if on a retina display.
 
+Bug?!  
+Add #bug to URL, to enter safemode and disable compiling.
+
 
 FUNCTIONS
 -------------------------------
