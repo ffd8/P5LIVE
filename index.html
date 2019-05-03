@@ -38,7 +38,7 @@
 		<textarea id="p5-console" class="p5-ta" disabled></textarea>
 	</div>
 
-	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" src="p5live_sketch.html" onLoad="injectJS()";></iframe>
+	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" srcdoc="" ></iframe>
 	<div id="p5-frame-cover"></div>
 
 	<div id="refholder">
@@ -346,7 +346,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		cocode, editorId
+		cocode, editorId, p5frameTemplate, p5htmlTemplate
 		;
 
 
@@ -393,21 +393,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			group: {name: 'sketches'},
 			animation: 200,
 			filter:'.sortable-placeholder',
-			// forceFallback: true,
-		 //    fallbackOnBody: true,
-		 emptyInsertThreshold: 0,
-		 dragClass: 'sortable-drag',
-		 ghostClass: 'sortable-ghost',
-		 draggable: ['li', 'ul'],
-			// fallbackOnBody = true,
+			emptyInsertThreshold: 0,
+			dragClass: 'sortable-drag',
+			ghostClass: 'sortable-ghost',
+			draggable: ['li', 'ul'],
 			swapInvert:true,
-			// swapThreshold:0.65,
 			store: {
 				set: function (sortable) {
 					getOrder();
 				}
 			}
 		}
+
+		var includeScripts = [{
+			'local':'includes/p5/p5.min.js',
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js'
+		}, {
+			'local':'includes/p5/addons/p5.dom.min.js',
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js'
+		}, {
+			'local':'includes/p5/addons/p5.sound.min.js',
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.sound.min.js'
+		}];
 
 
 		class CocodeApp{
@@ -718,6 +725,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			loadBG();
 			themeBGactiveToggleUpdate();
 			loadSnippets();
+			loadSketchTemplate();
+			loadHTMLTemplate(); 
 			loadRef();
 			vex.defaultOptions.className = 'vex-theme-plain'
 			legacySettings(); // update sketches from 1.0.2
@@ -824,6 +833,46 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					loadDefault();
 				}
 			}
+		}
+
+		function loadSketchTemplate(){
+			var tempPath = 'includes/templates/p5live_sketch.html';
+			var request = new XMLHttpRequest();
+			request.open('GET', tempPath, false);
+			request.send();
+			var el = document.createElement('html');
+			el.innerHTML = request.responseText;
+			p5frameTemplate = el;
+		}
+
+		// new technique to avoid accessing p5live_sketch.html sooo many times!
+		function buildSketch(){
+			sketchLoaded = false;
+			var el = p5frameTemplate.cloneNode(true);
+			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
+			
+			// load scripts (add custom options here)
+			for(var i=0; i < includeScripts.length; i++){
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+				if(navigator.onLine){
+					s.src = includeScripts[i].remote;
+				}else{
+					s.src = includeScripts[i].local;
+				}
+				iFrameBody.appendChild(s);
+			}
+
+			// load sketch
+			let s = document.createElement('script');
+			s.type = 'text/javascript';
+			s.innerHTML = editor.getValue() + p5custom.value + 'new p5(); sketchStatus();';
+			if(!settings.safeMode){
+				iFrameBody.appendChild(s);
+			}
+
+			// set dynamic html as iframe srcdoc
+			p5frame.srcdoc = el.innerHTML;
 		}
 
 		// load top sketch
@@ -1147,7 +1196,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								selClass = 'sketch-selected';
 								selSelected = true;
 							}
-							html +='<li class="item-sketch menu-sketch-holder '+selClass+'" data-type="sketch" data-id="'+d.name+'" onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>'; //  
+							html +='<li class="item-sketch menu-sketch-holder '+selClass+'" data-type="sketch" data-id="'+d.name+'" onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
 						}else if(d.type == 'folder'){
 							var icon = iconFolderExpand;
 							if(d.toggle == 'expand'){
@@ -1164,7 +1213,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							html += '</ul>';
 						}
 					};
-					html += '';    
+					html += '';
 					return( html );
 				}
 
@@ -1472,10 +1521,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
 				if(validCode || !settings.strictCompile){
 					if(editor.getValue().indexOf('function setup()') != -1){
-						p5frame.src = 'p5live_sketch.html';
+						buildSketch();
 						updateBackground();
 					}
-					
 				}
 			}
 			forceRecompile = false;
@@ -1935,7 +1983,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function loadDefault(){
 			var newID = 'sketch_' + timeStamp();
-			var newSketch = '<li class="item-sketch"  data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
+			var newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
 			var tempHTML = menuSketches.innerHTML;
 			menuSketches.innerHTML = newSketch + tempHTML;
 			
@@ -2034,21 +2082,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		function saveHTML(){
-			var tempPath = 'p5live_savehtml_template.html';
+		function loadHTMLTemplate(){
+			var tempPath = 'includes/templates/p5live_savehtml.html';
 			var request = new XMLHttpRequest();
 			request.open('GET', tempPath, false);
 			request.send();
 			var el = document.createElement('html');
 			el.innerHTML = request.responseText;
+			p5htmlTemplate = el;
+		}
+
+		function saveHTML(){
+			var el = p5htmlTemplate.cloneNode(true);
+			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 
 			var s = document.createElement('script');
 			s.type = 'text/javascript';
-			s.innerHTML = '\n' + editor.getValue() + p5custom.value;
-			el.getElementsByTagName('head')[0].appendChild(s);
+			s.innerHTML = '\n//' +settings.fileName+ '\n\n' + editor.getValue() +'\n\n'+ p5custom.value;
+			iFrameBody.appendChild(s);
 			download(el.innerHTML, 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
 		}
 
+		
 		function timeStamp(){
 			return (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
 		}
@@ -2320,19 +2375,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 
-		// pass sketch into p5frame
-		// https://jaspreetchahal.org/how-to-inject-javascript-into-an-iframe/
-		function injectJS() {
-			sketchLoaded = false;
-			var iFrameHead = p5f.document.getElementsByTagName('head')[0];
-			// loadScripts(iFrameHead); // eventually dynamic script load
-			var s = document.createElement('script');
-			s.type = 'text/javascript';
-			s.innerHTML = editor.getValue() + p5custom.value + 'new p5(); sketchStatus();';
-			if(!settings.safeMode){
-				iFrameHead.appendChild(s);
-			}
-		}
 
 		/* View in fullscreen */
 		function openFullscreen() {
