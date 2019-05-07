@@ -1,61 +1,120 @@
 "use strict";
+let online = false;
+/*
+	TODO
+	- check ram usage..
+	- check limiting origin of request
+	- create github repo for server only
+	- check trashing RGA
+	- check prohibiting direct requests outside origin...
+	- check https for socket example...
+*/
 
 const express = require('express')
 , app = express()
 , server = require('http').Server(app)
 , io = require('socket.io')(server)
-, RGA = require('./includes/js/rga.js')
+, RGA = require('../includes/js/rga.js')
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
 
 const maxSpaces = 20; // check memory for number of namespaces...
 const purgeCounter = 5; // sec until removing namespace
 let cc = {}; // store namespaces
+let ccStatsReporting = 15; // sec
+let ccStats = {};
+ccStats.reqCount = 4000;
+let countdown = 1000 * 60 * 60;
+ccStats.countdown = "60 min";
+
+function callEveryHour() {
+    setInterval(function(){
+    	countdown = 1000 * 60 * 60;
+    	ccStats.reqCount = 4000;
+    }, 1000 * 60 * 60);
+}
+
+function callEveryMinute() {
+    setInterval(function(){
+    	countdown -= (1000 * ccStatsReporting);
+    	ccStats.countdown = Math.floor(countdown/1000/60) + " min";
+    	console.log(ccStats);
+    }, 1000 * ccStatsReporting); // 60
+}
+callEveryHour();
+callEveryMinute();
 
 app.get('/', function (req, res) {
-	res.sendFile(__dirname + "/index.html");
+	res.redirect('https://teddavis.org/p5live');
+})
 
-	let ccRaw = req.query.cc; // get namespaces
+
+// io.origins(['http://localhost:8888']);
+io.origins((origin, callback) => {
+  if (origin !== 'http://teddavis.org:443' && online) {
+    return callback('origin not allowed', false);
+  }
+  callback(null, true);
+});
+
+// IT WORKS, dynamic namespaces to class!
+const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
+	// console.log(socket.request) // origin
+	let ccRaw = socket.nsp.name.substring(1);
 	if(ccRaw != null && ccRaw.length == 5){
 		if(cc[ccRaw] === undefined || cc[ccRaw] === null){
 			// create room if under limit
 			if(Object.keys(cc).length < maxSpaces){
-				cc[ccRaw] = new Namespace(ccRaw, io);
-			}else{
-				// report rooms are full
-				io.of('/' + ccRaw).on('connection', function(socket){
-				  socket.emit("full");
-				});
+				cc[ccRaw] = new Namespace(ccRaw, socket.nsp);
 			}
-		}		 
+		}
 	}
-})
+
+  // const newNamespace = socket.nsp; // newNamespace.name === '/dynamic-101'
+  //console.log(ccRaw+": " + Object.keys(cc[ccRaw].people).length);
+  // broadcast to all clients in the given sub-namespace
+  // newNamespace.emit('hello');
+});
+
+function reportStats(){
+	// console.log('ccStats');
+	ccStats.rooms = [];
+	for(let i=0; i < Object.keys(cc).length; i++){
+		let ccRaw = Object.keys(cc)[i];
+		if(cc[ccRaw]!= undefined && Object.keys(cc[ccRaw].people) != undefined){
+			let ccCount = Object.keys(cc[ccRaw].people).length;
+			if(ccCount > 1){
+				ccStats.rooms.push(ccCount);
+			}
+		}
+	}
+	ccStats.rooms.sort(function(a, b){return b-a});	
+}
 
 requestStats(server, function (stats) {
-	// this function will be called every time a request to the server completes
 	// console.log(stats.req.path)
+	ccStats.reqCount--;
 })
 
 // must be after app.get()!
-app.use(express.static('./'));
+//app.use(express.static('./'));
 
 // *** remove RGA / data
 function purgeNamespace(nsp){
+	cc[nsp] = {};
 	delete cc[nsp];
-	cc[nsp] = undefined;
-	//console.log("removed: " + nsp);
 }
 
 // tip for using socket in class!
 // https://stackoverflow.com/q/42998568/10885535
 class Namespace {
-	constructor(name, io) {
+	constructor(name, nsp) {
 		//console.log("creating: "+name);
 
 		this.name = name;
 		this.users = {};
 		this.people = {};
-		this.namespace = io.of('/' + name);
+		this.namespace = nsp;//io.of('/' + name);
 		this.rga = new RGA(0);
 		this.userId = 0;
 		this.lockdown = false;
@@ -65,6 +124,7 @@ class Namespace {
 
 	listenOnNamespace(users, people, namespace, purgeTimer, rga) {
 		this.namespace.on('connection', (socket) => {
+			reportStats();
 			this.userId++;
 			this.people[socket.id] = {"nick":this.userId, "status":"focus"};
 			io.of(namespace).emit("users", JSON.stringify(people)); // update users for all
@@ -82,7 +142,7 @@ class Namespace {
 			socket.on('disconnect', function() {
 				delete people[socket.id];
 				io.of(namespace).emit("users", JSON.stringify(people)); // ALL in namespace
-
+				reportStats();
 				// set timer to trash namespace... 
 				if(Object.keys(people).length == 0){
 					//console.log('purging: ' + namespace);

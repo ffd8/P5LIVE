@@ -5,5 +5,7 @@
 /_bu
 /packages
 /node_modules
+/cocoding-server/node_modules
+/cocoding-server/package-lock.json
 /package-lock.json
 /lib

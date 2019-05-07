@@ -1,7 +1,7 @@
 {
-  "name": "p5live",
+  "name": "cocoding-server",
   "version": "1.1.0",
-  "description": "Collaborative live-coding environment for p5.js",
+  "description": "Collaborative live-coding websocket server for P5LIVE",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -19,7 +19,8 @@
     "CRDT",
     "RGA",
     "Ace",
-    "Collaborative"
+    "Collaborative",
+    "P5LIVE"
   ],
   "author": "Ted Davis",
   "license": "GPL",
