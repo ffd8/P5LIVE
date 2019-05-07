@@ -14,7 +14,7 @@ const express = require('express')
 , app = express()
 , server = require('http').Server(app)
 , io = require('socket.io')(server)
-, RGA = require('../includes/js/rga.js')
+, RGA = require('./js/rga.js')
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
 
