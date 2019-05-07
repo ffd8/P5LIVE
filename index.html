@@ -255,7 +255,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
 	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
 
-	<script src="/socket.io/socket.io.js"></script>
+	<!-- <script src="/socket.io/socket.io.js"></script> -->
+	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
 	<script type="text/javascript">
 		'use strict'
@@ -416,12 +417,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.sound.min.js'
 		}];
 
-
 		class CocodeApp{
 			constructor(namespace) {
 				this.socket = '';
 				this.namespace = namespace;
-				this.socket = io('/' + this.namespace);
+				this.socket = io('http://localhost:5000/' + this.namespace);
+				if(window.location.hostname != 'localhost'){
+					this.socket = io('http://p5live-server.glitch.me:3000/' + this.namespace);	
+				}
+				console.log(this.socket);
 				this.rgaConnect();
 				this.users = {};
 				editor.setWrapBehavioursEnabled(false);
