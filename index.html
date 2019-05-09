@@ -136,27 +136,27 @@
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle Auto-Compiling<div class='shortcut'>CTRL + A</div>" onclick="autoCompileToggle();">
-						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile" onchange="autoCompileToggle();"> 
+						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile"> 
 						Live Coding
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>" onclick="fullscreenToggle();">
-						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen" onchange="fullscreenToggle();"> 
+						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen"> 
 						Fullscreen
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus" onclick="ecoRenderToggle();">
-						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender" onchange="ecoRenderToggle();"> 
+						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender"> 
 						Eco Render
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle Sketch Cursor<div class='shortcut'>CTRL + C</div>" onclick="cursorToggle();">
-						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor" onchange="cursorToggle();"> 
+						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor"> 
 						Cursor
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle Console" onclick="consoleToggle();">
-						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console" onchange="consoleToggle();"> 
+						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console"> 
 						Console
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle Menu-Tab <br>IF unchecked, MUST use shortcut<div class='shortcut'>CTRL + M</div>" onclick="menutabToggle();">
-						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab" onchange="menutabToggle();">
+						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab">
 						Menu Tab
 					</div>
 					<hr>
@@ -282,7 +282,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// settings
 		let initSettings = {
 			'version':'1.1.0',
-			'revision':3,
+			'revision':4,
 			'welcome':true,
 			'fontSize':15, 
 			'autoCompile':true, 
@@ -300,7 +300,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'scripts': ['includes/p5/addons/p5.dom.min.js', 'includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '052544',
-			'themeBGactive': true
+			'themeBGactive': true,
+			'refresh':true
 		}
 
 		// init vars
@@ -347,7 +348,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		cocode, editorId, p5frameTemplate, p5htmlTemplate
+		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false
 		;
 
 
@@ -384,6 +385,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		var iconRename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
 
+		var iconRefresh = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>';
+
 		var iconExport = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
 
 		var iconRemove = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
@@ -393,7 +396,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		var options = {
 			group: {name: 'sketches'},
 			animation: 200,
-			filter:'.sortable-placeholder',
+			filter:'.sortable-placeholder, .demo',
 			emptyInsertThreshold: 0,
 			dragClass: 'sortable-drag',
 			ghostClass: 'sortable-ghost',
@@ -421,11 +424,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			constructor(namespace) {
 				this.socket = '';
 				this.namespace = namespace;
-				this.socket = io('http://localhost:5000/' + this.namespace);
-				if(window.location.hostname != 'localhost'){
-					this.socket = io('http://p5live-server.glitch.me:3000/' + this.namespace);	
+				this.socket = io('https://p5live-server.glitch.me/' + this.namespace);	
+				if(window.location.hostname == 'localhost'){
+					this.socket = io('/' + this.namespace); // io('http://localhost:5000/' + this.namespace);
 				}
-				console.log(this.socket);
 				this.rgaConnect();
 				this.users = {};
 				editor.setWrapBehavioursEnabled(false);
@@ -586,78 +588,78 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* CMD-KEYS (remove key conflicts) */
 		editor.commands.removeCommands(['gotoright','movelinesup', 'movelinesdown', 'gotolinestart', 'splitline', 'gotolineend', 'golineup', 'jumptomatching', 'golinedown', 'transposeletters', 'find']);
 
-		 // replace backspace w/o ctrl + h
-		 editor.commands.addCommand({
-		 	name: 'backspace',
-		 	bindKey: { win: 'Shift-Backspace|Backspace', mac: 'Ctrl-Backspace|Shift-Backspace|Backspace' },
-		 	exec: function(e) { e.remove('left') },
-		 	multiSelectAction: 'forEach',
-		 	scrollIntoView: 'cursor'
-		 });
+		// replace backspace w/o ctrl + h
+		editor.commands.addCommand({
+			name: 'backspace',
+			bindKey: { win: 'Shift-Backspace|Backspace', mac: 'Ctrl-Backspace|Shift-Backspace|Backspace' },
+			exec: function(e) { e.remove('left') },
+			multiSelectAction: 'forEach',
+			scrollIntoView: 'cursor'
+		});
 
-		 // replace gotoright w/o ctrl + f
-		 editor.commands.addCommand({
-		 	name: 'gotoright',
-		 	bindKey: { win: 'Right', mac: 'Right' },
-		 	exec: function(e,t) { e.navigateRight(t.times) },
-		 	multiSelectAction: 'forEach',
-		 	scrollIntoView: 'cursor',
-		 	readOnly:!0
-		 });
+		// replace gotoright w/o ctrl + f
+		editor.commands.addCommand({
+			name: 'gotoright',
+			bindKey: { win: 'Right', mac: 'Right' },
+			exec: function(e,t) { e.navigateRight(t.times) },
+			multiSelectAction: 'forEach',
+			scrollIntoView: 'cursor',
+			readOnly:!0
+		});
 
-		 // replace golineup w/o ctrl + p
-		 editor.commands.addCommand({
-		 	name: 'golineup',
-		 	bindKey: { win: 'Up', mac: 'Up' },
-		 	exec: function(e,t) { e.navigateUp(t.times) },
-		 	multiSelectAction: 'forEach',
-		 	scrollIntoView: 'cursor',
-		 	readOnly:!0
-		 });
+		// replace golineup w/o ctrl + p
+		editor.commands.addCommand({
+			name: 'golineup',
+			bindKey: { win: 'Up', mac: 'Up' },
+			exec: function(e,t) { e.navigateUp(t.times) },
+			multiSelectAction: 'forEach',
+			scrollIntoView: 'cursor',
+			readOnly:!0
+		});
 
-		 // replace golinedown w/o ctrl + n
-		 editor.commands.addCommand({
-		 	name: 'golinedown',
-		 	bindKey: { win: 'Down', mac: 'Down' },
-		 	exec: function(e,t) { e.navigateDown(t.times) },
-		 	multiSelectAction: 'forEach',
-		 	scrollIntoView: 'cursor',
-		 	readOnly:!0
-		 });
+		// replace golinedown w/o ctrl + n
+		editor.commands.addCommand({
+			name: 'golinedown',
+			bindKey: { win: 'Down', mac: 'Down' },
+			exec: function(e,t) { e.navigateDown(t.times) },
+			multiSelectAction: 'forEach',
+			scrollIntoView: 'cursor',
+			readOnly:!0
+		});
 
-		 // beautify!
-		 var beautifyOptions = {
-		 	'indent_size': '1',
-		 	'indent_char': '\t',
-		 	'max_preserve_newlines': '5',
-		 	'preserve_newlines': true,
-		 	'keep_array_indentation': false,
-		 	'break_chained_methods': false,
-		 	'indent_scripts': 'normal',
-		 	'brace_style': 'collapse',
-		 	'space_before_conditional': false,
-		 	'unescape_strings': false,
-		 	'jslint_happy': false,
-		 	'end_with_newline': false,
-		 	'wrap_line_length': '0',
-		 	'indent_inner_html': false,
-		 	'comma_first': false,
-		 	'e4x': false
-		 }
+		// beautify!
+		var beautifyOptions = {
+			'indent_size': '1',
+			'indent_char': '\t',
+			'max_preserve_newlines': '5',
+			'preserve_newlines': true,
+			'keep_array_indentation': false,
+			'break_chained_methods': false,
+			'indent_scripts': 'normal',
+			'brace_style': 'collapse',
+			'space_before_conditional': false,
+			'unescape_strings': false,
+			'jslint_happy': false,
+			'end_with_newline': false,
+			'wrap_line_length': '0',
+			'indent_inner_html': false,
+			'comma_first': false,
+			'e4x': false
+		}
 
 
 
-		 /* DEBUG EDITOR COMMANDS + STORAGE */
+		/* DEBUG EDITOR COMMANDS + STORAGE */
 
-		 // list ace editor commands
-		 function listCommands(){
-		 	var cmds = editor.commands.commands;
-		 	var k = [];
-		 	for (var cmd in cmds){
-		 		k.push(cmd.name + ' = ' + cmd.bindKey);
-		 	}
-		 	console.log(cmds);
-		 }
+		// list ace editor commands
+		function listCommands(){
+			var cmds = editor.commands.commands;
+			var k = [];
+			for (var cmd in cmds){
+				k.push(cmd.name + ' = ' + cmd.bindKey);
+			}
+			console.log(cmds);
+		}
 
 		// check storageKeys
 		function getKeys(){
@@ -731,7 +733,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			loadSnippets();
 			loadSketchTemplate();
 			loadHTMLTemplate(); 
-			loadRef();
+			// loadRef();
 			vex.defaultOptions.className = 'vex-theme-plain'
 			legacySettings(); // update sketches from 1.0.2
 			settings.cocoding.active = false;
@@ -804,6 +806,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateSketches();
 			localStorage[settings.fileName] = editor.getValue();
 			editor.focus(); 
+			editor.session.off('change', cloneSketch);
+			
 		}
 
 		// load sketch
@@ -819,6 +823,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				})
 			}else {
 				if(localStorage.hasOwnProperty(sketch)){
+					editor.getSession().off('change', cloneSketch);
 					// auto expand folder (incase of short-cut selection)
 					recursiveFolderExpand(settings.sketches, sketch, '');
 					settings.fileName = sketch;
@@ -832,9 +837,18 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
 					editor.focus();
+					var checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
+					if(searchSketches(settings.fileName, checkDemo)){
+						editor.getSession().on('change', cloneSketch);
+					}
+					
 				}else{
 					// start new sketch
-					loadDefault();
+					if(listSketches(settings.sketches).length > 0){
+						loadSketch(loadLatest());
+					}else{
+						loadDefault();
+					}
 				}
 			}
 		}
@@ -859,7 +873,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for(var i=0; i < includeScripts.length; i++){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
-				if(navigator.onLine){
+				if(window.location.hostname != 'localhost'){
 					s.src = includeScripts[i].remote;
 				}else{
 					s.src = includeScripts[i].local;
@@ -896,8 +910,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		function searchSketches(sketchName){
-			var sketchesFlat = JSON.stringify(settings.sketches);
+		function searchSketches(sketchName, obj){
+			var sketchesFlat = JSON.stringify(obj);
 			if( sketchesFlat.indexOf('"'+sketchName+'"') > -1 ) {
 				return true;
 			}else{
@@ -929,6 +943,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			// console.log(folderObj);
 			var tempSketches = {};
 			tempSketches.version = settings.version;
+			tempSketches.revision = settings.revision;
 			tempSketches.structure = folderObj;
 			tempSketches.sketches = [];
 			listSketches(folderObj).forEach(function (sketch){
@@ -944,6 +959,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var tempSketches = {};
 			tempSketches.version = settings.version;
 			tempSketches.structure = settings.sketches;
+			tempSketches.revision = settings.revision;
 			tempSketches.sketches = [];
 			listSketches(settings.sketches).forEach(function (sketch){
 				if(localStorage.hasOwnProperty(sketch)){
@@ -1027,7 +1043,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				var pName = objStructure[key].name;
 
 				// if duplicate, give unique name
-				if(searchSketches(objStructure[key].name)){
+				if(searchSketches(objStructure[key].name, settings.sketches)){
 					objStructure[key].name += '_' + timeStamp();
 					dup = true;
 				}
@@ -1057,7 +1073,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function checkDupSketches(obj, keyName){
 			let jsonSketches = obj.sketches;
 			for(let i=0; i < jsonSketches.length; i++){
-				if(searchSketches(jsonSketches[i][keyName])){
+				if(searchSketches(jsonSketches[i][keyName], settings.sketches)){
 					jsonSketches[i][keyName] += '_' + timeStamp();
 				}
 			}			
@@ -1099,6 +1115,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			parseSketches(jsonObj);
 		}
 
+		function refreshDemos(){
+			window.setTimeout(function(){
+				removeItemProcess('demos');
+				window.setTimeout(function(){loadDemos();}, 200);
+			}, 200);
+		}
+
 		function parseSketches(jsonObj){
 			var jsonSketches = jsonObj.sketches.reverse();
 			for(var i=0; i < jsonSketches.length; i++){
@@ -1107,7 +1130,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				localStorage.setItem(sketchName, sketchCode);
 
 				// add to settings if doesn't exist
-				if(!searchSketches(sketchName)) {
+				if(!searchSketches(sketchName, settings.sketches)) {
 					settings.sketches.unshift({'type':'sketch', 'name':sketchName});
 				}
 				
@@ -1126,21 +1149,32 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(typeof settings.sketches[0] != 'object'){
 				var order = settings.sketches;
 				var newOrder = [];
+				var oldDemos = ["aboutsketch", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_sphereBox", "textToPoints", "basel.codes", "this is a really long name"];
 				order.forEach(function(o){
-					newOrder.push({'name':o, 'type':'sketch'});
+					if(!oldDemos.includes(o)){
+						newOrder.push({'name':o, 'type':'sketch'});
+					}
 				});
 				settings.sketches = newOrder;
 				updateSettings();
 			}
-
-			if(!settings.hasOwnProperty('cocoding') || typeof settings.cocoding != 'object'){
-				settings.cocoding = {};
-				updateSettings();
-			}
-
+			
 			if(searchJSON(settings.sketches, 'name', 'demos').length == 0){			
 				loadDemos();
 			}
+
+			if(!settings.hasOwnProperty('revision') || settings.revision < 4){
+				settings.revision = 4;
+				settings.cocoding = {};
+				settings.console = true;
+				settings.themeBGactive = true;
+				settings.refresh = true;
+				updateSettings();
+				
+				//loadDemos();
+			}
+
+			
 		}
 
 		function getOrder() {
@@ -1184,25 +1218,40 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function initSortable(){
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
 				var selSelected = false;
-				var htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches );
+				//var curFolder = "";
+				var htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
 				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
 				initFolders(menuSketches);
 
-				function recurse(data) {
+				function recurse(data, curFolder) {
 					var html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
 					for (var key in data) { 
 						var d = data[key];
 						var marq = '';
+						var demoClass = ' drag-item ';
+						var demoFolder = '';
 						if(d.name.length > 15){marq = 'marq';}
 						if(d.type == 'sketch'){
 							var selClass = '';
+							var navSketch = 'onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"';
+							if(curFolder == 'demos'){
+								navSketch = '';
+								demoClass = ' demo';
+							}
 							if(d.name == settings.fileName){
 								selClass = 'sketch-selected';
 								selSelected = true;
 							}
-							html +='<li class="item-sketch menu-sketch-holder '+selClass+'" data-type="sketch" data-id="'+d.name+'" onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
 						}else if(d.type == 'folder'){
+							curFolder = d.name;
 							var icon = iconFolderExpand;
+							var navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"';
+							if(curFolder == 'demos'){
+								navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'demos\');" onmouseleave="hideNav(this);"';
+								demoClass = ' demo';
+								demoFolder = 'id="demofolder"';
+							}
 							if(d.toggle == 'expand'){
 								icon = iconFolderCollapse;
 							}
@@ -1211,10 +1260,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								icon = iconFolderEmpty;
 								d.toggle = 'collapse';
 							}
-							html += '<ul class="item-folder '+d.toggle+'" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
-							html += '<div class="foldertitle" onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'">'+icon+'' +d.name + '</div></div> ';
-							html += recurse(d.contents);
+							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
+							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'">'+icon+'' +d.name + '</div></div> ';
+							html += recurse(d.contents, curFolder);
 							html += '</ul>';
+							curFolder = '';
 						}
 					};
 					html += '';
@@ -1225,10 +1275,21 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				new Sortable(menuSketches, options);
 
 				// all sub-folders
-				document.querySelectorAll('.item-folder').forEach((s) => {
+				document.querySelectorAll('.drag-item').forEach((s) => {
 					new Sortable(s, options);
 				});
 
+				if(document.getElementById('demofolder') != undefined){
+					new Sortable(demofolder, {
+						group: {name: 'demos', pull:false,put:false},
+						filter: '.demo'
+					});
+				}
+
+				if(settings.refresh){
+					settings.refresh = false;
+					refreshDemos();
+				}
 				loadTippy();
 			}
 		}
@@ -1283,6 +1344,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
 			}else if(elmType == 'sketch'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+			}else if(elmType == 'demos'){
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="refreshDemos(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconRefresh+'</a>';
 			}
 
 			loadTippy();
@@ -1352,23 +1415,27 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				message: 'Are you sure you want to delete: ' + dataID + ' ?',
 				callback: function (value) {
 					if (value) {
-						var selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
-						selElm.querySelectorAll('[data-id]').forEach(function(k){
-							localStorage.removeItem(k.dataset.id);
-							k.remove();
-						});
-
-						localStorage.removeItem(dataID);
-						selElm.remove();
-
-						getOrder();
-						if(dataID === settings.fileName){
-							// *** issue if trashing folder containing active sketch...
-							loadSketch(loadLatest());
-						}
+						removeItemProcess(dataID);
 					}
 				}
 			})
+		}
+
+		function removeItemProcess(dataID){
+			var selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
+			selElm.querySelectorAll('[data-id]').forEach(function(k){
+				localStorage.removeItem(k.dataset.id);
+				k.remove();
+			});
+
+			localStorage.removeItem(dataID);
+			selElm.remove();
+
+			getOrder();
+			if(dataID === settings.fileName){
+				// *** issue if trashing folder containing active sketch...
+				loadSketch(loadLatest());
+			}
 		}
 
 
@@ -1446,6 +1513,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
+			
 			map[event.keyCode] = event.type == 'keydown';
 			
 			pLen = editor.getValue().length; // len of editor
@@ -2021,6 +2089,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// HTML to TXT
 		function htmlToText(html){
+			console.log(html)
 			//remove code brakes and tabs
 			html = html.replace(/\n/g, '');
 			html = html.replace(/\t/g, '');
@@ -2029,10 +2098,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			html = html.replace(/<\/td>/g, '\t');
 			html = html.replace(/<\/table>/g, '\n');
 			html = html.replace(/<\/tr>/g, '\n');
-			html = html.replace(/<\/p>/g, '\n\n\n');
+			html = html.replace(/<\/p>/g, '\n\n');
 			html = html.replace(/<\/li>/g, '\n');
 			html = html.replace(/<\/ul>/g, '\n\n');
 			html = html.replace(/<\/div>/g, '\n');
+			html = html.replace(/<img([\w\W]+?)><br\/>/g, '');
 			html = html.replace(/<\/h.>/g, '\n----------------\n');
 			html = html.replace(/<br>/g, '\n'); html = html.replace(/<br( )*\/>/g, '\n');
 
@@ -2047,6 +2117,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// Tooltips via tippy
 		function loadTippy(){
+
 			tippy('.tippy', {
 				content(reference) {
 					const title = reference.getAttribute('data-title')
@@ -2057,7 +2128,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				arrow:true,
 				delay:0,
 				duration:0,
-				arrowType:'round'
+				arrowType:'round',
+				onShow(instance) {
+					document.querySelectorAll('.tippy-popper').forEach(popper => {
+						if (popper !== instance.popper) {
+							popper._tippy.hide()
+						}
+					})
+				}
 			});
 
 			tippy('.tippy-left', {
@@ -2072,7 +2150,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				duration:0,
 				zIndex:9999,
 				boundary:'window',
-				arrowType:'round'
+				arrowType:'round',
+				onShow(instance) {
+					document.querySelectorAll('.tippy-popper').forEach(popper => {
+						if (popper !== instance.popper) {
+							popper._tippy.hide()
+						}
+					})
+				}
 			});
 		}
 
@@ -2119,8 +2204,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		window.onhashchange = getRef;
 
 		function showRef(){
-			refHolder.style.display = 'block';
-			getRef();
+			if(!downloadedRef){
+				loadRef();
+				downloadedRef = true;
+			}else{
+				refHolder.style.display = 'block';
+				getRef();
+			}
 		}
 
 		function getRef(){
@@ -2300,6 +2390,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				});
 			});
 			allRef();
+
+			// display once downloaded
+			refHolder.style.display = 'block';
+			getRef();
 		}
 
 		// close references

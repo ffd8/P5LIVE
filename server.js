@@ -1,4 +1,6 @@
 "use strict";
+let online = false;
+let debugStats = true; // report glitch.com limits
 
 const express = require('express')
 , app = express()
@@ -8,32 +10,89 @@ const express = require('express')
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
 
-const maxSpaces = 20; // check memory for number of namespaces...
-const purgeCounter = 5; // sec until removing namespace
+const maxSpaces = 200; // check memory for number of namespaces...
+const purgeCounter = 60; // sec until removing namespace
 let cc = {}; // store namespaces
+let ccStatsReporting = 15; // sec
+let ccStats = {};
+ccStats.reqCount = 4000;
+let countdown = 1000 * 60 * 60;
+ccStats.countdown = "60 min";
+
+/* STATS */
+function callEveryHour() {
+    setInterval(function(){
+    	countdown = 1000 * 60 * 60;
+    	ccStats.reqCount = 4000;
+    }, 1000 * 60 * 60);
+}
+
+function callEveryMinute() {
+    setInterval(function(){
+    	countdown -= (1000 * ccStatsReporting);
+    	ccStats.countdown = Math.floor(countdown/1000/60) + " min";
+    	console.log(ccStats);
+    }, 1000 * ccStatsReporting); // 60
+}
+
+function setupStats(){
+	if(debugStats){
+		callEveryHour();
+		callEveryMinute();
+	}
+}
+
+setupStats();
+
 
 app.get('/', function (req, res) {
-	res.sendFile(__dirname + "/index.html");
+	if(online){
+		res.redirect('https://teddavis.org/p5live');	
+	}else{
+		res.sendFile(__dirname + "/index.html");
 
-	let ccRaw = req.query.cc; // get namespaces
-	if(ccRaw != null && ccRaw.length == 5){
-		if(cc[ccRaw] === undefined || cc[ccRaw] === null){
-			// create room if under limit
-			if(Object.keys(cc).length < maxSpaces){
-				cc[ccRaw] = new Namespace(ccRaw, io);
-			}else{
-				// report rooms are full
-				io.of('/' + ccRaw).on('connection', function(socket){
-				  socket.emit("full");
-				});
-			}
-		}		 
+		let ccRaw = req.query.cc; // get namespaces
+		if(ccRaw != null && ccRaw.length == 5){
+			if(cc[ccRaw] === undefined || cc[ccRaw] === null){
+				// create room if under limit
+				if(Object.keys(cc).length < maxSpaces){
+					cc[ccRaw] = new Namespace(ccRaw, io);
+				}else{
+					// report rooms are full
+					io.of('/' + ccRaw).on('connection', function(socket){
+					  socket.emit("full");
+					});
+				}
+			}		 
+		}
 	}
 })
 
+io.origins((origin, callback) => {
+  if (online && origin !== 'https://teddavis.org') {
+    return callback('origin not allowed', false);
+  }
+  callback(null, true);
+});
+
+function reportStats(){
+	// console.log('ccStats');
+	ccStats.rooms = [];
+	for(let i=0; i < Object.keys(cc).length; i++){
+		let ccRaw = Object.keys(cc)[i];
+		if(cc[ccRaw]!= undefined && Object.keys(cc[ccRaw].people) != undefined){
+			let ccCount = Object.keys(cc[ccRaw].people).length;
+			if(ccCount > 1){
+				ccStats.rooms.push(ccCount);
+			}
+		}
+	}
+	ccStats.rooms.sort(function(a, b){return b-a});	
+}
+
 requestStats(server, function (stats) {
-	// this function will be called every time a request to the server completes
 	// console.log(stats.req.path)
+	ccStats.reqCount--;
 })
 
 // must be after app.get()!
@@ -41,8 +100,8 @@ app.use(express.static('./'));
 
 // *** remove RGA / data
 function purgeNamespace(nsp){
+	cc[nsp] = {};
 	delete cc[nsp];
-	cc[nsp] = undefined;
 	//console.log("removed: " + nsp);
 }
 

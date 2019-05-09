@@ -1,5 +1,6 @@
 "use strict";
 let online = false;
+let debugStats = true;
 /*
 	TODO
 	- check ram usage..
@@ -18,8 +19,8 @@ const express = require('express')
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
 
-const maxSpaces = 20; // check memory for number of namespaces...
-const purgeCounter = 5; // sec until removing namespace
+const maxSpaces = 200; // check memory for number of namespaces...
+const purgeCounter = 60; // sec until removing namespace
 let cc = {}; // store namespaces
 let ccStatsReporting = 15; // sec
 let ccStats = {};
@@ -27,6 +28,7 @@ ccStats.reqCount = 4000;
 let countdown = 1000 * 60 * 60;
 ccStats.countdown = "60 min";
 
+/* STATS */
 function callEveryHour() {
     setInterval(function(){
     	countdown = 1000 * 60 * 60;
@@ -41,17 +43,29 @@ function callEveryMinute() {
     	console.log(ccStats);
     }, 1000 * ccStatsReporting); // 60
 }
-callEveryHour();
-callEveryMinute();
+
+function setupStats(){
+	if(debugStats){
+		callEveryHour();
+		callEveryMinute();
+	}
+}
+
+setupStats();
 
 app.get('/', function (req, res) {
-	res.redirect('https://teddavis.org/p5live');
+	if(online){
+		res.redirect('https://teddavis.org/p5live');	
+	}else{
+		// serve files simply via just npm?
+	}
+	
 })
 
 
 // io.origins(['http://localhost:8888']);
 io.origins((origin, callback) => {
-  if (origin !== 'http://teddavis.org:443' && online) {
+  if (online && origin !== 'https://teddavis.org') {
     return callback('origin not allowed', false);
   }
   callback(null, true);
@@ -103,6 +117,7 @@ requestStats(server, function (stats) {
 function purgeNamespace(nsp){
 	cc[nsp] = {};
 	delete cc[nsp];
+	//console.log("removed: " + nsp);
 }
 
 // tip for using socket in class!

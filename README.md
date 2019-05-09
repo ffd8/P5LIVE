@@ -4,11 +4,6 @@ v 1.1.0
 cc [teddavis.org](http://teddavis.org) – 2019  
 p5.js collaborative live-coding vj environment!
 
-INSTALL
--------------------------------
-- Online: [https://teddavis.org/p5live](https://teddavis.org/p5live)
-- Offline: Clone and run via localserver or nodejs (for cocoding).
-
 
 SHORTCUTS
 -------------------------------
@@ -18,9 +13,9 @@ SHORTCUTS
 - `CTRL + E` » editor toggle
 - `CTRL + F` » fullscreen toggle
 - `CTRL + M` » menu toggle
+- `CTRL + T` » tidy code
 - `CTRL + R` » references toggle
 - `CTRL + C` » cursor toggle
-- `CTRL + T` » tidy code
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
 - `CTRL + S` » save png
@@ -29,9 +24,20 @@ SHORTCUTS
 
 LOCALSTORAGE
 -------------------------------
-Sketches are ONLY stored in your browser's localStorage.  
+Sketches are ONLY stored in your browser's localStorage,   
+so export sketches/folders often.  
 Clearing browser history/data will probably erase all sketches.  
-Export sketches/folders often.
+
+As sketches are isolated to domain:port localstorage,  
+export/import all to migrate between online/offline.
+
+
+INSTALL
+-------------------------------
+Online: [https://teddavis.org/p5live](https://teddavis.org/p5live)
+
+Offline: [Clone Github Repo](https://github.com/ffd8/p5live)   
+Details below to run via localserver or nodejs/npm (for cocoding).
 
 
 GETTING STARTED
@@ -120,6 +126,25 @@ Additional custom functions have been added:
 - `ease(inVal, outVariable, easeVal)`  smooth values  
 - `println(foo)` for compatibility with Processing.  
 - `frameCount`, `mouseX`, `mouseY` are continous per recompile.
+
+
+OFFLINE SERVER
+-------------------------------
+#### Basic webserver using python (no cocoding):  
+- Download [P5LIVE](https://github.com/ffd8/p5live)  
+- on MacOS, open Terminal  
+- type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, hit `ENTER`  
+- type `python -m SimpleHTTPServer 5000`, hit `ENTER`    
+- goto [http://localhost:5000](http://localhost:5000)
+
+#### Fancy webserver using nodejs/npm (cocoding):  
+- Download [P5LIVE](https://github.com/ffd8/p5live)  
+- on MacOS, open Terminal  
+- type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, hit `ENTER`  
+- install nodejs + npm (search for instructions)  
+- type `npm install`, hit `ENTER`  
+- type `npm start`, hit `ENTER`  
+- goto [http://localhost:5000](http://localhost:5000)
 
 
 FUTURE
