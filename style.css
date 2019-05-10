@@ -97,7 +97,7 @@ hr{
 	font-size:9pt;
 	padding:5px 5px 5px 10px;
 	resize:none;
-	/*pointer-events: none;*/
+	pointer-events: none;
 }
 .myMarker {
 	position:fixed;

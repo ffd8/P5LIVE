@@ -30,6 +30,7 @@
 		if(p5console != null){
 			p5console.value = "";
 			p5console.style.background = "none";
+			p5console.style.pointerEvents = "none";
 		}
 		markLine();
 
@@ -68,6 +69,7 @@
 				if(m != "p5.RendererGL: enabled webgl context"){
 					p5console.value = m;
 					p5console.style.background = "#222";
+					p5console.style.pointerEvents = "all";
 				}
 			}       
 		};
