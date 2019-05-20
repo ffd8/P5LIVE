@@ -78,24 +78,27 @@
 				<div class="menu-section-bg"></div>
 				<div class="menu-header" id="menu-cocode-header">COCODING</div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
-					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop Collaborative Coding">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop CoCoding">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="copyLink(this);" data-title="Copy URL to Clipboard">
+					<button class="menu-button tippy" onclick="copyLink(this);" data-title="URL to Clipboard">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
 					</button>
 					<button class="menu-button tippy" onclick="cloneSketch();" data-title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
-					<button class="menu-button tippy" onclick="cocodeLayers();" data-title="Load cocodeLayers">
+					<button class="menu-button tippy admin-lock" id="cocode-layers" onclick="cocodeLayers();" data-title="Load CoCodeLayers" style="display:none;">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
 					</button>
-					<button class="menu-button tippy" id="lockdown" onclick="toggleLockdown()" data-title="lockdown" style="display:none;">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+					<button class="menu-button tippy admin-lock" id="cocode-lockdown" onclick="toggleLockdown()" data-title="Toggle Lockdown">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>
+					</button>
+					<button class="menu-button tippy admin-lock" id="cocode-sync" onclick="toggleSync()" data-title="Sync mouseX/Y + frameCount" disabled>
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
 					</button>
 				</div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-inactive">
-					<button class="menu-button tippy cocoding-inactive" id="menu-cocoding" onclick="cocodingInit();" data-title="Start Collaborative Coding!">
+					<button class="menu-button tippy cocoding-inactive" id="menu-cocoding" onclick="cocodingInit();" data-title="Start CoCoding!">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
 				</div>
@@ -242,8 +245,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 }</textarea>
 
 	<!-- Scripts -->
-	<script src="includes/js/src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
-	<script src="includes/js/src-min-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/src-noconflict/ext-language_tools.js" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
 	<script src="includes/js/jscolor.js"></script>
@@ -264,6 +267,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
+		let currentRevision = 6;
 
 		// resetP5(); // manual reset
 
@@ -282,7 +286,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// settings
 		let initSettings = {
 			'version':'1.1.0',
-			'revision':4,
+			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15, 
 			'autoCompile':true, 
@@ -296,7 +300,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'debugMode': false,
 			'safeMode': false,
 			'sketches': [],
-			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'status':''},
+			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false},
 			'scripts': ['includes/p5/addons/p5.dom.min.js', 'includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '052544',
@@ -393,6 +397,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		var iconCopy ='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
 
+		var iconUnlock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>';
+
+		var iconLock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+
+		var iconEdit = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+
+		var iconToggleLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>';
+
+		var iconToggleRight = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>';
+
+		var iconRadio = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
+
+		var iconPower = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>';
+
+		var iconThumbsDown = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-thumbs-down"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h2.67A2.31 2.31 0 0 1 22 4v7a2.31 2.31 0 0 1-2.33 2H17"></path></svg>';
+
+
 		var options = {
 			group: {name: 'sketches'},
 			animation: 200,
@@ -436,9 +457,38 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				});
 
 				this.login();
+				this.token();
 
 				this.socket.on('init', () => {
 					setTimeout(function(){editor.setValue(p5template, 1);}, 100);
+				});
+
+				this.socket.on('syncSettings', (data)=>{
+					let settingsUpdate = JSON.parse(data);
+					settings.cocoding.lockdown = settingsUpdate.lockdown;
+					settings.cocoding.sync = settingsUpdate.sync;
+					updateSettings();
+
+					//lockdown
+					if(settings.cocoding.lockdown){
+						editor.setReadOnly(true);
+						if(settings.cocoding.level == 'admin' || settings.cocoding.writemode){
+							editor.setReadOnly(false);
+						}
+					}else{
+						editor.setReadOnly(false);
+					}
+					updateToggleLockdown();
+
+					if(settings.cocoding.sync){
+						if(settingsUpdate.fc > 0){
+							p5f.frameCount = settingsUpdate.fc;
+						}
+					}
+					updateToggleSync();
+					// var settingsSync = document.getElementById('cocode-sync');
+					// toggleButtonActive(settingsSync, settings.cocoding.sync);
+
 				});
 
 				this.socket.on('cocodeReady', () =>{
@@ -454,53 +504,177 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					})
 				});
 
-				this.socket.on('updateSatus', (statusMode)=>{
-					settings.cocoding.status = statusMode;
-					console.log(statusMode);
+				this.socket.on('setLevel', (statusMode)=>{
+					settings.cocoding.level = statusMode;
 					updateSettings();
 					if(statusMode != 'admin'){
-						document.getElementById('lockdown').style.display = 'none';
+						var adminDivs = document.getElementsByClassName('admin-lock');
+						for(let i=0; i<adminDivs.length; i++){
+							//adminDivs[i].style.display = 'block';
+							adminDivs[i].setAttribute('disabled', 'disabled');
+						}
+						// updateToggleLockdown();
+						// if(settings.cocoding.sync){
+						// 	updateToggleSync();
+						// }
 					}
 				});
 
-				this.socket.on('lockdown', (lockMode)=>{
-					if(lockMode && settings.cocoding.status != 'admin'){
-						settings.cocoding.lockdown = true;
-						editor.setReadOnly(true);
-					}else{
-						settings.cocoding.lockdown = false;
-						editor.setReadOnly(false);
-					}
-					updateSettings();
+				// this.socket.on('hello', (data)=>{
+				// 	let ev = JSON.parse(data);
+				// 	console.log(ev);
+				// })
+
+				// this.socket.on('lockdown', (lockMode)=>{
+				// 	if(lockMode){
+				// 		settings.cocoding.lockdown = true;
+				// 		editor.setReadOnly(true);
+				// 		if(settings.cocoding.level == 'admin' || settings.cocoding.level == 'mod'){
+				// 			editor.setReadOnly(false);
+				// 		}
+				// 	}else{
+				// 		settings.cocoding.lockdown = false;
+				// 		editor.setReadOnly(false);
+				// 	}
+				// 	updateSettings();
+				// 	updateToggleLockdown();
+				// });
+
+				this.socket.on('dispatchMouse', (evData)=>{
+					let ev = JSON.parse(evData);	
+					var copy = new MouseEvent(ev.type, ev.options);
+					p5f.dispatchEvent(copy);	
+					p5f.frameCount = ev.fc;			
 				});
+
+				// this.socket.on('sync', (syncData)=>{
+				// 	let syncVals = JSON.parse(syncData);	
+				// 	if(syncVals.mode){
+				// 		settings.cocoding.sync = true;
+				// 		if(syncVals.fc > 0){
+				// 			p5f.frameCount = syncVals.fc;
+				// 		}
+				// 	}else{
+				// 		settings.cocoding.sync = false;
+				// 	}
+				// 	updateSettings;
+				// 	var settingsSync = document.getElementById('cocode-sync');
+				// 	toggleButtonActive(settingsSync, settings.cocoding.sync);
+				// 	// if(settings.cocoding.sync){
+				// 	// 	settings.cocoding.sync = true;
+				// 	// 	updateSettings;
+				// 	// }
+				// 	// let p5coords = JSON.parse(syncVals);
+				// 	// p5f.mouseX = p5coords.x;
+				// 	// p5f.mouseY = p5coords.y;
+				// 	// p5f.pmouseX = p5coords.px;
+				// 	// p5f.pmouseY = p5coords.py;
+				// 	// p5f.frameCount = p5coords.fc;
+				// 	//console.log(p5coords);
+				// });
 
 				this.socket.on('rename', (nick)=>{
 					settings.cocoding.nick = nick;
 					updateSettings();
 				});
 
-				this.socket.on('users', (usersRaw) => {
+				this.socket.on('requestReject', ()=>{
+					settings.cocoding.request = false;
+					updateSettings();
+				});
+
+				this.socket.on('toggleEdit', (writeMode)=>{
+					//this.req = JSON.parse(reqData);
+					if(writeMode){
+						settings.cocoding.writemode = true;
+						settings.cocoding.request = false;
+						updateSettings();
+						editor.setReadOnly(false);
+					}else{
+						settings.cocoding.writemode = false;
+						updateSettings();
+						editor.setReadOnly(true);
+					}
+				});
+
+				this.socket.on('syncUsers', (usersRaw) => {
 					this.users = JSON.parse(usersRaw);
+					let users = [];
+					for (var key in this.users) {
+						users.push(this.users[key])
+					};
+					// users.sort(function(a, b) {
+					// return parseFloat(a.request) - parseFloat(b.request);
+					// });
+					users.sort(function(userA,userB){return userA.request-userB.request || userA.writemode-userB.writemode}).reverse();
+					//users.sort(function(a,b){return a.writemode-b.writemode}).reverse();
+
 					menuCocodeSketches.innerHTML = '';
 					var activeSelf = '';
 					var usersHTML = '';
-					for (var key in this.users) {
-						if(this.users[key].nick != settings.cocoding.nick){
-							var active = '';
-							if(this.users[key].status == 'blur'){
-								active = 'style="opacity:.25;"';
+					var usersSelf;
+					for (var i=0; i < users.length; i++) {
+						if(users[i].nick != settings.cocoding.nick){
+							var userNav = '';
+							if(settings.cocoding.lockdown){
+								if(settings.cocoding.level == 'admin'){
+									if(users[i].writemode){
+										userNav = '<a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleRight+'</a>';
+									}else{
+										var reqNav = '';
+										if(users[i].request){
+											reqNav = '<a class="menu-sketch-button tippy" onclick="cocode.requestReject(\''+users[i].nick+'\')" data-title="Reject Request">'+iconThumbsDown+'</a>';
+										}
+										userNav = reqNav+'<a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleLeft+'</a>';
+									}
+								}			
 							}
-							usersHTML += '<li class="item-sketch menu-sketch-holder" '+active+'>'+this.users[key].nick+'</li>';
+							// if(settings.cocoding.level != 'admin' || !settings.cocoding.lockdown){
+							// 	userNav = ''; // add chat??
+							// }
+							var active = '';
+							var marq = '';
+							var writeClass = '';
+							if(settings.cocoding.lockdown){
+								if(users[i].request){
+									writeClass = ' write-req ';
+								}else if(users[i].writemode && settings.cocoding.level == 'admin'){
+									writeClass = ' write-access ';
+								}
+							}
+							if(users[i].nick.length > 10){marq = 'marq';}
+							if(users[i].status == 'blur'){
+								active = 'style="opacity:.5;"';
+							}
+							usersHTML += '<li id="user-'+users[i].nick+'" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch-nav">' +userNav+'</div><div class="menu-sketch '+marq+'" '+active+ '>'+users[i].nick+'</div></li>';
 						}else{
-							if(this.users[key].status == 'blur'){
-								activeSelf = 'style="opacity:.25;"';
+							usersSelf = users[i];
+							if(usersSelf.status == 'blur'){
+								activeSelf = 'style="opacity:.5;"';
 							}
 						}
 					}
-					menuCocodeSketches.innerHTML = '<li class="item-sketch menu-sketch-holder tippy" data-title="Click to Rename" onclick="cocode.rename();" '+activeSelf+'>'+settings.cocoding.nick+'</li>' + usersHTML;
-					loadTippy();
-				});
-			}
+						var selfNav = '';
+						console.log(settings.cocoding.level);
+						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown){
+							selfNav = '<div class="menu-sketch-nav"><a id="request-'+settings.cocoding.nick+'" class="menu-sketch-button tippy " onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')" data-title="Request Edit">'+iconEdit+'</a></div>';
+						}
+
+						var writeClass = '';
+						if(settings.cocoding.lockdown && settings.cocoding.level != 'admin'){
+							if(usersSelf.request){
+								writeClass = ' write-req ';
+							}else if(settings.cocoding.writemode){
+								writeClass = ' write-access ';
+							}
+						}
+						var marq = '';
+						if(settings.cocoding.nick.length > 10){marq = 'marq';}
+
+						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();">'+settings.cocoding.nick+'</div></li>' + usersHTML;
+						loadTippy();
+					});
+				}
 
 			rgaConnect(){
 				RGA.AceEditorRGA.setup(editor, this.socket);
@@ -530,6 +704,43 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.socket.emit('login', settings.cocoding.nick);
 			}
 
+			token(){
+				this.socket.emit('token', settings.cocoding.token);
+			}
+
+			lockdown(lockdownMode){
+				this.socket.emit('lockdown', lockdownMode)
+			}
+
+			editRequest(userID){
+				settings.cocoding.request = !settings.cocoding.request;
+				updateSettings();
+				// let reqElm = document.getElementById('request-'+userID);
+				// if(settings.cocoding.request){
+				// 	reqElm.style.backgroundColor = "#00aa00";
+				// }else{
+				// 	reqElm.style.backgroundColor = "";
+				// }
+				let reqData = {'userID':userID, 'mode':settings.cocoding.request}
+				this.socket.emit('editRequest', reqData);
+			}
+
+			toggleEdit(userID){
+				this.socket.emit('toggleEdit', {'userID':userID});
+			}
+
+			requestReject(userID){
+				this.socket.emit('rejectRequest', {'userID':userID});
+			}
+
+			dispatchMouse(evType, evOpts){
+				let ev = {'type':evType, 'options':evOpts, 'fc':p5f.frameCount};
+				this.socket.emit('dispatchMouse', ev);
+			}
+
+			sync(syncMode){
+				this.socket.emit('sync', {'mode':syncMode, 'fc':p5f.frameCount});
+			}
 		};
 
 
@@ -658,7 +869,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for (var cmd in cmds){
 				k.push(cmd.name + ' = ' + cmd.bindKey);
 			}
-			console.log(cmds);
+			//console.log(cmds);
 		}
 
 		// check storageKeys
@@ -667,7 +878,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for (var key in localStorage){
 				k.push(key);
 			}
-			console.log(k.join(', '));
+			//console.log(k.join(', '));
 		}
 
 		if(settings.debugMode){
@@ -689,12 +900,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 			// sketchloaded
 			if(e.detail.status){
-				p5f.frameCount = p5vars.frameCount;
-				p5f.mouseX = p5vars.mouseX;
-				p5f.mouseY = p5vars.mouseY;
+				// p5f.frameCount = p5vars.frameCount;
+				// p5f.mouseX = p5vars.mouseX;
+				// p5f.mouseY = p5vars.mouseY;
 
-				p5f.setup(); // better than clear/background, reinit w/ updated vars
-				p5varsReset();
+				// p5f.setup(); // better than clear/background, reinit w/ updated vars
+				//p5varsReset();
 				sketchLoaded = true;
 			}else{
 				sketchLoaded = false;
@@ -744,9 +955,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					cocodingExit(loadLatest());
 					return false;
 				}
+				var ccSpace = getParam('cc');
+				if(settings.cocoding.token != hashCode(ccSpace)){
+					cocodingReset();
+				}
 				settings.cocoding.active = true;
 				menuCocode.style.display = 'block';
-				settings.fileName = getParam('cc');
+				settings.fileName = ccSpace;
 				settings.cocoding.namespace = settings.fileName;
 				if(settings.cocoding.nick == undefined || settings.cocoding.nick == ''){
 					settings.cocoding.nick = makeid(6);
@@ -778,7 +993,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for(let i=0; i<params.length; i++){
 				let keyVal = params[i].split('=');
 				if(keyVal[0] == paramSearch){
-					console.log(keyVal[1]);
+					//console.log(keyVal[1]);
 					return keyVal[1];
 				}
 			}
@@ -814,7 +1029,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function loadSketch(sketch){
 			if(settings.cocoding.active){
 				vex.dialog.confirm({
-					message: 'Exit CO-CODING?',
+					message: 'Exit CoCoding?',
 					callback: function (value) {
 						if (value) {
 							cocodingExit(sketch);
@@ -881,10 +1096,33 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				iFrameBody.appendChild(s);
 			}
 
+			// check loadScripts;
+			let sketchTest = editor.getValue();
+			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			var sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*"\])/
+			var sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
+			if(sketchLoadScripts !=undefined){
+				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
+				// console.log(sketchLoadScripts);
+				for(var i=0; i < sketchLoadScripts.length; i++){
+					let s = document.createElement('script');
+					s.type = 'text/javascript';
+					s.src = sketchLoadScripts[i];
+					iFrameBody.appendChild(s);
+				}
+
+			}
+			
+
 			// load sketch
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			s.innerHTML = editor.getValue() + p5custom.value + 'new p5(); sketchStatus();';
+			let sketchCode = editor.getValue();
+			let updateVars = '\npmouseX='+p5vars.mouseX+';\npmouseY='+p5vars.mouseY+';\nmouseX='+p5vars.mouseX+';\nmouseY='+p5vars.mouseY+';\nframeCount='+p5vars.frameCount+';\n';
+			// console.log(updateVars);
+			var codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
+
+			s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
 			if(!settings.safeMode){
 				iFrameBody.appendChild(s);
 			}
@@ -1010,7 +1248,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						jsonStructureSorted.forEach(function(jsonItem){
 							if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
 								// foreach folder/sketch check duplicates and give unique names
-								recursiveNamecheck(jsonItem, jsonObj.sketches);
+								recursiveNamecheck(jsonStructureSorted, jsonObj.sketches);
 
 								// add structure to top of sketches list
 								//settings.sketches.unshift(jsonObj.structure);
@@ -1044,6 +1282,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				// if duplicate, give unique name
 				if(searchSketches(objStructure[key].name, settings.sketches)){
+					//console.log('dup')
 					objStructure[key].name += '_' + timeStamp();
 					dup = true;
 				}
@@ -1163,16 +1402,33 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				loadDemos();
 			}
 
-			if(!settings.hasOwnProperty('revision') || settings.revision < 4){
-				settings.revision = 4;
-				settings.cocoding = {};
-				settings.console = true;
-				settings.themeBGactive = true;
-				settings.refresh = true;
+			if(settings.revision < currentRevision){
+				settings.revision = currentRevision;
+				Object.keys(initSettings).forEach(function(k){
+					if(!settings.hasOwnProperty(k)){
+						settings[k] = initSettings[k];
+					}else if(typeof initSettings[k] === 'object'){
+						Object.keys(initSettings[k]).forEach(function(kk){
+							if(!settings[k].hasOwnProperty(kk)){
+								settings[k][kk] = initSettings[k][kk];
+							}
+						});
+					}
+					settings.refresh = true;
+				});
 				updateSettings();
-				
-				//loadDemos();
 			}
+
+			// if(!settings.hasOwnProperty('revision') || settings.revision < currentRevision){
+			// 	settings.revision = currentRevision;
+			// 	settings.cocoding = {};
+			// 	settings.console = true;
+			// 	settings.themeBGactive = true;
+			// 	settings.refresh = true;
+			// 	updateSettings();
+				
+			// 	//loadDemos();
+			// }
 
 			
 		}
@@ -1346,6 +1602,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
 			}else if(elmType == 'demos'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="refreshDemos(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconRefresh+'</a>';
+			}else if(elmType == 'user'){
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="toggleEdit(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconToggleLeft+'</a>';
+			}else if(elmType == 'self'){
+				var reqClass = '';
+				if(settings.cocoding.request){
+					reqClass = ' req ';
+				}
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a id="request-'+elmID+'" class="menu-sketch-button tippy '+reqClass+'" onclick="cocode.editRequest(\''+elmID+'\')" data-title="Request Edit">'+iconEdit+'</a>';
 			}
 
 			loadTippy();
@@ -1393,7 +1657,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 							updateSettings();
 							initSortable();
-							if(itemType == 'sketch'){
+							if(itemType == 'sketch' && !settings.cocoding.active){
 								settings.fileName = newName;
 								localStorage.setItem(newName, localStorage[itemName]);
 								localStorage.removeItem(itemName);
@@ -1403,7 +1667,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 				},
 				afterOpen: function(){
-					console.log(this);
+					//console.log(this);
 					document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
 				}
 			})
@@ -1432,7 +1696,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			selElm.remove();
 
 			getOrder();
-			if(dataID === settings.fileName){
+			if(dataID === settings.fileName && !settings.cocoding.active){
 				// *** issue if trashing folder containing active sketch...
 				loadSketch(loadLatest());
 			}
@@ -1763,7 +2027,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		window.onblur = function () { 
 			if(settings.cocoding.active){
-				cocode.socket.emit('blur');
+				cocode.socket.emit('status', 'blur');
 			}
 			if(settings.ecoRender && sketchLoaded){
 				if(document.activeElement !== p5frame){
@@ -1775,7 +2039,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 		window.onfocus = function () { 
 			if(settings.cocoding.active){
-				cocode.socket.emit('focus');
+				cocode.socket.emit('status', 'focus');
 			}
 			if(sketchLoaded){
 				p5f.loop();
@@ -2091,7 +2355,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// HTML to TXT
 		function htmlToText(html){
-			console.log(html)
+			//console.log(html)
 			//remove code brakes and tabs
 			html = html.replace(/\n/g, '');
 			html = html.replace(/\t/g, '');
@@ -2229,7 +2493,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				var snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(grabRef);
 				var ex = refList[snippetIndex];
-				console.log(ex);
+				//console.log(ex);
 				
 				var paramsCollect = [];
 				var paramsDesc = [];
@@ -2428,27 +2692,38 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function passMouse(event){
 			pass = !pass;
 			if (pass) {
-				var opts = {};
+				processMouse(event);
+			}
+		};
+
+		function passMouseClick(event){
+			processMouse(event);
+		};
+
+		function getOpts(event){
+			var opts = {};
 				fields.forEach(function(f) {
 					if (f in event) {
 						opts[f] = event[f];
 					}
 				});
-				var copy = new MouseEvent(event.type, opts);
-				p5f.dispatchEvent(copy);
-			}
-		};
+			return opts;
+		}
 
-		function passMouseClick(event){
-			var opts = {};
-			fields.forEach(function(f) {
-				if (f in event) {
-					opts[f] = event[f];
-				}
-			});
+		function processMouse(event){
+			var opts = getOpts(event);
 			var copy = new MouseEvent(event.type, opts);
-			p5f.dispatchEvent(copy);
-		};
+			
+				if(settings.cocoding.active && settings.cocoding.sync){
+					if(settings.cocoding.level == 'admin'){
+						p5f.dispatchEvent(copy);
+						cocode.dispatchMouse(event.type, opts);
+					}
+				}else{
+					p5f.dispatchEvent(copy);
+				}
+			
+		}
 
 
 		// pass keys on down
@@ -2523,7 +2798,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function cocodingInit(){
 			if(settings.cocoding.active){
 				vex.dialog.confirm({
-					message: 'Exit CO-CODING?',
+					message: 'Exit CoCoding?',
 					callback: function (value) {
 						if (value) {
 							cocodingExit(loadLatest());
@@ -2531,18 +2806,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 				})
 			}else{
+				cocodingReset();
 				var sessID = makeid(5);
 				settings.cocoding.active = true;
+				settings.cocoding.token = hashCode(sessID);
 				updateSettings();
 				document.location.search = 'cc=' + sessID;
 			}
 		}
 
+		function hashCode(s) {
+			let h;
+			for(let i = 0; i < s.length; i++) 
+				h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+
+			return h;
+		}
+
 		function cocodingExit(sketch){
-			settings.cocoding.active = false;
+			cocodingReset();
 			settings.fileName = sketch;
 			updateSettings;
-			loadSketch(settings.fileName);
+			// loadSketch(settings.fileName);
 			window.history.replaceState(null, null, window.location.pathname);
 			window.location = window.location.pathname;
 		}
@@ -2551,6 +2836,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			menuCocodeHolder.style.display = 'block';
 			cocode = new CocodeApp(settings.cocoding.namespace);
 			
+		}
+
+		function cocodingReset(){
+			Object.keys(initSettings.cocoding).forEach(function(cc){
+				if(cc != 'nick'){
+					settings.cocoding[cc] = initSettings.cocoding[cc];
+				}
+			});
+			updateSettings();
 		}
 
 		function copyLink(elm){
@@ -2575,7 +2869,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function cocodeLayers(){
 			vex.dialog.confirm({
-				message: 'Replace current code with cocodeLayers?',
+				message: 'Replace current code with CoCodeLayers?',
 				callback: function (value) {
 					if (value) {
 						var collabPath = 'includes/demos/P5L_cocodeLayers_20190429.json';
@@ -2587,6 +2881,54 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 				}
 			})
+		}
+
+		function toggleLockdown(){
+			settings.cocoding.lockdown = !settings.cocoding.lockdown;
+			updateSettings();
+			cocode.lockdown(settings.cocoding.lockdown);
+		}
+
+		function updateToggleLockdown(){
+			var settingsLockdown = document.getElementById('cocode-lockdown');
+			if(settings.cocoding.lockdown){
+				settingsLockdown.innerHTML = iconLock;
+			}else{
+				settingsLockdown.innerHTML = iconUnlock;
+			}
+			toggleButtonActive(settingsLockdown, settings.cocoding.lockdown);
+
+			if(settings.cocoding.level == 'admin'){
+				var settingsSync = document.getElementById('cocode-sync');
+				if(settings.cocoding.lockdown){
+					settingsSync.removeAttribute('disabled');
+				}else{
+					settingsSync.setAttribute('disabled', 'disabled');
+					settings.cocoding.sync = false;
+					updateToggleSync();
+				}
+			}
+			updateSettings();
+		}
+
+		function toggleSync(){
+			settings.cocoding.sync = !settings.cocoding.sync;
+			updateSettings();
+			updateToggleSync();
+			cocode.sync(settings.cocoding.sync);
+		}
+
+		function updateToggleSync(){
+			var settingsSync = document.getElementById('cocode-sync');
+			toggleButtonActive(settingsSync, settings.cocoding.sync);
+		}
+
+		function toggleButtonActive(elm, toggleMode){
+			if(toggleMode){
+				elm.classList.add("cocoding-active");
+			}else{
+				elm.classList.remove("cocoding-active");
+			}
 		}
 
 	</script>

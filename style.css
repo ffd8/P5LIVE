@@ -87,8 +87,9 @@ hr{
 	visibility:visible;
 }
 #p5-code {
-	height:100vh;
 	top:0vh;
+	height:calc(100vh - 45px);	
+	border:none;
 }
 #p5-console{
 	height:auto;
@@ -98,6 +99,8 @@ hr{
 	padding:5px 5px 5px 10px;
 	resize:none;
 	pointer-events: none;
+	background:none;
+	border:none;
 }
 .myMarker {
 	position:fixed;
@@ -318,7 +321,7 @@ hr{
 .menu-sketch-new{
 	color:#fff;
 }
-.menu-sketch-holder:hover{
+#menu-sketches .menu-sketch-holder:hover{
 	background:#666;
 	opacity:.9;
 	border-top:1px solid #888;
@@ -379,6 +382,46 @@ hr{
 .menu-sketch-button:hover{
 	background:#444;
 	opacity:.9;
+}
+#menu-cocode-sketches .menu-sketch-button{
+	border-left:none;
+	outline:none;
+}
+#menu-cocode-sketches .menu-sketch-button:hover{
+	background:none;
+}
+#menu-cocode-sketches .menu-sketch-nav{
+	display:inline-block;
+}
+#menu-cocode-sketches .menu-sketch-holder:hover{
+	opacity:1;
+	border-top:1px solid #888;
+	border-bottom:1px solid #888;
+}
+button:disabled,
+button[disabled]{
+	opacity:.25;
+	pointer-events: none;
+}
+
+.self{
+	background:#444;
+}
+.self:hover{
+	background:#444;
+}
+.write-req, .write-req:hover{
+	opacity:1;
+	background:#888800;
+	animation: request 2s linear infinite;
+}
+@keyframes request {
+	0%	 { opacity: 1 }
+	50%	 { opacity: .5 }
+	100% { opacity: 1 }
+}
+.write-access{
+	background:#008800 !important;
 }
 #menu-settings{
 	position:relative;
@@ -525,13 +568,13 @@ li{
 #menu-cocode{
 }
 .cocoding-inactive:hover{
-	background:#00CC00;
+	background:#008800;
 }
 .cocoding-active{
-	background:#00CC00;
+	background:#008800;
 }
 .cocoding-active:hover{
-	background:#662222;
+	background:#880000;
 }
 
 /* custom scrollbar for sketches */
@@ -554,6 +597,7 @@ li{
 .menu-sketches-holder::-webkit-scrollbar-thumb:hover {
   background: #aaa; 
 }
+
 
 /* REFERENCES */
 #refholder{

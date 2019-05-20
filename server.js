@@ -44,6 +44,13 @@ function setupStats(){
 
 setupStats();
 
+function hashCode(s) {
+	let h;
+	for(let i = 0; i < s.length; i++) 
+		h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+
+	return h;
+}
 
 app.get('/', function (req, res) {
 	if(online){
@@ -75,6 +82,28 @@ io.origins((origin, callback) => {
   callback(null, true);
 });
 
+
+// IT WORKS, dynamic namespaces to class!
+const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
+	// console.log(socket.request) // origin
+	if(online){
+		let ccRaw = socket.nsp.name.substring(1);
+		if(ccRaw != null && ccRaw.length == 5){
+			if(cc[ccRaw] === undefined || cc[ccRaw] === null){
+				// create room if under limit
+				if(Object.keys(cc).length < maxSpaces){
+					cc[ccRaw] = new Namespace(ccRaw, socket.nsp);
+				}
+			}
+		}
+	}
+
+  // const newNamespace = socket.nsp; // newNamespace.name === '/dynamic-101'
+  //console.log(ccRaw+": " + Object.keys(cc[ccRaw].people).length);
+  // broadcast to all clients in the given sub-namespace
+  // newNamespace.emit('hello');
+});
+
 function reportStats(){
 	// console.log('ccStats');
 	ccStats.rooms = [];
@@ -96,7 +125,9 @@ requestStats(server, function (stats) {
 })
 
 // must be after app.get()!
-app.use(express.static('./'));
+if(!online){
+	app.use(express.static('./'));	
+}
 
 // *** remove RGA / data
 function purgeNamespace(nsp){
@@ -109,104 +140,175 @@ function purgeNamespace(nsp){
 // https://stackoverflow.com/q/42998568/10885535
 class Namespace {
 	constructor(name, io) {
-		//console.log("creating: "+name);
-
-		this.name = name;
-		this.users = {};
-		this.people = {};
-		this.namespace = io.of('/' + name);
-		this.rga = new RGA(0);
-		this.userId = 0;
-		this.lockdown = false;
-		this.purgeTimer = null;
-		this.listenOnNamespace(this.users, this.people, this.name, this.purgeTimer, this.rga);
+		this.settings = {
+			"name" : name
+			, "token" : hashCode(name)
+			, "users" : {}
+			, "people" : {}
+			, "namespace" : io.of('/' + name)
+			, "rga": new RGA(0)
+			, "userId": 0
+			, "lockdown" : false
+			, "purgeTimer" : null
+			, "sync" : false
+			, "fc" : 0
+		}
+		this.listenOnNamespace(this.settings);
 	}
 
-	listenOnNamespace(users, people, namespace, purgeTimer, rga) {
-		this.namespace.on('connection', (socket) => {
-			this.userId++;
-			this.people[socket.id] = {"nick":this.userId, "status":"focus"};
-			io.of(namespace).emit("users", JSON.stringify(people)); // update users for all
+	listenOnNamespace(settings) {
+		settings.namespace.on('connection', (socket) => {
+			settings.userId++;
+			settings.people[socket.id] = {"nick":settings.userId, "status":"focus", "request":false, "writemode":false};
+			syncUsers();
 
 			// save namespace if quick return
-			if(purgeTimer != null){
-				clearTimeout(purgeTimer);
+			if(settings.purgeTimer != null){
+				clearTimeout(settings.purgeTimer);
 			}
 
-			this.namespace.clients((error, clients) => {
+			settings.namespace.clients((error, clients) => {
 				if (error) throw error;
-				users = clients;
+				settings.users = clients;
 			});
 
 			socket.on('disconnect', function() {
-				delete people[socket.id];
-				io.of(namespace).emit("users", JSON.stringify(people)); // ALL in namespace
+				delete settings.people[socket.id];
+				syncUsers(); // ALL in namespace
 
 				// set timer to trash namespace... 
-				if(Object.keys(people).length == 0){
+				if(Object.keys(settings.people).length == 0){
 					//console.log('purging: ' + namespace);
-					purgeTimer = setTimeout(function(){
-						for(let i=0; i<Object.keys(rga); i++){
-							Object.keys(rga)[i] = null;
+					settings.purgeTimer = setTimeout(function(){
+						for(let i=0; i<Object.keys(settings.rga); i++){
+							Object.keys(settings.rga)[i] = null;
 						}
 						 //rga = new RGA(0); // need to trash rga.history()
-						purgeNamespace(namespace);
-					}, (1000 * purgeCounter));
+						purgeNamespace(settings.namespace);
+					}, (1000 * settings.purgeCounter));
 				}
 			});
 
-			socket.emit("welcome", {id: this.userId, history: rga.history()})
+			socket.emit("welcome", {id: settings.userId, history: settings.rga.history()})
 			socket.emit("cocodeReady");
 
-			if(this.userId == 1){
+			if(settings.userId == 1){
 				socket.emit('init');
 			}
 
-			if(this.lockdown){
-				if(Object.keys(people).length == 1){
-					socket.emit('lockdown', false);
-					socket.emit('updateSatus', 'admin');
-				}else{
-					socket.emit('lockdown', true);
-					socket.emit('updateSatus', 'user');
-				}
-			}
 
-			RGA.tieToSocket(rga, socket);
+			RGA.tieToSocket(settings.rga, socket);
 
 			socket.on('login', function(newid){
 				// check existing name, add random id if so
-				let flatUsers = JSON.stringify(people);
+				let flatUsers = JSON.stringify(settings.people);
 				if(flatUsers.indexOf('"'+newid+'"') > -1 ){
 					let suffix = Math.floor(Math.random()*99);
 					newid += "_"+suffix;
 					socket.emit('rename', newid);
 				}
-				people[socket.id].nick = newid;
-				io.of(namespace).emit("users", JSON.stringify(people)); // ALL in namespace
+				settings.people[socket.id].nick = newid;
+				syncSettings();
+				//syncUsers(); // ALL in namespace
 				//socket.broadcast.emit("users", JSON.stringify(people))  // all except sender
+
+				//io.of(settings.name).emit('lockdown', settings.lockdown);
+
+				// setup sync
+				// if(settings.sync){
+				// 	let syncData = {'mode':settings.sync, 'fc':0};
+				// 	socket.emit('sync', JSON.stringify(syncData));
+				// }
+
+
+				//console.log(settings.namespace);
+				// io.of(settings.name).emit('hello', JSON.stringify(settings.people));
+				// console.log(settings.people);
+			})
+
+			socket.on('token', function(token){
+				if(token == settings.token){
+					settings.people[socket.id].level = 'admin';
+					settings.people[socket.id].writemode = true;
+				}else{
+					settings.people[socket.id].level = 'user';
+					if(settings.lockdown){
+						settings.people[socket.id].writemode = false;
+					}
+				}
+				socket.emit('setLevel', settings.people[socket.id].level);
+				syncSettings();
+				//syncUsers();
 			})
 
 			socket.on('lockdown', function(lockMode){
-				if(lockMode){
-					io.of(namespace).emit('lockdown', true);
-				}else{
-					io.of(namespace).emit('lockdown', false);
+				settings.lockdown = lockMode;
+				if(!settings.lockdown){
+					settings.sync = false;
 				}
+				syncSettings();
+				//syncUsers();
 			})
 
-			socket.on('blur', function(){
-				people[socket.id].status = "blur";
-				io.of(namespace).emit("users", JSON.stringify(people));
+			socket.on('sync', function(syncData){
+				settings.sync = syncData.mode;
+				settings.fc = syncData.fc;
+				syncSettings();
 			})
 
-			socket.on('focus', function(){
-				people[socket.id].status = "focus";
-				io.of(namespace).emit("users", JSON.stringify(people));
+			socket.on('dispatchMouse', function(evData){
+				socket.broadcast.emit('dispatchMouse', JSON.stringify(evData)); // all except sender
+			});
+
+			socket.on('status', function(statusMode){
+				settings.people[socket.id].status = statusMode;
+				syncUsers();
+			});
+
+			socket.on('editRequest', function(reqData){
+				settings.people[socket.id].request = reqData.mode;
+				syncUsers();
+			})
+
+			socket.on('rejectRequest', function(reqData){
+				Object.keys(settings.people).forEach(function(k){
+					if(settings.people[k].nick == reqData.userID){
+						settings.people[k].request = false;
+						io.of(settings.name).to(`${k}`).emit('requestReject');
+					}
+				});
+				syncUsers();
+			})
+
+			socket.on('toggleEdit', function(reqData){
+				Object.keys(settings.people).forEach(function(k){
+					if(settings.people[k].nick == reqData.userID){
+						if(!settings.people[k].writemode){
+							settings.people[k].writemode = true;
+							io.of(settings.name).to(`${k}`).emit('toggleEdit', true);
+						}else{
+							settings.people[k].writemode = false;
+							io.of(settings.name).to(`${k}`).emit('toggleEdit', false);
+						}
+						settings.people[k].request = false;
+					}
+				});
+				syncUsers();
 			})
 		});
 
+		let syncUsers = function(){
+			io.of(settings.name).emit("syncUsers", JSON.stringify(settings.people)); // update users for all
+		}
+
+		let syncSettings = function(){
+			let tempSettings = {"lockdown" : settings.lockdown, "sync" : settings.sync, "fc" : settings.fc};
+			io.of(settings.name).emit("syncSettings", JSON.stringify(tempSettings)); // update users for all
+			syncUsers();
+		}
+
 	}
+
 }
 module.exports = Namespace;
 

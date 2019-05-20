@@ -30,18 +30,18 @@ ccStats.countdown = "60 min";
 
 /* STATS */
 function callEveryHour() {
-    setInterval(function(){
-    	countdown = 1000 * 60 * 60;
-    	ccStats.reqCount = 4000;
-    }, 1000 * 60 * 60);
+	setInterval(function(){
+		countdown = 1000 * 60 * 60;
+		ccStats.reqCount = 4000;
+	}, 1000 * 60 * 60);
 }
 
 function callEveryMinute() {
-    setInterval(function(){
-    	countdown -= (1000 * ccStatsReporting);
-    	ccStats.countdown = Math.floor(countdown/1000/60) + " min";
-    	console.log(ccStats);
-    }, 1000 * ccStatsReporting); // 60
+	setInterval(function(){
+		countdown -= (1000 * ccStatsReporting);
+		ccStats.countdown = Math.floor(countdown/1000/60) + " min";
+		console.log(ccStats);
+	}, 1000 * ccStatsReporting); // 60
 }
 
 function setupStats(){
@@ -52,6 +52,14 @@ function setupStats(){
 }
 
 setupStats();
+
+function hashCode(s) {
+	let h;
+	for(let i = 0; i < s.length; i++) 
+		h = Math.imul(31, h) + s.charCodeAt(i) | 0;
+
+	return h;
+}
 
 app.get('/', function (req, res) {
 	if(online){
@@ -66,7 +74,7 @@ app.get('/', function (req, res) {
 // io.origins(['http://localhost:8888']);
 io.origins((origin, callback) => {
   if (online && origin !== 'https://teddavis.org') {
-    return callback('origin not allowed', false);
+	return callback('origin not allowed', false);
   }
   callback(null, true);
 });
@@ -127,6 +135,7 @@ class Namespace {
 		//console.log("creating: "+name);
 
 		this.name = name;
+		this.token = hashCode(name);
 		this.users = {};
 		this.people = {};
 		this.namespace = nsp;//io.of('/' + name);
@@ -181,10 +190,10 @@ class Namespace {
 			if(this.lockdown){
 				if(Object.keys(people).length == 1){
 					socket.emit('lockdown', false);
-					socket.emit('updateSatus', 'admin');
+					socket.emit('updateStatus', 'admin');
 				}else{
 					socket.emit('lockdown', true);
-					socket.emit('updateSatus', 'user');
+					socket.emit('updateStatus', 'user');
 				}
 			}
 
@@ -201,6 +210,10 @@ class Namespace {
 				people[socket.id].nick = newid;
 				io.of(namespace).emit("users", JSON.stringify(people)); // ALL in namespace
 				//socket.broadcast.emit("users", JSON.stringify(people))  // all except sender
+			})
+
+			socket.on('token', function(token){
+				console.log('TOKENS: '+token+' / '+this.token);
 			})
 
 			socket.on('lockdown', function(lockMode){
