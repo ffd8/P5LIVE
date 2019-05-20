@@ -85,7 +85,6 @@ io.origins((origin, callback) => {
 
 // IT WORKS, dynamic namespaces to class!
 const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
-	// console.log(socket.request) // origin
 	if(online){
 		let ccRaw = socket.nsp.name.substring(1);
 		if(ccRaw != null && ccRaw.length == 5){
@@ -97,15 +96,9 @@ const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
 			}
 		}
 	}
-
-  // const newNamespace = socket.nsp; // newNamespace.name === '/dynamic-101'
-  //console.log(ccRaw+": " + Object.keys(cc[ccRaw].people).length);
-  // broadcast to all clients in the given sub-namespace
-  // newNamespace.emit('hello');
 });
 
 function reportStats(){
-	// console.log('ccStats');
 	ccStats.rooms = [];
 	for(let i=0; i < Object.keys(cc).length; i++){
 		let ccRaw = Object.keys(cc)[i];
@@ -145,7 +138,6 @@ class Namespace {
 			, "token" : hashCode(name)
 			, "users" : {}
 			, "people" : {}
-			, "namespace" : io.of('/' + name)
 			, "rga": new RGA(0)
 			, "userId": 0
 			, "lockdown" : false
@@ -153,6 +145,13 @@ class Namespace {
 			, "sync" : false
 			, "fc" : 0
 		}
+
+		if(online){
+			this.settings.namespace = io;
+		}else{
+			this.settings.namespace = io.of('/' + name);
+		}
+
 		this.listenOnNamespace(this.settings);
 	}
 
@@ -209,21 +208,6 @@ class Namespace {
 				}
 				settings.people[socket.id].nick = newid;
 				syncSettings();
-				//syncUsers(); // ALL in namespace
-				//socket.broadcast.emit("users", JSON.stringify(people))  // all except sender
-
-				//io.of(settings.name).emit('lockdown', settings.lockdown);
-
-				// setup sync
-				// if(settings.sync){
-				// 	let syncData = {'mode':settings.sync, 'fc':0};
-				// 	socket.emit('sync', JSON.stringify(syncData));
-				// }
-
-
-				//console.log(settings.namespace);
-				// io.of(settings.name).emit('hello', JSON.stringify(settings.people));
-				// console.log(settings.people);
 			})
 
 			socket.on('token', function(token){
@@ -256,8 +240,12 @@ class Namespace {
 				syncSettings();
 			})
 
-			socket.on('dispatchMouse', function(evData){
-				socket.broadcast.emit('dispatchMouse', JSON.stringify(evData)); // all except sender
+			socket.on('dispatchSyncEvent', function(evData){
+				socket.broadcast.emit('dispatchSyncEvent', JSON.stringify(evData)); // all except sender
+			});
+
+			socket.on('recompile', function(){
+				socket.broadcast.emit('recompile'); // all except sender
 			});
 
 			socket.on('status', function(statusMode){
