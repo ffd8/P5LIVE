@@ -44,13 +44,13 @@ Details below to run via localserver or nodejs/npm (for cocoding).
 GETTING STARTED
 -------------------------------
 ### LIVE-CODE IN 5... 4... 3... 2...
-![menu-sketches-new](includes/images/menu-sketches-new.png)  
+![menu-sketches-new](includes/images/menu-sketches-new-7.png)  
 Create New Sketch via GUI icon or `CTRL + N` and start coding!  
 Live-coding active by default, `CTRL + ENTER` to force recompile.  
 Sketch is auto-saved on every keystroke.  
   
 ### P5LIVE MENU  
-![menu-p5live](includes/images/menu-p5live.png)  
+![menu-p5live](includes/images/menu-p5live-7.png)  
 - About, what you're reading now.  
 - Reset, re-initialize P5LIVE (erases sketches/settings).  
 - Reference, toggle p5.js reference list.  
@@ -58,33 +58,33 @@ Sketch is auto-saved on every keystroke.
 - Save HTML, export single-page website.
 
 ### COCODING MENU  
-![menu-cocoding-inactive](includes/images/menu-cocoding-inactive.png)  
+![menu-cocoding-inactive](includes/images/menu-cocoding-inactive-7.png)  
 - Start, click the single 'network' button.  
 
 
-![menu-cocoding-active](includes/images/menu-cocoding-active.png)  
+![menu-cocoding-active](includes/images/menu-cocoding-active-7.png)  
 - Exit, click the green 'network' button.  
 - Share, click copy URL and share with friends.  
 - Clone sketch, saves current co-code to local sketches within own folder.  
 - Lockdown (admin), limit editing, toggling privledges per user.  
 - Broadcast (admin + lockdown), sync mouseX/Y/frameCount with users.
 
-![menu-cocoding-active](includes/images/menu-cocoding-req-pre.png)  
+![menu-cocoding-active](includes/images/menu-cocoding-req-pre-7.png)  
 - Rename, click on your name (very top) to select a new nickname.
 
 #### Lockdown (user)
-![menu-cocoding-active](includes/images/menu-cocoding-req.png)    
+![menu-cocoding-active](includes/images/menu-cocoding-req-7.png)    
 - Request Write-access, click edit button and wait for admin to allow.
 
 #### Lockdown (admin)
-![menu-cocoding-active](includes/images/menu-cocoding-admin-vote.png)  
+![menu-cocoding-active](includes/images/menu-cocoding-admin-vote-7.png)  
 - Request Deny/Accept, reject or grant write-access from users.
 
-![menu-cocoding-active](includes/images/menu-cocoding-admin-allow.png)  
+![menu-cocoding-active](includes/images/menu-cocoding-admin-allow-7.png)  
 - Toggle Write-access, admin can always toggle write access of user.  
   
 #### SKETCHES MENU 
-![menu-sketches](includes/images/menu-sketches.png)  
+![menu-sketches](includes/images/menu-sketches-7.png)  
 - New sketch.  
 - Clone sketch, duplicates active sketch.  
 - New folder, used to nest sketches/folders within others.  
@@ -92,7 +92,7 @@ Sketch is auto-saved on every keystroke.
 - Export, exports entire sketches list as JSON for import.  
   
 ### SKETCH  
-![menu-sketch](includes/images/menu-sketch-nav.png)  
+![menu-sketch](includes/images/menu-sketch-nav-7.png)  
 Load, click on sketch name.  
 Rename, click pencil icon and type new name.  
 Export, click download icon to export sketch as JSON file.  
@@ -101,7 +101,7 @@ Sort, click + hold + drag to desired order.
 Add to folder, careully drag + drop into/over folder.
 
 ### FOLDER  
-![menu-folder](includes/images/menu-folder-nav.png)  
+![menu-folder](includes/images/menu-folder-nav-7.png)  
 Expand/collapse, click on folder name.  
 Rename, click pencil icon and type new name.  
 Export, click download icon to export entire contents as JSON file.  
