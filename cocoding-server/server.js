@@ -88,6 +88,7 @@ io.origins((origin, callback) => {
 // IT WORKS, dynamic namespaces to class!
 const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
 	if(online){
+		ccStats.reqCount--;
 		let ccRaw = socket.nsp.name.substring(1);
 		if(ccRaw != null && ccRaw.length == 5){
 			if(cc[ccRaw] === undefined || cc[ccRaw] === null){
