@@ -32,7 +32,6 @@ body {
 	width: 100vw;
 	height: 100vh;
 	color: #839496;
-	/*background: #000;*/
 	position: relative;
 	background:#000;
 }
@@ -96,7 +95,6 @@ hr{
 	outline:none;
 	border:none;
 	margin:0;
-	/*background:#000;*/
 	background:none;
 	position:fixed;
 	top:0;
@@ -402,12 +400,11 @@ hr{
 	100% { text-indent: -20em }
 }
 .sketch-selected{
-	color:#/*00FF00*/;
 	background:#006600;
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
-.sketch-selected .menu-sketch-nav, .menu-sketch-holder:hover .menu-sketch-nav{
+.sketch-selected:hover .menu-sketch-nav, .menu-sketch-holder:hover .menu-sketch-nav{
 	display: flex;
 	flex-direction: row;
 	align-items: stretch;
