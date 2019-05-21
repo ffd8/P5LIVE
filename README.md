@@ -19,7 +19,8 @@ SHORTCUTS
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
 - `CTRL + S` » save png
-- `CTRL + 1,2,3...0` » load first 10 sketches
+- `CTRL + I` » 720*720px popup for screen-recording
+- `CTRL + 1, 2, 3...0` » load first 10 sketches
 
 
 LOCALSTORAGE
@@ -36,18 +37,19 @@ INSTALL
 -------------------------------
 Online: [https://teddavis.org/p5live](https://teddavis.org/p5live)
 
-Offline: [Clone Github Repo](https://github.com/ffd8/p5live)   
+Offline: [Github Repo](https://github.com/ffd8/p5live)   
 Details below to run via localserver or nodejs/npm (for cocoding).
 
 
 GETTING STARTED
 -------------------------------
+### LIVE-CODE IN 5... 4... 3... 2...
 ![menu-sketches-new](includes/images/menu-sketches-new.png)  
-Start New Sketch via GUI icon or `CTRL + N` and start coding!  
+Create New Sketch via GUI icon or `CTRL + N` and start coding!  
 Live-coding active by default, `CTRL + ENTER` to force recompile.  
 Sketch is auto-saved on every keystroke.  
   
-#### P5LIVE MENU  
+### P5LIVE MENU  
 ![menu-p5live](includes/images/menu-p5live.png)  
 - About, what you're reading now.  
 - Reset, re-initialize P5LIVE (erases sketches/settings).  
@@ -55,15 +57,31 @@ Sketch is auto-saved on every keystroke.
 - Save PNG, export image.  
 - Save HTML, export single-page website.
 
-#### COCODING MENU  
+### COCODING MENU  
 ![menu-cocoding-inactive](includes/images/menu-cocoding-inactive.png)  
 - Start, click the single 'network' button.  
 
+
 ![menu-cocoding-active](includes/images/menu-cocoding-active.png)  
-- Stop, click the green 'network' button.  
-- Link, click to share URL with friends.  
-- Clone sketch, saves state of cocoding sketch to local sketches.  
-- cocodeLayers, replaces code with built-in layers sketch.
+- Exit, click the green 'network' button.  
+- Share, click copy URL and share with friends.  
+- Clone sketch, saves current co-code to local sketches within own folder.  
+- Lockdown (admin), limit editing, toggling privledges per user.  
+- Broadcast (admin + lockdown), sync mouseX/Y/frameCount with users.
+
+![menu-cocoding-active](includes/images/menu-cocoding-req-pre.png)  
+- Rename, click on your name (very top) to select a new nickname.
+
+#### Lockdown (user)
+![menu-cocoding-active](includes/images/menu-cocoding-req.png)    
+- Request Write-access, click edit button and wait for admin to allow.
+
+#### Lockdown (admin)
+![menu-cocoding-active](includes/images/menu-cocoding-admin-vote.png)  
+- Request Deny/Accept, reject or grant write-access from users.
+
+![menu-cocoding-active](includes/images/menu-cocoding-admin-allow.png)  
+- Toggle Write-access, admin can always toggle write access of user.  
   
 #### SKETCHES MENU 
 ![menu-sketches](includes/images/menu-sketches.png)  
@@ -73,7 +91,7 @@ Sketch is auto-saved on every keystroke.
 - Import, select JSON files from export (single/folder/all).  
 - Export, exports entire sketches list as JSON for import.  
   
-#### SKETCH  
+### SKETCH  
 ![menu-sketch](includes/images/menu-sketch-nav.png)  
 Load, click on sketch name.  
 Rename, click pencil icon and type new name.  
@@ -82,15 +100,15 @@ Remove, click trash icon and confirm deletion.
 Sort, click + hold + drag to desired order.  
 Add to folder, careully drag + drop into/over folder.
 
-#### FOLDER  
+### FOLDER  
 ![menu-folder](includes/images/menu-folder-nav.png)  
 Expand/collapse, click on folder name.  
 Rename, click pencil icon and type new name.  
-Export, click download icon to export contents as JSON file.  
+Export, click download icon to export entire contents as JSON file.  
 Remove, click trash icon and confirm deletion.  
 Sort, click + hold + drag to desired order.  
   
-#### SETTINGS  
+### SETTINGS  
 Check short-cuts above for faster toggling:  
 - Live Coding, (auto-compiling mode), recompiles on error-free keyup.  
 - Fullscreen, toggle fullScreen(), ideal for VJing.  
@@ -102,22 +120,24 @@ Check short-cuts above for faster toggling:
 - Background, toggle + set color behind each line of code.  
 - Theme, select custom styling of code.
 	
-#### SNIPPETS  
+### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
-Load snippets via shortcut, CTRL + SHIFT + key  
-- CTRL + SHIFT + A, adds audio-reactive code.
+Load snippet via shortcut, `CTRL + SHIFT + key`  
 
-#### ASSETS
+- `CTRL + SHIFT + A`, adds audio-reactive code.  
+- `CTRL + SHIFT + D`, adds WEBGL, disable depth-test.
+
+### ASSETS
 Want custom assets (fonts/images)?   
-Clone/download from github and host locally using MAMP server (or nodejs for cocoding).  
+Clone/download from github and run locally.  
 Drop files into folder and link relatively, ('data/fish.png')
 
-#### MISC
+### MISC
 Fan going nuts?  
 Set `pixelDensity(1);` in `setup()` if on a retina display.
 
-Bug?!  
-Add #bug to URL, to enter safemode and disable compiling.
+Bug?! Infinite loop??  
+Add `#bug` to URL, to enter safemode, disables compiling to fix code.
 
 
 FUNCTIONS
@@ -145,16 +165,6 @@ OFFLINE SERVER
 - type `npm install`, hit `ENTER`  
 - type `npm start`, hit `ENTER`  
 - goto [http://localhost:5000](http://localhost:5000)
-
-
-FUTURE
--------------------------------
-- [ ] audio variables (easedAudio, fft bands)
-- [ ] export video/gif
-- [ ] api (get request for sketch loading)
-- [ ] additional js libs for extended coding
-- [ ] assets (way of dealing with remotely)
-- [ ] autosuggest for p5.js functions
     
 
 TOOLS USED
@@ -173,8 +183,9 @@ P5LIVE is only possible to do these amazing open-source tools:
 - [vex](https://github.com/HubSpot/vex), custom dialog boxes
 - [markdown.js](https://github.com/cadorn/markdown-js), parsing this readme into about section
 - [Roboto Mono](https://github.com/google/roboto), font
-- [Feather Icons](https://feathericons.com), gui icons  
-- [glitch.com](https://glitch.com), nodejs hosting
+- [Feather Icons](https://feathericons.com), gui icons 
+- [loading.io](https://loading.io/css/), css spinning loader
+- [glitch.com](https://glitch.com), nodejs websocket hosting
 
 
 INSPIRATION

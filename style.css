@@ -42,6 +42,56 @@ hr{
 	border-bottom:1px solid #888;
 	outline:none;
 }
+#loader{
+	position:fixed;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	z-index:10000;
+	font-size:30pt;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+#loader-msg{
+	position:absolute;
+	z-index:10001;
+	color:#fff;
+	text-align:center;
+}
+#loader-bg{
+	position:absolute;
+	background:#000;
+	opacity:.85;
+	width:100%;
+	height:100%;
+	z-index:10000;
+}
+.lds-dual-ring {
+	position:absolute;
+	z-index:10001;
+}
+.lds-dual-ring:after {
+	content: " ";
+	display: block;
+	width: 200px;
+	height: 200px;
+	margin: 1px;
+	border-radius: 50%;
+	border: 3px solid #fff;
+	border-color: #fff transparent #fff transparent;
+	animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+}
+
 #p5-frame, #p5-frame-cover{
 	outline:none;
 	border:none;
@@ -87,8 +137,9 @@ hr{
 	visibility:visible;
 }
 #p5-code {
-	height:100vh;
 	top:0vh;
+	height:calc(100vh - 45px);	
+	border:none;
 }
 #p5-console{
 	height:auto;
@@ -98,6 +149,8 @@ hr{
 	padding:5px 5px 5px 10px;
 	resize:none;
 	pointer-events: none;
+	background:none;
+	border:none;
 }
 .myMarker {
 	position:fixed;
@@ -318,7 +371,7 @@ hr{
 .menu-sketch-new{
 	color:#fff;
 }
-.menu-sketch-holder:hover{
+#menu-sketches .menu-sketch-holder:hover{
 	background:#666;
 	opacity:.9;
 	border-top:1px solid #888;
@@ -379,6 +432,46 @@ hr{
 .menu-sketch-button:hover{
 	background:#444;
 	opacity:.9;
+}
+#menu-cocode-sketches .menu-sketch-button{
+	border-left:none;
+	outline:none;
+}
+#menu-cocode-sketches .menu-sketch-button:hover{
+	background:none;
+}
+#menu-cocode-sketches .menu-sketch-nav{
+	display:inline-block;
+}
+#menu-cocode-sketches .menu-sketch-holder:hover{
+	opacity:1;
+	border-top:1px solid #888;
+	border-bottom:1px solid #888;
+}
+button:disabled,
+button[disabled]{
+	opacity:.25;
+	pointer-events: none;
+}
+
+.self{
+	background:#444;
+}
+.self:hover{
+	background:#444;
+}
+.write-req, .write-req:hover{
+	opacity:1;
+	background:#888800;
+	animation: request 2s linear infinite;
+}
+@keyframes request {
+	0%	 { opacity: 1 }
+	50%	 { opacity: .5 }
+	100% { opacity: 1 }
+}
+.write-access{
+	background:#008800 !important;
 }
 #menu-settings{
 	position:relative;
@@ -525,34 +618,55 @@ li{
 #menu-cocode{
 }
 .cocoding-inactive:hover{
-	background:#00CC00;
+	background:#008800;
 }
 .cocoding-active{
-	background:#00CC00;
+	background:#008800;
 }
 .cocoding-active:hover{
-	background:#662222;
+	background:#880000;
 }
 
 /* custom scrollbar for sketches */
 /* width */
-.menu-sketches-holder::-webkit-scrollbar {
+#importdump::-webkit-scrollbar, .menu-sketches-holder::-webkit-scrollbar {
   width: 10px;
 }
 
 /* Track */
-.menu-sketches-holder::-webkit-scrollbar-track {
+#importdump::-webkit-scrollbar-track, .menu-sketches-holder::-webkit-scrollbar-track {
   background: #444; 
 }
 
 /* Handle */
-.menu-sketches-holder::-webkit-scrollbar-thumb {
+#importdump::-webkit-scrollbar-thumb, .menu-sketches-holder::-webkit-scrollbar-thumb {
   background: #aaa; 
 }
 
 /* Handle on hover */
-.menu-sketches-holder::-webkit-scrollbar-thumb:hover {
+#importdump::-webkit-scrollbar-thumb:hover, .menu-sketches-holder::-webkit-scrollbar-thumb:hover {
   background: #aaa; 
+}
+
+/* IMPORT */
+#importdump{
+	max-height:300px;
+	overflow:auto;
+	overflow-wrap:normal;
+	hyphens:none;
+	font-size:10pt;
+	line-height:1.6em;
+	margin-top:25px;
+}
+#importdump-holder{
+	height:300px;
+}
+#importdump svg{
+	height:12px;
+}
+.importdump-dup{
+	background:#cc0000;
+	opacity:.75;
 }
 
 /* REFERENCES */
