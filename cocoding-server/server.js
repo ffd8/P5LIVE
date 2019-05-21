@@ -1,16 +1,16 @@
 "use strict";
-let online = false;
+let online = true; // set online
 let debugStats = true; // report glitch.com limits
 
 const express = require('express')
 , app = express()
 , server = require('http').Server(app)
 , io = require('socket.io')(server)
-, RGA = require('./includes/js/rga.js')
+, RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
 
-const maxSpaces = 200; // check memory for number of namespaces...
+const maxSpaces = 500; // check memory for number of namespaces...
 const purgeCounter = 60; // sec until removing namespace
 let cc = {}; // store namespaces
 let ccStatsReporting = 15; // sec
@@ -74,6 +74,8 @@ app.get('/', function (req, res) {
 		}
 	}
 })
+
+io.set('transports', ['websocket']); 
 
 io.origins((origin, callback) => {
   if (online && origin !== 'https://teddavis.org') {
