@@ -183,7 +183,8 @@ P5LIVE is only possible to do these amazing open-source tools:
 - [vex](https://github.com/HubSpot/vex), custom dialog boxes
 - [markdown.js](https://github.com/cadorn/markdown-js), parsing this readme into about section
 - [Roboto Mono](https://github.com/google/roboto), font
-- [Feather Icons](https://feathericons.com), gui icons  
+- [Feather Icons](https://feathericons.com), gui icons 
+- [loading.io](https://loading.io/css/), css spinning loader
 - [glitch.com](https://glitch.com), nodejs websocket hosting
 
 

@@ -32,6 +32,11 @@
 	<link rel="stylesheet" type="text/css" media="all" href="style.css">
 </head>
 <body>
+	<div id="loader">
+		<div id="loader-msg">P5LIVE</div>
+		<div class="lds-dual-ring"></div>
+		<div id="loader-bg"> </div>
+	</div>
 
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
@@ -267,7 +272,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 6;
+		let currentRevision = 7;
 
 		// resetP5(); // manual reset
 
@@ -340,6 +345,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuTheme = document.getElementById('menu-settings-theme'),
 		settingsBG = document.getElementById('menu-settings-bg'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
+		loader = document.getElementById('loader'),
 		settings = getSettings(),
 		validCode = true, 
 		sketchLoaded = false,
@@ -453,12 +459,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		class CocodeApp{
 			constructor(namespace) {
+				this.initialized = false;
 				this.socket = '';
 				this.namespace = namespace;
 				if(window.location.hostname == 'localhost'){
-					this.socket = io('/' + this.namespace); // io('http://localhost:5000/' + this.namespace);
+					this.socket = io('/' + this.namespace, { transports: ['websocket'] }); // io('http://localhost:5000/' + this.namespace);
 				}else{
-					this.socket = io('https://p5live-server.glitch.me/' + this.namespace);	
+					this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true });	
 				}
 				this.rgaConnect();
 				this.users = {};
@@ -503,9 +510,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				});
 
 				this.socket.on('cocodeReady', () =>{
-					document.getElementById('cocoding-buttons-inactive').innerHTML = document.getElementById('cocoding-buttons-active').innerHTML;
-					document.getElementById('cocoding-buttons-active').innerHTML = '';
-					loadTippy();
+					if(!this.initialized){
+						document.getElementById('cocoding-buttons-inactive').innerHTML = document.getElementById('cocoding-buttons-active').innerHTML;
+						document.getElementById('cocoding-buttons-active').innerHTML = '';
+						loadTippy();
+						this.initialized = true;
+					}
 				});
 
 				this.socket.on('full', () =>{
@@ -916,12 +926,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			loadSnippets();
 			loadSketchTemplate();
 			loadHTMLTemplate(); 
-			// loadRef();
 			vex.defaultOptions.className = 'vex-theme-plain'
 			legacySettings(); // update sketches from 1.0.2
 			settings.cocoding.active = false;
 			settings.safeMode = false;
 			updateSketches();
+			hideLoader();
 			if(getParam('cc') != undefined){
 				if(getParam('cc').length != 5){
 					cocodingExit(loadLatest());
@@ -1003,6 +1013,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				addFolder(forkSession);
 			}
 			var forkName = forkSession+'_'+timeStamp();
+			settings.fileName = forkName;
 			var forkObj = searchJSON(settings.sketches, 'name', forkSession)[0];
 			forkObj.contents.unshift({'type':'sketch', 'name':forkName});
 			forkObj.toggle = 'expand';
@@ -1042,10 +1053,21 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						editor.getSession().on('change', cloneSketch);
 					}
 					
+				}else if(!localStorage.hasOwnProperty(sketch) && searchSketches(settings.fileName, settings.sketches)){
+					vex.dialog.confirm({
+						message:'Sketch code missing, remove from list?',
+						callback: function(value){
+							if(value){
+								removeItemProcess(settings.fileName);	
+							}
+						}
+					})
 				}else{
 					// start new sketch
 					if(listSketches(settings.sketches).length > 0){
-						loadSketch(loadLatest());
+						settings.fileName = loadLatest();
+						updateSettings();
+						loadSketch(settings.fileName);
 					}else{
 						loadDefault();
 					}
@@ -1221,39 +1243,126 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// import sketches from JSON
 		function importSketches(data){
+
+			/*
 			for(var i=0; i < data.length; i++){
 				var reader = new FileReader();
 				reader.onload = function(data) {
 					var jsonObj = JSON.parse(event.target.result);
 					if(jsonObj.hasOwnProperty('structure')){
-						var jsonStructureSorted = jsonObj.structure.reverse();
-						jsonStructureSorted.forEach(function(jsonItem){
-							if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
-								// foreach folder/sketch check duplicates and give unique names
-								recursiveNamecheck(jsonStructureSorted, jsonObj.sketches);
-
-								// add structure to top of sketches list
-								//settings.sketches.unshift(jsonObj.structure);
-								settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
-
-								
-							}else if(jsonItem.type == 'sketch'){
-								settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name});
+						// importData.push(jsonObj.structure);
+						var count = (JSON.stringify(jsonObj.structure).match(/name/g) || []).length;
+						var jsonStructureSorted = jsonObj.structure;
+						let importData = 'Import the following ('+count+') items?<br>';
+						var importDupFound = false;
+						for (var key in jsonStructureSorted) { 
+							if(searchSketches(jsonStructureSorted[key].name, settings.sketches)){
+								importDupFound = true;
+							}
+						}
+						if(importDupFound){
+							importData += '<span style="font-size:10pt;"><span class="importdump-dup">Duplicates</span> given a unique _timestamp</span><br>';
+						}
+						importData += '<div id="importdump">';
+						importData += recursiveImportCheck(jsonStructureSorted, '', '');
+						importData += '</div>';
+						vex.dialog.confirm({
+							unsafeMessage:importData,
+							callback: function(value){
+								if(value){
+									console.log('yes')
+								}
 							}
 						})
-						updateSettings();
-						initSortable();
-						//updateSketches();
+					}
+				}
+				reader.readAsText(data[i]);
+			}
+			*/
+			
+			
+			for(var i=0; i < data.length; i++){
+				var reader = new FileReader();
+				reader.onload = function(data) {
+					var jsonObj = JSON.parse(event.target.result);
+					if(jsonObj.hasOwnProperty('structure')){
 
-						// import structure as folder..
-						parseSketches(jsonObj);
+						var count = (JSON.stringify(jsonObj.structure).match(/name/g) || []).length;
+						var jsonStructureNormal = jsonObj.structure;
+						let importData = 'Import the following ('+count+') items?<br>';
+						var importDupFound = false;
+						for (var key in jsonStructureNormal) { 
+							if(searchSketches(jsonStructureNormal[key].name, settings.sketches)){
+								importDupFound = true;
+							}
+						}
+						if(importDupFound){
+							importData += '<span style="font-size:10pt;"><span class="importdump-dup">Duplicates</span> given a unique _timestamp</span><br>';
+						}
+						importData += '<div id="importdump">';
+						importData += recursiveImportCheck(jsonStructureNormal, '', '');
+						importData += '</div>';
+
+						// first confirm importing of whole structure/sketches
+						vex.dialog.confirm({
+							unsafeMessage:importData,
+							callback: function(value){
+								if(value){
+									var jsonStructureSorted = jsonObj.structure.reverse();
+									jsonStructureSorted.forEach(function(jsonItem){
+										if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
+											// foreach folder/sketch check duplicates and give unique names
+											recursiveNamecheck(jsonStructureSorted, jsonObj.sketches);
+
+											// add structure to top of sketches list
+											settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+
+											
+										}else if(jsonItem.type == 'sketch'){
+											settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name});
+										}
+									})
+									updateSettings();
+									initSortable();
+									//updateSketches();
+
+									// import structure as folder..
+									parseSketches(jsonObj);
+								}
+							}
+						})						
 					}else{
+						// import single sketch w/o confirm dialog
 						checkDupSketches(jsonObj, 'sketchName');
 						parseSketches(jsonObj);
 					}
 				}
 				reader.readAsText(data[i]);
 			}
+			
+		}
+
+		function recursiveImportCheck(objStructure, level, outputData) { // obj
+			for (var key in objStructure) { 
+				var pName = objStructure[key].name;
+				var dup = '';
+
+				if(searchSketches(pName, settings.sketches)){
+					dup = 'class="importdump-dup"';
+				}
+
+				// if sketch, update sketches name too
+				if(objStructure[key].type == 'sketch'){
+					outputData += level + iconFileLines +'<span '+dup+'>'+ pName + '</span><br>';
+				}
+
+				// if folder, recurse deeper
+				if(objStructure[key].type == 'folder'){
+					outputData += level + iconFolderEmpty +'<span '+dup+'>'+  pName + '</span><br>';
+					outputData = recursiveImportCheck(objStructure[key].contents, '&nbsp;&nbsp;'+level, outputData);
+				}
+			};
+			return outputData;
 		}
 
 		// recursively check for duplicate names when importing
@@ -1623,7 +1732,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			vex.dialog.prompt({
 				message: 'Rename:',
 				value: itemName, // placeholder
-				// buttons[0].text = 'Okiedokie',
 				callback: function (value) {
 					if(value){
 						var newName = value.replace(/["']/g, '');
@@ -1644,11 +1752,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 							updateSettings();
 							initSortable();
-							if(itemType == 'sketch' && !settings.cocoding.active){
+							if(itemType == 'sketch'){
 								settings.fileName = newName;
 								localStorage.setItem(newName, localStorage[itemName]);
 								localStorage.removeItem(itemName);
-								setTimeout(function(){ loadSketch(newName); }, 100);
+								if(!settings.cocoding.active){
+									setTimeout(function(){ loadSketch(newName); }, 100);
+								}
 							}
 						}
 					}
@@ -2475,6 +2585,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function showRef(){
 			if(!downloadedRef){
+				showLoader();
 				loadRef();
 				downloadedRef = true;
 			}else{
@@ -2659,7 +2770,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				});
 			});
 			allRef();
-
+			hideLoader();
 			// display once downloaded
 			refHolder.style.display = 'block';
 			getRef();
@@ -2810,6 +2921,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/*	MISC */
 		function pop720(){
 			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=748');
+		}
+
+		function showLoader(){
+			loader.style.display = 'block';
+		}
+
+		function hideLoader(){
+			loader.style.display = 'none';
 		}
 
 
