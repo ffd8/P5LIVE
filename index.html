@@ -83,7 +83,7 @@
 				<div class="menu-section-bg"></div>
 				<div class="menu-header" id="menu-cocode-header">COCODING</div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
-					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop CoCoding">
+					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop COCODING">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
 					</button>
 					<button class="menu-button tippy" onclick="copyLink(this);" data-title="URL to Clipboard">
@@ -103,7 +103,7 @@
 					</button>
 				</div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-inactive">
-					<button class="menu-button tippy cocoding-inactive" id="menu-cocoding" onclick="cocodingInit();" data-title="Start CoCoding!">
+					<button class="menu-button tippy cocoding-inactive" id="menu-cocoding" onclick="cocodingInit();" data-title="Start COCODING!">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
 				</div>
@@ -520,7 +520,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				this.socket.on('full', () =>{
 					vex.dialog.alert({
-						message:'Sorry CoCoding is full at the moment.',
+						message:'Sorry COCODING is full at the moment.',
 						callback: function(){cocodingExit(loadLatest());}
 					})
 				});
@@ -732,6 +732,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		};
 
 
+
 		/* FANCY EDITOR FUNCTIONS */
 
 		// check for errors
@@ -778,6 +779,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			}
 		}
+
 
 
 		/* CMD-KEYS (remove key conflicts) */
@@ -867,6 +869,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			listCommands();
 			getKeys();
 		}
+
 
 
 		/* p5 iframe communication */
@@ -982,6 +985,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 
+
 		/*	SKETCHES TASKS	*/
 		// set settings to localstorage
 		function updateSettings(){
@@ -1007,7 +1011,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			
 		}
 
-		function cloneSketchCoCoding(){
+		function cloneSketchCOCODING(){
 			var forkSession = settings.cocoding.namespace;
 			if(searchJSON(settings.sketches, 'name', forkSession).length == 0){
 				addFolder(forkSession);
@@ -1025,7 +1029,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function loadSketch(sketch){
 			if(settings.cocoding.active){
 				vex.dialog.confirm({
-					message: 'Exit CoCoding?',
+					message: 'Exit COCODING?',
 					callback: function (value) {
 						if (value) {
 							cocodingExit(sketch);
@@ -1243,44 +1247,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// import sketches from JSON
 		function importSketches(data){
-
-			/*
-			for(var i=0; i < data.length; i++){
-				var reader = new FileReader();
-				reader.onload = function(data) {
-					var jsonObj = JSON.parse(event.target.result);
-					if(jsonObj.hasOwnProperty('structure')){
-						// importData.push(jsonObj.structure);
-						var count = (JSON.stringify(jsonObj.structure).match(/name/g) || []).length;
-						var jsonStructureSorted = jsonObj.structure;
-						let importData = 'Import the following ('+count+') items?<br>';
-						var importDupFound = false;
-						for (var key in jsonStructureSorted) { 
-							if(searchSketches(jsonStructureSorted[key].name, settings.sketches)){
-								importDupFound = true;
-							}
-						}
-						if(importDupFound){
-							importData += '<span style="font-size:10pt;"><span class="importdump-dup">Duplicates</span> given a unique _timestamp</span><br>';
-						}
-						importData += '<div id="importdump">';
-						importData += recursiveImportCheck(jsonStructureSorted, '', '');
-						importData += '</div>';
-						vex.dialog.confirm({
-							unsafeMessage:importData,
-							callback: function(value){
-								if(value){
-									console.log('yes')
-								}
-							}
-						})
-					}
-				}
-				reader.readAsText(data[i]);
-			}
-			*/
-			
-			
 			for(var i=0; i < data.length; i++){
 				var reader = new FileReader();
 				reader.onload = function(data) {
@@ -1358,7 +1324,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				// if folder, recurse deeper
 				if(objStructure[key].type == 'folder'){
-					outputData += level + iconFolderEmpty +'<span '+dup+'>'+  pName + '</span><br>';
+					outputData += level + iconFolderEmpty +'<span '+dup+'>'+ pName + '</span><br>';
 					outputData = recursiveImportCheck(objStructure[key].contents, '&nbsp;&nbsp;'+level, outputData);
 				}
 			};
@@ -1508,19 +1474,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				});
 				updateSettings();
 			}
-
-			// if(!settings.hasOwnProperty('revision') || settings.revision < currentRevision){
-			// 	settings.revision = currentRevision;
-			// 	settings.cocoding = {};
-			// 	settings.console = true;
-			// 	settings.themeBGactive = true;
-			// 	settings.refresh = true;
-			// 	updateSettings();
-				
-			// 	//loadDemos();
-			// }
-
-			
 		}
 
 		function getOrder() {
@@ -1800,7 +1753,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 
-
 		/* EDITOR KEY-CMDS */
 
 		var map = [];
@@ -1942,6 +1894,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				return confirmationMessage;								//Webkit, Safari, Chrome
 			}
 		});
+
 
 
 		/* COMPILE CODE */
@@ -2889,6 +2842,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 
+		
+
+
+
+		/*	MISC */
+		function pop720(){
+			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=748');
+		}
+
+		function showLoader(){
+			loader.style.display = 'block';
+		}
+
+		function hideLoader(){
+			loader.style.display = 'none';
+		}
+
 		/* View in fullscreen */
 		function openFullscreen() {
 			var elem = document.documentElement;
@@ -2918,22 +2888,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 
-		/*	MISC */
-		function pop720(){
-			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=748');
-		}
-
-		function showLoader(){
-			loader.style.display = 'block';
-		}
-
-		function hideLoader(){
-			loader.style.display = 'none';
-		}
-
-
-
-		/*	CoCoding */
+		/*	COCODING */
 		function makeid(charCount){
 			var text = "";
 			for( var i=0; i < charCount; i++ )
@@ -2944,7 +2899,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function cocodingInit(){
 			if(settings.cocoding.active){
 				vex.dialog.confirm({
-					message: 'Exit CoCoding?',
+					message: 'Exit COCODING?',
 					callback: function (value) {
 						if (value) {
 							cocodingExit(loadLatest());
@@ -2980,7 +2935,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function cocoding(){
 			menuCocodeHolder.style.display = 'block';
-			editor.setValue('// Loading CoCoding Session: '+settings.cocoding.namespace, 1);
+			editor.setValue('// Loading COCODING Session: '+settings.cocoding.namespace, 1);
 			cocode = new CocodeApp(settings.cocoding.namespace);
 			
 		}
