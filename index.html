@@ -998,6 +998,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function updateSettings(){
 			localStorage.setItem('settings', JSON.stringify(settings));
 			if(settings.debugMode){console.log(getSettings());}
+
+			// hook the vi ':w' command to recompile
+			var vim = ace.require("ace/keyboard/vim")
+			if (vim) vim.Vim.defineEx(
+				'write', 'w', function() {
+				console.log("Recompile...");
+				forceRecompile = true;
+				recompile();
+			});
 		}
 
 		// set sketches list to localstorage
