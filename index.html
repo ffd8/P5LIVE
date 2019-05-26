@@ -147,6 +147,10 @@
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile"> 
 						Live Coding
 					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="VI Editor Mode" onclick="viModeToggle();">
+						<input type="checkbox" id="settings-vimode" name="settings-vimode" value="settings-vimode"> 
+						VI Mode
+					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>" onclick="fullscreenToggle();">
 						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen"> 
 						Fullscreen
@@ -295,6 +299,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'welcome':true,
 			'fontSize':15, 
 			'autoCompile':true, 
+			'viMode':false, 
 			'ecoRender': true,
 			'canvasCursor': true,
 			'console': true,
@@ -332,6 +337,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuBG = document.getElementById('menu-bg'),
 		settingsFontsize = document.getElementById('menu-settings-fontsize'),
 		settingsAutoMode = document.getElementById('settings-autocompile'),
+		settingsViMode = document.getElementById('settings-vimode'),
 		settingsFullscreen = document.getElementById('settings-fullscreen'),
 		settingsEcoMode = document.getElementById('settings-ecorender'),
 		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
@@ -917,6 +923,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function loadSettings(){
 			fontSizeUpdate();
 			autoCompileUpdate();
+			viModeUpdate();
 			fullscreenUpdate();
 			menuToggleUpdate();
 			ecoRenderUpdate();
@@ -2083,6 +2090,20 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function autoCompileUpdate(){
 			checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
+		}
+
+		// toggle vi mode
+		function viModeToggle(){
+			settings.viMode = !settings.viMode;
+			viModeUpdate();
+		}
+
+		function viModeUpdate(){
+			checkToggle("viMode", settings.viMode, settingsViMode);
+			editor.setKeyboardHandler( settings.viMode
+				? "ace/keyboard/vim"
+				: "ace/keyboard/sublime"
+			);
 		}
 
 
