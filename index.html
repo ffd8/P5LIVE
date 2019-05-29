@@ -89,7 +89,7 @@
 					<button class="menu-button tippy" onclick="copyLink(this);" data-title="URL to Clipboard">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
 					</button>
-					<button class="menu-button tippy" onclick="cloneSketchCoCoding();" data-title="Clone Sketch">
+					<button class="menu-button tippy" onclick="cloneSketchCOCODING();" data-title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
 					<button class="menu-button tippy admin-lock" id="cocode-layers" onclick="cocodeLayers();" data-title="Load CoCodeLayers" style="display:none;">
@@ -462,8 +462,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.initialized = false;
 				this.socket = '';
 				this.namespace = namespace;
-				if(window.location.hostname == 'localhost'){
-					this.socket = io('/' + this.namespace, { transports: ['websocket'] }); // io('http://localhost:5000/' + this.namespace);
+				if(!window.location.hostname.includes('teddavis.org')){
+					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true }); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true });	
 				}
@@ -1099,7 +1099,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for(var i=0; i < includeScripts.length; i++){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
-				if(window.location.hostname != 'localhost'){
+				if(window.location.hostname.includes('teddavis.org')){
 					s.src = includeScripts[i].remote;
 				}else{
 					s.src = includeScripts[i].local;
@@ -1110,7 +1110,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			// check loadScripts;
 			let sketchTest = editor.getValue();
 			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
-			var sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*"\])/
+			var sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*["']\])/
 			var sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
 			if(sketchLoadScripts !=undefined){
 				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');

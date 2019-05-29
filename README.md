@@ -127,25 +127,36 @@ Load snippet via shortcut, `CTRL + SHIFT + key`
 - `CTRL + SHIFT + A`, adds audio-reactive code.  
 - `CTRL + SHIFT + D`, adds WEBGL, disable depth-test.
 
+### LIBRARIES
+P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, there's an experimental mode for loading external [CDN hosted](https://www.jsdelivr.com/) javascript files (or local if running offline). Use the following syntax at the top of your sketch, placing each link into the following array:  
+
+```
+let loadScripts = [
+	"", 
+	""
+];
+```
+
 ### ASSETS
-Want custom assets (fonts/images)?   
-Clone/download from github and run locally.  
-Drop files into folder and link relatively, ('data/fish.png')
+Want custom assets (fonts/images/...)?   
+Clone/download from GitHub and run locally.  
+Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
 
-### MISC
-Fan going nuts?  
-Set `pixelDensity(1);` in `setup()` if on a retina display.
+### PERFORMANCE
+Set `pixelDensity(1);` in `setup()` if on a retina display and lagging.
 
-Bug?! Infinite loop??  
-Add `#bug` to URL, to enter safemode, disables compiling to fix code.
+### Bug?! 
+Infinite loop? Lost-data?  
+Add `#bug` to URL to stop compiler to fix a bug/infinite-loop...  
+Add `#new` to URL to force a fresh blank sketch.
 
 
 FUNCTIONS
 -------------------------------
 Additional custom functions have been added:  
-- `ease(inVal, outVariable, easeVal)`  smooth values  
-- `println(foo)` for compatibility with Processing.  
-- `frameCount`, `mouseX`, `mouseY` are continous per recompile.
+- `ease(inVal, outVariable, easeVal)`  smooth values.  
+- `println(foo)` Compatibility with Processing.  
+- `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.
 
 
 OFFLINE SERVER
@@ -160,8 +171,8 @@ OFFLINE SERVER
 #### Fancy webserver using nodejs/npm (cocoding):  
 - Download [P5LIVE](https://github.com/ffd8/p5live)  
 - on MacOS, open Terminal  
+- install nodejs + npm ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, hit `ENTER`  
-- install nodejs + npm (search for instructions)  
 - type `npm install`, hit `ENTER`  
 - type `npm start`, hit `ENTER`  
 - goto [http://localhost:5000](http://localhost:5000)
@@ -196,4 +207,4 @@ INSPIRATION
 
 SOURCE
 -------------------------------
-- [github](https://github.com/ffd8/p5live)
+- [GitHub](https://github.com/ffd8/p5live)
