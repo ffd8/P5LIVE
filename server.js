@@ -1,6 +1,6 @@
 "use strict";
 let online = false; // set online
-let debugStats = true; // report glitch.com limits
+let debugStats = false; // report glitch.com limits
 
 const express = require('express')
 , app = express()
