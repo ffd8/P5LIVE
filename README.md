@@ -125,7 +125,7 @@ Add custom snippets to '/includes/demos/P5L_snippets.json'.
 Load snippet via shortcut, `CTRL + SHIFT + key`  
 
 - `CTRL + SHIFT + A`, adds audio-reactive code.  
-- `CTRL + SHIFT + D`, adds WEBGL, disable depth-test.
+- `CTRL + SHIFT + D`, adds WEBGL code to disable depth-test.
 
 ### LIBRARIES
 P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, there's an experimental mode for loading external [CDN hosted](https://www.jsdelivr.com/) javascript files (or local if running offline). Use the following syntax at the top of your sketch, placing each link into the following array:  
