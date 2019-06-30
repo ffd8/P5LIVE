@@ -35,7 +35,7 @@
 
 		{
 			"id":"webgl",
-			"key": "W",
+			"key": "D",
 			"code":{
 				"global":{
 					"top":"",
@@ -47,22 +47,7 @@
 					"bottom":""
 				}
 			}
-		},
-		{
-			"id":"cocode-demo",
-			"key": "D",
-			"code":{
-				"global":{
-					"top":"let x;",
-					"bottom":"function mousePressed(){\n\tpush()\n\tfill(255, 0, 0)\n\tellipse(x, mouseY, 150)\n\tpop()\n}"
-				},
-				"setup":"",
-				"draw":{
-					"top":"x = frameCount*5%width;\nellipse(x, mouseY, 50);",
-					"bottom":""
-				}
-			}
 		}
-
+		
 		]
 }
