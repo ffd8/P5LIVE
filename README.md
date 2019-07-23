@@ -126,6 +126,7 @@ Load snippet via shortcut, `CTRL + SHIFT + key`
 
 - `CTRL + SHIFT + A`, adds audio-reactive code.  
 - `CTRL + SHIFT + D`, adds WEBGL code to disable depth-test.
+- `CTRL + SHIFT + O`, adds OSC communication code.
 
 ### LIBRARIES
 P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, there's an experimental mode for loading external [CDN hosted](https://www.jsdelivr.com/) javascript files (or local if running offline). Use the following syntax at the top of your sketch, placing each link into the following array:  
@@ -144,6 +145,11 @@ Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
 
 ### PERFORMANCE
 Set `pixelDensity(1);` in `setup()` if on a retina display and lagging.
+
+### OSC/MIDI
+OSC is implemented when running locally using node.js/npm.
+Simply use the OSC snippet (`CTRL + SHIFT + O`) to add code to sketch, then adjust in/out ports within the setup.  
+MIDI communication is pending.
 
 ### Bug?! 
 Infinite loop? Lost-data?  
@@ -197,6 +203,7 @@ P5LIVE is only possible to do these amazing open-source tools:
 - [Feather Icons](https://feathericons.com), gui icons 
 - [loading.io](https://loading.io/css/), css spinning loader
 - [glitch.com](https://glitch.com), nodejs websocket hosting
+- [p5js-osc](https://github.com/genekogan/p5js-osc/), osc connection
 
 
 INSPIRATION

@@ -6,9 +6,11 @@ const express = require('express')
 , app = express()
 , server = require('http').Server(app)
 , io = require('socket.io')(server)
+, iop = require('socket.io')(8082)
 , RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
+, osc = require('node-osc')
 
 const maxSpaces = 500; // check memory for number of namespaces...
 const purgeCounter = 60; // sec until removing namespace
@@ -18,6 +20,9 @@ let ccStats = {};
 ccStats.reqCount = 4000;
 let countdown = 1000 * 60 * 60;
 ccStats.countdown = "60 min";
+
+let oscServer, oscClient;
+let isConnected = false;
 
 /* STATS */
 function callEveryHour() {
@@ -82,6 +87,30 @@ io.origins((origin, callback) => {
     return callback('origin not allowed', false);
   }
   callback(null, true);
+});
+
+// OSC
+iop.sockets.on('connection', function (socket) {
+	//console.log('connection');
+	socket.on("config", function (obj) {
+		isConnected = true;
+    	oscServer = new osc.Server(obj.server.port, obj.server.host);
+	    oscClient = new osc.Client(obj.client.host, obj.client.port);
+	    oscClient.send('/status', socket.sessionId + ' connected');
+		oscServer.on('message', function(msg, rinfo) {
+			socket.emit("message", msg);
+		});
+		socket.emit("connected", 1);
+	});
+ 	socket.on("message", function (obj) {
+		oscClient.send.apply(oscClient, obj);
+  	});
+	socket.on('disconnect', function(){
+		if (isConnected) {
+			oscServer.kill();
+			oscClient.kill();
+		}
+  	});
 });
 
 
