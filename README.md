@@ -1,6 +1,6 @@
 P5LIVE
 -------------------------------
-v 1.1.0  
+v 1.1.1  
 cc [teddavis.org](http://teddavis.org) – 2019  
 p5.js collaborative live-coding vj environment!
 
@@ -8,7 +8,8 @@ p5.js collaborative live-coding vj environment!
 SHORTCUTS
 -------------------------------
 - `CTRL + N` » new sketch
-- `CTRL + ENTER` » compile
+- `CTRL + ENTER` » soft compile
+- `CTRL + SHIFT + ENTER` » hard compile
 - `CTRL + A` » autocompile toggle
 - `CTRL + E` » editor toggle
 - `CTRL + F` » fullscreen toggle
@@ -147,8 +148,9 @@ Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
 Set `pixelDensity(1);` in `setup()` if on a retina display and lagging.
 
 ### OSC/MIDI
-OSC is implemented when running locally using node.js/npm.
-Simply use the OSC snippet (`CTRL + SHIFT + O`) to add code to sketch, then adjust in/out ports within the setup.  
+OSC is implemented when running locally using node.js/npm.  
+Load *osc_setup* demo and run Processing sketch, [p5live\_osc\_setup](https://gist.github.com/ffd8/f9f33cc7461f8467f62d5a792dde53ca)  
+or use the OSC snippet (`CTRL + SHIFT + O`) and adjust in/out ports within the setup.  
 MIDI communication is pending.
 
 ### Bug?! 

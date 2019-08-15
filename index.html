@@ -167,17 +167,20 @@
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab">
 						Menu Tab
 					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
+						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
+					</div>
 					<hr>
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
-						Font Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
+						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
 
 					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
-						Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();"> <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+						Code Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();"><input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
@@ -272,7 +275,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 8;
+		let currentRevision = 9;
 
 		// resetP5(); // manual reset
 
@@ -290,7 +293,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// settings
 		let initSettings = {
-			'version':'1.1.0',
+			'version':'1.1.1',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15, 
@@ -300,6 +303,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'console': true,
 			'fullscreenMode':false,
 			'fileName': '',
+			'linenumbers': false,
 			'menuMode': true,
 			'menutab':true,
 			'debugMode': false,
@@ -337,6 +341,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
 		settingsConsole = document.getElementById('settings-console'),
 		settingsMenutab = document.getElementById('settings-menutab'),
+		settingsLinenumbers = document.getElementById('settings-linenumbers'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		refHolder = document.getElementById('refholder'),
 		ref = document.getElementById('ref'),
@@ -358,7 +363,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false
+		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
+		demosLocked = true, compileTimer = 1000
 		;
 
 
@@ -923,6 +929,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			cursorToggleUpdate();
 			consoleToggleUpdate();
 			menutabToggleUpdate();
+			linenumbersUpdate();
 			loadTheme();
 			loadBG();
 			themeBGactiveToggleUpdate();
@@ -1047,13 +1054,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					pLen = editor.getValue().length;
 					updateSketches();
 
-					setTimeout(function(){p5varsReset();recompile();}, 200);
+					setTimeout(function(){p5varsReset();recompile(true);}, 200);
 
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
 					editor.focus();
 					var checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
-					if(searchSketches(settings.fileName, checkDemo)){
+					if(searchSketches(settings.fileName, checkDemo) && demosLocked){
 						editor.getSession().on('change', cloneSketch);
 					}
 					
@@ -1090,7 +1097,56 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
-		function buildSketch(){
+		function buildSketch(soft){
+			if(soft == undefined && sketchLoaded){
+				// technique to only update draw if code changed there (= continous background!)
+				var curPos = editor.getCursorPosition();
+				var allLines = editor.session.getLines(0, editor.session.getLength());
+				var drawPos = [];//{};
+				var drawPosSel = -1;
+				var countBrackets = false;
+				var braces = 0;
+				var curDraw = false;
+
+				// how to undeclare class/function??
+				for(var i=0; i<allLines.length; i++){
+					if(allLines[i].includes('function') && !countBrackets){
+							countBrackets = true;
+							drawPos.push({start:i});
+					}
+					
+					if(countBrackets){
+						if(allLines[i].includes('{')){
+							braces += (allLines[i].match(/{/g) || []).length;
+						}else if(allLines[i].includes('}')){
+							braces -= (allLines[i].match(/}/g) || []).length;
+							if(braces == 0){
+								drawPos[drawPos.length-1].end = i;
+								countBrackets = false;
+							}
+						}
+					}
+				}
+
+				for(var i=0; i<drawPos.length; i++){
+					if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end){
+						curDraw = true;
+						drawPosSel = i;
+					}
+				}
+
+				// check if cursor is within (any!) function
+				// if so, only overwrite that function = softCompile
+				if(curDraw){
+					var curCodeTemp = editor.session.getLines(drawPos[drawPosSel].start, drawPos[drawPosSel].end).join('\n');
+					let s = document.createElement('script');
+					s.type = 'text/javascript';
+					s.innerHTML = curCodeTemp;
+					p5f.document.head.appendChild(s);
+					return false; // prevent complete rebuild
+				}
+			}
+
 			sketchLoaded = false;
 			var el = p5frameTemplate.cloneNode(true);
 			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
@@ -1403,7 +1459,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load demos
 		function loadDemos(){
-			var demosPath = 'includes/demos/P5L_demos_4.json';
+			var demosPath = 'includes/demos/P5L_demos_20190815.json';
 			var request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send()
@@ -1543,8 +1599,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							var selClass = '';
 							var navSketch = 'onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"';
 							if(curFolder == 'demos'){
-								navSketch = '';
-								demoClass = ' demo';
+								if(demosLocked){
+									navSketch = '';
+									demoClass = ' demo';
+								}
 							}
 							if(d.name == settings.fileName){
 								selClass = 'sketch-selected';
@@ -1555,7 +1613,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							curFolder = d.name;
 							var icon = iconFolderExpand;
 							var navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"';
-							if(curFolder == 'demos'){
+							if(curFolder == 'demos' && demosLocked){
 								navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'demos\');" onmouseleave="hideNav(this);"';
 								demoClass = ' demo';
 								demoFolder = 'id="demofolder"';
@@ -1592,7 +1650,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				if(document.getElementById('demofolder') != undefined){
 					new Sortable(demofolder, {
-						group: {name: 'demos', pull:false,put:false},
+						group: {name: 'demos', pull:false, put:false},
 						filter: '.demo'
 					});
 				}
@@ -1769,7 +1827,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			map[event.keyCode] = event.type == 'keydown';
 			
 			if(map[16] && map[17]){
-				addSnippet(event.key);
+				if(event.keyCode == 13){
+					forceRecompile = true;
+					recompile(true);
+				}else{
+					addSnippet(event.key);
+				}
 				event.preventDefault();
 			}else if(!map[16] && map[17]){ // check !shift and √control
 				if(event.keyCode == 69){ // e = editor toggle
@@ -1866,7 +1929,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function checkErrors(){
 			clearTimeout(errorTimer);
-			errorTimer = setTimeout(function(){checkErrorsWorker();}, 500);	
+			errorTimer = setTimeout(function(){checkErrorsWorker();}, compileTimer);	
 		}
 
 		function checkErrorsWorker(){
@@ -1908,12 +1971,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* COMPILE CODE */
 
-		function recompile(){
+		function recompile(soft){
 			var currline = editor.getSelectionRange().start.row;
 			var currCode = editor.session.getLine(currline);
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
 				if(validCode){
-					if(editor.getValue().indexOf('function setup()') != -1){
+					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
 						// buildSketch(); // 
 						updateBackground();
 						if(settings.cocoding.active){
@@ -1926,7 +1989,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								buildSketch(); // 
 							}
 						}else{
-							buildSketch(); // 
+							buildSketch(soft); // 
 						}
 
 						// if(settings.cocoding.active && settings.cocoding.sync && settings.cocoding.level == 'admin'){
@@ -1994,7 +2057,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* SNIPPETS */
 		function loadSnippets(){
-			var snippetsPath = 'includes/demos/P5L_snippets_4.json?'+currentRevision;
+			var snippetsPath = 'includes/demos/P5L_snippets_20190815.json?'+currentRevision;
 			var request = new XMLHttpRequest();
 			request.open('GET', snippetsPath, false);
 			request.send();
@@ -2191,6 +2254,27 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				menuSwitch.style.display = 'none';
 			}else{
 				menuSwitch.style.display = 'block';
+			}	
+		}
+
+		//menutab toggle
+		function linenumbersToggle(){
+			settings.linenumbers = !settings.linenumbers;
+			linenumbersUpdate();
+		}
+
+		function linenumbersUpdate(){
+			checkToggle('linenumbers', settings.linenumbers, settingsLinenumbers);
+			if(!settings.linenumbers){
+				editor.setOptions({
+					showLineNumbers: false, // false
+					showGutter: false, // false
+				});
+			}else{
+				editor.setOptions({
+					showLineNumbers: true, // false
+					showGutter: true, // false
+				});
 			}	
 		}
 
@@ -2410,7 +2494,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateSettings();
 			editor.focus();
 			getOrder();
-			setTimeout(function(){ recompile(); }, 100);
+			setTimeout(function(){ recompile(true); }, 100);
 		}
 
 		function loadAbout(){
@@ -2427,7 +2511,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			editor.setValue(p5liveabout, 1);
 			editor.focus();
 			updateSettings();
-			setTimeout(function(){ recompile(); }, 100);
+			setTimeout(function(){ recompile(true); }, 100);
 		}
 
 		// HTML to TXT

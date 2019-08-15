@@ -1,10 +1,11 @@
 {
   "version": "1.1.0",
+  "revision": 9,
   "structure": [
     {
       "name": "demos",
       "type": "folder",
-      "toggle": "collapse",
+      "toggle": "expand",
       "contents": [
         {
           "name": "aboutsketch",
@@ -44,6 +45,10 @@
         },
         {
           "name": "this is a really long name",
+          "type": "sketch"
+        },
+        {
+          "name": "osc_setup",
           "type": "sketch"
         }
       ]
@@ -89,6 +94,10 @@
     {
       "sketchName": "this is a really long name",
       "sketchCode": "/*\tthis is a really long name // cc teddavis.org 2019\t*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbackground(0);\n}\n\nfunction draw() {\n\tfill(255);\n\ttextSize(200);\n\ttext(\"yup... \\nthat's a really long name\", 0, 0, width, height);\n}"
+    },
+    {
+      "sketchName": "osc_setup",
+      "sketchCode": "/*\tosc_setup // cc teddavis.org 2019\t*/\n/*\tRequires offline nodejs/npm installation of P5LIVE\t*/\n/*\tProcessing sketch: https://gist.github.com/ffd8/f9f33cc7461f8467f62d5a792dde53ca\t*/\n\nlet loadScripts = [\"includes/js/socket.io.js\"];\nlet socket;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tsetupOsc(12000, 12001); // in, out\n\n\ttextSize(50);\n\ttextAlign(CENTER, CENTER);\n}\n\nfunction draw() {\n\n}\n\nfunction mouseMoved() {\n\tsendOsc('/p5js', [mouseX, mouseY]);\n}\n\nfunction mousePressed() {\n\tsendOsc('/clear', \"\");\n}\n\n/* OSC COMMUNICATION */\nfunction receiveOsc(address, value) {\n\t//print(\"received OSC: \" + address + \", \" + value);\n\tfill(0);\n\trect(0, 0, width / 2, height);\n\tfill(255);\n\ttext(\"RECEIVING:\\n\" + address + \", \" + value, 0, 0, width / 2, height);\n}\n\nfunction sendOsc(address, value) {\n\tsocket.emit('message', [address].concat(value));\n\tfill(0);\n\trect(width / 2, 0, width / 2, height);\n\tfill(255);\n\ttext(\"SENDING:\\n\" + address + \", \" + value, width / 2, 0, width / 2, height);\n}\n\nfunction setupOsc(oscPortIn, oscPortOut) {\n\tsocket = io.connect('http://127.0.0.1:8082', {\n\t\tport: 8082,\n\t\trememberTransport: false\n\t});\n\tsocket.on('connect', function() {\n\t\tsocket.emit('config', {\n\t\t\tserver: {\n\t\t\t\tport: oscPortIn,\n\t\t\t\thost: '127.0.0.1'\n\t\t\t},\n\t\t\tclient: {\n\t\t\t\tport: oscPortOut,\n\t\t\t\thost: '127.0.0.1'\n\t\t\t}\n\t\t});\n\t});\n\tsocket.on('message', function(msg) {\n\t\tif(msg[0] == '#bundle') {\n\t\t\tfor(var i = 2; i < msg.length; i++) {\n\t\t\t\treceiveOsc(msg[i][0], msg[i].splice(1));\n\t\t\t}\n\t\t} else {\n\t\t\treceiveOsc(msg[0], msg.splice(1));\n\t\t}\n\t});\n}"
     }
   ]
 }
