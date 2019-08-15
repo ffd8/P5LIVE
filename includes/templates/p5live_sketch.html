@@ -41,7 +41,6 @@
 		window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
 			p5console.value = errorMsg; // lineNumber +" / "+
 			p5console.style.background = "#000";
-			// p5console.style.background = "none";
 			markLine(lineNumber);            
 			return false;
 		}
@@ -77,6 +76,7 @@
 					p5console.style.borderTop = "1px solid #444";
 					p5console.style.pointerEvents = "all";
 					p5code.style.height = "calc(100vh - 40px)";
+					window.parent.console.log(m); // also send to parent console!
 				}
 			}       
 		};

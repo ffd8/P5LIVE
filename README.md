@@ -120,6 +120,11 @@ Check short-cuts above for faster toggling:
 - Font Size, adjust size of editor text.  
 - Background, toggle + set color behind each line of code.  
 - Theme, select custom styling of code.
+
+### COMPILING
+There's now two modes of compiling in P5LIVE, soft and hard.  
+softCompile (default) `CTRL + ENTER`, overwrites function where cursor is (smooth refresh).  
+hardCompile (`CTRL + SHIFT + ENTER`), forces entire sketch to recompile.
 	
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
@@ -151,7 +156,7 @@ Set `pixelDensity(1);` in `setup()` if on a retina display and lagging.
 OSC is implemented when running locally using node.js/npm.  
 Load *osc_setup* demo and run Processing sketch, [p5live\_osc\_setup](https://gist.github.com/ffd8/f9f33cc7461f8467f62d5a792dde53ca)  
 or use the OSC snippet (`CTRL + SHIFT + O`) and adjust in/out ports within the setup.  
-MIDI communication is pending.
+MIDI is implemented with webmidi.js – see *midi_setup* demo.
 
 ### Bug?! 
 Infinite loop? Lost-data?  
@@ -179,7 +184,7 @@ OFFLINE SERVER
 #### Fancy webserver using nodejs/npm (cocoding):  
 - Download [P5LIVE](https://github.com/ffd8/p5live)  
 - on MacOS, open Terminal  
-- install nodejs + npm ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm))  
+- install nodejs + npm ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) / [binary installers](https://nodejs.org/en/download/))  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, hit `ENTER`  
 - type `npm install`, hit `ENTER`  
 - type `npm start`, hit `ENTER`  
@@ -206,7 +211,7 @@ P5LIVE is only possible to do these amazing open-source tools:
 - [loading.io](https://loading.io/css/), css spinning loader
 - [glitch.com](https://glitch.com), nodejs websocket hosting
 - [p5js-osc](https://github.com/genekogan/p5js-osc/), osc connection
-
+- [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 
 INSPIRATION
 -------------------------------

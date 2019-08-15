@@ -1309,8 +1309,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for(let i=0; i < data.length; i++){
 				let reader = new FileReader();
 				reader.onload = function(data) {
-					let jsonObj = JSON.parse(event.target.result);
-					let jsonObjList = JSON.parse(event.target.result);
+					let jsonObj = JSON.parse(data.target.result);
+					let jsonObjList = JSON.parse(data.target.result);
 					if(jsonObj.hasOwnProperty('structure')){
 						let jsonStructureSorted = jsonObj.structure.reverse();
 
