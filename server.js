@@ -6,10 +6,10 @@ const express = require('express')
 , app = express()
 , server = require('http').Server(app)
 , io = require('socket.io')(server)
-, iop = require('socket.io')(8082)
 , RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
+, iop = require('socket.io')(8082)
 , osc = require('node-osc')
 
 const maxSpaces = 500; // check memory for number of namespaces...
@@ -91,7 +91,6 @@ io.origins((origin, callback) => {
 
 // OSC
 iop.sockets.on('connection', function (socket) {
-	//console.log('connection');
 	socket.on("config", function (obj) {
 		isConnected = true;
     	oscServer = new osc.Server(obj.server.port, obj.server.host);
@@ -107,8 +106,8 @@ iop.sockets.on('connection', function (socket) {
   	});
 	socket.on('disconnect', function(){
 		if (isConnected) {
-			oscServer.kill();
-			oscClient.kill();
+			oscServer.close();
+			oscClient.close();
 		}
   	});
 });
