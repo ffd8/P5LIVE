@@ -1112,7 +1112,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				for(var i=0; i<allLines.length; i++){
 					if(allLines[i].includes('function') && !countBrackets){
 							countBrackets = true;
-							var functionName = allLines[i].match(/(function)(.*)(\()/)[1].trim();
+							var functionName = allLines[i].match(/function (.*)\(/)[1].trim();
 							drawPos.push({name:functionName, start:i});
 
 					}
@@ -1129,11 +1129,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						}
 					}
 				}
-
 				for(var i=0; i<drawPos.length; i++){
-					if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end && drawPos[i].name != 'setup'){
-						curDraw = true;
-						drawPosSel = i;
+					if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end){
+						if(drawPos[i].name != 'setup'){
+							curDraw = true;
+							drawPosSel = i;
+						}
+						console.log(drawPos[i].name);
 					}
 				}
 
