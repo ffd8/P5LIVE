@@ -19,7 +19,7 @@ SHORTCUTS
 - `CTRL + C` » cursor toggle
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
-- `CTRL + S` » save png
+- `CTRL + S` » save png + code
 - `CTRL + I` » 720*720px popup for screen-recording
 - `CTRL + 1, 2, 3...0` » load first 10 sketches
 
@@ -55,7 +55,7 @@ Sketch is auto-saved on every keystroke.
 - About, what you're reading now.  
 - Reset, re-initialize P5LIVE (erases sketches/settings).  
 - Reference, toggle p5.js reference list.  
-- Save PNG, export image.  
+- Save PNG + CODE, export image and snapshot of code.  
 - Save HTML, export single-page website.
 
 ### COCODING MENU  
