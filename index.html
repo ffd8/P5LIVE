@@ -364,7 +364,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
-		demosLocked = true, compileTimer = 1000
+		demosLocked = true, compileTimer = 1000, curPos
 		;
 
 
@@ -1100,7 +1100,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function buildSketch(soft){
 			if(soft == undefined && sketchLoaded){
 				// technique to only update draw if code changed there (= continous background!)
-				var curPos = editor.getCursorPosition();
+				//curPos = editor.getCursorPosition();
 				var allLines = editor.session.getLines(0, editor.session.getLength());
 				var drawPos = [];//{};
 				var drawPosSel = -1;
@@ -1976,6 +1976,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function recompile(soft){
 			var currline = editor.getSelectionRange().start.row;
 			var currCode = editor.session.getLine(currline);
+			curPos = editor.getCursorPosition();
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
 				if(validCode){
 					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
@@ -2613,11 +2614,29 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var el = p5htmlTemplate.cloneNode(true);
 			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 
+			// check loadScripts;
+			let sketchTest = editor.getValue();
+			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			var sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*["']\])/
+			var sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
+			if(sketchLoadScripts !=undefined){
+				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
+				for(var i=0; i < sketchLoadScripts.length; i++){
+					let s = document.createElement('script');
+					s.type = 'text/javascript';
+					s.src = sketchLoadScripts[i];
+					iFrameBody.appendChild(s);
+					iFrameBody.innerHTML += '\n\n';
+				}
+
+			}
+
 			var s = document.createElement('script');
 			s.type = 'text/javascript';
 			s.innerHTML = '\n//' +settings.fileName+ '\n\n' + editor.getValue() +'\n\n'+ p5custom.value;
 			iFrameBody.appendChild(s);
-			download(el.innerHTML, 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
+			iFrameBody.innerHTML += '\n\n';
+			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
 		}
 
 		

@@ -122,9 +122,11 @@ Check short-cuts above for faster toggling:
 - Theme, select custom styling of code.
 
 ### COMPILING
-There's now two modes of compiling in P5LIVE, soft and hard.  
-softCompile (default) `CTRL + ENTER`, overwrites function where cursor is (smooth refresh).  
-hardCompile (`CTRL + SHIFT + ENTER`), forces entire sketch to recompile.
+There are two modes of compiling in P5LIVE:  
+- softCompile, `CTRL + ENTER`, (default) replaces changed functions (smooth refresh).  
+- hardCompile, `CTRL + SHIFT + ENTER`, forces entire sketch to recompile.  
+
+Changes to global variables and `setup()` automatically perform a hardCompile since the entire sketch needs it. For smooth transitions, be sure to change values within `draw()` or other custom functions. This is especially useful if using loaded assets or drawing without a background during a performance, as it allows things to keep flowing. If in doubt or not seeing changes, run a hardCompile. 
 	
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
@@ -160,14 +162,14 @@ MIDI is implemented with webmidi.js – see *midi_setup* demo.
 
 ### Bug?! 
 Infinite loop? Lost-data?  
-Add `#bug` to URL to stop compiler to fix a bug/infinite-loop...  
-Add `#new` to URL to force a fresh blank sketch.
+Add `#bug` to URL and refresh to stop compiler to fix a bug/infinite-loop...  
+Add `#new` to URL and refresh to force a fresh blank sketch.
 
 
 FUNCTIONS
 -------------------------------
-Additional custom functions have been added:  
-- `ease(inVal, outVariable, easeVal)`  smooth values.  
+Additional custom functions available in every sketch:  
+- `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
 - `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.
 
