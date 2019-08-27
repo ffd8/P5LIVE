@@ -1100,6 +1100,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
 		function buildSketch(soft){
+
+			// softCompile
 			if(soft == undefined && sketchLoaded){
 				// technique to only update draw if code changed there (= continous background!)
 				//curPos = editor.getCursorPosition();
@@ -1131,16 +1133,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						}
 					}
 				}
+
+				// check if cursor is within (any!) function
 				for(var i=0; i<drawPos.length; i++){
 					if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end){
-						if(drawPos[i].name != 'setup'){
+						if(drawPos[i].name != 'setup'){ // setup = hardCompile
 							curDraw = true;
 							drawPosSel = i;
 						}
 					}
 				}
 
-				// check if cursor is within (any!) function
 				// if so, only overwrite that function = softCompile
 				if(curDraw){
 					var curCodeTemp = editor.session.getLines(drawPos[drawPosSel].start, drawPos[drawPosSel].end).join('\n');
@@ -1152,6 +1155,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 			}
 
+			// hardCompile
 			sketchLoaded = false;
 			var el = p5frameTemplate.cloneNode(true);
 			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
@@ -1227,14 +1231,38 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		function searchJSON(obj, key, value) {
-			return obj.filter(
-				function(obj){return obj[key] == value}
-				);
+		function searchJSON(obj, key, value, out) {
+			if(out == undefined){
+				out = [];
+			}
+			if(Array.isArray(obj)){
+				obj.forEach(function(o){
+					if(o[key] == value){
+						out.push(o);
+					}else
 
-			// build recursive clone, both recursive folders and individual - filter that...
-			// https://stackoverflow.com/questions/38132146/recursively-filter-array-of-objects
+					if(o.contents){
+						searchJSON(o.contents, key, value, out);
+					}
+				});
+			}
+
+			return out;
 		}
+
+
+
+		// function find(obj, key, value) {
+		//   if (obj.value && obj.value.indexOf(key) > -1){
+		//     return true;
+		//   }
+		//   if (obj.children && obj.children.length > 0){
+		//     return obj.children.reduce(function(obj1, obj2){
+		//       return find(obj1, key) || find(obj2, key);
+		//     }, {}); 
+		//   } 
+		//   return false;
+		// }
 
 
 
@@ -1540,7 +1568,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				settings.sketches = newOrder;
 				updateSettings();
 			}
-			
 			if(searchJSON(settings.sketches, 'name', 'demos').length == 0){			
 				loadDemos();
 			}
@@ -1911,7 +1938,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		window.onkeyup = function(event) {
-			console.log(map[17]);
 			map[event.keyCode] = event.type == 'keydown';
 		}
 
