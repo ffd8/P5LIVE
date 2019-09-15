@@ -2009,16 +2009,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				// how to undeclare class/function??
 
-
-
 				for(var i=0; i<allLines.length; i++){
 					if(allLines[i].includes('function') && !countBrackets){
 							countBrackets = true;
-							 if(allLines[i].match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/) == undefined){
+							
+							// first catch commented out lines
+							if(allLines[i].match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/) == undefined){
 								var functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
 								drawPos.push({name:functionName, start:i});
-							 }
-
+							}
 					}
 					
 					if(countBrackets){
