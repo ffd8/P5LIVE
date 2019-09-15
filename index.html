@@ -187,7 +187,8 @@
 					</div>
 
 					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
-						Code Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();"><input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+						Code Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();">
+						<input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
@@ -319,7 +320,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'debugMode': false,
 			'safeMode': false,
 			'sketches': [],
-			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false},
+			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
 			'scripts': ['includes/p5/addons/p5.dom.min.js', 'includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '052544',
@@ -487,11 +488,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.rgaConnect();
 				this.users = {};
 				editor.setWrapBehavioursEnabled(false);
-				editor.getSession().on('change', function(){
+				editor.getSession().on('change', function(delta){
+					curPos = delta.start;
 					checkErrors();
 				});
 
 				this.login();
+				this.updateColor();
 				this.token();
 
 				this.socket.on('init', () => {
@@ -565,8 +568,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					p5f.frameCount = ev.fc;			
 				});
 
-				this.socket.on('recompile', ()=>{
-					buildSketch(); // 
+				this.socket.on('recompile', (force)=>{
+					buildSketch(force); // 
 					updateBackground();
 				});
 
@@ -646,7 +649,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							if(users[i].status == 'blur'){
 								active = 'style="opacity:.5;"';
 							}
-							usersHTML += '<li id="user-'+users[i].nick+'" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch-nav">' +userNav+'</div><div class="menu-sketch '+marq+'" '+active+ '>'+userIcon+ ' ' +users[i].nick+'</div></li>';
+							usersHTML += '<li id="user-'+users[i].nick+'" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch-nav">' +userNav+'</div><div class="menu-sketch '+marq+'" '+active+ '><span style="padding-top:4px;background:'+users[i].color+';">'+userIcon+ '</span> ' +users[i].nick+'</div></li>';
 						}else{
 							usersSelf = users[i];
 							if(usersSelf.status == 'blur'){
@@ -677,7 +680,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						var marq = '';
 						if(settings.cocoding.nick.length > 10){marq = 'marq';}
 
-						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();">'+userIcon+ ' ' +settings.cocoding.nick+'</div></li>' + usersHTML;
+						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();"><span id="cocodingself" style="padding-top:4px;background:'+settings.cocoding.color+';">'+userIcon+ '</span> ' +settings.cocoding.nick+'</div></li>' + usersHTML;
 						loadTippy();
 					});
 				}
@@ -686,28 +689,55 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				RGA.AceEditorRGA.setup(editor, this.socket);
 			}
 
+			userBG(newVal){
+				document.getElementById('cocodingself').style.background = newVal;
+				// settings.cocoding.color = newVal;
+			}
+
 			rename(){
-				vex.dialog.prompt({
-					message: 'Nickname:',
-					value: settings.cocoding.nick, // placeholder
-					callback: function (value) {
-						if(value){
-							var newName = value.replace(/["']/g, '');
-							if(newName != '' && newName != settings.cocoding.nick){
-								settings.cocoding.nick = newName;
-								updateSettings();
-								cocode.login();
+				// add color! 
+				vex.dialog.open({
+					// message: 'Nickname:',
+					input:[
+					'<label for="nick">Nickname</label><br>',
+					'<input id="cocodingnick" name="nick" type="text" value="'+settings.cocoding.nick+'">',
+					'<br><br>',
+					// *** back to normal JS color picker.. 
+					'<label for="color">Cursor Color</label><br>',
+					'<input name="color" type="color" value="'+settings.cocoding.color+'" onchange="cocode.userBG(this.value);" oninput="cocode.userBG(this.value);" style="width:100%;height:50px;">'
+					].join(''),
+					// value: settings.cocoding.nick, // placeholder
+					callback: function (data) {
+						if(data){
+							if(data.nick != settings.cocoding.nick){
+								//console.log('namechange')
+								var newName = data.nick.replace(/["']/g, '');
+								if(newName != '' && newName != settings.cocoding.nick){
+									settings.cocoding.nick = newName;
+									cocode.login();
+								}
 							}
+							if(data.color != settings.cocoding.color){
+								settings.cocoding.color = data.color;
+								cocode.userBG(data.color);
+								cocode.updateColor();
+							}
+							updateSettings();
 						}
 					},
 					afterOpen: function(){
-						document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+						// document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+						document.getElementById('cocodingnick').select();
 					}
 				})
 			}
 
 			login(){				
 				this.socket.emit('login', settings.cocoding.nick);
+			}
+
+			updateColor(){
+				this.socket.emit('updateColor', settings.cocoding.color);	
 			}
 
 			token(){
@@ -739,8 +769,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.socket.emit('dispatchSyncEvent', ev);
 			}
 
-			recompile(){
-				this.socket.emit('recompile');
+			recompile(force){
+				this.socket.emit('recompile', force);
 			}
 
 			sync(syncMode){
@@ -751,6 +781,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* FANCY EDITOR FUNCTIONS */
+
+		editor.getSession().selection.on("changeCursor", function(){
+			//console.log(editor.getCursorPosition());
+			curPos = editor.getCursorPosition();
+		})
 
 		// check for errors
 		editor.getSession().on('changeAnnotation', function(){
@@ -792,7 +827,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				var pitem = pcode[i];
 				var pcontents = pitem.innerHTML;
 				if(settings.themeBGactive){
-					pitem.innerHTML = '<span class="ace_line_bg" style="background:#'+settings.themeBG+'">' + pcontents + '</span>';
+					pitem.innerHTML = '<span class="ace_line_bg" style="background:'+settings.themeBG+'">' + pcontents + '</span>';
 				}
 			}
 		}
@@ -1922,7 +1957,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* COMPILE CODE */
 
-		function recompile(soft){
+		function recompile(force){
 			var currline = editor.getSelectionRange().start.row;
 			var currCode = editor.session.getLine(currline);
 			curPos = editor.getCursorPosition();
@@ -1934,14 +1969,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						if(settings.cocoding.active){
 							if(settings.cocoding.sync){
 								if(settings.cocoding.level == 'admin'){
-									buildSketch(); // 
-									cocode.recompile();
+									buildSketch(force); // 
+									cocode.recompile(force);
 								}
 							}else{
-								buildSketch(); // 
+								buildSketch(force); // 
 							}
 						}else{
-							buildSketch(soft); // 
+							buildSketch(force); // 
 						}
 
 						// if(settings.cocoding.active && settings.cocoding.sync && settings.cocoding.level == 'admin'){
@@ -1959,10 +1994,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
-		function buildSketch(soft){
+		function buildSketch(force){
 
 			// softCompile
-			if(soft == undefined && sketchLoaded){
+			if(force == undefined && sketchLoaded){
 				// technique to only update draw if code changed there (= continous background!)
 				//curPos = editor.getCursorPosition();
 				var allLines = editor.session.getLines(0, editor.session.getLength());
@@ -1973,11 +2008,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				var curDraw = false;
 
 				// how to undeclare class/function??
+
+
+
 				for(var i=0; i<allLines.length; i++){
 					if(allLines[i].includes('function') && !countBrackets){
 							countBrackets = true;
-							var functionName = allLines[i].match(/function (.*)\(/)[1].trim();
-							drawPos.push({name:functionName, start:i});
+							 if(allLines[i].match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/) == undefined){
+								var functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
+								drawPos.push({name:functionName, start:i});
+							 }
 
 					}
 					
@@ -1997,7 +2037,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				// check if cursor is within (any!) function
 				for(var i=0; i<drawPos.length; i++){
 					if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end){
-						if(drawPos[i].name != 'setup'){ // setup = hardCompile
+						if(drawPos[i].name != 'setup'){ // && !settings.cocoding.active
 							curDraw = true;
 							drawPosSel = i;
 						}
@@ -2494,6 +2534,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// load themeBG 
 		function loadBG(){
 			settingsBG.value = settings.themeBG;
+			// settingsBG.style.color = '#'+settings.themeBG;
+			// settingsBGholder.style.background = settings.themeBG;
 			// menuBG.style.backgroundColor = "#" + settings.themeBG;
 			// styleMenu();
 		}
@@ -2501,7 +2543,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// set themeBG
 		function setBG(val){
 			if(settings.themeBG != val){
-				settings.themeBG = val + '';
+				settings.themeBG = '#'+ val;
+				settingsBG.style.color = settings.themeBG;
+				// settingsBGholder.style.background = settings.themeBG;
 				updateSettings();
 				editor.renderer.updateFull();
 				// menuBG.style.backgroundColor = "#" + settings.themeBG;

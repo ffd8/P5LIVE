@@ -487,10 +487,13 @@ button[disabled]{
 	color:#fff;
 }
 #menu-settings-bg{
-	width:50px;
-	text-transform: uppercase;
+	float:right;
+	margin:4px 10px 0;
+	width:35px;
+	height:14px;
 	outline:none;
 	border:1px solid #888;
+	color: transparent !important;
 }
 #menu-settings-fontsize{
 	width:4em;

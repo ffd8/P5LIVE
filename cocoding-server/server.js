@@ -247,8 +247,8 @@ class Namespace {
 				socket.broadcast.emit('dispatchSyncEvent', JSON.stringify(evData)); // all except sender
 			});
 
-			socket.on('recompile', function(){
-				socket.broadcast.emit('recompile'); // all except sender
+			socket.on('recompile', function(force){
+				socket.broadcast.emit('recompile', force); // all except sender
 			});
 
 			socket.on('status', function(statusMode){

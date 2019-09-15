@@ -189,7 +189,7 @@ class Namespace {
 	listenOnNamespace(settings) {
 		settings.namespace.on('connection', (socket) => {
 			settings.userId++;
-			settings.people[socket.id] = {"nick":settings.userId, "status":"focus", "request":false, "writemode":false};
+			settings.people[socket.id] = {"nick":settings.userId, "status":"focus", "request":false, "writemode":false, "cursor":{"row":0, "column":0}, "color":"#00aa00"};
 			syncUsers();
 
 			// save namespace if quick return
@@ -237,8 +237,13 @@ class Namespace {
 					newid += "_"+suffix;
 					socket.emit('rename', newid);
 				}
-				settings.people[socket.id].nick = newid;
-				syncSettings();
+				settings.people[socket.id].nick = newid;				
+				syncSettings();				
+			})
+
+			socket.on('updateColor', function(newcolor){
+				settings.people[socket.id].color = newcolor;
+				syncSettings();				
 			})
 
 			socket.on('token', function(token){
@@ -275,8 +280,8 @@ class Namespace {
 				socket.broadcast.emit('dispatchSyncEvent', JSON.stringify(evData)); // all except sender
 			});
 
-			socket.on('recompile', function(){
-				socket.broadcast.emit('recompile'); // all except sender
+			socket.on('recompile', function(force){
+				socket.broadcast.emit('recompile', force); // all except sender
 			});
 
 			socket.on('status', function(statusMode){
