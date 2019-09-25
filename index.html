@@ -285,7 +285,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 11;
+		let currentRevision = 12;
 
 		// resetP5(); // manual reset
 
@@ -323,7 +323,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
 			'scripts': ['includes/p5/addons/p5.dom.min.js', 'includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
-			'themeBG': '052544',
+			'themeBG': '#052544',
 			'themeBGactive': true,
 			'refresh':true
 		}
@@ -704,8 +704,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					'<input id="cocodingnick" name="nick" type="text" value="'+settings.cocoding.nick+'">',
 					'<br><br>',
 					// *** back to normal JS color picker.. 
-					'<label for="color">Cursor Color</label><br>',
-					'<input name="color" type="color" value="'+settings.cocoding.color+'" onchange="cocode.userBG(this.value);" oninput="cocode.userBG(this.value);" style="width:100%;height:50px;">'
+					'<label for="color" style="display:none;">Cursor Color</label><br>',
+					'<input name="color" type="color" value="'+settings.cocoding.color+'" onchange="cocode.userBG(this.value);" oninput="cocode.userBG(this.value);" style="width:100%;height:50px;display:none;">'
 					].join(''),
 					// value: settings.cocoding.nick, // placeholder
 					callback: function (data) {
@@ -2085,7 +2085,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							// console.log(drawPos[i].name); // debug where chage occured
 							if(drawPos[i].name == 'setup' || drawPos[i].name == 'preload'){ // && !settings.cocoding.active
 								curDraw = false;
-								console.log('setup or preload!')
 							}
 						}
 					}
