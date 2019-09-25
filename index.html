@@ -376,7 +376,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
-		demosLocked = true, curPos
+		demosLocked = true, curPos, curPositions = []
 		;
 
 
@@ -490,6 +490,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				editor.setWrapBehavioursEnabled(false);
 				editor.getSession().on('change', function(delta){
 					curPos = delta.start;
+					curPositions.push(delta.start);
 					checkErrors();
 				});
 
@@ -785,7 +786,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		editor.getSession().selection.on("changeCursor", function(){
 			//console.log(editor.getCursorPosition());
 			curPos = editor.getCursorPosition();
+			// curPositions.push(editor.getCursorPosition());
 		})
+
+		editor.getSession().on('change', function(delta){
+			curPos = delta.start;
+			curPositions.push(delta.start);
+			checkErrors();
+		});
 
 		// check for errors
 		editor.getSession().on('changeAnnotation', function(){
@@ -946,6 +954,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				sketchLoaded = true;
 			}else{
 				sketchLoaded = false;
+				// set timer for refreshing if error			
 			}
 		}
 
@@ -1910,7 +1919,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!settings.cocoding.active){
 				localStorage[settings.fileName] = editor.getValue();
 			}
-			checkErrors();			
+			// checkErrors();	// ** maybe turn back on>?		
 		};
 
 		function checkErrors(){
@@ -1934,11 +1943,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				clearTimeout(errorTimer);
 				validCode = true;
 				if(settings.autoCompile){
-					var cLen = editor.getValue().length;
-					if(cLen != pLen || settings.cocoding.active){
-						pLen = cLen;
-						recompile();
-					}
+					recompile();
 				}
 			}
 			if(settings.debugMode){console.log('validCode: ' + validCode);}
@@ -2034,18 +2039,64 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				}
 
 				// check if cursor is within (any!) function
+				// for(var i=0; i<drawPos.length; i++){
+				// 	if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end){
+				// 		if(drawPos[i].name != 'setup'){ // && !settings.cocoding.active
+				// 			curDraw = true;
+				// 			drawPosSel = i;
+				// 		}
+				// 	}
+				// }
+				
+				// check all changed positions + if custom function
+				let funName = '';
 				for(var i=0; i<drawPos.length; i++){
-					if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end){
-						if(drawPos[i].name != 'setup'){ // && !settings.cocoding.active
-							curDraw = true;
-							drawPosSel = i;
+					for(var j=0; j < curPositions.length; j++){
+						let cPos = curPositions[j];
+						if(cPos.row >= drawPos[i].start && cPos.row <= drawPos[i].end){
+							// console.log(drawPos[i].name); // debug where change occured
+							if(drawPos[i].name != 'setup' && drawPos[i].name != 'preload'){ // && !settings.cocoding.active
+								curDraw = true;
+								drawPosSel = i;
+								funName = drawPos[i].name;
+							}
 						}
 					}
 				}
 
+				// if custom function, grab where it's used
+				let functionPos = [];
+				for(var j=0; j<drawPos.length; j++){
+					if(funName == drawPos[j].name){
+						// find lines where drawPos[i].name sits
+						for(var i=0; i<allLines.length; i++){
+							if(allLines[i].includes(drawPos[j].name)){
+								functionPos.push(i);
+							}
+						}
+					}
+				}
+
+				// catch custom functions in preload + setup
+				for(var i=0; i<functionPos.length; i++){
+					for(var j=0; j < curPositions.length; j++){
+						let fPos = functionPos[j];
+						if(fPos >= drawPos[i].start && fPos <= drawPos[i].end){
+							// console.log(drawPos[i].name); // debug where chage occured
+							if(drawPos[i].name == 'setup' || drawPos[i].name == 'preload'){ // && !settings.cocoding.active
+								curDraw = false;
+								console.log('setup or preload!')
+							}
+						}
+					}
+				}
+
+
+
 				// if so, only overwrite that function = softCompile
 				if(curDraw){
 					softCompile(drawPos[drawPosSel].start, drawPos[drawPosSel].end);
+					curPositions = [];
 					return false; // prevent complete rebuild
 				}
 			}
@@ -2098,6 +2149,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			// set dynamic html as iframe srcdoc
 			p5frame.srcdoc = el.innerHTML;
+			curPositions = [];
 		}
 
 		// softCompile swap
@@ -2505,9 +2557,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!settings.menuMode){
 				menuPanel.style.marginRight = '-250px';
 				menuSwitch.innerHTML = '«';
+				menuPanel.style.overflow = "auto";
 			}else{
 				menuPanel.style.marginRight = '0px';
 				menuSwitch.innerHTML = '»';
+				menuPanel.style.overflow = "hidden";
 			}
 		}
 

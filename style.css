@@ -34,6 +34,7 @@ body {
 	color: #839496;
 	position: relative;
 	background:#000;
+	overflow:hidden;
 }
 hr{
 	width:80%;
