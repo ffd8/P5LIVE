@@ -2070,7 +2070,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					if(funName == drawPos[j].name){
 						// find lines where drawPos[i].name sits
 						for(var i=0; i<allLines.length; i++){
-							if(allLines[i].includes(drawPos[j].name)){
+							if(allLines[i].includes(drawPos[j].name + '(')){
 								functionPos.push(i);
 							}
 						}
