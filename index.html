@@ -285,7 +285,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 12;
+		let currentRevision = 13;
 
 		// resetP5(); // manual reset
 
@@ -2004,16 +2004,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			// softCompile
 			if(force == undefined && sketchLoaded){
 				// technique to only update draw if code changed there (= continous background!)
-				//curPos = editor.getCursorPosition();
 				var allLines = editor.session.getLines(0, editor.session.getLength());
 				var drawPos = [];//{};
 				var drawPosSel = -1;
 				var countBrackets = false;
 				var braces = 0;
-				var curDraw = false;
+				var softFunction = false;
+				var softClass = false;
 
-				// how to undeclare class/function??
-
+				// extract all functions and their line number
 				for(var i=0; i<allLines.length; i++){
 					if(allLines[i].includes('function') && !countBrackets){
 							countBrackets = true;
@@ -2021,10 +2020,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							// first catch commented out lines
 							if(allLines[i].match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/) == undefined){
 								var functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
-								drawPos.push({name:functionName, start:i});
+								drawPos.push({type:'function', name:functionName, start:i});
+							}
+					}else if(allLines[i].includes('class') && !countBrackets){
+							countBrackets = true;
+							
+							// first catch commented out lines
+							if(allLines[i].match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/) == undefined){
+								var className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
+								drawPos.push({type:'class', name:className, start:i});
 							}
 					}
 					
+					// count {} and mark where class/function ends
 					if(countBrackets){
 						if(allLines[i].includes('{')){
 							braces += (allLines[i].match(/{/g) || []).length;
@@ -2039,16 +2047,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 				}
 
-				// check if cursor is within (any!) function
-				// for(var i=0; i<drawPos.length; i++){
-				// 	if(curPos.row >= drawPos[i].start && curPos.row <= drawPos[i].end){
-				// 		if(drawPos[i].name != 'setup'){ // && !settings.cocoding.active
-				// 			curDraw = true;
-				// 			drawPosSel = i;
-				// 		}
-				// 	}
-				// }
-				
 				// check all changed positions + if custom function
 				let funName = '';
 				for(var i=0; i<drawPos.length; i++){
@@ -2056,10 +2054,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						let cPos = curPositions[j];
 						if(cPos.row >= drawPos[i].start && cPos.row <= drawPos[i].end){
 							// console.log(drawPos[i].name); // debug where change occured
-							if(drawPos[i].name != 'setup' && drawPos[i].name != 'preload'){ // && !settings.cocoding.active
-								curDraw = true;
+							if(drawPos[i].name != 'setup' && drawPos[i].name != 'preload' && drawPos[i].type == 'function'){ // && !settings.cocoding.active
+								softFunction = true;
 								drawPosSel = i;
 								funName = drawPos[i].name;
+							}else if(drawPos[i].type == 'class'){
+								softClass = true;
+								drawPosSel = i;
+								// console.log(drawPos[i]);
+								//className = drawPos[i].name;
 							}
 						}
 					}
@@ -2085,17 +2088,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						if(fPos >= drawPos[i].start && fPos <= drawPos[i].end){
 							// console.log(drawPos[i].name); // debug where chage occured
 							if(drawPos[i].name == 'setup' || drawPos[i].name == 'preload'){ // && !settings.cocoding.active
-								curDraw = false;
+								softFunction = false;
 							}
 						}
 					}
 				}
 
-
-
-				// if so, only overwrite that function = softCompile
-				if(curDraw){
-					softCompile(drawPos[drawPosSel].start, drawPos[drawPosSel].end);
+				// if possible, only overwrite function/class for softCompile
+				if(softClass || softFunction){
+					softCompile(drawPos[drawPosSel].type, drawPos[drawPosSel].name, drawPos[drawPosSel].start, drawPos[drawPosSel].end);
 					curPositions = [];
 					return false; // prevent complete rebuild
 				}
@@ -2152,9 +2153,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			curPositions = [];
 		}
 
-		// softCompile swap
-		function softCompile(codeStart, codeEnd){
-			var curCodeTemp = editor.session.getLines(codeStart, codeEnd).join('\n');
+		// softCompile function or class changes
+		function softCompile(codeType, codeName, codeStart, codeEnd){
+			var curCodeTemp = "";
+			if(codeType == 'function'){
+				curCodeTemp = editor.session.getLines(codeStart, codeEnd).join('\n');
+			}else if(codeType == 'class'){
+				curCodeTemp = codeName + " = class {" + editor.session.getLines(codeStart+1, codeEnd).join('\n');
+			}
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
 			s.innerHTML = curCodeTemp;
