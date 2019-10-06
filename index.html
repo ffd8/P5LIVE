@@ -2028,7 +2028,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					if(countBrackets){
 						if(allLines[i].includes('{')){
 							braces += (allLines[i].match(/{/g) || []).length;
-						}else if(allLines[i].includes('}')){
+						}
+						if(allLines[i].includes('}')){
 							braces -= (allLines[i].match(/}/g) || []).length;
 							if(braces == 0){
 								drawPos[drawPos.length-1].end = i;
