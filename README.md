@@ -3,10 +3,11 @@ v 1.1.1
 cc [teddavis.org](http://teddavis.org) – 2019  
 p5.js collaborative live-coding vj environment!
 
+
 ## SHORTCUTS
 - `CTRL + N` » new sketch
-- `CTRL + ENTER` » soft compile
-- `CTRL + SHIFT + ENTER` » hard compile
+- `CTRL + ENTER` » softCompile
+- `CTRL + SHIFT + ENTER` » hardCompile
 - `CTRL + A` » autocompile toggle
 - `CTRL + E` » editor toggle
 - `CTRL + F` » fullscreen toggle
@@ -20,20 +21,21 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + I` » 720*720px popup for screen-recording
 - `CTRL + 1, 2, 3...0` » load first 10 sketches
 
+
 ## LOCALSTORAGE
 Sketches are ONLY stored in your browser's localStorage,   
-so export sketches/folders often.  
-Clearing browser history/data will probably erase all sketches.  
+so export sketches/folders often!  
+Clearing browser history/data will likely erase all sketches.  
 
-As sketches are isolated to domain:port localstorage,  
-export/import all to migrate between online/offline.
+This means sketches are isolated to the localStorage per domain:port,  
+so export/import all sketches to migrate between online/offline/browsers.
 
 
 ## INSTALL
 Online: [p5live.org](https://p5live.org)
 
 Offline: [Github Repo](https://github.com/ffd8/p5live)   
-Details below to run via localserver or nodejs/npm (for cocoding).
+Details below to run via python webserver or nodejs/npm (for complete functionality).
 
 
 ## GETTING STARTED
@@ -47,19 +49,18 @@ Sketch is auto-saved on every keystroke.
 ![menu-p5live](includes/images/menu-p5live-7.png)  
 - About, what you're reading now.  
 - Reset, re-initialize P5LIVE (erases sketches/settings).  
-- Reference, toggle p5.js reference list.  
-- Save PNG + CODE, export image and snapshot of code.  
-- Save HTML, export single-page website.
+- Reference, `CTRL + R`, toggle p5.js reference list.  
+- Save PNG + CODE, `CTRL + S`, exports timestamped image and snapshot of code.  
+- Save HTML, export single-page website (re-link path to any assets).
 
 ### COCODING MENU  
 ![menu-cocoding-inactive](includes/images/menu-cocoding-inactive-7.png)  
 - Start, click the single 'network' button.  
 
-
 ![menu-cocoding-active](includes/images/menu-cocoding-active-7.png)  
 - Exit, click the green 'network' button.  
 - Share, click copy URL and share with friends.  
-- Clone sketch, saves current co-code to local sketches within own folder.  
+- Clone sketch, saves current co-code to local sketches within session folder.  
 - Lockdown (admin), limit editing, toggling privledges per user.  
 - Broadcast (admin + lockdown), sync mouseX/Y/frameCount with users.
 
@@ -116,10 +117,10 @@ Check short-cuts above for faster toggling:
 
 ### COMPILING
 There are two modes of compiling in P5LIVE:  
-- softCompile, `CTRL + ENTER`, (default) replaces changed functions (smooth refresh).  
+- softCompile, `CTRL + ENTER`, (default) only replaces changed functions (smooth refresh).  
 - hardCompile, `CTRL + SHIFT + ENTER`, forces entire sketch to recompile.  
 
-Changes to global variables and `setup()` automatically perform a hardCompile since the entire sketch needs it. For smooth transitions, be sure to change values within `draw()` or other custom functions. This is especially useful if using loaded assets or drawing without a background during a performance, as it allows things to keep flowing. If in doubt or not seeing changes, run a hardCompile. 
+Changes to global variables and `setup()`/`preload()` automatically perform a hardCompile since the entire sketch needs it. If your change only occurs within the `draw()` and custom functions (that aren't used in `setup()`), you should see a smooth transition. This is especially useful if using preloaded assets or drawing without a background during a performance, as it allows things to keep flowing. `Classes` are also softCompiled, but remember that each instance will still hold the old variables/methods, so replace each instance as needed (you'll see the updates on each new copy). If in doubt or not seeing changes, run a hardCompile, `CTRL + SHIFT + ENTER`. 
 	
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
@@ -154,9 +155,9 @@ or use the OSC snippet (`CTRL + SHIFT + O`) and adjust in/out ports within the s
 MIDI is implemented with webmidi.js – see *midi_setup* demo.
 
 ### Bug?! 
-Infinite loop? Lost-data?  
-Add `#bug` to URL and refresh to stop compiler to fix a bug/infinite-loop...  
-Add `#new` to URL and refresh to force a fresh blank sketch.
+Infinite loop? Broken code?  
+- Add `#bug` to URL and try refreshing to stop compiler to fix a bug/infinite-loop...  
+- Add `#new` to URL and refresh to force a fresh blank sketch. Then you can export and delete broken sketch, try fixing externally, and re-import.
 
 
 ## FUNCTIONS
@@ -168,7 +169,7 @@ Additional custom functions are available in every sketch:
 
 ## OFFLINE SERVER
 #### Basic webserver using Python (without COCODING/OSC):  
-- Download / Clone [P5LIVE](https://github.com/ffd8/p5live)  
+- Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER` 
 - check Python version, type `python --version`, press `ENTER` 
@@ -177,7 +178,7 @@ Additional custom functions are available in every sketch:
 - goto [http://localhost:5000](http://localhost:5000)
 
 #### Fancy webserver using nodejs/npm (with COCODING/OSC):  
-- Download / Clone [P5LIVE](https://github.com/ffd8/p5live)  
+- Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - Install Node.js + NPM ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) / [binary installers](https://nodejs.org/en/download/))  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER`  
@@ -189,7 +190,7 @@ Additional custom functions are available in every sketch:
 ## TOOLS USED
 P5LIVE is possible thanks to these amazing open-source projects:  
 
-- [p5.js](https://p5js.org), magic – v0.8.0
+- [p5.js](https://p5js.org), magic – v0.9.0
 - [ace editor](https://ace.c9.io), code editor on top
 - [peeredit / rga.js](https://github.com/jorendorff/peeredit), syncing text for cocoding
 - [socket.io](https://socket.io/), websockets for cocoding
@@ -206,6 +207,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [glitch.com](https://glitch.com), nodejs websocket hosting
 - [p5js-osc](https://github.com/genekogan/p5js-osc/), osc connection
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
+
 
 ## INSPIRATION
 - [cyril](https://github.com/cyrilcode/cyril)
