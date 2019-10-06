@@ -1,12 +1,9 @@
-P5LIVE
--------------------------------
+## P5LIVE
 v 1.1.1  
 cc [teddavis.org](http://teddavis.org) – 2019  
 p5.js collaborative live-coding vj environment!
 
-
-SHORTCUTS
--------------------------------
+## SHORTCUTS
 - `CTRL + N` » new sketch
 - `CTRL + ENTER` » soft compile
 - `CTRL + SHIFT + ENTER` » hard compile
@@ -23,9 +20,7 @@ SHORTCUTS
 - `CTRL + I` » 720*720px popup for screen-recording
 - `CTRL + 1, 2, 3...0` » load first 10 sketches
 
-
-LOCALSTORAGE
--------------------------------
+## LOCALSTORAGE
 Sketches are ONLY stored in your browser's localStorage,   
 so export sketches/folders often.  
 Clearing browser history/data will probably erase all sketches.  
@@ -34,16 +29,14 @@ As sketches are isolated to domain:port localstorage,
 export/import all to migrate between online/offline.
 
 
-INSTALL
--------------------------------
-Online: [https://teddavis.org/p5live](https://teddavis.org/p5live)
+## INSTALL
+Online: [p5live.org](https://p5live.org)
 
 Offline: [Github Repo](https://github.com/ffd8/p5live)   
 Details below to run via localserver or nodejs/npm (for cocoding).
 
 
-GETTING STARTED
--------------------------------
+## GETTING STARTED
 ### LIVE-CODE IN 5... 4... 3... 2...
 ![menu-sketches-new](includes/images/menu-sketches-new-7.png)  
 Create New Sketch via GUI icon or `CTRL + N` and start coding!  
@@ -166,35 +159,34 @@ Add `#bug` to URL and refresh to stop compiler to fix a bug/infinite-loop...
 Add `#new` to URL and refresh to force a fresh blank sketch.
 
 
-FUNCTIONS
--------------------------------
-Additional custom functions available in every sketch:  
+## FUNCTIONS
+Additional custom functions are available in every sketch:  
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
 - `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.
 
 
-OFFLINE SERVER
--------------------------------
-#### Basic webserver using python (no cocoding):  
-- Download [P5LIVE](https://github.com/ffd8/p5live)  
-- on MacOS, open Terminal  
-- type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, hit `ENTER`  
-- type `python -m SimpleHTTPServer 5000`, hit `ENTER`    
+## OFFLINE SERVER
+#### Basic webserver using Python (without COCODING/OSC):  
+- Download / Clone [P5LIVE](https://github.com/ffd8/p5live)  
+- MacOS – open `Terminal` // Windows – open `command prompt`  
+- type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER` 
+- check Python version, type `python --version`, press `ENTER` 
+	- `Python 2.0+`, type `python -m SimpleHTTPServer 5000`, press `ENTER`    
+	- `Python 3.0+`, type `python -m http.server 5000`, press `ENTER`    
 - goto [http://localhost:5000](http://localhost:5000)
 
-#### Fancy webserver using nodejs/npm (cocoding):  
-- Download [P5LIVE](https://github.com/ffd8/p5live)  
-- on MacOS, open Terminal  
-- install nodejs + npm ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) / [binary installers](https://nodejs.org/en/download/))  
-- type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, hit `ENTER`  
-- type `npm install`, hit `ENTER`  
-- type `npm start`, hit `ENTER`  
+#### Fancy webserver using nodejs/npm (with COCODING/OSC):  
+- Download / Clone [P5LIVE](https://github.com/ffd8/p5live)  
+- Install Node.js + NPM ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) / [binary installers](https://nodejs.org/en/download/))  
+- MacOS – open `Terminal` // Windows – open `command prompt`  
+- type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER`  
+- type `npm install`, press `ENTER`  
+- type `npm start`, press `ENTER`  
 - goto [http://localhost:5000](http://localhost:5000)
     
 
-TOOLS USED
--------------------------------
+## TOOLS USED
 P5LIVE is possible thanks to these amazing open-source projects:  
 
 - [p5.js](https://p5js.org), magic – v0.8.0
@@ -215,12 +207,10 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [p5js-osc](https://github.com/genekogan/p5js-osc/), osc connection
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 
-INSPIRATION
--------------------------------
+## INSPIRATION
 - [cyril](https://github.com/cyrilcode/cyril)
 - [Hydra](https://github.com/ojack/hydra)
 
 
-SOURCE
--------------------------------
+## SOURCE
 - [GitHub](https://github.com/ffd8/p5live)
