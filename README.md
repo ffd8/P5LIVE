@@ -142,6 +142,7 @@ let loadScripts = [
 
 ### ASSETS
 Want custom assets (fonts/images/...)?   
+Load from a CORS friendly webserver (ie. [imgur](https://imgur.com) for images), or better yet,  
 Clone/download from GitHub and run locally.  
 Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
 
