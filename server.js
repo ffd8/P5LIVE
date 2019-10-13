@@ -9,8 +9,13 @@ const express = require('express')
 , RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
-, iop = require('socket.io')(8082)
-, osc = require('node-osc')
+
+// OSC
+let iop, osc, oscServer, oscClient, isConnected;
+if(!online){
+	iop = require('socket.io')(8082);
+	osc = require('node-osc');
+}
 
 const maxSpaces = 500; // check memory for number of namespaces...
 const purgeCounter = 60; // sec until removing namespace
@@ -20,9 +25,6 @@ let ccStats = {};
 ccStats.reqCount = 4000;
 let countdown = 1000 * 60 * 60;
 ccStats.countdown = "60 min";
-
-let oscServer, oscClient;
-let isConnected = false;
 
 /* STATS */
 function callEveryHour() {
@@ -90,27 +92,29 @@ io.origins((origin, callback) => {
 });
 
 // OSC
-iop.sockets.on('connection', function (socket) {
-	socket.on("config", function (obj) {
-		isConnected = true;
-    	oscServer = new osc.Server(obj.server.port, obj.server.host);
-	    oscClient = new osc.Client(obj.client.host, obj.client.port);
-	    oscClient.send('/status', socket.sessionId + ' connected');
-		oscServer.on('message', function(msg, rinfo) {
-			socket.emit("message", msg);
+if(!online){
+	iop.sockets.on('connection', function (socket) {
+		socket.on("config", function (obj) {
+			isConnected = true;
+	    	oscServer = new osc.Server(obj.server.port, obj.server.host);
+		    oscClient = new osc.Client(obj.client.host, obj.client.port);
+		    oscClient.send('/status', socket.sessionId + ' connected');
+			oscServer.on('message', function(msg, rinfo) {
+				socket.emit("message", msg);
+			});
+			socket.emit("connected", 1);
 		});
-		socket.emit("connected", 1);
+	 	socket.on("message", function (obj) {
+			oscClient.send.apply(oscClient, obj);
+	  	});
+		socket.on('disconnect', function(){
+			if (isConnected) {
+				oscServer.close();
+				oscClient.close();
+			}
+	  	});
 	});
- 	socket.on("message", function (obj) {
-		oscClient.send.apply(oscClient, obj);
-  	});
-	socket.on('disconnect', function(){
-		if (isConnected) {
-			oscServer.close();
-			oscClient.close();
-		}
-  	});
-});
+}
 
 
 // IT WORKS, dynamic namespaces to class!
@@ -175,6 +179,7 @@ class Namespace {
 			, "purgeTimer" : null
 			, "sync" : false
 			, "fc" : 0
+			, "request" : false
 		}
 
 		if(online){
@@ -250,6 +255,7 @@ class Namespace {
 				if(token == settings.token){
 					settings.people[socket.id].level = 'admin';
 					settings.people[socket.id].writemode = true;
+					settings.request = false;
 				}else{
 					settings.people[socket.id].level = 'user';
 					if(settings.lockdown){
@@ -281,6 +287,7 @@ class Namespace {
 			});
 
 			socket.on('recompile', function(force){
+				settings.request = false;
 				socket.broadcast.emit('recompile', force); // all except sender
 			});
 
@@ -289,6 +296,28 @@ class Namespace {
 				syncUsers();
 			});
 
+			socket.on('requestCode', function(reqData){
+				if(!settings.request){
+					Object.keys(settings.people).forEach(function(k){
+						if(settings.people[k].level == 'admin'){
+							settings.request = true;
+							io.of(settings.name).to(`${k}`).emit('requestCode', reqData);
+						}
+					});
+				}else{
+					socket.emit('requestCodeBusy');
+				}
+			})
+
+			socket.on('requestCodeReject', function(reqData){
+				settings.request = false;
+				Object.keys(settings.people).forEach(function(k){
+					if(settings.people[k].nick == reqData.userID){
+						io.of(settings.name).to(`${k}`).emit('requestCodeReject', reqData);
+					}
+				});
+			})
+			
 			socket.on('editRequest', function(reqData){
 				settings.people[socket.id].request = reqData.mode;
 				syncUsers();
@@ -319,6 +348,11 @@ class Namespace {
 				});
 				syncUsers();
 			})
+
+			socket.on('cursor', function(pos){
+				settings.people[socket.id].cursor = pos;
+				syncCursors();
+			})
 		});
 
 		let syncUsers = function(){
@@ -329,6 +363,10 @@ class Namespace {
 			let tempSettings = {"lockdown" : settings.lockdown, "sync" : settings.sync, "fc" : settings.fc};
 			io.of(settings.name).emit("syncSettings", JSON.stringify(tempSettings)); // update users for all
 			syncUsers();
+		}
+
+		let syncCursors = function(){
+			io.of(settings.name).emit("syncCursors", JSON.stringify(settings.people)); // update users for all
 		}
 
 	}

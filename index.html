@@ -69,7 +69,7 @@
 					<button class="menu-button tippy" onclick="showRef();" data-title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button class="menu-button tippy" onclick="savePNG();" data-title="Export Snapshot<br>PNG + CODE<div class='shortcut'>CTRL + S</div>">
+					<button class="menu-button tippy" onclick="savePNG();" data-title="Export Snapshot<br>PNG [+ CODE]<div class='shortcut'>CTRL + S</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
 					<button class="menu-button tippy" onclick="saveHTML();" data-title="Export HTML">
@@ -177,6 +177,9 @@
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
 						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
 					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Include sketch code with Snapshot" onclick="exportcodeToggle();">
+						<input type="checkbox" id="settings-exportcode" name="settings-exportcode" value="settings-exportcode"> Snapshot Code
+					</div>
 					<hr>
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
@@ -188,7 +191,7 @@
 
 					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
 						Code Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();">
-						<input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+						<div id="pickr" class="pickr"></div>
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
@@ -268,6 +271,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
 	<script src="includes/js/jscolor.js"></script>
+	<link rel="stylesheet" href="includes/css/nano.min.css"/>
+	<script src="includes/js/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
 	<script src="includes/js/markdown.min.js"></script>
@@ -285,7 +290,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 13;
+		let currentRevision = 14;
 
 		// resetP5(); // manual reset
 
@@ -317,6 +322,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'linenumbers': false,
 			'menuMode': true,
 			'menutab':true,
+			'exportCode':true,
 			'debugMode': false,
 			'safeMode': false,
 			'sketches': [],
@@ -353,6 +359,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsConsole = document.getElementById('settings-console'),
 		settingsMenutab = document.getElementById('settings-menutab'),
 		settingsLinenumbers = document.getElementById('settings-linenumbers'),
+		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		refHolder = document.getElementById('refholder'),
@@ -360,7 +367,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuPanel = document.getElementById('menu'),
 		menuSwitch = document.getElementById('menu-switch'),
 		menuTheme = document.getElementById('menu-settings-theme'),
-		settingsBG = document.getElementById('menu-settings-bg'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
 		loader = document.getElementById('loader'),
 		settings = getSettings(),
@@ -378,7 +384,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
 		demosLocked = true, curPos, curPositions = []
 		;
-
 
 		// force off
 		settings.debugMode = false;
@@ -447,6 +452,39 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		var iconUserCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
 
+		// code-line color picker
+		const pickr = Pickr.create({
+		    el: '.pickr',
+		    theme: 'nano', // or 'monolith', or 'nano'
+		    default: settings.themeBG,
+
+		    components: {
+		        preview: true,
+		        opacity: true,
+		        hue: true,
+
+		        interaction: {
+		            input: true,
+		            cancel:true,
+		            save: false
+		        },
+		    },
+
+		    // rename buttons
+		    strings: {
+		       save: 'Set',  // Default for save button
+		       cancel: 'Close' // Default for cancel button
+		    }
+		});
+
+		pickr.on('change', (color, instance) => {
+		    setBG(color.toHEXA().join(''));
+		}).on('save', (color, instance) => {
+			instance.hide();
+		}).on('cancel', instance => {
+		    instance.hide();
+		});
+
 
 		var options = {
 			group: {name: 'sketches'},
@@ -466,13 +504,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		var includeScripts = [{
 			'local':'includes/p5/p5.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/p5.min.js'
 		}, {
 			'local':'includes/p5/addons/p5.dom.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js'
 		}, {
 			'local':'includes/p5/addons/p5.sound.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.sound.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js'
 		}];
 
 		class CocodeApp{
@@ -579,6 +617,36 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					updateSettings();
 				});
 
+				this.socket.on('requestCode', (data)=>{
+					vex.dialog.confirm({
+						unsafeMessage:'Replace code request<br><hr><div class="requestcode-header">User </div>'+data.userID+'<br><div class="requestcode-header">SketchName</div>'+data.sketchName+'<br><div class="requestcode-header">SketchCode</div> <textarea id="requestcode-textarea" class="requestcode-textarea">'+data.sketchCode+'</textarea>',
+						callback: function (value) {
+							if (value) {
+								let checkedCode = document.getElementById('requestcode-textarea').value;
+								editor.setValue(checkedCode, 1);
+								window.setTimeout(function(){cocode.recompile()}, 300);
+								window.setTimeout(function(){recompile(true)}, 400);
+							}else{
+								cocode.requestCodeReject(data);
+							}
+						}
+					})
+				});
+
+				this.socket.on('requestCodeReject', (data)=>{
+					vex.dialog.alert({
+						message:"Request denied.",
+						callback: function(){}
+					})
+				});
+
+				this.socket.on('requestCodeBusy', ()=>{
+					vex.dialog.alert({
+						message:"Busy with another request, try later.",
+						callback: function(){}
+					})
+				});
+
 				this.socket.on('requestReject', ()=>{
 					settings.cocoding.request = false;
 					updateSettings();
@@ -595,6 +663,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						updateSettings();
 						editor.setReadOnly(true);
 					}
+				});
+
+				this.socket.on('syncCursors', (usersRaw) => {
+					this.users = JSON.parse(usersRaw);
+					let users = [];
+					for (var key in this.users) {
+						users.push(this.users[key])
+					};
+					// *** overwriter markers here!
 				});
 
 				this.socket.on('syncUsers', (usersRaw) => {
@@ -692,43 +769,87 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			userBG(newVal){
 				document.getElementById('cocodingself').style.background = newVal;
-				// settings.cocoding.color = newVal;
 			}
 
 			rename(){
-				// add color! 
 				vex.dialog.open({
-					// message: 'Nickname:',
 					input:[
 					'<label for="nick">Nickname</label><br>',
 					'<input id="cocodingnick" name="nick" type="text" value="'+settings.cocoding.nick+'">',
 					'<br><br>',
-					// *** back to normal JS color picker.. 
-					'<label for="color" style="display:none;">Cursor Color</label><br>',
-					'<input name="color" type="color" value="'+settings.cocoding.color+'" onchange="cocode.userBG(this.value);" oninput="cocode.userBG(this.value);" style="width:100%;height:50px;display:none;">'
+					
+					'<label for="color" style="display:block;">Cursor Color</label><br>',
+					'<input id="cocodingcolor" name="pickr" type="text" autocomplete="off" readonly  class="cocode-pickr" style="cursor:pointer;">'
 					].join(''),
-					// value: settings.cocoding.nick, // placeholder
 					callback: function (data) {
 						if(data){
+							//console.log(data);
 							if(data.nick != settings.cocoding.nick){
-								//console.log('namechange')
 								var newName = data.nick.replace(/["']/g, '');
 								if(newName != '' && newName != settings.cocoding.nick){
 									settings.cocoding.nick = newName;
 									cocode.login();
+									updateSettings();
 								}
 							}
-							if(data.color != settings.cocoding.color){
-								settings.cocoding.color = data.color;
-								cocode.userBG(data.color);
+							if(data.pickr != undefined && data.pickr != settings.cocoding.color){
+								settings.cocoding.color = data.pickr;
+								cocode.userBG(data.pickr);
 								cocode.updateColor();
+								document.querySelectorAll('.ace_cursor')[0].style.background = data.pickr;
+								// document.querySelectorAll('.ace_animatet-blinking')[0].style.background = data.pickr;
+								//ace_cursor
+								updateSettings();
+							}else{
+								//settings.cocoding.color = data.pickr;
 							}
-							updateSettings();
+							
 						}
 					},
 					afterOpen: function(){
-						// document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
 						document.getElementById('cocodingnick').select();
+						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
+						let defaultColor = "00aa00";
+
+						if(settings.cocoding.color != null){
+						    defaultColor = settings.cocoding.color;
+						}
+						//document.querySelectorAll('.ace_cursor')[0].style.background = defaultColor;
+						const pickr2 = Pickr.create({
+						    el: '#cocodingcolor',
+						    useAsButton: true,
+						    theme: 'nano',
+						    default: defaultColor,
+
+						    components: {
+						        preview: true,
+						        opacity: false,
+						        hue: true,
+
+						        // Input / output Options
+						        interaction: {
+						            input: true,
+						            cancel:true,
+						            save: true
+						        },
+						    },
+
+						    // rename buttons
+						    strings: {
+						       save: 'Set',  // Default for save button
+						       cancel: 'Close' // Default for cancel button
+						    }
+						});
+
+						pickr2.on('change', (color, instance) => {
+						}).on('save', (color, instance) => {
+						    document.getElementById('cocodingcolor').value = "#" + color.toHEXA().join('');
+						    document.getElementById('cocodingcolor').style.background = "#" + color.toHEXA().join('');
+						    document.getElementById('cocodingcolor').style.color = "#" + color.toHEXA().join('');
+							instance.hide();
+						}).on('cancel', instance => {
+						    instance.hide();
+						})
 					}
 				})
 			}
@@ -747,6 +868,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			lockdown(lockdownMode){
 				this.socket.emit('lockdown', lockdownMode)
+			}
+
+			requestCode(userID, sketchName, sketchCode){			
+				let reqData = {'userID':userID, 'sketchName':sketchName, 'sketchCode':sketchCode}
+				this.socket.emit('requestCode', reqData);
+			}
+
+			requestCodeReject(data){
+				this.socket.emit('requestCodeReject', data);
 			}
 
 			editRequest(userID){
@@ -777,6 +907,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			sync(syncMode){
 				this.socket.emit('sync', {'mode':syncMode, 'fc':p5f.frameCount});
 			}
+
+			cursorPos(pos){
+				this.socket.emit('cursor', pos);
+			}
 		};
 
 
@@ -786,6 +920,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		editor.getSession().selection.on("changeCursor", function(){
 			//console.log(editor.getCursorPosition());
 			curPos = editor.getCursorPosition();
+
+			// sync cursors in COCODING
+			if(settings.cocoding.active && cocode != null){
+				cocode.cursorPos(curPos);
+			}
 			// curPositions.push(editor.getCursorPosition());
 		})
 
@@ -793,6 +932,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			curPos = delta.start;
 			curPositions.push(delta.start);
 			checkErrors();
+
 		});
 
 		// check for errors
@@ -986,8 +1126,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			consoleToggleUpdate();
 			menutabToggleUpdate();
 			linenumbersUpdate();
+			exportcodeUpdate();
 			loadTheme();
-			loadBG();
 			themeBGactiveToggleUpdate();
 			loadSnippets();
 			loadSketchTemplate();
@@ -1090,15 +1230,35 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load sketch
 		function loadSketch(sketch){
-			if(settings.cocoding.active){
-				vex.dialog.confirm({
-					message: 'Exit COCODING?',
-					callback: function (value) {
-						if (value) {
-							cocodingExit(sketch);
+			if(settings.cocoding.active){				
+				if(settings.cocoding.level == 'admin'){
+					vex.dialog.confirm({
+						unsafeMessage: 'Replace code with:\n' + sketch,
+						callback: function (value) {
+							if (value) {
+								editor.setValue(localStorage[sketch], 1);
+								window.setTimeout(function(){cocode.recompile()}, 300);
+								window.setTimeout(function(){recompile(true)}, 400);
+							}
 						}
+					})
+				}else{
+					if(settings.cocoding.writemode || !settings.cocoding.lockdown){
+						vex.dialog.confirm({
+							unsafeMessage: 'Request to replace code with:\n' + sketch,
+							callback: function (value) {
+								if (value) {
+									cocode.requestCode(settings.cocoding.nick, sketch, localStorage[sketch]);
+								}
+							}
+						})
+					}else{
+						vex.dialog.alert({
+							message:"Editor is locked, request to edit.",
+							callback: function(){}
+						})
 					}
-				})
+				}
 			}else {
 				if(localStorage.hasOwnProperty(sketch)){
 					editor.getSession().off('change', cloneSketch);
@@ -1515,7 +1675,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				settings.sketches = newOrder;
 				updateSettings();
 			}
-			if(searchJSON(settings.sketches, 'name', 'demos').length == 0){			
+
+			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){			
 				loadDemos();
 			}
 
@@ -1769,11 +1930,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							updateSettings();
 							initSortable();
 							if(itemType == 'sketch'){
-								settings.fileName = newName;
 								localStorage.setItem(newName, localStorage[itemName]);
 								localStorage.removeItem(itemName);
-								if(!settings.cocoding.active){
-									setTimeout(function(){ loadSketch(newName); }, 100);
+								if(settings.fileName == itemName){
+									settings.fileName = newName;
+									if(!settings.cocoding.active){
+										setTimeout(function(){ loadSketch(newName); }, 100);
+									}
 								}
 							}
 						}
@@ -2004,7 +2167,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			// softCompile
 			if(force == undefined && sketchLoaded){
 				// technique to only update draw if code changed there (= continous background!)
-				var allLines = editor.session.getLines(0, editor.session.getLength());
+				var rawLines = editor.session.getLines(0, editor.session.getLength());
 				var drawPos = [];//{};
 				var drawPosSel = -1;
 				var countBrackets = false;
@@ -2012,24 +2175,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				var softFunction = false;
 				var softClass = false;
 
+				// replace single + multiline comments with \n to avoid processing + keep line numbers same
+				var codeNoComments = editor.getValue().replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'));
+
+				var allLines = codeNoComments.split('\n');
+				
+				// test purging of comments
+				// let offLines = 6;
+				// console.log(rawLines[offLines]);
+				// console.log(allLines[offLines]);
+
 				// extract all functions and their line number
 				for(var i=0; i<allLines.length; i++){
+
+					// catch function or class
 					if(allLines[i].includes('function') && !countBrackets){
 							countBrackets = true;
-							
-							// first catch commented out lines
-							if(allLines[i].match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/) == undefined){
-								var functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
-								drawPos.push({type:'function', name:functionName, start:i});
-							}
+							var functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
+							drawPos.push({type:'function', name:functionName, start:i});
 					}else if(allLines[i].includes('class') && !countBrackets){
 							countBrackets = true;
-							
-							// first catch commented out lines
-							if(allLines[i].match(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/) == undefined){
-								var className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
-								drawPos.push({type:'class', name:className, start:i});
-							}
+							var className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
+							drawPos.push({type:'class', name:className, start:i});
 					}
 					
 					// count {} and mark where class/function ends
@@ -2059,15 +2226,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						let cPos = curPositions[j];
 						if(cPos.row >= drawPos[i].start && cPos.row <= drawPos[i].end){
 							// console.log(drawPos[i].name); // debug where change occured
-							if(drawPos[i].name != 'setup' && drawPos[i].name != 'preload' && drawPos[i].type == 'function'){ // && !settings.cocoding.active
+							if(drawPos[i].name != 'setup' && drawPos[i].name != 'preload' && drawPos[i].type == 'function'){
 								softFunction = true;
 								drawPosSel = i;
 								funName = drawPos[i].name;
 							}else if(drawPos[i].type == 'class'){
 								softClass = true;
 								drawPosSel = i;
-								// console.log(drawPos[i]);
-								//className = drawPos[i].name;
 							}
 						}
 					}
@@ -2112,7 +2277,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			var el = p5frameTemplate.cloneNode(true);
 			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 			
-			// load scripts (add custom options here)
+			// load scripts remote vs local (*** add custom options here)
 			for(var i=0; i < includeScripts.length; i++){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
@@ -2120,6 +2285,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					s.src = includeScripts[i].remote;
 				}else{
 					s.src = includeScripts[i].local;
+					document.title = 'P5LIVE – OFFLINE';
 				}
 				iFrameBody.appendChild(s);
 			}
@@ -2447,7 +2613,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}	
 		}
 
-		//menutab toggle
+		//linenumbers toggle
 		function linenumbersToggle(){
 			settings.linenumbers = !settings.linenumbers;
 			linenumbersUpdate();
@@ -2466,6 +2632,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					showGutter: true, // false
 				});
 			}	
+		}
+
+		//exportcode toggle
+		function exportcodeToggle(){
+			settings.exportCode = !settings.exportCode;
+			linenumbersUpdate();
+		}
+
+		function exportcodeUpdate(){
+			checkToggle('exportCode', settings.exportCode, settingsExportcode);
 		}
 
 		//BGactive toggle
@@ -2568,11 +2744,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!settings.menuMode){
 				menuPanel.style.marginRight = '-250px';
 				menuSwitch.innerHTML = '«';
-				menuPanel.style.overflow = "auto";
+				// menuPanel.style.overflow = "visible"; // test again w/ chromium
 			}else{
 				menuPanel.style.marginRight = '0px';
 				menuSwitch.innerHTML = '»';
-				menuPanel.style.overflow = "hidden";
+				// menuPanel.style.overflow = "hidden";
 			}
 		}
 
@@ -2594,26 +2770,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateSettings();
 		}
 
-
-		// load themeBG 
-		function loadBG(){
-			settingsBG.value = settings.themeBG;
-			// settingsBG.style.color = '#'+settings.themeBG;
-			// settingsBGholder.style.background = settings.themeBG;
-			// menuBG.style.backgroundColor = "#" + settings.themeBG;
-			// styleMenu();
-		}
-
 		// set themeBG
 		function setBG(val){
 			if(settings.themeBG != val){
 				settings.themeBG = '#'+ val;
-				settingsBG.style.color = settings.themeBG;
-				// settingsBGholder.style.background = settings.themeBG;
 				updateSettings();
 				editor.renderer.updateFull();
-				// menuBG.style.backgroundColor = "#" + settings.themeBG;
-				// styleMenu();
 			}
 		}
 
@@ -2675,22 +2837,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* LOAD VARIOUS SKETCHES */
-
 		function loadDefault(){
-			var newID = 'sketch_' + timeStamp();
-			var newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
-			var tempHTML = menuSketches.innerHTML;
-			menuSketches.innerHTML = newSketch + tempHTML;
-			
-			
-			settings.fileName = newID;
-			localStorage.setItem(settings.fileName, p5template);
-			editor.setValue(p5template, 1);
-			editor.gotoLine(7, 1, false);
-			updateSettings();
-			editor.focus();
-			getOrder();
-			setTimeout(function(){ recompile(true); }, 100);
+			if(!settings.cocoding.active){
+				var newID = 'sketch_' + timeStamp();
+				var newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
+				var tempHTML = menuSketches.innerHTML;
+				menuSketches.innerHTML = newSketch + tempHTML;
+				
+				
+				settings.fileName = newID;
+				localStorage.setItem(settings.fileName, p5template);
+				editor.setValue(p5template, 1);
+				editor.gotoLine(7, 1, false);
+				updateSettings();
+				editor.focus();
+				getOrder();
+				setTimeout(function(){ recompile(true); }, 100);
+			}
 		}
 
 		function loadAbout(){
@@ -2790,7 +2953,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function savePNG(){
 			if(sketchLoaded){
 				p5f.save('P5L_' + settings.fileName + '_' + timeStamp() + '.png');
-				exportSketch(settings.fileName);
+				if(settings.exportCode){
+					exportSketch(settings.fileName);
+				}
 			}
 		}
 
@@ -3248,9 +3413,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			
 		}
 
+		// reset all cocoding except nick + color
 		function cocodingReset(){
 			Object.keys(initSettings.cocoding).forEach(function(cc){
-				if(cc != 'nick'){
+				if(cc != 'nick' && cc != 'color'){
 					settings.cocoding[cc] = initSettings.cocoding[cc];
 				}
 			});

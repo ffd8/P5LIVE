@@ -197,7 +197,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [socket.io](https://socket.io/), websockets for cocoding
 - [sortablejs](https://github.com/SortableJS/Sortable), drag + drop sorting of sketches/folders
 - [beautify](https://github.com/beautify-web/js-beautify), tidy code in editor
-- [jscolor](http://jscolor.com/), color picker for background
+- [pickr](https://github.com/Simonwep/pickr), color picker
 - [tippy](https://atomiks.github.io/tippyjs/), tooltips
 - [download.js](http://danml.com/download.html), exporting html file
 - [vex](https://github.com/HubSpot/vex), custom dialog boxes
