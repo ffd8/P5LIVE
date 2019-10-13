@@ -219,11 +219,9 @@ function draw() {
 }</textarea>
 <textarea style="display:none;" id="p5-custom">
 /* CUSTOM FUNCTIONS FOR P5LIVE */
-// readjust if full width/height window-resized
+// keep fullscreen if window resized
 function windowResized() {
-	if(height == windowHeight){
-		resizeCanvas(windowWidth, windowHeight);
-	}
+	resizeCanvas(windowWidth, windowHeight);
 }
 
 // custom ease function
@@ -1616,7 +1614,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load demos
 		function loadDemos(){
-			var demosPath = 'includes/demos/P5L_demos_20190817.json?'+currentRevision;
+			var demosPath = 'includes/demos/P5L_demos_20191013.json?'+currentRevision;
 			var request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send()
