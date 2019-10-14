@@ -461,35 +461,35 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// code-line color picker
 		const pickr = Pickr.create({
-		    el: '.pickr',
-		    theme: 'nano', // or 'monolith', or 'nano'
-		    default: settings.themeBG,
+			el: '.pickr',
+			theme: 'nano', // or 'monolith', or 'nano'
+			default: settings.themeBG,
 
-		    components: {
-		        preview: true,
-		        opacity: true,
-		        hue: true,
+			components: {
+				preview: true,
+				opacity: true,
+				hue: true,
 
-		        interaction: {
-		            input: true,
-		            cancel:true,
-		            save: false
-		        },
-		    },
+				interaction: {
+					input: true,
+					cancel:true,
+					save: false
+				},
+			},
 
-		    // rename buttons
-		    strings: {
-		       save: 'Set',  // Default for save button
-		       cancel: 'Close' // Default for cancel button
-		    }
+			// rename buttons
+			strings: {
+				save: 'Set', // Default for save button
+				cancel: 'Close' // Default for cancel button
+			}
 		});
 
 		pickr.on('change', (color, instance) => {
-		    setBG(color.toHEXA().join(''));
+			setBG(color.toHEXA().join(''));
 		}).on('save', (color, instance) => {
 			instance.hide();
 		}).on('cancel', instance => {
-		    instance.hide();
+			instance.hide();
 		});
 
 
@@ -525,51 +525,51 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		var marker = {}
 		marker.cursors = []
 		marker.update = function(html, markerLayer, session, config) {
-		    var start = config.firstRow, end = config.lastRow;
-		    var cursors = this.cursors
-		    for (var i = 0; i < cursors.length; i++) {
-		        var pos = this.cursors[i];
-		        if (pos.row < start) {
-		            continue;
-		        } else if (pos.row > end) {
-		            break;
-		        } else {
-		            // compute cursor position on screen
-		            // this code is based on ace/layer/marker.js
-		            var screenPos = session.documentToScreenPosition(pos.row, pos.column)
-		            var height = config.lineHeight;
-		            var width = config.characterWidth;
-		            var top = markerLayer.$getTop(screenPos.row, config);
-		            var left = markerLayer.$padding + screenPos.column * width;
+			var start = config.firstRow, end = config.lastRow;
+			var cursors = this.cursors
+			for (var i = 0; i < cursors.length; i++) {
+				var pos = this.cursors[i];
+				if (pos.row < start) {
+					continue;
+				} else if (pos.row > end) {
+					break;
+				} else {
+					// compute cursor position on screen
+					// this code is based on ace/layer/marker.js
+					var screenPos = session.documentToScreenPosition(pos.row, pos.column)
+					var height = config.lineHeight;
+					var width = config.characterWidth;
+					var top = markerLayer.$getTop(screenPos.row, config);
+					var left = markerLayer.$padding + screenPos.column * width;
 
-		            // update if exists + rebuild on textsize change
-		            let elm = document.getElementById('cursor_'+pos.id);
+					// update if exists + rebuild on textsize change
+					let elm = document.getElementById('cursor_'+pos.id);
 					if(elm != undefined){
 						elm.parentNode.removeChild(elm);
 					}
 
-		            // can add any html here
-		            var el = document.createElement('div');
-		            el.id = 'cursor_'+pos.id;
-		            el.className = "cursor"
-		            el.style.position = 'absolute';
-		            el.style.height = height+"px";
-		            el.style.width = width+"px";
-		            el.style.top = top+"px";
-		            el.style.left = left+"px";
-		            el.style.borderLeft = "3px solid "+pos.color;
-		            el.style.zIndex = 9999999;
-		            el.style.color = "#000";
-		            el.style.cursor = 'help';
-		            el.onmouseover = function(){this.childNodes[0].style.display = 'block';};
-		            el.onmouseout = function(){this.childNodes[0].style.display = 'none';};
-		            el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;">'+pos.id+'</div>';
-		            document.body.appendChild(el);
-		        }
-		    }
+					// can add any html here
+					var el = document.createElement('div');
+					el.id = 'cursor_'+pos.id;
+					el.className = "cursor"
+					el.style.position = 'absolute';
+					el.style.height = height+"px";
+					el.style.width = width+"px";
+					el.style.top = top+"px";
+					el.style.left = left+"px";
+					el.style.borderLeft = "3px solid "+pos.color;
+					el.style.zIndex = 9999999;
+					el.style.color = "#000";
+					el.style.cursor = 'help';
+					el.onmouseover = function(){this.childNodes[0].style.display = 'block';};
+					el.onmouseout = function(){this.childNodes[0].style.display = 'none';};
+					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;">'+pos.id+'</div>';
+					document.body.appendChild(el);
+				}
+			}
 		}
 		marker.redraw = function() {
-		   this.session._signal("changeFrontMarker");
+			this.session._signal("changeFrontMarker");
 		}
 		marker.session = editor.session;
 		marker.session.addDynamicMarker(marker, true);
@@ -836,7 +836,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					'<br><br>',
 					
 					'<label for="color" style="display:block;">Cursor Color</label><br>',
-					'<input id="cocodingcolor" name="pickr" type="text" autocomplete="off" readonly  class="cocode-pickr" style="cursor:pointer;">'
+					'<input id="cocodingcolor" name="pickr" type="text" autocomplete="off" readonly class="cocode-pickr" style="cursor:pointer;">'
 					].join(''),
 					callback: function (data) {
 						if(data){
@@ -866,43 +866,43 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						let defaultColor = "00aa00";
 
 						if(settings.cocoding.color != null){
-						    defaultColor = settings.cocoding.color;
+							defaultColor = settings.cocoding.color;
 						}
 						//document.querySelectorAll('.ace_cursor')[0].style.background = defaultColor;
 						const pickr2 = Pickr.create({
-						    el: '#cocodingcolor',
-						    useAsButton: true,
-						    theme: 'nano',
-						    default: defaultColor,
+							el: '#cocodingcolor',
+							useAsButton: true,
+							theme: 'nano',
+							default: defaultColor,
 
-						    components: {
-						        preview: true,
-						        opacity: false,
-						        hue: true,
+							components: {
+								preview: true,
+								opacity: false,
+								hue: true,
 
-						        // Input / output Options
-						        interaction: {
-						            input: true,
-						            cancel:true,
-						            save: true
-						        },
-						    },
+								// Input / output Options
+								interaction: {
+									input: true,
+									cancel:true,
+									save: true
+								},
+							},
 
-						    // rename buttons
-						    strings: {
-						       save: 'Set',  // Default for save button
-						       cancel: 'Close' // Default for cancel button
-						    }
+							// rename buttons
+							strings: {
+								save: 'Set', // Default for save button
+								cancel: 'Close' // Default for cancel button
+							}
 						});
 
 						pickr2.on('change', (color, instance) => {
 						}).on('save', (color, instance) => {
-						    document.getElementById('cocodingcolor').value = "#" + color.toHEXA().join('');
-						    document.getElementById('cocodingcolor').style.background = "#" + color.toHEXA().join('');
-						    document.getElementById('cocodingcolor').style.color = "#" + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').value = "#" + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').style.background = "#" + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').style.color = "#" + color.toHEXA().join('');
 							instance.hide();
 						}).on('cancel', instance => {
-						    instance.hide();
+							instance.hide();
 						})
 					}
 				})
@@ -971,9 +971,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					marker.cursors = [];
 
 					var elements = document.getElementsByClassName('cursor');
-				    while(elements.length > 0){
-				        elements[0].parentNode.removeChild(elements[0]);
-				    }
+					while(elements.length > 0){
+						elements[0].parentNode.removeChild(elements[0]);
+					}
 
 					for (let key in this.users) {			
 						marker.cursors.push({row:this.users[key].cursor.row, column:this.users[key].cursor.column, color:this.users[key].color, id:this.users[key].nick});
@@ -1429,7 +1429,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		// function find(obj, key, value) {
-		//   if (obj.value && obj.value.indexOf(key) > -1){
+		//	if (obj.value && obj.value.indexOf(key) > -1){
 		//     return true;
 		//   }
 		//   if (obj.children && obj.children.length > 0){
@@ -1445,19 +1445,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* IMPORT/EXPORT SKETCHES */
 
 		function exportJSON(jsonData, jsonFilename){
-		    const filename = jsonFilename;
-		    const jsonStr = JSON.stringify(jsonData, undefined, 2);
+			const filename = jsonFilename;
+			const jsonStr = JSON.stringify(jsonData, undefined, 2);
 
-		    let element = document.createElement('a');
-		    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
-		    element.setAttribute('download', filename);
+			let element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
+			element.setAttribute('download', filename);
 
-		    element.style.display = 'none';
-		    document.body.appendChild(element);
+			element.style.display = 'none';
+			document.body.appendChild(element);
 
-		    element.click();
+			element.click();
 
-		    document.body.removeChild(element);
+			document.body.removeChild(element);
 		}
 
 		// export single sketch to JSON
@@ -1634,7 +1634,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				let rncPName = rnc.name;
 
 				// if duplicate, give unique name
-				if(searchSketches(rnc.name, settings.sketches)){ //  && rnc.type == 'sketch'
+				if(searchSketches(rnc.name, settings.sketches)){ // && rnc.type == 'sketch'
 					rnc.name += '_' + timeStamp();
 					fixNamecheck(objSketches, rncPName, rnc.name);
 				}
