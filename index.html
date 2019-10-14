@@ -30,6 +30,15 @@
 
 	<!-- Style -->
 	<link rel="stylesheet" type="text/css" media="all" href="style.css?7">
+	<style type="text/css">
+		.cursor-label{
+			display:none;
+			padding:2px;
+			font-size:8pt;
+			position:absolute;
+			left:-3px;
+		}
+	</style>
 </head>
 <body>
 	<div id="loader">
@@ -215,7 +224,7 @@ function setup() {
 }
 
 function draw() {
-
+	
 }</textarea>
 <textarea style="display:none;" id="p5-custom">
 /* CUSTOM FUNCTIONS FOR P5LIVE */
@@ -511,15 +520,70 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.sound.min.js'
 		}];
 
+		// markers for COCODING
+		// built upon: https://stackoverflow.com/a/24812641/10885535
+		var marker = {}
+		marker.cursors = []
+		marker.update = function(html, markerLayer, session, config) {
+		    var start = config.firstRow, end = config.lastRow;
+		    var cursors = this.cursors
+		    for (var i = 0; i < cursors.length; i++) {
+		        var pos = this.cursors[i];
+		        if (pos.row < start) {
+		            continue;
+		        } else if (pos.row > end) {
+		            break;
+		        } else {
+		            // compute cursor position on screen
+		            // this code is based on ace/layer/marker.js
+		            var screenPos = session.documentToScreenPosition(pos.row, pos.column)
+		            var height = config.lineHeight;
+		            var width = config.characterWidth;
+		            var top = markerLayer.$getTop(screenPos.row, config);
+		            var left = markerLayer.$padding + screenPos.column * width;
+
+		            // update if exists + rebuild on textsize change
+		            let elm = document.getElementById('cursor_'+pos.id);
+					if(elm != undefined){
+						elm.parentNode.removeChild(elm);
+					}
+
+		            // can add any html here
+		            var el = document.createElement('div');
+		            el.id = 'cursor_'+pos.id;
+		            el.className = "cursor"
+		            el.style.position = 'absolute';
+		            el.style.height = height+"px";
+		            el.style.width = width+"px";
+		            el.style.top = top+"px";
+		            el.style.left = left+"px";
+		            el.style.borderLeft = "3px solid "+pos.color;
+		            el.style.zIndex = 9999999;
+		            el.style.color = "#000";
+		            el.style.cursor = 'help';
+		            el.onmouseover = function(){this.childNodes[0].style.display = 'block';};
+		            el.onmouseout = function(){this.childNodes[0].style.display = 'none';};
+		            el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;">'+pos.id+'</div>';
+		            document.body.appendChild(el);
+		        }
+		    }
+		}
+		marker.redraw = function() {
+		   this.session._signal("changeFrontMarker");
+		}
+		marker.session = editor.session;
+		marker.session.addDynamicMarker(marker, true);
+	
+
 		class CocodeApp{
 			constructor(namespace) {
 				this.initialized = false;
 				this.socket = '';
 				this.namespace = namespace;
 				if(!window.location.hostname.includes('teddavis.org')){
-					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true }); // io('http://localhost:5000/' + this.namespace);
+					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
-					this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true });	
+					this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });	
 				}
 				this.rgaConnect();
 				this.users = {};
@@ -530,7 +594,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					checkErrors();
 				});
 
-				this.login();
 				this.updateColor();
 				this.token();
 
@@ -664,12 +727,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				});
 
 				this.socket.on('syncCursors', (usersRaw) => {
-					this.users = JSON.parse(usersRaw);
-					let users = [];
-					for (var key in this.users) {
-						users.push(this.users[key])
-					};
-					// *** overwriter markers here!
+					this.syncCursors(usersRaw);
 				});
 
 				this.socket.on('syncUsers', (usersRaw) => {
@@ -758,6 +816,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();"><span id="cocodingself" style="padding-top:4px;background:'+settings.cocoding.color+';">'+userIcon+ '</span> ' +settings.cocoding.nick+'</div></li>' + usersHTML;
 						loadTippy();
+						this.syncCursors(usersRaw);
 					});
 				}
 
@@ -794,9 +853,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								settings.cocoding.color = data.pickr;
 								cocode.userBG(data.pickr);
 								cocode.updateColor();
-								document.querySelectorAll('.ace_cursor')[0].style.background = data.pickr;
-								// document.querySelectorAll('.ace_animatet-blinking')[0].style.background = data.pickr;
-								//ace_cursor
 								updateSettings();
 							}else{
 								//settings.cocoding.color = data.pickr;
@@ -908,6 +964,21 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			cursorPos(pos){
 				this.socket.emit('cursor', pos);
+			}
+
+			syncCursors(usersRaw){
+				this.users = JSON.parse(usersRaw);
+					marker.cursors = [];
+
+					var elements = document.getElementsByClassName('cursor');
+				    while(elements.length > 0){
+				        elements[0].parentNode.removeChild(elements[0]);
+				    }
+
+					for (let key in this.users) {			
+						marker.cursors.push({row:this.users[key].cursor.row, column:this.users[key].cursor.column, color:this.users[key].color, id:this.users[key].nick});
+					};
+					marker.redraw();
 			}
 		};
 
@@ -2842,7 +2913,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				var tempHTML = menuSketches.innerHTML;
 				menuSketches.innerHTML = newSketch + tempHTML;
 				
-				
 				settings.fileName = newID;
 				localStorage.setItem(settings.fileName, p5template);
 				editor.setValue(p5template, 1);
@@ -2851,6 +2921,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				editor.focus();
 				getOrder();
 				setTimeout(function(){ recompile(true); }, 100);
+			}else if(settings.cocoding.level == 'admin'){
+				editor.setValue(p5template, 1);
+				editor.gotoLine(7, 1, false);
 			}
 		}
 

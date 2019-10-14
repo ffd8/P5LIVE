@@ -194,7 +194,7 @@ class Namespace {
 	listenOnNamespace(settings) {
 		settings.namespace.on('connection', (socket) => {
 			settings.userId++;
-			settings.people[socket.id] = {"nick":settings.userId, "status":"focus", "request":false, "writemode":false, "cursor":{"row":0, "column":0}, "color":"#00aa00"};
+			settings.people[socket.id] = {"nick":socket.handshake.query.nick, "status":"focus", "request":false, "writemode":false, "cursor":{"row":0, "column":0}, "color":"#00aa00"};
 			syncUsers();
 
 			// save namespace if quick return
