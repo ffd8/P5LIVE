@@ -2258,11 +2258,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				for(var i=0; i<allLines.length; i++){
 
 					// catch function or class
-					if(allLines[i].includes('function') && !countBrackets){
+					if(allLines[i].includes('function ') && !countBrackets){
 							countBrackets = true;
 							var functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
 							drawPos.push({type:'function', name:functionName, start:i});
-					}else if(allLines[i].includes('class') && !countBrackets){
+					}else if(allLines[i].includes('class ') && !countBrackets){
 							countBrackets = true;
 							var className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
 							drawPos.push({type:'class', name:className, start:i});
