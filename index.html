@@ -298,6 +298,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* INIT */
 		let currentRevision = 14;
+		let developBranch = true;
 
 		// resetP5(); // manual reset
 
@@ -580,7 +581,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				if(!window.location.hostname.includes('teddavis.org')){
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
-					this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });	
+					if(developBranch){
+						this.socket = io('https://p5live-server-develop.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
+					}else{
+						this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });	
+					}
 				}
 				this.rgaConnect();
 				this.users = {};
