@@ -29,16 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?7">
-	<style type="text/css">
-		.cursor-label{
-			display:none;
-			padding:2px;
-			font-size:8pt;
-			position:absolute;
-			left:-3px;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?8">
 </head>
 <body>
 	<div id="loader">
@@ -90,7 +81,7 @@
 
 			<div class="menu-section" id="menu-cocode">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header" id="menu-cocode-header">COCODING</div>
+				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter"></span></div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
 					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop COCODING">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
@@ -300,7 +291,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* INIT */
 		let currentRevision = 15;
-		let developBranch = true;
+		let developBranch = false;
 
 		// resetP5(); // manual reset
 
@@ -356,6 +347,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5liveaboutSketch = document.getElementById('p5live-about').value,
 		p5script = document.getElementById('holdscript'),
 		menuCocode = document.getElementById('menu-cocode'),
+		menuCocodeCounter = document.getElementById('menu-cocode-counter'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
@@ -760,6 +752,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					var activeSelf = '';
 					var usersHTML = '';
 					var usersSelf;
+					menuCocodeCounter.innerHTML = users.length;
 					for (var i=0; i < users.length; i++) {
 						if(users[i].nick != settings.cocoding.nick){
 							var userNav = '';
@@ -855,7 +848,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							//console.log(data);
 							if(data.nick != settings.cocoding.nick){
 								var newName = data.nick.replace(/["']/g, '');
-								if(newName != '' && newName != settings.cocoding.nick){
+								if(newName.trim() != '' && newName != settings.cocoding.nick){
 									settings.cocoding.nick = newName;
 									cocode.login();
 									updateSettings();
@@ -1474,21 +1467,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			return out;
 		}
-
-
-
-		// function find(obj, key, value) {
-		//	if (obj.value && obj.value.indexOf(key) > -1){
-		//     return true;
-		//   }
-		//   if (obj.children && obj.children.length > 0){
-		//     return obj.children.reduce(function(obj1, obj2){
-		//       return find(obj1, key) || find(obj2, key);
-		//     }, {}); 
-		//   } 
-		//   return false;
-		// }
-
 
 
 		/* IMPORT/EXPORT SKETCHES */
@@ -3359,7 +3337,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// clean up invalid characters
 		function htmlEntities(str) {
-		    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+			return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 		}
 
 

@@ -162,6 +162,13 @@ hr{
 	background:none;
 	border-width:3px;
 }
+.cursor-label{
+	display:none;
+	padding:2px;
+	font-size:8pt;
+	position:absolute;
+	left:-3px;
+}
 #editor, #p5-code, .ace_scroller{
 	cursor:cell !important;
 }
@@ -444,6 +451,11 @@ hr{
 	opacity:1;
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
+}
+#menu-cocode-counter{
+	font-size:8pt;
+	padding-left:.3em;
+	vertical-align: super;
 }
 button:disabled,
 button[disabled]{
