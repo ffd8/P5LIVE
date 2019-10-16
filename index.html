@@ -272,24 +272,27 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	endShape();
 }</textarea>
 
+	<!-- Script Styles -->
+	<link rel="stylesheet" href="includes/css/nano.min.css"/>
+	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
+	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
+
 	<!-- Scripts -->
 	<script src="includes/js/src-noconflict/ace.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/src-noconflict/ext-language_tools.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
-	<link rel="stylesheet" href="includes/css/nano.min.css"/>
 	<script src="includes/js/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
 	<script src="includes/js/markdown.min.js"></script>
 	<script src='includes/js/download.js'></script>
 	<script src="includes/js/vex/js/vex.combined.min.js"></script>
-	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
-	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
 
 	<!-- <script src="/socket.io/socket.io.js"></script> -->
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
+
 	<script type="text/javascript">
 		'use strict'
 
@@ -472,8 +475,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				interaction: {
 					input: true,
-					cancel:true,
-					save: false
+					cancel:false,
+					save: true
 				},
 			},
 
@@ -484,7 +487,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		});
 
-		pickr.on('change', (color, instance) => {
+		pickr.on('init', (color, instance) => {
+			setBG(settings.themeBG.substring(1));
+		}).on('change', (color, instance) => {
 			setBG(color.toHEXA().join(''));
 		}).on('save', (color, instance) => {
 			instance.hide();
@@ -554,7 +559,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					el.style.width = width+"px";
 					el.style.top = top+"px";
 					el.style.left = left+"px";
-					el.style.borderLeft = "3px solid "+pos.color;
+					if(pos.id != settings.cocoding.nick){
+						el.style.borderLeft = "3px solid "+pos.color;
+					}else{
+						let cursorSelf = document.getElementsByClassName('ace_cursor')[0];
+						cursorSelf.style.borderColor = pos.color;
+						el.style.left = (left+3) + "px";
+					}
 					el.style.zIndex = 9999999;
 					el.style.color = "#000";
 					el.style.cursor = 'help';
@@ -1202,6 +1213,24 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// react to settings once gathered
 		function loadSettings(){
+			// make sure all settings are there
+			if(settings.revision < currentRevision){
+				settings.revision = currentRevision;
+				Object.keys(initSettings).forEach(function(k){
+					if(!settings.hasOwnProperty(k)){
+						settings[k] = initSettings[k];
+					}else if(typeof initSettings[k] === 'object'){
+						Object.keys(initSettings[k]).forEach(function(kk){
+							if(!settings[k].hasOwnProperty(kk)){
+								settings[k][kk] = initSettings[k][kk];
+							}
+						});
+					}
+					settings.refresh = true;
+				});
+				updateSettings();
+			}
+
 			fontSizeUpdate();
 			autoCompileUpdate();
 			compileTimerUpdate();
@@ -1244,6 +1273,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				cocoding();
 			}else if(settings.welcome){
 				loadAbout();
+				vex.dialog.alert({
+					unsafeMessage:'Welcome to P5LIVE! <br><br><div class="requestcode-header">Storage</div>Sketches are only stored your browser\'s localStorage, so export often.<br><br><div class="requestcode-header">Shortcuts (most important)</div>CTRL + N » new sketch<br>CTRL + ENTER » softCompile<br>CTRL + E » editor toggle<br>CTRL + M » menu toggle',
+				})
 				settings.welcome = false;
 				updateSettings();
 			}else if(window.location.hash){
@@ -1766,22 +1798,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				loadDemos();
 			}
 
-			if(settings.revision < currentRevision){
-				settings.revision = currentRevision;
-				Object.keys(initSettings).forEach(function(k){
-					if(!settings.hasOwnProperty(k)){
-						settings[k] = initSettings[k];
-					}else if(typeof initSettings[k] === 'object'){
-						Object.keys(initSettings[k]).forEach(function(kk){
-							if(!settings[k].hasOwnProperty(kk)){
-								settings[k][kk] = initSettings[k][kk];
-							}
-						});
-					}
-					settings.refresh = true;
-				});
-				updateSettings();
-			}
+			
 		}
 
 		function getOrder() {
@@ -2074,6 +2091,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(map[16] && map[17]){
 				if(event.keyCode == 13){
 					forceRecompile = true;
+					clearTimeout(errorTimer);
 					recompile(true);
 				}else{
 					addSnippet(event.key);
@@ -2097,6 +2115,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					event.preventDefault();
 				}else if(event.keyCode == 13){ // enter = recompile
 					forceRecompile = true;
+					clearTimeout(errorTimer);
 					recompile();
 					event.preventDefault();
 				}else if(event.keyCode == 80){ // p = pause
@@ -2249,7 +2268,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
 		function buildSketch(force){
-
 			// softCompile
 			if(force == undefined && sketchLoaded){
 				// technique to only update draw if code changed there (= continous background!)
@@ -2604,6 +2622,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// loop/noLoop on window blur
 
 		window.onblur = function () { 
+			// deactivate modifier keys
+			map[16] = false;
+			map[17] = false;
+
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'blur');
 			}
@@ -2612,9 +2634,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					p5f.noLoop();
 				}
 			}
-
-
 		}
+
 		window.onfocus = function () { 
 			// deactivate modifier keys
 			map[16] = false;
@@ -2629,7 +2650,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 
-		// toggle fullscreen
+		// toggle fullscreen (better to use browser native fullscreen)
 		function fullscreenToggle(){
 			settings.fullscreenMode = !settings.fullscreenMode;
 			fullscreenUpdate();
@@ -2983,7 +3004,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			html = html.replace(/<\/li>/g, '\n');
 			html = html.replace(/<\/ul>/g, '\n\n');
 			html = html.replace(/<\/div>/g, '\n');
-			html = html.replace(/<img([\w\W]+?)><br\/>/g, '');
+			html = html.replace(/&lt;img([\w\W]+?)&gt;<br\/>/g, '');
 			html = html.replace(/<\/h.>/g, '\n----------------\n');
 			html = html.replace(/<br>/g, '\n'); html = html.replace(/<br( )*\/>/g, '\n');
 
@@ -3125,12 +3146,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					grabRef = location.hash.split('/')[2];
 				}else{
 					allRef();
-					window.location = window.location.hash;
+					// window.location = window.location.hash;
 				}
 
-				var snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(grabRef);
+				var snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(decodeURI(grabRef));
 				var ex = refList[snippetIndex];
-				
 				var paramsCollect = [];
 				var paramsDesc = [];
 				if(ex.overloads != undefined || ex.params != undefined){
@@ -3152,7 +3172,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								}
 
 							})
-							ref.innerHTML += '<div class="param-code">' + ex.name + '(' + params.join(', ') + ')</div>';
+							var paramsJoin = '';
+							if(params.length > 0){
+								paramsJoin = '(' + params.join(', ') + ')';
+							}
+							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 						})
 					}else{
 						var params = [];
@@ -3169,7 +3193,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							}
 						})
 						if(ex.module != 'Constants'){
-							ref.innerHTML += '<div class="param-code">' + ex.name + '(' + params.join(', ') + ')</div>';
+							var paramsJoin = '';
+							if(params.length > 0){
+								paramsJoin = '(' + params.join(', ') + ')';
+							}
+							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 						}
 					}
 
@@ -3212,7 +3240,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							desc = ci.description;
 						}
 						title += desc;
-						modAll.push('<a href="#/p5/' + ci.name + '" title="' + title + '">' + ci.name + '</a><br>');
+						modAll.push('<a href="#/p5/' + htmlEntities(ci.name) + '" title="' + htmlEntities(title) + '">' + htmlEntities(ci.name) + '</a><br>');
 					}
 				});
 				modHTML += modAll.join('');
@@ -3221,6 +3249,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			});
 
 			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
+
+			// jump to category of viewed ref
+			if(location.hash != undefined && location.hash.length > 1){
+				var refPieces = location.hash.split('/');
+				if(refPieces.length == 1){
+					let refTopic = location.hash.substring(1);
+
+					const overflow = document.getElementById('refholder');
+					let anchor = document.getElementById(refTopic);
+
+					const rectOverflow = ref.getBoundingClientRect();
+					const rectAnchor = anchor.getBoundingClientRect();
+
+					overflow.scrollTop = rectAnchor.top - rectOverflow.top;
+				}
+			}
+
 			return false;
 		}
 
@@ -3310,6 +3355,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// group references
 		function groupBy(xs, f) {
 			return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
+		}
+
+		// clean up invalid characters
+		function htmlEntities(str) {
+		    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 		}
 
 

@@ -10,14 +10,13 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + SHIFT + ENTER` » hardCompile
 - `CTRL + A` » autocompile toggle
 - `CTRL + E` » editor toggle
-- `CTRL + F` » fullscreen toggle
 - `CTRL + M` » menu toggle
 - `CTRL + T` » tidy code
 - `CTRL + R` » references toggle
 - `CTRL + C` » cursor toggle
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
-- `CTRL + S` » save png + code
+- `CTRL + S` » save png [ + code ]
 - `CTRL + I` » 720*720px popup for screen-recording
 - `CTRL + 1, 2, 3...0` » load first 10 sketches
 
@@ -40,13 +39,13 @@ Details below to run via python webserver or nodejs/npm (for complete functional
 
 ## GETTING STARTED
 ### LIVE-CODE IN 5... 4... 3... 2...
-![menu-sketches-new](includes/images/menu-sketches-new-7.png)  
+<img src="includes/images/menu-sketches-new-7.png" width="220px">  
 Create New Sketch via GUI icon or `CTRL + N` and start coding!  
 Live-coding active by default, `CTRL + ENTER` to force recompile.  
 Sketch is auto-saved on every keystroke.  
   
 ### P5LIVE MENU  
-![menu-p5live](includes/images/menu-p5live-7.png)  
+<img src="includes/images/menu-p5live-7.png" width="220px">  
 - About, what you're reading now.  
 - Reset, re-initialize P5LIVE (erases sketches/settings).  
 - Reference, `CTRL + R`, toggle p5.js reference list.  
@@ -54,32 +53,32 @@ Sketch is auto-saved on every keystroke.
 - Save HTML, export single-page website (re-link path to any assets).
 
 ### COCODING MENU  
-![menu-cocoding-inactive](includes/images/menu-cocoding-inactive-7.png)  
+<img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
 - Start, click the single 'network' button.  
 
-![menu-cocoding-active](includes/images/menu-cocoding-active-7.png)  
+<img src="includes/images/menu-cocoding-active-7.png" width="220px">  
 - Exit, click the green 'network' button.  
 - Share, click copy URL and share with friends.  
 - Clone sketch, saves current co-code to local sketches within session folder.  
 - Lockdown (admin), limit editing, toggling privledges per user.  
 - Broadcast (admin + lockdown), sync mouseX/Y/frameCount with users.
 
-![menu-cocoding-active](includes/images/menu-cocoding-req-pre-7.png)  
-- Rename, click on your name (very top) to select a new nickname.
+<img src="includes/images/menu-cocoding-req-pre-7.png" width="220px">  
+- Rename, click on your name (very top) to select a new nickname and cursor color.
 
 #### Lockdown (user)
-![menu-cocoding-active](includes/images/menu-cocoding-req-7.png)    
+<img src="includes/images/menu-cocoding-req-7.png" width="220px">  
 - Request Write-access, click edit button and wait for admin to allow.
 
 #### Lockdown (admin)
-![menu-cocoding-active](includes/images/menu-cocoding-admin-vote-7.png)  
+<img src="includes/images/menu-cocoding-admin-vote-7.png" width="220px">  
 - Request Deny/Accept, reject or grant write-access from users.
 
-![menu-cocoding-active](includes/images/menu-cocoding-admin-allow-7.png)  
+<img src="includes/images/menu-cocoding-admin-allow-7.png" width="220px">  
 - Toggle Write-access, admin can always toggle write access of user.  
   
 #### SKETCHES MENU 
-![menu-sketches](includes/images/menu-sketches-7.png)  
+<img src="includes/images/menu-sketches-7.png" width="220px">  
 - New sketch.  
 - Clone sketch, duplicates active sketch.  
 - New folder, used to nest sketches/folders within others.  
@@ -87,7 +86,7 @@ Sketch is auto-saved on every keystroke.
 - Export, exports entire sketches list as JSON for import.  
   
 ### SKETCH  
-![menu-sketch](includes/images/menu-sketch-nav-7.png)  
+<img src="includes/images/menu-sketch-nav-7.png" width="220px">  
 Load, click on sketch name.  
 Rename, click pencil icon and type new name.  
 Export, click download icon to export sketch as JSON file.  
@@ -96,7 +95,7 @@ Sort, click + hold + drag to desired order.
 Add to folder, careully drag + drop into/over folder.
 
 ### FOLDER  
-![menu-folder](includes/images/menu-folder-nav-7.png)  
+<img src="includes/images/menu-folder-nav-7.png" width="220px">  
 Expand/collapse, click on folder name.  
 Rename, click pencil icon and type new name.  
 Export, click download icon to export entire contents as JSON file.  
