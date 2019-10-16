@@ -116,7 +116,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
 				</div>
-				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;">
+				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;" onmouseenter="showUsers();" onmouseleave="hideUsers();">
 					<div id="menu-cocode-sketches" class="menu-sketches"></div>
 				</div>
 			</div>
@@ -277,7 +277,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	<script src="includes/js/src-noconflict/ext-language_tools.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
-	<script src="includes/js/jscolor.js"></script>
 	<link rel="stylesheet" href="includes/css/nano.min.css"/>
 	<script src="includes/js/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
@@ -297,7 +296,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 14;
+		let currentRevision = 15;
 		let developBranch = true;
 
 		// resetP5(); // manual reset
@@ -390,7 +389,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
-		demosLocked = true, curPos, curPositions = []
+		demosLocked = true, curPos, curPositions = [], updateCursor
 		;
 
 		// force off
@@ -984,6 +983,22 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		};
 
+		// cocode extras
+
+		function showUsers(){
+			var cursorSel = document.getElementsByClassName('cursor-label');
+			for(var i=0; i < cursorSel.length; i++){
+				cursorSel[i].style.display = 'block';
+			}
+		}
+
+		function hideUsers(){
+			var cursorSel = document.getElementsByClassName('cursor-label');
+			for(var i=0; i < cursorSel.length; i++){
+				cursorSel[i].style.display = 'none';
+			}
+		}
+
 
 
 		/* FANCY EDITOR FUNCTIONS */
@@ -994,7 +1009,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			// sync cursors in COCODING
 			if(settings.cocoding.active && cocode != null){
-				cocode.cursorPos(curPos);
+				updateCursor = window.setTimeout(function(){cocode.cursorPos(curPos);}, 200);
 			}
 			// curPositions.push(editor.getCursorPosition());
 		})
