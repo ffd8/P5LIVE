@@ -290,8 +290,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 16;
-		let developBranch = false;
+		let currentRevision = 17;
+		let developBranch = true;
 
 		// resetP5(); // manual reset
 
@@ -384,7 +384,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
-		demosLocked = true, curPos, curPositions = [], updateCursor
+		demosLocked = true, curPos, curPositions = [], updateCursor, showCursors = false
 		;
 
 		// force off
@@ -561,10 +561,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					el.style.zIndex = 9999999;
 					el.style.color = "#000";
 					el.style.cursor = 'help';
-					el.onmouseover = function(){this.childNodes[0].style.display = 'block';};
-					el.onmouseout = function(){this.childNodes[0].style.display = 'none';};
+					if(!showCursors){
+						el.style.display = 'none';
+					}
 					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;">'+pos.id+'</div>';
-					document.body.appendChild(el);
+					p5editor.appendChild(el);
 				}
 			}
 		}
@@ -592,11 +593,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.rgaConnect();
 				this.users = {};
 				editor.setWrapBehavioursEnabled(false);
-				editor.getSession().on('change', function(delta){
-					curPos = delta.start;
-					curPositions.push(delta.start);
-					checkErrors();
-				});
+				// editor.getSession().on('change', function(delta){
+				// 	curPos = delta.start;
+				// 	curPositions.push(delta.start);
+				// 	checkErrors();
+				// });
 
 				this.updateColor();
 				this.token();
@@ -682,30 +683,31 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					updateSettings();
 				});
 
-				this.socket.on('requestCode', (data)=>{
+				this.socket.on('codeReplaceRequest', (data)=>{
 					vex.dialog.confirm({
-						unsafeMessage:'Replace code request<br><hr><div class="requestcode-header">User </div>'+data.userID+'<br><div class="requestcode-header">SketchName</div>'+data.sketchName+'<br><div class="requestcode-header">SketchCode</div> <textarea id="requestcode-textarea" class="requestcode-textarea">'+data.sketchCode+'</textarea>',
+						unsafeMessage:'Replace code request<br><hr><div class="code-replace-header">User </div>'+data.userID+'<br><div class="code-replace-header">SketchName</div>'+data.sketchName+'<br><div class="code-replace-header">SketchCode</div> <textarea id="code-replace-textarea" class="code-replace-textarea">'+data.sketchCode+'</textarea>',
 						callback: function (value) {
 							if (value) {
-								let checkedCode = document.getElementById('requestcode-textarea').value;
-								editor.setValue(checkedCode, 1);
-								window.setTimeout(function(){cocode.recompile()}, 300);
-								window.setTimeout(function(){recompile(true)}, 400);
+								let checkedCode = document.getElementById('code-replace-textarea').value;
+								cocode.codeReplace({'code':checkedCode});
+								// editor.setValue(checkedCode, 1);
+								// window.setTimeout(function(){cocode.recompile()}, 300);
+								// window.setTimeout(function(){recompile(true)}, 400);
 							}else{
-								cocode.requestCodeReject(data);
+								cocode.codeReplaceReject(data);
 							}
 						}
 					})
 				});
 
-				this.socket.on('requestCodeReject', (data)=>{
+				this.socket.on('codeReplaceReject', (data)=>{
 					vex.dialog.alert({
 						message:"Request denied.",
 						callback: function(){}
 					})
 				});
 
-				this.socket.on('requestCodeBusy', ()=>{
+				this.socket.on('codeReplaceBusy', ()=>{
 					vex.dialog.alert({
 						message:"Busy with another request, try later.",
 						callback: function(){}
@@ -716,6 +718,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					settings.cocoding.request = false;
 					updateSettings();
 				});
+
+				this.socket.on('codeReplace', (data)=>{
+					RGA.AceEditorRGA.prototype.destroy;
+					RGA.AceEditorRGA._lastText = data.code;
+					if(settings.cocoding.level == 'admin'){
+						editor.setValue('', 1);
+						window.setTimeout(function(){editor.setValue(data.code, 1);}, 300);
+					}
+					window.setTimeout(function(){cocode.recompile()}, 400);
+					window.setTimeout(function(){recompile(true)}, 500);
+				})
 
 				this.socket.on('toggleEdit', (writeMode)=>{
 					if(writeMode){
@@ -929,13 +942,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.socket.emit('lockdown', lockdownMode)
 			}
 
-			requestCode(userID, sketchName, sketchCode){			
+			codeReplaceRequest(userID, sketchName, sketchCode){			
 				let reqData = {'userID':userID, 'sketchName':sketchName, 'sketchCode':sketchCode}
-				this.socket.emit('requestCode', reqData);
+				this.socket.emit('codeReplaceRequest', reqData);
 			}
 
-			requestCodeReject(data){
-				this.socket.emit('requestCodeReject', data);
+			codeReplaceReject(data){
+				this.socket.emit('codeReplaceReject', data);
+			}
+
+			codeReplace(data){
+				this.socket.emit('codeReplace', data);				
 			}
 
 			editRequest(userID){
@@ -990,17 +1007,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// cocode extras
 
 		function showUsers(){
-			let cursorSel = document.getElementsByClassName('cursor-label');
+			let cursorSel = document.getElementsByClassName('cursor');
 			for(let i=0; i < cursorSel.length; i++){
 				cursorSel[i].style.display = 'block';
 			}
+			showCursors = true;
 		}
 
 		function hideUsers(){
-			let cursorSel = document.getElementsByClassName('cursor-label');
+			let cursorSel = document.getElementsByClassName('cursor');
 			for(let i=0; i < cursorSel.length; i++){
 				cursorSel[i].style.display = 'none';
 			}
+			showCursors = false;
 		}
 
 
@@ -1267,7 +1286,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else if(settings.welcome){
 				loadAbout();
 				vex.dialog.alert({
-					unsafeMessage:'Welcome to P5LIVE! <br><br><div class="requestcode-header">Storage</div>Sketches are only stored your browser\'s localStorage, so export often.<br><br><div class="requestcode-header">Shortcuts (most important)</div>CTRL + N » new sketch<br>CTRL + ENTER » softCompile<br>CTRL + E » editor toggle<br>CTRL + M » menu toggle',
+					unsafeMessage:'Welcome to P5LIVE! <br><br><div class="code-replace-header">Storage</div>Sketches are only stored your browser\'s localStorage, so export often.<br><br><div class="code-replace-header">Shortcuts (most important)</div>CTRL + N » new sketch<br>CTRL + ENTER » softCompile<br>CTRL + E » editor toggle<br>CTRL + M » menu toggle',
 				})
 				settings.welcome = false;
 				updateSettings();
@@ -1341,15 +1360,31 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load sketch
 		function loadSketch(sketch){
-			if(settings.cocoding.active){				
+			if(settings.cocoding.active){
+
+				vex.dialog.confirm({
+					message: 'Exit COCODING?',
+					callback: function (value) {
+						if (value) {
+							cocodingExit(sketch);
+
+						}
+					}
+				})
+
+				// *** launch once better RGA solution for complete text replace is found
+				/*
 				if(settings.cocoding.level == 'admin'){
 					vex.dialog.confirm({
-						unsafeMessage: 'Replace code with:\n' + sketch,
+						unsafeMessage:'Replace code with<br><hr><div class="code-replace-header">SketchName</div>'+sketch+'<br><div class="code-replace-header">SketchCode</div> <textarea id="code-replace-textarea" class="code-replace-textarea">'+localStorage[sketch]+'</textarea>',
 						callback: function (value) {
 							if (value) {
-								editor.setValue(localStorage[sketch], 1);
-								window.setTimeout(function(){cocode.recompile()}, 300);
-								window.setTimeout(function(){recompile(true)}, 400);
+								let checkedCode = document.getElementById('code-replace-textarea').value;
+								cocode.codeReplace({'code':checkedCode});
+								//cocode.codeReplace({'code':localStorage[sketch]});
+								// editor.setValue(localStorage[sketch], 1);
+								// window.setTimeout(function(){cocode.recompile()}, 300);
+								// window.setTimeout(function(){recompile(true)}, 400);
 							}
 						}
 					})
@@ -1359,7 +1394,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							unsafeMessage: 'Request to replace code with:\n' + sketch,
 							callback: function (value) {
 								if (value) {
-									cocode.requestCode(settings.cocoding.nick, sketch, localStorage[sketch]);
+									cocode.codeReplaceRequest(settings.cocoding.nick, sketch, localStorage[sketch]);
 								}
 							}
 						})
@@ -1370,6 +1405,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						})
 					}
 				}
+				*/
 			}else {
 				if(localStorage.hasOwnProperty(sketch)){
 					editor.getSession().off('change', cloneSketch);
@@ -2212,6 +2248,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			let currline = editor.getSelectionRange().start.row;
 			let currCode = editor.session.getLine(currline);
 			curPos = editor.getCursorPosition();
+			
+			// catch missing {}'s
+			let allCode = editor.getValue();
+			let cbCount = {
+				l : (allCode.match(/\{/g) || []).length,
+				r : (allCode.match(/\}/g) || []).length
+			}
+			if(cbCount.l == 0 || cbCount.l != cbCount.r){
+				return false;
+			}
+
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
 				if(validCode){
 					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
@@ -2294,11 +2341,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							}
 						}
 					}
-				}
-
-				// missing a closing curly brace = don't compile!
-				if(braces > 0){
-					return false;
 				}
 
 				// check all changed positions + if custom function
@@ -2944,9 +2986,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					message:'Replace code with default template?',
 					callback: function(value){
 						if(value){
-							editor.setValue(p5template, 1);
-							editor.gotoLine(7, 1, false);
-							editor.focus();
+							cocode.codeReplace({'code':p5template});
+							// editor.setValue(p5template, 1);
+							// editor.gotoLine(7, 1, false);
+							// editor.focus();
 						}
 					}
 				})
