@@ -10,6 +10,13 @@ const express = require('express')
 , port = process.env.PORT || 5000
 , requestStats = require('request-stats')
 
+// OSC
+let iop, osc, oscServer, oscClient, isConnected;
+if(!online){
+	iop = require('socket.io')(8082);
+	osc = require('node-osc');
+}
+
 const maxSpaces = 500; // check memory for number of namespaces...
 const purgeCounter = 60; // sec until removing namespace
 let cc = {}; // store namespaces
@@ -84,6 +91,31 @@ io.origins((origin, callback) => {
   callback(null, true);
 });
 
+// OSC
+if(!online){
+	iop.sockets.on('connection', function (socket) {
+		socket.on("config", function (obj) {
+			isConnected = true;
+	    	oscServer = new osc.Server(obj.server.port, obj.server.host);
+		    oscClient = new osc.Client(obj.client.host, obj.client.port);
+		    oscClient.send('/status', socket.sessionId + ' connected');
+			oscServer.on('message', function(msg, rinfo) {
+				socket.emit("message", msg);
+			});
+			socket.emit("connected", 1);
+		});
+	 	socket.on("message", function (obj) {
+			oscClient.send.apply(oscClient, obj);
+	  	});
+		socket.on('disconnect', function(){
+			if (isConnected) {
+				oscServer.close();
+				oscClient.close();
+			}
+	  	});
+	});
+}
+
 
 // IT WORKS, dynamic namespaces to class!
 const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
@@ -147,6 +179,7 @@ class Namespace {
 			, "purgeTimer" : null
 			, "sync" : false
 			, "fc" : 0
+			, "request" : false
 		}
 
 		if(online){
@@ -161,7 +194,7 @@ class Namespace {
 	listenOnNamespace(settings) {
 		settings.namespace.on('connection', (socket) => {
 			settings.userId++;
-			settings.people[socket.id] = {"nick":settings.userId, "status":"focus", "request":false, "writemode":false};
+			settings.people[socket.id] = {"nick":socket.handshake.query.nick, "status":"focus", "request":false, "writemode":false, "cursor":{"row":0, "column":0}, "color":"#00aa00"};
 			syncUsers();
 
 			// save namespace if quick return
@@ -209,14 +242,20 @@ class Namespace {
 					newid += "_"+suffix;
 					socket.emit('rename', newid);
 				}
-				settings.people[socket.id].nick = newid;
-				syncSettings();
+				settings.people[socket.id].nick = newid;				
+				syncSettings();				
+			})
+
+			socket.on('updateColor', function(newcolor){
+				settings.people[socket.id].color = newcolor;
+				syncSettings();				
 			})
 
 			socket.on('token', function(token){
 				if(token == settings.token){
 					settings.people[socket.id].level = 'admin';
 					settings.people[socket.id].writemode = true;
+					settings.request = false;
 				}else{
 					settings.people[socket.id].level = 'user';
 					if(settings.lockdown){
@@ -247,8 +286,9 @@ class Namespace {
 				socket.broadcast.emit('dispatchSyncEvent', JSON.stringify(evData)); // all except sender
 			});
 
-			socket.on('recompile', function(){
-				socket.broadcast.emit('recompile'); // all except sender
+			socket.on('recompile', function(force){
+				settings.request = false;
+				socket.broadcast.emit('recompile', force); // all except sender
 			});
 
 			socket.on('status', function(statusMode){
@@ -256,6 +296,32 @@ class Namespace {
 				syncUsers();
 			});
 
+			socket.on('codeReplaceRequest', function(reqData){
+				if(!settings.request){
+					Object.keys(settings.people).forEach(function(k){
+						if(settings.people[k].level == 'admin'){
+							settings.request = true;
+							io.of(settings.name).to(`${k}`).emit('codeReplaceRequest', reqData);
+						}
+					});
+				}else{
+					socket.emit('codeReplaceBusy');
+				}
+			})
+
+			socket.on('codeReplaceReject', function(reqData){
+				settings.request = false;
+				Object.keys(settings.people).forEach(function(k){
+					if(settings.people[k].nick == reqData.userID){
+						io.of(settings.name).to(`${k}`).emit('codeReplaceReject', reqData);
+					}
+				});
+			})
+
+			socket.on('codeReplace', function(reqData){
+				io.of(settings.name).emit('codeReplace', reqData);
+			})
+			
 			socket.on('editRequest', function(reqData){
 				settings.people[socket.id].request = reqData.mode;
 				syncUsers();
@@ -286,6 +352,11 @@ class Namespace {
 				});
 				syncUsers();
 			})
+
+			socket.on('cursor', function(pos){
+				settings.people[socket.id].cursor = pos;
+				syncCursors();
+			})
 		});
 
 		let syncUsers = function(){
@@ -296,6 +367,10 @@ class Namespace {
 			let tempSettings = {"lockdown" : settings.lockdown, "sync" : settings.sync, "fc" : settings.fc};
 			io.of(settings.name).emit("syncSettings", JSON.stringify(tempSettings)); // update users for all
 			syncUsers();
+		}
+
+		let syncCursors = function(){
+			io.of(settings.name).emit("syncCursors", JSON.stringify(settings.people)); // update users for all
 		}
 
 	}

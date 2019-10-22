@@ -26,14 +26,11 @@
 		var p5p = parent.document;
 		var p5console = p5p.getElementById('p5-console');
 		var p5code = p5p.getElementById('p5-code');
+		var p5consoleTimer, p5consoleDelay = 2000;
 
 		// clear console if all good
 		if(p5console != null){
-			p5console.value = "";
-			p5console.style.background = "none";
-			p5console.style.borderTop = "none";
-			p5console.style.pointerEvents = "none";
-			p5code.style.height = "100vh";
+			clearConsole();
 		}
 		markLine();
 
@@ -41,7 +38,6 @@
 		window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
 			p5console.value = errorMsg; // lineNumber +" / "+
 			p5console.style.background = "#000";
-			// p5console.style.background = "none";
 			markLine(lineNumber);            
 			return false;
 		}
@@ -77,9 +73,19 @@
 					p5console.style.borderTop = "1px solid #444";
 					p5console.style.pointerEvents = "all";
 					p5code.style.height = "calc(100vh - 40px)";
+					window.parent.console.log(m); // also send to parent console!
+					p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
 				}
 			}       
 		};
+
+		function clearConsole(){
+			p5console.value = "";
+			p5console.style.background = "none";
+			p5console.style.borderTop = "none";
+			p5console.style.pointerEvents = "none";
+			p5code.style.height = "100vh";
+		}
 	</script>
 </head>
 <body>

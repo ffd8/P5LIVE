@@ -34,6 +34,7 @@ body {
 	color: #839496;
 	position: relative;
 	background:#000;
+	overflow:hidden;
 }
 hr{
 	width:80%;
@@ -120,7 +121,6 @@ hr{
 	background: none;
 	outline:none;
 	border:none;
-	border-bottom:1px dashed #000;
 	box-sizing: border-box;
 	color:#fff;
 	margin: 0;
@@ -161,6 +161,12 @@ hr{
 .ace-gob .ace_cursor{
 	background:none;
 	border-width:3px;
+}
+.cursor-label{
+	padding:2px;
+	font-size:8pt;
+	position:absolute;
+	left:-3px;
 }
 #editor, #p5-code, .ace_scroller{
 	cursor:cell !important;
@@ -445,6 +451,11 @@ hr{
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
+#menu-cocode-counter{
+	font-size:8pt;
+	padding-left:.3em;
+	vertical-align: super;
+}
 button:disabled,
 button[disabled]{
 	opacity:.25;
@@ -483,12 +494,17 @@ button[disabled]{
 	font-size:8pt;
 	border:1px solid #888;
 	outline:none;
+	background:none;
+	color:#fff;
 }
 #menu-settings-bg{
-	width:50px;
-	text-transform: uppercase;
+	float:right;
+	margin:4px 10px 0;
+	width:35px;
+	height:14px;
 	outline:none;
 	border:1px solid #888;
+	color: transparent !important;
 }
 #menu-settings-fontsize{
 	width:4em;
@@ -622,6 +638,19 @@ li{
 }
 .cocoding-active:hover{
 	background:#880000;
+}
+.code-replace-header{
+	font-size:10pt;
+	text-decoration: underline;
+	margin-top:10px;
+}
+.code-replace-textarea{
+	width:100%;
+	height:200px;
+	outline:none;
+	border:1px solid #888;
+	padding:5px;
+	background:#eee;
 }
 
 /* custom scrollbar for sketches */

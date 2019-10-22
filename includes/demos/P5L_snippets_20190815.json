@@ -1,0 +1,69 @@
+{
+	"snippets": [
+
+		{
+			"id":"template",
+			"key": "T",
+			"code":{
+				"global":{
+					"top":"",
+					"bottom":""
+				},
+				"setup":"",
+				"draw":{
+					"top":"",
+					"bottom":""
+				}
+			}
+		},
+
+		{
+			"id":"audio",
+			"key": "A",
+			"code":{
+				"global":{
+					"top":"",
+					"bottom":"/* AUDIO INIT */\nlet mic, fftRaw, fft, waveform, amp = 0.0, ampStereo = {l:0.0, r:0.0},\nampEase = 0.0,\nnumBins = 512,\nbands = 12; \n\nfunction setupAudio() {\nmic = new p5.AudioIn();\nmic.start();\nfftRaw = new p5.FFT(0.75, numBins);\nfftRaw.setInput(mic);\n}\n\nfunction updateAudio() {\nfftRaw.analyze(); \namp = mic.getLevel() * 1000; // average mixed amplitude\nampStereo.l = mic.amplitude.getLevel(0) * 500; // average left amplitude\nampStereo.r = mic.amplitude.getLevel(1) * 500; // average right amplitude\nampEase = ease(amp, ampEase, 0.075); // smooth 'amp'\nwaveform = fftRaw.waveform(); // array (-1, 1)\nfft = fftRaw.logAverages(fftRaw.getOctaveBands(bands)); // array (0, 255)\n}"
+				},
+				"setup":"setupAudio();",
+				"draw":{
+					"top":"/* audio vars: amp, ampEase, fft, waveform */\nupdateAudio();",
+					"bottom":""
+				}
+			}
+		},
+
+		{
+			"id":"webgl",
+			"key": "D",
+			"code":{
+				"global":{
+					"top":"",
+					"bottom":""
+				},
+				"setup":"gl = this._renderer.GL;\ngl.disable(gl.DEPTH_TEST);",
+				"draw":{
+					"top":"",
+					"bottom":""
+				}
+			}
+		},
+
+		{
+			"id":"osc",
+			"key": "O",
+			"code":{
+				"global":{
+					"top":"let loadScripts = [\"includes/js/socket.io.js\"];\nlet socket;",
+					"bottom":"\n\n\n\n\n// OSC LOGIC \nfunction receiveOsc(address, value) {\n\tprint(\"received OSC: \" + address + \", \" + value);\n}\nfunction sendOsc(address, value) {\nsocket.emit(\"message\", [address].concat(value));\n}\n\nfunction setupOsc(oscPortIn, oscPortOut) {\nsocket = io.connect(\"http://127.0.0.1:8082\", {\nport: 8082,\nrememberTransport: false\n});\nsocket.on(\"connect\", function() {\nsocket.emit(\"config\", {\nserver: {\nport: oscPortIn,\nhost: \"127.0.0.1\"\n},\nclient: {\nport: oscPortOut,\nhost: \"127.0.0.1\"\n}\n});\n});\nsocket.on(\"message\", function(msg) {\nif(msg[0] == \"#bundle\") {\nfor(var i = 2; i < msg.length; i++) {\nreceiveOsc(msg[i][0], msg[i].splice(1));\n}\n} else {\nreceiveOsc(msg[0], msg.splice(1));\n}\n});\n}"
+				},
+				"setup":"setupOsc(12000, 12001); // in, out",
+				"draw":{
+					"top":"",
+					"bottom":""
+				}
+			}
+		}
+		
+		]
+}

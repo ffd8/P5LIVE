@@ -29,7 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?7">
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?8">
 </head>
 <body>
 	<div id="loader">
@@ -69,10 +69,10 @@
 					<button class="menu-button tippy" onclick="showRef();" data-title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button class="menu-button tippy" onclick="savePNG();" data-title="Save PNG">
+					<button class="menu-button tippy" onclick="savePNG();" data-title="Export Snapshot<br>PNG [+ CODE]<div class='shortcut'>CTRL + S</div>">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
-					<button class="menu-button tippy" onclick="saveHTML();" data-title="Save HTML">
+					<button class="menu-button tippy" onclick="saveHTML();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
 					
@@ -81,7 +81,7 @@
 
 			<div class="menu-section" id="menu-cocode">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header" id="menu-cocode-header">COCODING</div>
+				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter"></span></div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
 					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop COCODING">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
@@ -107,7 +107,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
 				</div>
-				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;">
+				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;" onmouseenter="showUsers();" onmouseleave="hideUsers();">
 					<div id="menu-cocode-sketches" class="menu-sketches"></div>
 				</div>
 			</div>
@@ -143,11 +143,18 @@
 				<div class="menu-section-bg"></div>
 				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
 				<div id="menu-settings" class="menu-contents">
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Auto-Compiling<div class='shortcut'>CTRL + A</div>" onclick="autoCompileToggle();">
+					<div>
+						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-Compile code on keyUp<div class='shortcut'>CTRL + A</div>" onclick="autoCompileToggle();">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile"> 
-						Live Coding
+						Live Coding</div> 
+							<select id="settings-compiletimer" style="display:none;float:right;margin-right:10px;outline:none;border:1px solid #888;background:none;color:#fff;cursor:help;" class="tippy" data-title="Delay from keyUp to compile" onchange="compileTimerChange();">
+									<option value="250">250ms</option>
+									<option value="500">500ms</option>
+									<option value="1000">1000ms</option>
+									<option value="2000">2000ms</option>
+							</select>
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>" onclick="fullscreenToggle();">
+					<div class="tippy-left" style="cursor:help;display:none;" data-title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>" onclick="fullscreenToggle();">
 						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen"> 
 						Fullscreen
 					</div>
@@ -155,17 +162,23 @@
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender"> 
 						Eco Render
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Sketch Cursor<div class='shortcut'>CTRL + C</div>" onclick="cursorToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Show Cursor <br>(when editor is hidden)<div class='shortcut'>CTRL + C</div>" onclick="cursorToggle();">
 						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor"> 
 						Cursor
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Console" onclick="consoleToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Show Console messages" onclick="consoleToggle();">
 						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console"> 
 						Console
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Menu-Tab <br>IF unchecked, MUST use shortcut<div class='shortcut'>CTRL + M</div>" onclick="menutabToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Show Menu-Tab <br>If unchecked, must use shortcut<div class='shortcut'>CTRL + M</div>" onclick="menutabToggle();">
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab">
 						Menu Tab
+					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
+						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
+					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Include sketch code with Snapshot" onclick="exportcodeToggle();">
+						<input type="checkbox" id="settings-exportcode" name="settings-exportcode" value="settings-exportcode"> Snapshot Code
 					</div>
 					<hr>
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
@@ -173,11 +186,12 @@
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
-						Font Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
+						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
 
 					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
-						Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();"> <input id="menu-settings-bg" class="jscolor {width:101, padding:0, shadow:false, borderWidth:0, backgroundColor:'transparent', insetColor:'#000'}" onchange="setBG(this.jscolor);">
+						Code Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();">
+						<div id="pickr" class="pickr"></div>
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
 						Theme: 
@@ -201,19 +215,19 @@ function setup() {
 }
 
 function draw() {
-
+	
 }</textarea>
 <textarea style="display:none;" id="p5-custom">
 /* CUSTOM FUNCTIONS FOR P5LIVE */
-// readjust if window-resized
+// keep fullscreen if window resized
 function windowResized() {
 	resizeCanvas(windowWidth, windowHeight);
 }
 
 // custom ease function
 function ease(iVal, oVal, eVal){
-	var targetX = iVal;
-	var dx = targetX - oVal; 
+	let targetX = iVal;
+	let dx = targetX - oVal; 
 	return oVal += dx * eVal;
 }
 
@@ -240,7 +254,7 @@ function draw() {
 }
 
 function tri(x1, y1, x2, y2, x3, y3, fc){
-	var v = 0.002;
+	let v = 0.002;
 	fill(abs(sin(fc+(frameCount*v)))*255);
 	beginShape();
 	vertex(x1, y1);
@@ -249,36 +263,41 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	endShape();
 }</textarea>
 
+	<!-- Script Styles -->
+	<link rel="stylesheet" href="includes/css/nano.min.css"/>
+	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
+	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
+
 	<!-- Scripts -->
 	<script src="includes/js/src-noconflict/ace.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/src-noconflict/ext-language_tools.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
-	<script src="includes/js/jscolor.js"></script>
+	<script src="includes/js/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
 	<script src="includes/js/markdown.min.js"></script>
 	<script src='includes/js/download.js'></script>
 	<script src="includes/js/vex/js/vex.combined.min.js"></script>
-	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
-	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
 
 	<!-- <script src="/socket.io/socket.io.js"></script> -->
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
+
 	<script type="text/javascript">
 		'use strict'
 
 
 
 		/* INIT */
-		let currentRevision = 8;
+		let currentRevision = 17;
+		let developBranch = true;
 
 		// resetP5(); // manual reset
 
 		function resetP5(){
 			vex.dialog.confirm({
-				message: 'Completely reset P5LIVE?',
+				unsafeMessage: 'Completely reset P5LIVE?<br><i>All sketches will be removed.</i>',
 				callback: function (value) {
 					if (value) {
 						localStorage.clear();
@@ -290,30 +309,33 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// settings
 		let initSettings = {
-			'version':'1.1.0',
+			'version':'1.2.0',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15, 
-			'autoCompile':true, 
+			'autoCompile':true,
+			'compileTimer':500, 
 			'ecoRender': true,
 			'canvasCursor': true,
 			'console': true,
 			'fullscreenMode':false,
 			'fileName': '',
+			'linenumbers': false,
 			'menuMode': true,
 			'menutab':true,
+			'exportCode':true,
 			'debugMode': false,
 			'safeMode': false,
 			'sketches': [],
-			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false},
-			'scripts': ['includes/p5/addons/p5.dom.min.js', 'includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
+			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
+			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
-			'themeBG': '052544',
+			'themeBG': '#052544',
 			'themeBGactive': true,
 			'refresh':true
 		}
 
-		// init vars
+		// init variabless
 		let p5editor = document.getElementById('p5-editor'),
 		p5code = document.getElementById('p5-code'),
 		p5console = document.getElementById('p5-console'),
@@ -325,6 +347,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5liveaboutSketch = document.getElementById('p5live-about').value,
 		p5script = document.getElementById('holdscript'),
 		menuCocode = document.getElementById('menu-cocode'),
+		menuCocodeCounter = document.getElementById('menu-cocode-counter'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
@@ -337,13 +360,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
 		settingsConsole = document.getElementById('settings-console'),
 		settingsMenutab = document.getElementById('settings-menutab'),
+		settingsLinenumbers = document.getElementById('settings-linenumbers'),
+		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsBGactive = document.getElementById('settings-usebg'),
+		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		refHolder = document.getElementById('refholder'),
 		ref = document.getElementById('ref'),
 		menuPanel = document.getElementById('menu'),
 		menuSwitch = document.getElementById('menu-switch'),
 		menuTheme = document.getElementById('menu-settings-theme'),
-		settingsBG = document.getElementById('menu-settings-bg'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
 		loader = document.getElementById('loader'),
 		settings = getSettings(),
@@ -358,16 +383,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false
+		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
+		demosLocked = true, curPos, curPositions = [], updateCursor, showCursors = false
 		;
-
 
 		// force off
 		settings.debugMode = false;
 		
 		// init editor 
-		var Range = ace.require('ace/range').Range;
-		var editor = ace.edit('p5-code');
+		let Range = ace.require('ace/range').Range;
+		let editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
 		editor.setOptions({
@@ -383,54 +408,89 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5editor.style.visibility = 'visible';
 
 		// ICONS!
-		var iconFolderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
+		let iconFolderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
 
-		var iconFolderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+		let iconFolderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
 
-		var iconFolderExpand = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+		let iconFolderExpand = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
 
-		var iconFileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+		let iconFileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
 
-		var iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
+		let iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
 
-		var iconRename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
+		let iconRename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
 
-		var iconRefresh = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>';
+		let iconRefresh = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>';
 
-		var iconExport = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+		let iconExport = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
 
-		var iconRemove = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+		let iconRemove = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
 
-		var iconCopy ='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+		let iconCopy ='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
 
-		var iconUnlock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>';
+		let iconUnlock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>';
 
-		var iconLock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+		let iconLock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 
-		var iconEdit = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+		let iconEdit = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
 
-		var iconToggleLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>';
+		let iconToggleLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>';
 
-		var iconToggleRight = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>';
+		let iconToggleRight = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>';
 
-		var iconScreencast = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
+		let iconScreencast = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
 
-		var iconPower = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>';
+		let iconPower = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>';
 
-		var iconXCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+		let iconXCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
 
-		var iconCheckCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+		let iconCheckCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
 
-		var iconShield = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>';
+		let iconShield = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>';
 
-		var iconUser = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+		let iconUser = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
 
-		var iconUsers = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+		let iconUsers = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
 
-		var iconUserCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
+		let iconUserCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
+
+		// code-line color picker
+		const pickr = Pickr.create({
+			el: '.pickr',
+			theme: 'nano', // or 'monolith', or 'nano'
+			default: settings.themeBG,
+
+			components: {
+				preview: true,
+				opacity: true,
+				hue: true,
+
+				interaction: {
+					input: true,
+					cancel:false,
+					save: true
+				},
+			},
+
+			// rename buttons
+			strings: {
+				save: 'Set', // Default for save button
+				cancel: 'Close' // Default for cancel button
+			}
+		});
+
+		pickr.on('init', (color, instance) => {
+			setBG(settings.themeBG.substring(1));
+		}).on('change', (color, instance) => {
+			setBG(color.toHEXA().join(''));
+		}).on('save', (color, instance) => {
+			instance.hide();
+		}).on('cancel', instance => {
+			instance.hide();
+		});
 
 
-		var options = {
+		let options = {
 			group: {name: 'sketches'},
 			animation: 200,
 			filter:'.sortable-placeholder, .demo',
@@ -446,16 +506,75 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		var includeScripts = [{
+		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/p5.min.js'
-		}, {
-			'local':'includes/p5/addons/p5.dom.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.dom.min.js'
+			'remote':'https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.min.js'
 		}, {
 			'local':'includes/p5/addons/p5.sound.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.8.0/addons/p5.sound.min.js'
+			'remote':'https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/addons/p5.sound.min.js'
 		}];
+
+		// markers for COCODING
+		// built upon: https://stackoverflow.com/a/24812641/10885535
+		let marker = {}
+		marker.cursors = []
+		marker.update = function(html, markerLayer, session, config) {
+			let start = config.firstRow, end = config.lastRow;
+			let cursors = this.cursors
+			for (let i = 0; i < cursors.length; i++) {
+				let pos = this.cursors[i];
+				if (pos.row < start) {
+					continue;
+				} else if (pos.row > end) {
+					break;
+				} else {
+					// compute cursor position on screen
+					// this code is based on ace/layer/marker.js
+					let screenPos = session.documentToScreenPosition(pos.row, pos.column)
+					let height = config.lineHeight;
+					let width = config.characterWidth;
+					let top = markerLayer.$getTop(screenPos.row, config);
+					let left = markerLayer.$padding + screenPos.column * width;
+
+					// update if exists + rebuild on textsize change
+					let elm = document.getElementById('cursor_'+pos.id);
+					if(elm != undefined){
+						elm.parentNode.removeChild(elm);
+					}
+
+					// can add any html here
+					let el = document.createElement('div');
+					el.id = 'cursor_'+pos.id;
+					el.className = "cursor"
+					el.style.position = 'absolute';
+					el.style.height = height+"px";
+					el.style.width = width+"px";
+					el.style.top = top+"px";
+					el.style.left = left+"px";
+					if(pos.id != settings.cocoding.nick){
+						el.style.borderLeft = "3px solid "+pos.color;
+					}else{
+						let cursorSelf = document.getElementsByClassName('ace_cursor')[0];
+						cursorSelf.style.borderColor = pos.color;
+						el.style.left = (left+3) + "px";
+					}
+					el.style.zIndex = 9999999;
+					el.style.color = "#000";
+					el.style.cursor = 'help';
+					if(!showCursors){
+						el.style.display = 'none';
+					}
+					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;">'+pos.id+'</div>';
+					p5editor.appendChild(el);
+				}
+			}
+		}
+		marker.redraw = function() {
+			this.session._signal("changeFrontMarker");
+		}
+		marker.session = editor.session;
+		marker.session.addDynamicMarker(marker, true);
+	
 
 		class CocodeApp{
 			constructor(namespace) {
@@ -463,18 +582,24 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.socket = '';
 				this.namespace = namespace;
 				if(!window.location.hostname.includes('teddavis.org')){
-					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true }); // io('http://localhost:5000/' + this.namespace);
+					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
-					this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true });	
+					if(developBranch){
+						this.socket = io('https://p5live-server-develop.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
+					}else{
+						this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });	
+					}
 				}
 				this.rgaConnect();
 				this.users = {};
 				editor.setWrapBehavioursEnabled(false);
-				editor.getSession().on('change', function(){
-					checkErrors();
-				});
+				// editor.getSession().on('change', function(delta){
+				// 	curPos = delta.start;
+				// 	curPositions.push(delta.start);
+				// 	checkErrors();
+				// });
 
-				this.login();
+				this.updateColor();
 				this.token();
 
 				this.socket.on('init', () => {
@@ -504,7 +629,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						}
 					}
 					updateToggleSync();
-					// var settingsSync = document.getElementById('cocode-sync');
+					// let settingsSync = document.getElementById('cocode-sync');
 					// toggleButtonActive(settingsSync, settings.cocoding.sync);
 
 				});
@@ -529,7 +654,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					settings.cocoding.level = statusMode;
 					updateSettings();
 					if(statusMode != 'admin'){
-						var adminDivs = document.getElementsByClassName('admin-lock');
+						let adminDivs = document.getElementsByClassName('admin-lock');
 						for(let i=0; i<adminDivs.length; i++){
 							adminDivs[i].setAttribute('disabled', 'disabled');
 						}
@@ -538,7 +663,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				this.socket.on('dispatchSyncEvent', (evData)=>{
 					let ev = JSON.parse(evData);
-					var copy;
+					let copy;
 					if(ev.mode == 'keyboard'){
 						copy = new KeyboardEvent(ev.type, ev.options);
 					}else if(ev.mode == 'mouse'){
@@ -548,8 +673,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					p5f.frameCount = ev.fc;			
 				});
 
-				this.socket.on('recompile', ()=>{
-					buildSketch(); // 
+				this.socket.on('recompile', (force)=>{
+					buildSketch(force); // 
 					updateBackground();
 				});
 
@@ -558,10 +683,52 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					updateSettings();
 				});
 
+				this.socket.on('codeReplaceRequest', (data)=>{
+					vex.dialog.confirm({
+						unsafeMessage:'Replace code request<br><hr><div class="code-replace-header">User </div>'+data.userID+'<br><div class="code-replace-header">SketchName</div>'+data.sketchName+'<br><div class="code-replace-header">SketchCode</div> <textarea id="code-replace-textarea" class="code-replace-textarea">'+data.sketchCode+'</textarea>',
+						callback: function (value) {
+							if (value) {
+								let checkedCode = document.getElementById('code-replace-textarea').value;
+								cocode.codeReplace({'code':checkedCode});
+								// editor.setValue(checkedCode, 1);
+								// window.setTimeout(function(){cocode.recompile()}, 300);
+								// window.setTimeout(function(){recompile(true)}, 400);
+							}else{
+								cocode.codeReplaceReject(data);
+							}
+						}
+					})
+				});
+
+				this.socket.on('codeReplaceReject', (data)=>{
+					vex.dialog.alert({
+						message:"Request denied.",
+						callback: function(){}
+					})
+				});
+
+				this.socket.on('codeReplaceBusy', ()=>{
+					vex.dialog.alert({
+						message:"Busy with another request, try later.",
+						callback: function(){}
+					})
+				});
+
 				this.socket.on('requestReject', ()=>{
 					settings.cocoding.request = false;
 					updateSettings();
 				});
+
+				this.socket.on('codeReplace', (data)=>{
+					RGA.AceEditorRGA.prototype.destroy;
+					RGA.AceEditorRGA._lastText = data.code;
+					if(settings.cocoding.level == 'admin'){
+						editor.setValue('', 1);
+						window.setTimeout(function(){editor.setValue(data.code, 1);}, 300);
+					}
+					window.setTimeout(function(){cocode.recompile()}, 400);
+					window.setTimeout(function(){recompile(true)}, 500);
+				})
 
 				this.socket.on('toggleEdit', (writeMode)=>{
 					if(writeMode){
@@ -576,10 +743,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 				});
 
+				this.socket.on('syncCursors', (usersRaw) => {
+					this.syncCursors(usersRaw);
+				});
+
 				this.socket.on('syncUsers', (usersRaw) => {
 					this.users = JSON.parse(usersRaw);
 					let users = [];
-					for (var key in this.users) {
+					for (let key in this.users) {
 						users.push(this.users[key])
 					};
 
@@ -591,12 +762,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 
 					menuCocodeSketches.innerHTML = '';
-					var activeSelf = '';
-					var usersHTML = '';
-					var usersSelf;
-					for (var i=0; i < users.length; i++) {
+					let activeSelf = '';
+					let usersHTML = '';
+					let usersSelf;
+					menuCocodeCounter.innerHTML = users.length;
+					for (let i=0; i < users.length; i++) {
 						if(users[i].nick != settings.cocoding.nick){
-							var userNav = '';
+							let userNav = '';
 							if(settings.cocoding.lockdown){
 								if(settings.cocoding.level == 'admin'){
 									if(users[i].writemode){
@@ -611,10 +783,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								}			
 							}
 
-							var active = '';
-							var marq = '';
-							var writeClass = '';
-							var userIcon = iconUsers;
+							let active = '';
+							let marq = '';
+							let writeClass = '';
+							let userIcon = iconUsers;
 							if(settings.cocoding.lockdown){
 								if(users[i].request){
 									writeClass = ' write-req ';
@@ -629,7 +801,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							if(users[i].status == 'blur'){
 								active = 'style="opacity:.5;"';
 							}
-							usersHTML += '<li id="user-'+users[i].nick+'" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch-nav">' +userNav+'</div><div class="menu-sketch '+marq+'" '+active+ '>'+userIcon+ ' ' +users[i].nick+'</div></li>';
+							usersHTML += '<li id="user-'+users[i].nick+'" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch-nav">' +userNav+'</div><div class="menu-sketch '+marq+'" '+active+ '><span style="padding-top:4px;background:'+users[i].color+';">'+userIcon+ '</span> ' +users[i].nick+'</div></li>';
 						}else{
 							usersSelf = users[i];
 							if(usersSelf.status == 'blur'){
@@ -637,13 +809,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							}
 						}
 					}
-						var selfNav = '';
-						var userIcon = iconUser;
+						let selfNav = '';
+						let userIcon = iconUser;
 						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown && !settings.cocoding.writemode){
 							selfNav = '<div class="menu-sketch-nav"><a id="request-'+settings.cocoding.nick+'" class="menu-sketch-button tippy " onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')" data-title="Request Edit">'+iconEdit+'</a></div>';
 						}
 
-						var writeClass = '';
+						let writeClass = '';
 						if(settings.cocoding.lockdown && settings.cocoding.level != 'admin'){
 							if(usersSelf.request){
 								writeClass = ' write-req ';
@@ -657,11 +829,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							userIcon = iconShield;
 						}
 
-						var marq = '';
+						let marq = '';
 						if(settings.cocoding.nick.length > 10){marq = 'marq';}
 
-						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();">'+userIcon+ ' ' +settings.cocoding.nick+'</div></li>' + usersHTML;
+						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();"><span id="cocodingself" style="padding-top:4px;background:'+settings.cocoding.color+';">'+userIcon+ '</span> ' +settings.cocoding.nick+'</div></li>' + usersHTML;
 						loadTippy();
+						this.syncCursors(usersRaw);
 					});
 				}
 
@@ -669,22 +842,86 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				RGA.AceEditorRGA.setup(editor, this.socket);
 			}
 
+			userBG(newVal){
+				document.getElementById('cocodingself').style.background = newVal;
+			}
+
 			rename(){
-				vex.dialog.prompt({
-					message: 'Nickname:',
-					value: settings.cocoding.nick, // placeholder
-					callback: function (value) {
-						if(value){
-							var newName = value.replace(/["']/g, '');
-							if(newName != '' && newName != settings.cocoding.nick){
-								settings.cocoding.nick = newName;
-								updateSettings();
-								cocode.login();
+				vex.dialog.open({
+					input:[
+					'<label for="nick">Nickname</label><br>',
+					'<input id="cocodingnick" name="nick" type="text" value="'+settings.cocoding.nick+'">',
+					'<br><br>',
+					
+					'<label for="color" style="display:block;">Cursor Color</label><br>',
+					'<input id="cocodingcolor" name="pickr" type="text" autocomplete="off" readonly class="cocode-pickr" style="cursor:pointer;">'
+					].join(''),
+					callback: function (data) {
+						if(data){
+							//console.log(data);
+							if(data.nick != settings.cocoding.nick){
+								let newName = data.nick.replace(/["']/g, '');
+								if(newName.trim() != '' && newName != settings.cocoding.nick){
+									settings.cocoding.nick = newName;
+									cocode.login();
+									updateSettings();
+								}
 							}
+							if(data.pickr != undefined && data.pickr != settings.cocoding.color){
+								settings.cocoding.color = data.pickr;
+								cocode.userBG(data.pickr);
+								cocode.updateColor();
+								updateSettings();
+							}else{
+								//settings.cocoding.color = data.pickr;
+							}
+							
 						}
 					},
 					afterOpen: function(){
-						document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+						document.getElementById('cocodingnick').select();
+						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
+						let defaultColor = "00aa00";
+
+						if(settings.cocoding.color != null){
+							defaultColor = settings.cocoding.color;
+						}
+						//document.querySelectorAll('.ace_cursor')[0].style.background = defaultColor;
+						const pickr2 = Pickr.create({
+							el: '#cocodingcolor',
+							useAsButton: true,
+							theme: 'nano',
+							default: defaultColor,
+
+							components: {
+								preview: true,
+								opacity: false,
+								hue: true,
+
+								// Input / output Options
+								interaction: {
+									input: true,
+									cancel:true,
+									save: true
+								},
+							},
+
+							// rename buttons
+							strings: {
+								save: 'Set', // Default for save button
+								cancel: 'Close' // Default for cancel button
+							}
+						});
+
+						pickr2.on('change', (color, instance) => {
+						}).on('save', (color, instance) => {
+							document.getElementById('cocodingcolor').value = "#" + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').style.background = "#" + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').style.color = "#" + color.toHEXA().join('');
+							instance.hide();
+						}).on('cancel', instance => {
+							instance.hide();
+						})
 					}
 				})
 			}
@@ -693,12 +930,29 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.socket.emit('login', settings.cocoding.nick);
 			}
 
+			updateColor(){
+				this.socket.emit('updateColor', settings.cocoding.color);	
+			}
+
 			token(){
 				this.socket.emit('token', settings.cocoding.token);
 			}
 
 			lockdown(lockdownMode){
 				this.socket.emit('lockdown', lockdownMode)
+			}
+
+			codeReplaceRequest(userID, sketchName, sketchCode){			
+				let reqData = {'userID':userID, 'sketchName':sketchName, 'sketchCode':sketchCode}
+				this.socket.emit('codeReplaceRequest', reqData);
+			}
+
+			codeReplaceReject(data){
+				this.socket.emit('codeReplaceReject', data);
+			}
+
+			codeReplace(data){
+				this.socket.emit('codeReplace', data);				
 			}
 
 			editRequest(userID){
@@ -722,24 +976,79 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				this.socket.emit('dispatchSyncEvent', ev);
 			}
 
-			recompile(){
-				this.socket.emit('recompile');
+			recompile(force){
+				this.socket.emit('recompile', force);
 			}
 
 			sync(syncMode){
 				this.socket.emit('sync', {'mode':syncMode, 'fc':p5f.frameCount});
 			}
+
+			cursorPos(pos){
+				this.socket.emit('cursor', pos);
+			}
+
+			syncCursors(usersRaw){
+				this.users = JSON.parse(usersRaw);
+					marker.cursors = [];
+
+					let elements = document.getElementsByClassName('cursor');
+					while(elements.length > 0){
+						elements[0].parentNode.removeChild(elements[0]);
+					}
+
+					for (let key in this.users) {			
+						marker.cursors.push({row:this.users[key].cursor.row, column:this.users[key].cursor.column, color:this.users[key].color, id:this.users[key].nick});
+					};
+					marker.redraw();
+			}
 		};
+
+		// cocode extras
+
+		function showUsers(){
+			let cursorSel = document.getElementsByClassName('cursor');
+			for(let i=0; i < cursorSel.length; i++){
+				cursorSel[i].style.display = 'block';
+			}
+			showCursors = true;
+		}
+
+		function hideUsers(){
+			let cursorSel = document.getElementsByClassName('cursor');
+			for(let i=0; i < cursorSel.length; i++){
+				cursorSel[i].style.display = 'none';
+			}
+			showCursors = false;
+		}
 
 
 
 		/* FANCY EDITOR FUNCTIONS */
 
+		editor.getSession().selection.on("changeCursor", function(){
+			//console.log(editor.getCursorPosition());
+			curPos = editor.getCursorPosition();
+
+			// sync cursors in COCODING
+			if(settings.cocoding.active && cocode != null){
+				updateCursor = window.setTimeout(function(){cocode.cursorPos(curPos);}, 200);
+			}
+			// curPositions.push(editor.getCursorPosition());
+		})
+
+		editor.getSession().on('change', function(delta){
+			curPos = delta.start;
+			curPositions.push(delta.start);
+			checkErrors();
+
+		});
+
 		// check for errors
 		editor.getSession().on('changeAnnotation', function(){
-			var annot = editor.getSession().getAnnotations();
+			let annot = editor.getSession().getAnnotations();
 			validCode = true;
-			for(var i=0; i < annot.length; i++){
+			for(let i=0; i < annot.length; i++){
 				if(annot[i].type === 'error'){
 					addMarker(annot[i].row);
 					validCode = false;
@@ -751,14 +1060,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		});
 
 		function addMarker(n){
-			var elementPos = markerID.map(function(x) {return x.line; }).indexOf(n);
+			let elementPos = markerID.map(function(x) {return x.line; }).indexOf(n);
 			if (elementPos === -1) {
 				markerID.push({'line':n, 'id':editor.session.addMarker(new Range(n, 0, n, 7000), 'myMarker', 'fullLine')});
 			}
 		}
 
 		function removeMarkers(){
-			for(var i=0; i < markerID.length; i++){
+			for(let i=0; i < markerID.length; i++){
 				editor.session.removeMarker(markerID[i].id);
 			}
 			markerID = [];
@@ -770,12 +1079,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		});
 
 		function adjustLines(){
-			var pcode = document.getElementsByClassName('ace_line');
-			for(var i=0; i < pcode.length; i++){
-				var pitem = pcode[i];
-				var pcontents = pitem.innerHTML;
+			let pcode = document.getElementsByClassName('ace_line');
+			for(let i=0; i < pcode.length; i++){
+				let pitem = pcode[i];
+				let pcontents = pitem.innerHTML;
 				if(settings.themeBGactive){
-					pitem.innerHTML = '<span class="ace_line_bg" style="background:#'+settings.themeBG+'">' + pcontents + '</span>';
+					pitem.innerHTML = '<span class="ace_line_bg" style="background:'+settings.themeBG+'">' + pcontents + '</span>';
 				}
 			}
 		}
@@ -825,7 +1134,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		});
 
 		// beautify!
-		var beautifyOptions = {
+		let beautifyOptions = {
 			'indent_size': '1',
 			'indent_char': '\t',
 			'max_preserve_newlines': '5',
@@ -850,17 +1159,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// list ace editor commands
 		function listCommands(){
-			var cmds = editor.commands.commands;
-			var k = [];
-			for (var cmd in cmds){
+			let cmds = editor.commands.commands;
+			let k = [];
+			for (let cmd in cmds){
 				k.push(cmd.name + ' = ' + cmd.bindKey);
 			}
 		}
 
 		// check storageKeys
 		function getKeys(){
-			var k = [];
-			for (var key in localStorage){
+			let k = [];
+			for (let key in localStorage){
 				k.push(key);
 			}
 		}
@@ -878,7 +1187,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		window.document.addEventListener('myEvent', handleEvent, false)
 		function handleEvent(e) {
 			if(e.detail.lineNumber != undefined){
-				var errorLine = parseInt(e.detail.lineNumber)-1;
+				let errorLine = parseInt(e.detail.lineNumber)-1;
 				addMarker(errorLine);
 			}else{
 				removeMarkers()
@@ -894,6 +1203,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				sketchLoaded = true;
 			}else{
 				sketchLoaded = false;
+				// set timer for refreshing if error			
 			}
 		}
 
@@ -906,7 +1216,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// get settings from localstorage
 		function getSettings(){
-			var tempSettings = initSettings;
+			let tempSettings = initSettings;
 			if(localStorage.hasOwnProperty('settings')){
 				tempSettings = JSON.parse(localStorage.getItem('settings'));
 			}
@@ -915,16 +1225,36 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// react to settings once gathered
 		function loadSettings(){
+			// make sure all settings are there
+			if(settings.revision < currentRevision){
+				settings.revision = currentRevision;
+				Object.keys(initSettings).forEach(function(k){
+					if(!settings.hasOwnProperty(k)){
+						settings[k] = initSettings[k];
+					}else if(typeof initSettings[k] === 'object'){
+						Object.keys(initSettings[k]).forEach(function(kk){
+							if(!settings[k].hasOwnProperty(kk)){
+								settings[k][kk] = initSettings[k][kk];
+							}
+						});
+					}
+					settings.refresh = true;
+				});
+				updateSettings();
+			}
+
 			fontSizeUpdate();
 			autoCompileUpdate();
+			compileTimerUpdate();
 			fullscreenUpdate();
 			menuToggleUpdate();
 			ecoRenderUpdate();
 			cursorToggleUpdate();
 			consoleToggleUpdate();
 			menutabToggleUpdate();
+			linenumbersUpdate();
+			exportcodeUpdate();
 			loadTheme();
-			loadBG();
 			themeBGactiveToggleUpdate();
 			loadSnippets();
 			loadSketchTemplate();
@@ -940,7 +1270,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					cocodingExit(loadLatest());
 					return false;
 				}
-				var ccSpace = getParam('cc');
+				let ccSpace = getParam('cc');
 				if(settings.cocoding.token != hashCode(ccSpace)){
 					cocodingReset();
 				}
@@ -955,6 +1285,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				cocoding();
 			}else if(settings.welcome){
 				loadAbout();
+				vex.dialog.alert({
+					unsafeMessage:'Welcome to P5LIVE! <br><br><div class="code-replace-header">Storage</div>Sketches are only stored your browser\'s localStorage, so export often.<br><br><div class="code-replace-header">Shortcuts (most important)</div>CTRL + N » new sketch<br>CTRL + ENTER » softCompile<br>CTRL + E » editor toggle<br>CTRL + M » menu toggle',
+				})
 				settings.welcome = false;
 				updateSettings();
 			}else if(window.location.hash){
@@ -965,7 +1298,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					updateSettings();
 					loadSketch(settings.fileName);
 				}else{
-					getRef();
+					loadRef();
 					loadSketch(settings.fileName);
 				}
 			}else{
@@ -1001,7 +1334,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// save skettch as...
 		function cloneSketch(){
-			var forkName = settings.fileName;
+			let forkName = settings.fileName;
 			settings.fileName = forkName+'_'+timeStamp();
 			settings.sketches.unshift({'type':'sketch', 'name':settings.fileName});
 			updateSketches();
@@ -1012,13 +1345,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function cloneSketchCOCODING(){
-			var forkSession = settings.cocoding.namespace;
+			let forkSession = settings.cocoding.namespace;
 			if(searchJSON(settings.sketches, 'name', forkSession).length == 0){
 				addFolder(forkSession);
 			}
-			var forkName = forkSession+'_'+timeStamp();
+			let forkName = forkSession+'_'+timeStamp();
 			settings.fileName = forkName;
-			var forkObj = searchJSON(settings.sketches, 'name', forkSession)[0];
+			let forkObj = searchJSON(settings.sketches, 'name', forkSession)[0];
 			forkObj.contents.unshift({'type':'sketch', 'name':forkName});
 			forkObj.toggle = 'expand';
 			updateSketches();
@@ -1028,14 +1361,51 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// load sketch
 		function loadSketch(sketch){
 			if(settings.cocoding.active){
+
 				vex.dialog.confirm({
 					message: 'Exit COCODING?',
 					callback: function (value) {
 						if (value) {
 							cocodingExit(sketch);
+
 						}
 					}
 				})
+
+				// *** launch once better RGA solution for complete text replace is found
+				/*
+				if(settings.cocoding.level == 'admin'){
+					vex.dialog.confirm({
+						unsafeMessage:'Replace code with<br><hr><div class="code-replace-header">SketchName</div>'+sketch+'<br><div class="code-replace-header">SketchCode</div> <textarea id="code-replace-textarea" class="code-replace-textarea">'+localStorage[sketch]+'</textarea>',
+						callback: function (value) {
+							if (value) {
+								let checkedCode = document.getElementById('code-replace-textarea').value;
+								cocode.codeReplace({'code':checkedCode});
+								//cocode.codeReplace({'code':localStorage[sketch]});
+								// editor.setValue(localStorage[sketch], 1);
+								// window.setTimeout(function(){cocode.recompile()}, 300);
+								// window.setTimeout(function(){recompile(true)}, 400);
+							}
+						}
+					})
+				}else{
+					if(settings.cocoding.writemode || !settings.cocoding.lockdown){
+						vex.dialog.confirm({
+							unsafeMessage: 'Request to replace code with:\n' + sketch,
+							callback: function (value) {
+								if (value) {
+									cocode.codeReplaceRequest(settings.cocoding.nick, sketch, localStorage[sketch]);
+								}
+							}
+						})
+					}else{
+						vex.dialog.alert({
+							message:"Editor is locked, request to edit.",
+							callback: function(){}
+						})
+					}
+				}
+				*/
 			}else {
 				if(localStorage.hasOwnProperty(sketch)){
 					editor.getSession().off('change', cloneSketch);
@@ -1047,13 +1417,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					pLen = editor.getValue().length;
 					updateSketches();
 
-					setTimeout(function(){p5varsReset();recompile();}, 200);
+					setTimeout(function(){p5varsReset();recompile(true);}, 200);
 
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
 					editor.focus();
-					var checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
-					if(searchSketches(settings.fileName, checkDemo)){
+					let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
+					if(searchSketches(settings.fileName, checkDemo) && demosLocked){
 						editor.getSession().on('change', cloneSketch);
 					}
 					
@@ -1080,64 +1450,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function loadSketchTemplate(){
-			var tempPath = 'includes/templates/p5live_sketch.html';
-			var request = new XMLHttpRequest();
+			let tempPath = 'includes/templates/p5live_sketch.html';
+			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, false);
 			request.send();
-			var el = document.createElement('html');
+			let el = document.createElement('html');
 			el.innerHTML = request.responseText;
 			p5frameTemplate = el;
-		}
-
-		// new technique to avoid accessing p5live_sketch.html sooo many times!
-		function buildSketch(){
-			sketchLoaded = false;
-			var el = p5frameTemplate.cloneNode(true);
-			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
-			
-			// load scripts (add custom options here)
-			for(var i=0; i < includeScripts.length; i++){
-				let s = document.createElement('script');
-				s.type = 'text/javascript';
-				if(window.location.hostname.includes('teddavis.org')){
-					s.src = includeScripts[i].remote;
-				}else{
-					s.src = includeScripts[i].local;
-				}
-				iFrameBody.appendChild(s);
-			}
-
-			// check loadScripts;
-			let sketchTest = editor.getValue();
-			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
-			var sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*["']\])/
-			var sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
-			if(sketchLoadScripts !=undefined){
-				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
-				for(var i=0; i < sketchLoadScripts.length; i++){
-					let s = document.createElement('script');
-					s.type = 'text/javascript';
-					s.src = sketchLoadScripts[i];
-					iFrameBody.appendChild(s);
-				}
-
-			}
-			
-
-			// load sketch
-			let s = document.createElement('script');
-			s.type = 'text/javascript';
-			let sketchCode = editor.getValue();
-			let updateVars = '\npmouseX='+p5vars.mouseX+';\npmouseY='+p5vars.mouseY+';\nmouseX='+p5vars.mouseX+';\nmouseY='+p5vars.mouseY+';\nframeCount='+p5vars.frameCount+';\n';
-			var codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
-
-			s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
-			if(!settings.safeMode){
-				iFrameBody.appendChild(s);
-			}
-
-			// set dynamic html as iframe srcdoc
-			p5frame.srcdoc = el.innerHTML;
 		}
 
 		// load top sketch
@@ -1158,7 +1477,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function searchSketches(sketchName, obj){
-			var sketchesFlat = JSON.stringify(obj);
+			let sketchesFlat = JSON.stringify(obj);
 			if( sketchesFlat.indexOf('"'+sketchName+'"') > -1 ) {
 				return true;
 			}else{
@@ -1166,31 +1485,57 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		function searchJSON(obj, key, value) {
-			return obj.filter(
-				function(obj){return obj[key] == value}
-				);
+		function searchJSON(obj, key, value, out) {
+			if(out == undefined){
+				out = [];
+			}
+			if(Array.isArray(obj)){
+				obj.forEach(function(o){
+					if(o[key] == value){
+						out.push(o);
+					}else
 
-			// build recursive clone, both recursive folders and individual - filter that...
-			// https://stackoverflow.com/questions/38132146/recursively-filter-array-of-objects
+					if(o.contents){
+						searchJSON(o.contents, key, value, out);
+					}
+				});
+			}
+
+			return out;
 		}
 
 
-
 		/* IMPORT/EXPORT SKETCHES */
+
+		function exportJSON(jsonData, jsonFilename){
+			const filename = jsonFilename;
+			const jsonStr = JSON.stringify(jsonData, undefined, 2);
+
+			let element = document.createElement('a');
+			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
+			element.setAttribute('download', filename);
+
+			element.style.display = 'none';
+			document.body.appendChild(element);
+
+			element.click();
+
+			document.body.removeChild(element);
+		}
+
 		// export single sketch to JSON
 		function exportSketch(sketch){
-			var jsonExport = {};
+			let jsonExport = {};
 			jsonExport.sketches = [];
 			jsonExport.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
-			p5f.saveJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp()+'.json');
+			exportJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp()+'.json');
 			if(settings.debugMode){console.log(jsonExport);}
 		}
 
 		// export folder[s] w/ sketches to JSON
 		function exportFolder(folder){
-			var folderObj = searchJSON(settings.sketches, 'name', folder);
-			var tempSketches = {};
+			let folderObj = searchJSON(settings.sketches, 'name', folder);
+			let tempSketches = {};
 			tempSketches.version = settings.version;
 			tempSketches.revision = settings.revision;
 			tempSketches.structure = folderObj;
@@ -1200,12 +1545,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
 				}
 			});
-			p5f.saveJSON(tempSketches, 'P5L_FOLDER_' + folder + '_' + timeStamp() + '.json');
+			exportJSON(tempSketches, 'P5L_FOLDER_' + folder + '_' + timeStamp() + '.json');
 		}
 
 		// export all sketches to JSON
 		function exportAllSketches(){
-			var tempSketches = {};
+			let tempSketches = {};
 			tempSketches.version = settings.version;
 			tempSketches.structure = settings.sketches;
 			tempSketches.revision = settings.revision;
@@ -1215,7 +1560,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
 				}
 			});
-			p5f.saveJSON(tempSketches, 'P5L_SKETCHES_' + timeStamp() + '.json');
+			exportJSON(tempSketches, 'P5L_SKETCHES_' + timeStamp() + '.json');
 		}
 
 		function listSketches(obj){
@@ -1229,7 +1574,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function findValuesHelper(obj, key, filter, saveKey, list) {
 			if (!obj) return list;
 			if (obj instanceof Array) {
-				for (var i in obj) {
+				for (let i in obj) {
 					list = list.concat(findValuesHelper(obj[i], key, filter, saveKey, []));
 				}
 				return list;
@@ -1237,9 +1582,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if (obj[key] && obj[key] == filter) list.push(obj[saveKey]);
 
 			if ((typeof obj == 'object') && (obj !== null) ){
-				var children = Object.keys(obj);
+				let children = Object.keys(obj);
 				if (children.length > 0){
-					for (i = 0; i < children.length; i++ ){
+					for (let i = 0; i < children.length; i++ ){
 						list = list.concat(findValuesHelper(obj[children[i]], key, filter, saveKey, []));
 					}
 				}
@@ -1253,8 +1598,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			for(let i=0; i < data.length; i++){
 				let reader = new FileReader();
 				reader.onload = function(data) {
-					let jsonObj = JSON.parse(event.target.result);
-					let jsonObjList = JSON.parse(event.target.result);
+					let jsonObj = JSON.parse(data.target.result);
+					let jsonObjList = JSON.parse(data.target.result);
 					if(jsonObj.hasOwnProperty('structure')){
 						let jsonStructureSorted = jsonObj.structure.reverse();
 
@@ -1352,7 +1697,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				let rncPName = rnc.name;
 
 				// if duplicate, give unique name
-				if(searchSketches(rnc.name, settings.sketches)){ //  && rnc.type == 'sketch'
+				if(searchSketches(rnc.name, settings.sketches)){ // && rnc.type == 'sketch'
 					rnc.name += '_' + timeStamp();
 					fixNamecheck(objSketches, rncPName, rnc.name);
 				}
@@ -1385,7 +1730,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// recursively check folder containing sketch
 		function recursiveFolderExpand(objStructure, sketch, curFolder) { // obj
-			for (var key in objStructure) { 
+			for (let key in objStructure) { 
 				// sketch, update sketches name too
 				if(objStructure[key].type == 'sketch' && objStructure[key].name == sketch){
 					if(curFolder!= '' && curFolder.toggle != 'expand'){
@@ -1403,11 +1748,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load demos
 		function loadDemos(){
-			var demosPath = 'includes/demos/P5L_demos_4.json';
-			var request = new XMLHttpRequest();
+			let demosPath = 'includes/demos/P5L_demos_20191013.json?' + currentRevision;
+			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send()
-			var jsonObj = JSON.parse(request.responseText);
+			let jsonObj = JSON.parse(request.responseText);
 			recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
 
 			//add structure to top of sketches list
@@ -1427,10 +1772,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function parseSketches(jsonObj){
-			var jsonSketches = jsonObj.sketches.reverse();
-			for(var i=0; i < jsonSketches.length; i++){
-				var sketchName = jsonSketches[i].sketchName;
-				var sketchCode = jsonSketches[i].sketchCode;
+			let jsonSketches = jsonObj.sketches.reverse();
+			for(let i=0; i < jsonSketches.length; i++){
+				let sketchName = jsonSketches[i].sketchName;
+				let sketchCode = jsonSketches[i].sketchCode;
 				localStorage.setItem(sketchName, sketchCode);
 
 				// add to settings if doesn't exist
@@ -1451,9 +1796,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function legacySettings(){
 			if(typeof settings.sketches[0] != 'object'){
-				var order = settings.sketches;
-				var newOrder = [];
-				var oldDemos = ["aboutsketch", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_sphereBox", "textToPoints", "basel.codes", "this is a really long name"];
+				let order = settings.sketches;
+				let newOrder = [];
+				let oldDemos = ["aboutsketch", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_sphereBox", "textToPoints", "basel.codes", "this is a really long name"];
 				order.forEach(function(o){
 					if(!oldDemos.includes(o)){
 						newOrder.push({'name':o, 'type':'sketch'});
@@ -1462,27 +1807,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				settings.sketches = newOrder;
 				updateSettings();
 			}
-			
-			if(searchJSON(settings.sketches, 'name', 'demos').length == 0){			
+
+			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){			
 				loadDemos();
 			}
 
-			if(settings.revision < currentRevision){
-				settings.revision = currentRevision;
-				Object.keys(initSettings).forEach(function(k){
-					if(!settings.hasOwnProperty(k)){
-						settings[k] = initSettings[k];
-					}else if(typeof initSettings[k] === 'object'){
-						Object.keys(initSettings[k]).forEach(function(kk){
-							if(!settings[k].hasOwnProperty(kk)){
-								settings[k][kk] = initSettings[k][kk];
-							}
-						});
-					}
-					settings.refresh = true;
-				});
-				updateSettings();
-			}
+			
 		}
 
 		function getOrder() {
@@ -1525,26 +1855,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// initialize sortable 
 		function initSortable(){
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
-				var selSelected = false;
-				//var curFolder = "";
-				var htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
+				let selSelected = false;
+				//let curFolder = "";
+				let htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
 				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
 				initFolders(menuSketches);
 
 				function recurse(data, curFolder) {
-					var html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
-					for (var key in data) { 
-						var d = data[key];
-						var marq = '';
-						var demoClass = ' drag-item ';
-						var demoFolder = '';
+					let html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
+					for (let key in data) { 
+						let d = data[key];
+						let marq = '';
+						let demoClass = ' drag-item ';
+						let demoFolder = '';
 						if(d.name.length > 15){marq = 'marq';}
 						if(d.type == 'sketch'){
-							var selClass = '';
-							var navSketch = 'onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"';
+							let selClass = '';
+							let navSketch = 'onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"';
 							if(curFolder == 'demos'){
-								navSketch = '';
-								demoClass = ' demo';
+								if(demosLocked){
+									navSketch = '';
+									demoClass = ' demo';
+								}
 							}
 							if(d.name == settings.fileName){
 								selClass = 'sketch-selected';
@@ -1553,9 +1885,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
-							var icon = iconFolderExpand;
-							var navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"';
-							if(curFolder == 'demos'){
+							let icon = iconFolderExpand;
+							let navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"';
+							if(curFolder == 'demos' && demosLocked){
 								navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'demos\');" onmouseleave="hideNav(this);"';
 								demoClass = ' demo';
 								demoFolder = 'id="demofolder"';
@@ -1592,7 +1924,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				if(document.getElementById('demofolder') != undefined){
 					new Sortable(demofolder, {
-						group: {name: 'demos', pull:false,put:false},
+						group: {name: 'demos', pull:false, put:false},
 						filter: '.demo'
 					});
 				}
@@ -1606,7 +1938,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function dragOver(elm){
-			elm.style.minHeight='30px';
+			elm.style.minHeight='40px';
 		}
 
 		// load sortable, restore expanded/collapsed
@@ -1630,7 +1962,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// expand/collapse folders
 		function toggle(elm){
-			var divFolder = elm.parentNode.parentNode;
+			let divFolder = elm.parentNode.parentNode;
 			if(divFolder.dataset.toggle == 'expand'){
 				divFolder.dataset.toggle = 'collapse';
 				elm.innerHTML = iconFolderExpand;
@@ -1660,7 +1992,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else if(elmType == 'user'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="toggleEdit(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconToggleLeft+'</a>';
 			}else if(elmType == 'self'){
-				var reqClass = '';
+				let reqClass = '';
 				if(settings.cocoding.request){
 					reqClass = ' req ';
 				}
@@ -1676,12 +2008,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function addFolder(folderName){
-			var newID = 'folder ' + Math.floor(Math.random()*99);
+			let newID = 'folder ' + Math.floor(Math.random()*99);
 			if(folderName != undefined){
 				newID = folderName;
 			}
-			var newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
-			var tempHTML = menuSketches.innerHTML;
+			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
+			let tempHTML = menuSketches.innerHTML;
 			menuSketches.innerHTML = newFolder + tempHTML;
 			getOrder();
 			if(folderName == undefined){
@@ -1696,12 +2028,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				value: itemName, // placeholder
 				callback: function (value) {
 					if(value){
-						var newName = value.replace(/["']/g, '');
+						let newName = value.replace(/["']/g, '');
 						if(newName != '' && newName != itemName){
-							var sketchesFlat = JSON.stringify(settings.sketches);
+							let sketchesFlat = JSON.stringify(settings.sketches);
 							if( sketchesFlat.indexOf('"'+itemName+'"') > -1 ) {
 								if( sketchesFlat.indexOf('"'+newName+'"') == -1 ) {
-									var sketchesFixed = sketchesFlat.replace('"'+itemName+'"', '"'+newName+'"');
+									let sketchesFixed = sketchesFlat.replace('"'+itemName+'"', '"'+newName+'"');
 									settings.sketches = JSON.parse(sketchesFixed);
 								}else{
 									vex.dialog.alert({
@@ -1715,11 +2047,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							updateSettings();
 							initSortable();
 							if(itemType == 'sketch'){
-								settings.fileName = newName;
 								localStorage.setItem(newName, localStorage[itemName]);
 								localStorage.removeItem(itemName);
-								if(!settings.cocoding.active){
-									setTimeout(function(){ loadSketch(newName); }, 100);
+								if(settings.fileName == itemName){
+									settings.fileName = newName;
+									if(!settings.cocoding.active){
+										setTimeout(function(){ loadSketch(newName); }, 100);
+									}
 								}
 							}
 						}
@@ -1744,7 +2078,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function removeItemProcess(dataID){
-			var selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
+			let selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
 			selElm.querySelectorAll('[data-id]').forEach(function(k){
 				localStorage.removeItem(k.dataset.id);
 				k.remove();
@@ -1764,12 +2098,18 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* EDITOR KEY-CMDS */
 
-		var map = [];
+		let map = [];
 		window.onkeydown = function(event) {			
 			map[event.keyCode] = event.type == 'keydown';
 			
 			if(map[16] && map[17]){
-				addSnippet(event.key);
+				if(event.keyCode == 13){
+					forceRecompile = true;
+					clearTimeout(errorTimer);
+					recompile(true);
+				}else{
+					addSnippet(event.key);
+				}
 				event.preventDefault();
 			}else if(!map[16] && map[17]){ // check !shift and √control
 				if(event.keyCode == 69){ // e = editor toggle
@@ -1789,6 +2129,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					event.preventDefault();
 				}else if(event.keyCode == 13){ // enter = recompile
 					forceRecompile = true;
+					clearTimeout(errorTimer);
 					recompile();
 					event.preventDefault();
 				}else if(event.keyCode == 80){ // p = pause
@@ -1808,7 +2149,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 					event.preventDefault();
 				}else if((event.keyCode >= 48 && event.keyCode <= 57)){ // 	0-9 = preset sketches
-					var keySketch = event.keyCode - 49;
+					let keySketch = event.keyCode - 49;
 					if(keySketch == -1){keySketch = 9;}
 					loadSketch(listSketches(settings.sketches)[keySketch]); // FIX PRESETS
 					event.preventDefault();
@@ -1818,7 +2159,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 
 			if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
-				var eTarget = event.target.tagName.toLowerCase();
+				let eTarget = event.target.tagName.toLowerCase();
 				if(!p5code.focus() && eTarget != 'input' && eTarget != 'textarea'){
 					event.preventDefault();
 				}
@@ -1833,7 +2174,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
-			
 			map[event.keyCode] = event.type == 'keydown';
 			
 			pLen = editor.getValue().length; // len of editor
@@ -1861,19 +2201,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!settings.cocoding.active){
 				localStorage[settings.fileName] = editor.getValue();
 			}
-			checkErrors();			
+			// checkErrors();	// ** maybe turn back on>?		
 		};
 
 		function checkErrors(){
 			clearTimeout(errorTimer);
-			errorTimer = setTimeout(function(){checkErrorsWorker();}, 500);	
+			errorTimer = setTimeout(function(){checkErrorsWorker();}, settings.compileTimer);	
 		}
 
 		function checkErrorsWorker(){
-			var annos = editor.getSession().getAnnotations();
+			let annos = editor.getSession().getAnnotations();
 			if(settings.debugMode){console.log(annos)};
-			var errorsFound = false;
-			for(var i=0; i < annos.length; i++){
+			let errorsFound = false;
+			for(let i=0; i < annos.length; i++){
 				if(annos[i].type == "error"){
 					errorsFound = true;
 				}
@@ -1885,11 +2225,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				clearTimeout(errorTimer);
 				validCode = true;
 				if(settings.autoCompile){
-					var cLen = editor.getValue().length;
-					if(cLen != pLen || settings.cocoding.active){
-						pLen = cLen;
-						recompile();
-					}
+					recompile();
 				}
 			}
 			if(settings.debugMode){console.log('validCode: ' + validCode);}
@@ -1898,7 +2234,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// prevent lost work in default
 		window.addEventListener('beforeunload', function (e) {
 			if(settings.fileName == 'default'){
-				var confirmationMessage = '\o/';
+				let confirmationMessage = '\o/';
 				(e || window.event).returnValue = confirmationMessage; 	//Gecko + IE
 				return confirmationMessage;								//Webkit, Safari, Chrome
 			}
@@ -1908,25 +2244,37 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* COMPILE CODE */
 
-		function recompile(){
-			var currline = editor.getSelectionRange().start.row;
-			var currCode = editor.session.getLine(currline);
+		function recompile(force){
+			let currline = editor.getSelectionRange().start.row;
+			let currCode = editor.session.getLine(currline);
+			curPos = editor.getCursorPosition();
+			
+			// catch missing {}'s
+			let allCode = editor.getValue();
+			let cbCount = {
+				l : (allCode.match(/\{/g) || []).length,
+				r : (allCode.match(/\}/g) || []).length
+			}
+			if(cbCount.l == 0 || cbCount.l != cbCount.r){
+				return false;
+			}
+
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
 				if(validCode){
-					if(editor.getValue().indexOf('function setup()') != -1){
+					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
 						// buildSketch(); // 
 						updateBackground();
 						if(settings.cocoding.active){
 							if(settings.cocoding.sync){
 								if(settings.cocoding.level == 'admin'){
-									buildSketch(); // 
-									cocode.recompile();
+									buildSketch(force); // 
+									cocode.recompile(force);
 								}
 							}else{
-								buildSketch(); // 
+								buildSketch(force); // 
 							}
 						}else{
-							buildSketch(); // 
+							buildSketch(force); // 
 						}
 
 						// if(settings.cocoding.active && settings.cocoding.sync && settings.cocoding.level == 'admin'){
@@ -1943,18 +2291,189 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			forceRecompile = false;
 		}
 
+		// new technique to avoid accessing p5live_sketch.html sooo many times!
+		function buildSketch(force){
+			// softCompile
+			if(force == undefined && sketchLoaded){
+				// technique to only update draw if code changed there (= continous background!)
+				let rawLines = editor.session.getLines(0, editor.session.getLength());
+				let drawPos = [];//{};
+				let drawPosSel = -1;
+				let countBrackets = false;
+				let braces = 0;
+				let softFunction = false;
+				let softClass = false;
+
+				// replace single + multiline comments with \n to avoid processing + keep line numbers same
+				let codeNoComments = editor.getValue().replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'));
+
+				let allLines = codeNoComments.split('\n');
+				
+				// test purging of comments
+				// let offLines = 6;
+				// console.log(rawLines[offLines]);
+				// console.log(allLines[offLines]);
+
+				// extract all functions and their line number
+				for(let i=0; i<allLines.length; i++){
+
+					// catch function or class
+					if(allLines[i].includes('function ') && !countBrackets){
+							countBrackets = true;
+							let functionName = allLines[i].match(/function ([\w\d]*)\(/)[1].trim();
+							drawPos.push({type:'function', name:functionName, start:i});
+					}else if(allLines[i].includes('class ') && !countBrackets){
+							countBrackets = true;
+							let className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
+							drawPos.push({type:'class', name:className, start:i});
+					}
+					
+					// count {} and mark where class/function ends
+					if(countBrackets){
+						if(allLines[i].includes('{')){
+							braces += (allLines[i].match(/{/g) || []).length;
+						}
+						if(allLines[i].includes('}')){
+							braces -= (allLines[i].match(/}/g) || []).length;
+							if(braces == 0){
+								drawPos[drawPos.length-1].end = i;
+								countBrackets = false;
+							}
+						}
+					}
+				}
+
+				// check all changed positions + if custom function
+				let funName = '';
+				for(let i=0; i<drawPos.length; i++){
+					for(let j=0; j < curPositions.length; j++){
+						let cPos = curPositions[j];
+						if(cPos.row >= drawPos[i].start && cPos.row <= drawPos[i].end){
+							// console.log(drawPos[i].name); // debug where change occured
+							if(drawPos[i].name != 'setup' && drawPos[i].name != 'preload' && drawPos[i].type == 'function'){
+								softFunction = true;
+								drawPosSel = i;
+								funName = drawPos[i].name;
+							}else if(drawPos[i].type == 'class'){
+								softClass = true;
+								drawPosSel = i;
+							}
+						}
+					}
+				}
+
+				// if custom function, grab where it's used
+				let functionPos = [];
+				for(let j=0; j<drawPos.length; j++){
+					if(funName == drawPos[j].name){
+						// find lines where drawPos[i].name sits
+						for(let i=0; i<allLines.length; i++){
+							if(allLines[i].includes(drawPos[j].name + '(')){
+								functionPos.push(i);
+							}
+						}
+					}
+				}
+
+				// catch custom functions in preload + setup
+				for(let i=0; i<functionPos.length; i++){
+					for(let j=0; j < curPositions.length; j++){
+						let fPos = functionPos[j];
+						if(fPos >= drawPos[i].start && fPos <= drawPos[i].end){
+							// console.log(drawPos[i].name); // debug where chage occured
+							if(drawPos[i].name == 'setup' || drawPos[i].name == 'preload'){ // && !settings.cocoding.active
+								softFunction = false;
+							}
+						}
+					}
+				}
+
+				// if possible, only overwrite function/class for softCompile
+				if(softClass || softFunction){
+					softCompile(drawPos[drawPosSel].type, drawPos[drawPosSel].name, drawPos[drawPosSel].start, drawPos[drawPosSel].end);
+					curPositions = [];
+					return false; // prevent complete rebuild
+				}
+			}
+
+			// hardCompile
+			sketchLoaded = false;
+			let el = p5frameTemplate.cloneNode(true);
+			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
+			
+			// load scripts remote vs local (*** add custom options here)
+			for(let i=0; i < includeScripts.length; i++){
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+				if(window.location.hostname.includes('teddavis.org')){
+					s.src = includeScripts[i].remote;
+				}else{
+					s.src = includeScripts[i].local;
+					document.title = 'P5LIVE – OFFLINE';
+				}
+				iFrameBody.appendChild(s);
+			}
+
+			// check loadScripts;
+			let sketchTest = editor.getValue();
+			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			let sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*["']\])/
+			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
+			if(sketchLoadScripts !=undefined){
+				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
+				for(let i=0; i < sketchLoadScripts.length; i++){
+					let s = document.createElement('script');
+					s.type = 'text/javascript';
+					s.src = sketchLoadScripts[i];
+					iFrameBody.appendChild(s);
+				}
+
+			}
+			
+
+			// load sketch
+			let s = document.createElement('script');
+			s.type = 'text/javascript';
+			let sketchCode = editor.getValue();
+			let updateVars = '\npmouseX='+p5vars.mouseX+';\npmouseY='+p5vars.mouseY+';\nmouseX='+p5vars.mouseX+';\nmouseY='+p5vars.mouseY+';\nframeCount='+p5vars.frameCount+';\n';
+			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
+
+			s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+			if(!settings.safeMode){
+				iFrameBody.appendChild(s);
+			}
+
+			// set dynamic html as iframe srcdoc
+			p5frame.srcdoc = el.innerHTML;
+			curPositions = [];
+		}
+
+		// softCompile function or class changes
+		function softCompile(codeType, codeName, codeStart, codeEnd){
+			let curCodeTemp = "";
+			if(codeType == 'function'){
+				curCodeTemp = editor.session.getLines(codeStart, codeEnd).join('\n');
+			}else if(codeType == 'class'){
+				curCodeTemp = codeName + " = class {" + editor.session.getLines(codeStart+1, codeEnd).join('\n');
+			}
+			let s = document.createElement('script');
+			s.type = 'text/javascript';
+			s.innerHTML = curCodeTemp;
+			p5f.document.head.appendChild(s);
+		}
+
 
 		function updateBackground(){
-			var bgReg = /background\(([^)]+)\)/;
-			var nonComments = editor.getValue();
+			let bgReg = /background\(([^)]+)\)/;
+			let nonComments = editor.getValue();
 			nonComments = nonComments.replace(/\s*\/\/.*\n/g, '\n').replace(/\s*\/\*[\s\S]*?\*\//g, '');
-			var bgMatches = bgReg.exec(nonComments);
+			let bgMatches = bgReg.exec(nonComments);
 			if(bgMatches != null){
-				var newBG = '';
+				let newBG = '';
 				if(bgMatches[1].includes('#')){
 					newBG = bgMatches[1].replace(/["']/g, '');
 				}else{
-					var cols = bgMatches[1].split(',');
+					let cols = bgMatches[1].split(',');
 					if(cols.length > 2){
 						newBG = rgb2hex(cols[0].trim(), cols[1].trim(), cols[2].trim());
 					}else{
@@ -1967,26 +2486,26 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function rgb2hex(red, green, blue) {
-			var rgb = blue | (green << 8) | (red << 16);
+			let rgb = blue | (green << 8) | (red << 16);
 			return '#' + (0x1000000 + rgb).toString(16).slice(1)
 		}
 
 		function loadScripts(elm){
 			if(settings.debugMode){console.log(settings.scripts);}
-			for(var i=0; i < settings.scripts.length; i++){
+			for(let i=0; i < settings.scripts.length; i++){
 				elm.appendChild(loadScript(settings.scripts[i]));
 			}
 		}
 
 		function loadScript(scriptPath){
-			var ps = document.createElement('script');
+			let ps = document.createElement('script');
 			ps.type = 'text/javascript';
 			ps.src = scriptPath;
 			return ps;
 		}
 
 		function tidyCode(){
-			var tempCode = js_beautify(editor.getValue(), beautifyOptions);
+			let tempCode = js_beautify(editor.getValue(), beautifyOptions);
 			editor.setValue(tempCode, 1);
 		}
 
@@ -1994,17 +2513,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* SNIPPETS */
 		function loadSnippets(){
-			var snippetsPath = 'includes/demos/P5L_snippets_4.json?'+currentRevision;
-			var request = new XMLHttpRequest();
+			let snippetsPath = 'includes/demos/P5L_snippets_20190815.json?' + currentRevision;
+			let request = new XMLHttpRequest();
 			request.open('GET', snippetsPath, false);
 			request.send();
-			var jsonObj = JSON.parse(request.responseText);
+			let jsonObj = JSON.parse(request.responseText);
 			snippets = jsonObj.snippets;
-			var dropCommands = [];
-			var cmds = editor.commands;
-			for(var i=0; i < snippets.length; i++){
-				var snippetKey = snippets[i].key+'';
-				var findCommand = cmds.commandKeyBinding['ctrl-shift-'+snippetKey.toLowerCase()];
+			let dropCommands = [];
+			let cmds = editor.commands;
+			for(let i=0; i < snippets.length; i++){
+				let snippetKey = snippets[i].key+'';
+				let findCommand = cmds.commandKeyBinding['ctrl-shift-'+snippetKey.toLowerCase()];
 				if(findCommand != undefined){
 					dropCommands.push(findCommand.name);
 				}
@@ -2013,30 +2532,30 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function addSnippet(loadSnippet){
-			var snippetIndex = snippets.map(function(d) { return d['key']; }).indexOf(loadSnippet);
+			let snippetIndex = snippets.map(function(d) { return d['key']; }).indexOf(loadSnippet);
 			if(snippetIndex == -1){
 				return false;
 			}
-			var snippetCode = snippets[snippetIndex].code;
-			var addGlobalTop = snippetCode.global.top;
-			var addGlobalBottom = snippetCode.global.bottom;
-			var addSetup = snippetCode.setup;
-			var addDrawTop = snippetCode.draw.top;
-			var addDrawBottom = snippetCode.draw.bottom;
+			let snippetCode = snippets[snippetIndex].code;
+			let addGlobalTop = snippetCode.global.top;
+			let addGlobalBottom = snippetCode.global.bottom;
+			let addSetup = snippetCode.setup;
+			let addDrawTop = snippetCode.draw.top;
+			let addDrawBottom = snippetCode.draw.bottom;
 
-			var curCode = editor.getValue();			
-			var codeGlobalTop = addGlobalTop + '\n' + curCode;
-			var codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
-			var codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
-			var codeDrawBottom = addCode(codeDrawTop, addDrawBottom, 'draw', 'bottom');
-			var codeGlobalBottom = codeDrawBottom + '\n\n' + addGlobalBottom;
+			let curCode = editor.getValue();			
+			let codeGlobalTop = addGlobalTop + '\n' + curCode;
+			let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
+			let codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
+			let codeDrawBottom = addCode(codeDrawTop, addDrawBottom, 'draw', 'bottom');
+			let codeGlobalBottom = codeDrawBottom + '\n\n' + addGlobalBottom;
 
 			editor.setValue(codeGlobalBottom, 1);
 			tidyCode();
 		}
 
 		function addCode(codeBase, codeInsert, funName, codePos){
-			var tempCode, tempPos = addPosition(codeBase, funName);
+			let tempCode, tempPos = addPosition(codeBase, funName);
 			if(codePos === 'bottom'){
 				tempCode = [codeBase.slice(0, tempPos[1]), ""+codeInsert+"\n", codeBase.slice(tempPos[1])].join('');
 			}else if(codePos === 'top'){
@@ -2086,6 +2605,26 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function autoCompileUpdate(){
 			checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
+			if(settings.autoCompile){
+				settingsCompileTimer.style.display = 'block';
+			}else{
+				settingsCompileTimer.style.display = 'none';				
+			}
+		}
+
+		// auto-compile delay on keyup
+		function compileTimerChange(){
+			settings.compileTimer = settingsCompileTimer.value;
+			updateSettings();
+		}
+
+		function compileTimerUpdate(){
+			for(let i=0; i < settingsCompileTimer.options.length; i++){
+				let opt = settingsCompileTimer.options[i];
+				if(settings.compileTimer == opt.value){
+					settingsCompileTimer.selectedIndex = i;
+				}
+			}
 		}
 
 
@@ -2103,6 +2642,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// loop/noLoop on window blur
 
 		window.onblur = function () { 
+			// deactivate modifier keys
+			map[16] = false;
+			map[17] = false;
+
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'blur');
 			}
@@ -2111,10 +2654,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					p5f.noLoop();
 				}
 			}
-
-
 		}
+
 		window.onfocus = function () { 
+			// deactivate modifier keys
+			map[16] = false;
+			map[17] = false;
+
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'focus');
 			}
@@ -2124,7 +2670,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 
-		// toggle fullscreen
+		// toggle fullscreen (better to use browser native fullscreen)
 		function fullscreenToggle(){
 			settings.fullscreenMode = !settings.fullscreenMode;
 			fullscreenUpdate();
@@ -2194,6 +2740,37 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}	
 		}
 
+		//linenumbers toggle
+		function linenumbersToggle(){
+			settings.linenumbers = !settings.linenumbers;
+			linenumbersUpdate();
+		}
+
+		function linenumbersUpdate(){
+			checkToggle('linenumbers', settings.linenumbers, settingsLinenumbers);
+			if(!settings.linenumbers){
+				editor.setOptions({
+					showLineNumbers: false, // false
+					showGutter: false, // false
+				});
+			}else{
+				editor.setOptions({
+					showLineNumbers: true, // false
+					showGutter: true, // false
+				});
+			}	
+		}
+
+		//exportcode toggle
+		function exportcodeToggle(){
+			settings.exportCode = !settings.exportCode;
+			linenumbersUpdate();
+		}
+
+		function exportcodeUpdate(){
+			checkToggle('exportCode', settings.exportCode, settingsExportcode);
+		}
+
 		//BGactive toggle
 		function themeBGactiveToggle(){
 			settings.themeBGactive = !settings.themeBGactive;
@@ -2220,7 +2797,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		// constant frameCount (great for recompiling)
-		var fcTimer = setInterval(function(){
+		let fcTimer = setInterval(function(){
 			if(sketchLoaded && p5f.frameCount != undefined){
 				p5vars.frameCount = p5f.frameCount;
 				p5vars.mouseX = p5f.mouseX;
@@ -2294,17 +2871,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!settings.menuMode){
 				menuPanel.style.marginRight = '-250px';
 				menuSwitch.innerHTML = '«';
+				// menuPanel.style.overflow = "visible"; // test again w/ chromium
 			}else{
 				menuPanel.style.marginRight = '0px';
 				menuSwitch.innerHTML = '»';
+				// menuPanel.style.overflow = "hidden";
 			}
 		}
 
 
 		// load theme
 		function loadTheme(){
-			for(var i=0; i < menuTheme.options.length; i++){
-				var opt = menuTheme.options[i];
+			for(let i=0; i < menuTheme.options.length; i++){
+				let opt = menuTheme.options[i];
 				if(settings.theme == opt.value){
 					menuTheme.selectedIndex = i;
 				}
@@ -2318,33 +2897,23 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			updateSettings();
 		}
 
-
-		// load themeBG 
-		function loadBG(){
-			settingsBG.value = settings.themeBG;
-			// menuBG.style.backgroundColor = "#" + settings.themeBG;
-			// styleMenu();
-		}
-
 		// set themeBG
 		function setBG(val){
 			if(settings.themeBG != val){
-				settings.themeBG = val + '';
+				settings.themeBG = '#'+ val;
 				updateSettings();
 				editor.renderer.updateFull();
-				// menuBG.style.backgroundColor = "#" + settings.themeBG;
-				// styleMenu();
 			}
 		}
 
 		// paused for launch.. to visit in future!
 		function styleMenu(){
 			// buttons
-			setStyle('class', 'menu-button', 'backgroundColor', ColorLuminance(settings.themeBG, .4));
+			//setStyle('class', 'menu-button', 'backgroundColor', ColorLuminance(settings.themeBG, .4));
 		}
 
 		function setStyle(styleType, styleElm, styleAttribute, styleChange){
-			var elms;
+			let elms;
 			if(styleType == 'class'){
 				elms = document.getElementsByClassName(styleElm);
 			}else if(styleType == 'tag'){
@@ -2352,12 +2921,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else if(styleType == 'id'){
 				elms = document.getElementById(styleElm);
 			}
-			for(var i=0; i < elms.length; i++){
+			for(let i=0; i < elms.length; i++){
 				elms[i].style[styleAttribute] = styleChange;
 			}
 		}
 
 		// https://www.sitepoint.com/javascript-generate-lighter-darker-color/
+		/*
 		function ColorLuminance(hex, lum) {
 			// validate hex string
 			hex = String(hex).replace(/[^0-9a-f]/gi, '');
@@ -2367,8 +2937,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			lum = lum || 0;
 
 			// convert to decimal and change luminosity
-			var rgb = '#', c, i;
-			for (i = 0; i < 3; i++) {
+			let rgb = '#', c;
+			for (let i = 0; i < 3; i++) {
 				c = parseInt(hex.substr(i*2,2), 16);
 				c = Math.round(Math.min(Math.max(0, c + (c * lum)), 255)).toString(16);
 				rgb += ('00'+c).substr(c.length);
@@ -2376,6 +2946,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			return rgb;
 		}
+		*/
 
 		// adjust fontsize
 		function fontSizeAdjust(newVal){
@@ -2395,39 +2966,51 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* LOAD VARIOUS SKETCHES */
-
 		function loadDefault(){
-			var newID = 'sketch_' + timeStamp();
-			var newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
-			var tempHTML = menuSketches.innerHTML;
-			menuSketches.innerHTML = newSketch + tempHTML;
-			
-			
-			settings.fileName = newID;
-			localStorage.setItem(settings.fileName, p5template);
-			editor.setValue(p5template, 1);
-			editor.gotoLine(7, 1, false);
-			updateSettings();
-			editor.focus();
-			getOrder();
-			setTimeout(function(){ recompile(); }, 100);
+			if(!settings.cocoding.active){
+				let newID = 'sketch_' + timeStamp();
+				let newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
+				let tempHTML = menuSketches.innerHTML;
+				menuSketches.innerHTML = newSketch + tempHTML;
+				
+				settings.fileName = newID;
+				localStorage.setItem(settings.fileName, p5template);
+				editor.setValue(p5template, 1);
+				editor.gotoLine(7, 1, false);
+				updateSettings();
+				editor.focus();
+				getOrder();
+				setTimeout(function(){ recompile(true); }, 100);
+			}else if(settings.cocoding.level == 'admin'){
+				vex.dialog.confirm({
+					message:'Replace code with default template?',
+					callback: function(value){
+						if(value){
+							cocode.codeReplace({'code':p5template});
+							// editor.setValue(p5template, 1);
+							// editor.gotoLine(7, 1, false);
+							// editor.focus();
+						}
+					}
+				})
+			}
 		}
 
 		function loadAbout(){
 			settings.fileName = 'p5liveabout';
 
-			var demosPath = 'README.md';
-			var request = new XMLHttpRequest();
+			let demosPath = 'README.md?' + settings.revision;
+			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send();
-			var ptContent = htmlToText(markdown.toHTML( request.responseText ));
+			let ptContent = htmlToText(markdown.toHTML( request.responseText ));
 
-			var p5liveabout = '/*\n\n' + ptContent + '*/\n\n' + p5liveaboutSketch;
+			let p5liveabout = '/*\n\n' + ptContent + '*/\n\n' + p5liveaboutSketch;
 			localStorage.setItem(settings.fileName, p5liveabout);
 			editor.setValue(p5liveabout, 1);
 			editor.focus();
 			updateSettings();
-			setTimeout(function(){ recompile(); }, 100);
+			setTimeout(function(){ recompile(true); }, 100);
 		}
 
 		// HTML to TXT
@@ -2444,14 +3027,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			html = html.replace(/<\/li>/g, '\n');
 			html = html.replace(/<\/ul>/g, '\n\n');
 			html = html.replace(/<\/div>/g, '\n');
-			html = html.replace(/<img([\w\W]+?)><br\/>/g, '');
+			html = html.replace(/&lt;img([\w\W]+?)&gt;<br\/>/g, '');
 			html = html.replace(/<\/h.>/g, '\n----------------\n');
-			html = html.replace(/<br>/g, '\n'); html = html.replace(/<br( )*\/>/g, '\n');
+			html = html.replace(/<br>/g, '\n'); 
+			html = html.replace(/<br( )*\/>/g, '\n');
+			html = html.replace(/(.{80}.\s)/g, "$1\n");
 
 			//parse html into text
-			var dom = (new DOMParser()).parseFromString('<!doctype html><body>' + html, 'text/html');
-			var links = dom.querySelectorAll('a');
-			for(var i=0; i < links.length; ++i){
+			let dom = (new DOMParser()).parseFromString('<!doctype html><body>' + html, 'text/html');
+			let links = dom.querySelectorAll('a');
+			for(let i=0; i < links.length; ++i){
 				links[i].innerHTML = links[i].href;
 			}
 			return dom.body.textContent;
@@ -2510,28 +3095,49 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function savePNG(){
 			if(sketchLoaded){
 				p5f.save('P5L_' + settings.fileName + '_' + timeStamp() + '.png');
+				if(settings.exportCode){
+					exportSketch(settings.fileName);
+				}
 			}
 		}
 
 		function loadHTMLTemplate(){
-			var tempPath = 'includes/templates/p5live_savehtml.html';
-			var request = new XMLHttpRequest();
+			let tempPath = 'includes/templates/p5live_savehtml.html';
+			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, false);
 			request.send();
-			var el = document.createElement('html');
+			let el = document.createElement('html');
 			el.innerHTML = request.responseText;
 			p5htmlTemplate = el;
 		}
 
 		function saveHTML(){
-			var el = p5htmlTemplate.cloneNode(true);
-			var iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
+			let el = p5htmlTemplate.cloneNode(true);
+			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 
-			var s = document.createElement('script');
+			// check loadScripts;
+			let sketchTest = editor.getValue();
+			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			let sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*["']\])/
+			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
+			if(sketchLoadScripts !=undefined){
+				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
+				for(let i=0; i < sketchLoadScripts.length; i++){
+					let s = document.createElement('script');
+					s.type = 'text/javascript';
+					s.src = sketchLoadScripts[i];
+					iFrameBody.appendChild(s);
+					iFrameBody.innerHTML += '\n\n';
+				}
+
+			}
+
+			let s = document.createElement('script');
 			s.type = 'text/javascript';
 			s.innerHTML = '\n//' +settings.fileName+ '\n\n' + editor.getValue() +'\n\n'+ p5custom.value;
 			iFrameBody.appendChild(s);
-			download(el.innerHTML, 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
+			iFrameBody.innerHTML += '\n\n';
+			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
 		}
 
 		
@@ -2558,26 +3164,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function getRef(){
 			if(location.hash != undefined && location.hash.length > 1){
-				var refPieces = location.hash.split('/');
-				var grabRef = '';
+				let refPieces = location.hash.split('/');
+				let grabRef = '';
 				if(refPieces.length == 3){
 					ref.innerHTML = '';
 					grabRef = location.hash.split('/')[2];
 				}else{
 					allRef();
-					window.location = window.location.hash;
+					// window.location = window.location.hash;
 				}
 
-				var snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(grabRef);
-				var ex = refList[snippetIndex];
-				
-				var paramsCollect = [];
-				var paramsDesc = [];
+				let snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(decodeURI(grabRef));
+				let ex = refList[snippetIndex];
+				let paramsCollect = [];
+				let paramsDesc = [];
 				if(ex.overloads != undefined || ex.params != undefined){
 					ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
 					if(ex.overloads != undefined){
 						ex.overloads.forEach(function(ol){
-							var params = [];
+							let params = [];
 							ol.params.forEach(function(param){
 								if(param.optional){
 									params.push('[' + param.name + ']');
@@ -2587,15 +3192,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								
 								if(paramsCollect.indexOf(param.name) === -1){
 									paramsCollect.push(param.name);
-									var paramHTML = '<div class="param"><div class="param-name">'+ param.name +"</div> "+ param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
+									let paramHTML = '<div class="param"><div class="param-name">'+ param.name +"</div> "+ param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
 									paramsDesc.push(paramHTML);
 								}
 
 							})
-							ref.innerHTML += '<div class="param-code">' + ex.name + '(' + params.join(', ') + ')</div>';
+							let paramsJoin = '';
+							if(params.length > 0){
+								paramsJoin = '(' + params.join(', ') + ')';
+							}
+							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 						})
 					}else{
-						var params = [];
+						let params = [];
 						ex.params.forEach(function(param){
 							if(paramsCollect.indexOf(param.name) === -1){
 								if(param.optional){
@@ -2603,13 +3212,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 								}else{
 									params.push(param.name);
 								}
-								var paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> ' + param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
+								let paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> ' + param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
 								paramsDesc.push(paramHTML);
 								paramsCollect.push(param.name);
 							}
 						})
 						if(ex.module != 'Constants'){
-							ref.innerHTML += '<div class="param-code">' + ex.name + '(' + params.join(', ') + ')</div>';
+							let paramsJoin = '';
+							if(params.length > 0){
+								paramsJoin = '(' + params.join(', ') + ')';
+							}
+							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 						}
 					}
 
@@ -2617,11 +3230,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
 				}
 
-				var desc = '';
+				let desc = '';
 				if(ex.descriptionHTML != undefined){
 					desc = ex.descriptionHTML;
 				}
-				ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc;
+
+				let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">» p5.js reference</a>'
+
+				ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc + refLink;
 
 			}else{
 				allRef();
@@ -2630,17 +3246,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function allRef(){
 			ref.innerHTML = '<div class="ref-title">p5.js reference</div><br>';
-			var all = [];
-			var grouped = groupBy(refList, (c) => c.module);
+			let all = [];
+			let grouped = groupBy(refList, (c) => c.module);
 			Object.keys(grouped).forEach(function(k){
-				var modHTML = '<div class="module" name="' + k + '" id="' + k + '"><div class="module-name">' + k + '</div>';
-				var modAll = [];
+				let modHTML = '<div class="module" name="' + k + '" id="' + k + '"><div class="module-name">' + k + '</div>';
+				let modAll = [];
 				grouped[k].forEach(function(ci){
 					if(ci.name != ''){
-						var title = '';
-						var desc = '';
+						let title = '';
+						let desc = '';
 						title += ci.code.join('\n') + '\n\n';
-						var params = [];
+						let params = [];
 						ci.params.forEach(function(cip){
 							params.push(cip.name + ' - ' + cip.description);
 						});
@@ -2649,7 +3265,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 							desc = ci.description;
 						}
 						title += desc;
-						modAll.push('<a href="#/p5/' + ci.name + '" title="' + title + '">' + ci.name + '</a><br>');
+						modAll.push('<a href="#/p5/' + htmlEntities(ci.name) + '" title="' + htmlEntities(title) + '">' + htmlEntities(ci.name) + '</a><br>');
 					}
 				});
 				modHTML += modAll.join('');
@@ -2658,21 +3274,38 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			});
 
 			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
+
+			// jump to category of viewed ref
+			if(location.hash != undefined && location.hash.length > 1){
+				let refPieces = location.hash.split('/');
+				if(refPieces.length == 1){
+					let refTopic = location.hash.substring(1);
+
+					const overflow = document.getElementById('refholder');
+					let anchor = document.getElementById(refTopic);
+
+					const rectOverflow = ref.getBoundingClientRect();
+					const rectAnchor = anchor.getBoundingClientRect();
+
+					overflow.scrollTop = rectAnchor.top - rectOverflow.top;
+				}
+			}
+
 			return false;
 		}
 
 		function loadRef(){
-			var refPath = 'includes/p5/data.js';
-			var request = new XMLHttpRequest();
+			let refPath = 'includes/p5/data.js';
+			let request = new XMLHttpRequest();
 			request.open('GET', refPath, false);
 			request.send()
-			var jsonObj = JSON.parse(request.responseText.replace('referenceData = ', '')).classitems;
-			var grouped = groupBy(jsonObj, (c) => c.module);
+			let jsonObj = JSON.parse(request.responseText.replace('referenceData = ', '')).classitems;
+			let grouped = groupBy(jsonObj, (c) => c.module);
 			
 			// filter to own needs
 			Object.keys(grouped).forEach(function(k){
 				grouped[k].forEach(function(ci){
-					var classItem = {};
+					let classItem = {};
 					classItem.module = k;
 					if(ci.name != undefined){
 						classItem.name = ci.name;
@@ -2685,14 +3318,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}else{
 						classItem.description = '';
 					}
-					var classCode = [];
-					var classParams = [];
-					var paramsCollect = [];
+					let classCode = [];
+					let classParams = [];
+					let paramsCollect = [];
 
 					if(ci.overloads != undefined || ci.params != undefined){
 						if(ci.overloads != undefined){
 							ci.overloads.forEach(function(ol){
-								var params = [];
+								let params = [];
 								ol.params.forEach(function(param){
 									if(param.optional){
 										params.push('[' + param.name + ']');
@@ -2702,14 +3335,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 									
 									if(paramsCollect.indexOf(param.name) === -1){
 										paramsCollect.push(param.name);						
-										var paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+										let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
 										classParams.push({'name':param.name, 'description':paramDesc});
 									}
 								})
 								classCode.push(ci.name + '(' + params.join(', ') + ')');
 							})
 						}else{
-							var params = [];
+							let params = [];
 							ci.params.forEach(function(param){
 								if(paramsCollect.indexOf(param.name) === -1){
 									if(param.optional){
@@ -2718,7 +3351,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 										params.push(param.name);
 									}
 									paramsCollect.push(param.name);
-									var paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+									let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
 									classParams.push({'name':param.name, 'description':paramDesc});
 								}
 							})
@@ -2749,6 +3382,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
 		}
 
+		// clean up invalid characters
+		function htmlEntities(str) {
+			return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+		}
+
 
 
 		/* iFrame magic */
@@ -2760,11 +3398,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		window.addEventListener('mouseup', passMouseClick);
 		window.addEventListener('mousedown', passMouseClick);
 		
-		var fields = ['pageX','pageY','screenX', 'screenY', 'clientX', 
+		let fields = ['pageX','pageY','screenX', 'screenY', 'clientX', 
 		'clientY','ctrlKey', 'altKey', 'shiftKey', 'metaKey',
 		'button', 'buttons', 'relatedTarget', 'region'];
 		
-		var pass = false;
+		let pass = false;
 		function passMouse(event){
 			pass = !pass;
 			if (pass) {
@@ -2777,7 +3415,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		};
 
 		function getOpts(event){
-			var opts = {};
+			let opts = {};
 				fields.forEach(function(f) {
 					if (f in event) {
 						opts[f] = event[f];
@@ -2787,8 +3425,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function processMouse(event){
-			var opts = getOpts(event);
-			var copy = new MouseEvent(event.type, opts);
+			let opts = getOpts(event);
+			let copy = new MouseEvent(event.type, opts);
 			
 			if(settings.cocoding.active && settings.cocoding.sync){
 				if(settings.cocoding.level == 'admin'){
@@ -2822,7 +3460,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		});
 
 		function keyOpts(ev){
-			var e = {};
+			let e = {};
 			e.key=ev.key; 
 			e.keyCode=ev.keyCode; 
 			e.which=ev.keyCode; 
@@ -2835,8 +3473,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function sendKey(type, ev, elm){
-			var opts = keyOpts(ev);
-			var copy = new KeyboardEvent(type, opts);
+			let opts = keyOpts(ev);
+			let copy = new KeyboardEvent(type, opts);
 
 			if(settings.cocoding.active && settings.cocoding.sync){
 				if(settings.cocoding.level == 'admin'){
@@ -2870,7 +3508,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* View in fullscreen */
 		function openFullscreen() {
-			var elem = document.documentElement;
+			let elem = document.documentElement;
 			if (elem.requestFullscreen) {
 				elem.requestFullscreen();
 			} else if (elem.mozRequestFullScreen) { /* Firefox */
@@ -2899,8 +3537,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/*	COCODING */
 		function makeid(charCount){
-			var text = "";
-			for( var i=0; i < charCount; i++ )
+			let text = "";
+			for( let i=0; i < charCount; i++ )
 				text += chars.charAt(Math.floor(Math.random() * chars.length));
 			return text;
 		}
@@ -2917,7 +3555,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				})
 			}else{
 				cocodingReset();
-				var sessID = makeid(5);
+				let sessID = makeid(5);
 				settings.cocoding.active = true;
 				settings.cocoding.token = hashCode(sessID);
 				updateSettings();
@@ -2949,9 +3587,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			
 		}
 
+		// reset all cocoding except nick + color
 		function cocodingReset(){
 			Object.keys(initSettings.cocoding).forEach(function(cc){
-				if(cc != 'nick'){
+				if(cc != 'nick' && cc != 'color'){
 					settings.cocoding[cc] = initSettings.cocoding[cc];
 				}
 			});
@@ -2959,7 +3598,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function copyLink(elm){
-			var dummy = document.createElement('input'),
+			let dummy = document.createElement('input'),
 			text = window.location.href;
 
 			document.body.appendChild(dummy);
@@ -2969,7 +3608,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			document.body.removeChild(dummy);
 			
 			// share info
-			var oldContent = elm._tippy.props.content;
+			let oldContent = elm._tippy.props.content;
 			elm._tippy.setContent('Copied!');
 			elm._tippy.show(200);
 			setTimeout(function(){
@@ -2983,11 +3622,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				message: 'Replace current code with CoCodeLayers?',
 				callback: function (value) {
 					if (value) {
-						var collabPath = 'includes/demos/P5L_cocodeLayers_20190429.json';
-						var request = new XMLHttpRequest();
+						let collabPath = 'includes/demos/P5L_cocodeLayers_20190429.json';
+						let request = new XMLHttpRequest();
 						request.open('GET', collabPath, false);
 						request.send()
-						var jsonObj = JSON.parse(request.responseText);
+						let jsonObj = JSON.parse(request.responseText);
 						editor.setValue(jsonObj.sketches[0].sketchCode, 1);
 					}
 				}
@@ -3001,7 +3640,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function updateToggleLockdown(){
-			var settingsLockdown = document.getElementById('cocode-lockdown');
+			let settingsLockdown = document.getElementById('cocode-lockdown');
 			if(settings.cocoding.lockdown){
 				settingsLockdown.innerHTML = iconLock;
 			}else{
@@ -3010,7 +3649,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			toggleButtonActive(settingsLockdown, settings.cocoding.lockdown);
 
 			if(settings.cocoding.level == 'admin'){
-				var settingsSync = document.getElementById('cocode-sync');
+				let settingsSync = document.getElementById('cocode-sync');
 				if(settings.cocoding.lockdown){
 					settingsSync.removeAttribute('disabled');
 				}else{
@@ -3030,7 +3669,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		}
 
 		function updateToggleSync(){
-			var settingsSync = document.getElementById('cocode-sync');
+			let settingsSync = document.getElementById('cocode-sync');
 			toggleButtonActive(settingsSync, settings.cocoding.sync);
 		}
 
