@@ -296,26 +296,30 @@ class Namespace {
 				syncUsers();
 			});
 
-			socket.on('requestCode', function(reqData){
+			socket.on('codeReplaceRequest', function(reqData){
 				if(!settings.request){
 					Object.keys(settings.people).forEach(function(k){
 						if(settings.people[k].level == 'admin'){
 							settings.request = true;
-							io.of(settings.name).to(`${k}`).emit('requestCode', reqData);
+							io.of(settings.name).to(`${k}`).emit('codeReplaceRequest', reqData);
 						}
 					});
 				}else{
-					socket.emit('requestCodeBusy');
+					socket.emit('codeReplaceBusy');
 				}
 			})
 
-			socket.on('requestCodeReject', function(reqData){
+			socket.on('codeReplaceReject', function(reqData){
 				settings.request = false;
 				Object.keys(settings.people).forEach(function(k){
 					if(settings.people[k].nick == reqData.userID){
-						io.of(settings.name).to(`${k}`).emit('requestCodeReject', reqData);
+						io.of(settings.name).to(`${k}`).emit('codeReplaceReject', reqData);
 					}
 				});
+			})
+
+			socket.on('codeReplace', function(reqData){
+				io.of(settings.name).emit('codeReplace', reqData);
 			})
 			
 			socket.on('editRequest', function(reqData){
