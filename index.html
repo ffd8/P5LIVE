@@ -455,39 +455,45 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		let iconUserCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
 
 		// code-line color picker
-		const pickr = Pickr.create({
-			el: '.pickr',
-			theme: 'nano', // or 'monolith', or 'nano'
-			default: settings.themeBG,
-
-			components: {
-				preview: true,
-				opacity: true,
-				hue: true,
-
-				interaction: {
-					input: true,
-					cancel:false,
-					save: true
-				},
-			},
-
-			// rename buttons
-			strings: {
-				save: 'Set', // Default for save button
-				cancel: 'Close' // Default for cancel button
+		function loadColorPicker(){
+			let defaultColor = settings.themeBG;
+			if(defaultColor.includes('#')){
+				defaultColor = defaultColor.substring(1);
 			}
-		});
+			let pickr = Pickr.create({
+				el: '.pickr',
+				theme: 'nano', // or 'monolith', or 'nano'
+				default: defaultColor,
 
-		pickr.on('init', (color, instance) => {
-			setBG(settings.themeBG.substring(1));
-		}).on('change', (color, instance) => {
-			setBG(color.toHEXA().join(''));
-		}).on('save', (color, instance) => {
-			instance.hide();
-		}).on('cancel', instance => {
-			instance.hide();
-		});
+				components: {
+					preview: true,
+					opacity: true,
+					hue: true,
+
+					interaction: {
+						input: true,
+						cancel:false,
+						save: true
+					},
+				},
+
+				// rename buttons
+				strings: {
+					save: 'Set', // Default for save button
+					cancel: 'Close' // Default for cancel button
+				}
+			});
+
+			pickr.on('init', (color, instance) => {
+				setBG(defaultColor);
+			}).on('change', (color, instance) => {
+				setBG(color.toHEXA().join(''));
+			}).on('save', (color, instance) => {
+				instance.hide();
+			}).on('cancel', instance => {
+				instance.hide();
+			});
+		}
 
 
 		let options = {
@@ -1226,7 +1232,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// react to settings once gathered
 		function loadSettings(){
 			// make sure all settings are there
-			if(settings.revision < currentRevision){
+			if(settings.revision == undefined || settings.revision < currentRevision){
 				settings.revision = currentRevision;
 				Object.keys(initSettings).forEach(function(k){
 					if(!settings.hasOwnProperty(k)){
@@ -1259,9 +1265,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			loadSnippets();
 			loadSketchTemplate();
 			loadHTMLTemplate(); 
+			loadColorPicker();
 			vex.defaultOptions.className = 'vex-theme-plain'
 			legacySettings(); // update sketches from 1.0.2
-			settings.cocoding.active = false;
+			if(settings.cocoding != undefined){
+				settings.cocoding.active = false;
+			}else{
+				// settings = initSettings;
+				// updateSettings();
+				// window.setTimeout(function(){location.reload(true);}, 300);
+			}
 			settings.safeMode = false;
 			updateSketches();
 			hideLoader();
