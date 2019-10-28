@@ -515,6 +515,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
 			'remote':'https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.min.js'
+		},{
+			'local':'includes/p5/addons/p5.dom.min.js',
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js'
 		}, {
 			'local':'includes/p5/addons/p5.sound.min.js',
 			'remote':'https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/addons/p5.sound.min.js'
@@ -2263,10 +2266,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			curPos = editor.getCursorPosition();
 			
 			// catch missing {}'s
-			let allCode = editor.getValue();
+			let codeNoComments = editor.getValue().replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'));
+
 			let cbCount = {
-				l : (allCode.match(/\{/g) || []).length,
-				r : (allCode.match(/\}/g) || []).length
+				l : (codeNoComments.match(/\{/g) || []).length,
+				r : (codeNoComments.match(/\}/g) || []).length
 			}
 			if(cbCount.l == 0 || cbCount.l != cbCount.r){
 				return false;
