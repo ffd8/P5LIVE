@@ -13,13 +13,8 @@
 			margin:0;
 
 		}
-		#catchfocus{
-			position: fixed;
-			width:100vw;
-			height:100vh;
-			top:0;
-			left:0;
-			z-index:99;
+		input{
+			cursor:crosshair;
 		}
 	</style>
 	<script type="text/javascript">
@@ -72,8 +67,9 @@
 					p5console.style.background = "#000";
 					p5console.style.borderTop = "1px solid #444";
 					p5console.style.pointerEvents = "all";
-					p5code.style.height = "calc(100vh - 40px)";
+					p5code.style.height = "calc(100vh - 40px)"; // calc(100vh - 40px)
 					window.parent.console.log(m); // also send to parent console!
+					clearTimeout(p5consoleTimer);
 					p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
 				}
 			}       
@@ -86,6 +82,38 @@
 			p5console.style.pointerEvents = "none";
 			p5code.style.height = "100vh";
 		}
+
+
+		// iFrame got focus()?!
+		document.onkeydown = function(event){
+			// on CONTROL, return focus and activate CONTROL
+			if(event.keyCode == 17){
+				window.parent.focus();
+				window.setTimeout(function(){window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));}, 100);
+			}
+		}
+
+		// test if focus lost
+		window.onfocus = function() {
+		  // console.log('stole lost!');
+		};
+
+		// forward mouse/key events to parent
+		document.addEventListener('mousemove', forwardMouse);
+		document.addEventListener('mouseup', forwardMouse);
+		document.addEventListener('mousedown', forwardMouse);
+
+		function forwardMouse(event){
+			window.parent.passMouseClick(event);
+		}
+
+		document.addEventListener('keydown', forwardKey);
+		document.addEventListener('keyup', forwardKey);
+
+		function forwardKey(event){
+			window.parent.sendKey(event);
+		}
+
 	</script>
 </head>
 <body>

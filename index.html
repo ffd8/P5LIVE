@@ -290,7 +290,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 17;
+		let currentRevision = 18;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -309,7 +309,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// settings
 		let initSettings = {
-			'version':'1.2.0',
+			'version':'1.2.1',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15, 
@@ -498,7 +498,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		let options = {
 			group: {name: 'sketches'},
-			animation: 200,
+			animation: 0,
 			filter:'.sortable-placeholder, .demo',
 			emptyInsertThreshold: 0,
 			dragClass: 'sortable-drag',
@@ -1764,7 +1764,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// load demos
 		function loadDemos(){
-			let demosPath = 'includes/demos/P5L_demos_20191013.json?' + currentRevision;
+			let demosPath = 'includes/demos/P5L_demos_20191103232335.json?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send()
@@ -2720,9 +2720,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				if(!settings.canvasCursor){
 					p5f.noCursor();
 					p5frameCover.style.cursor = 'none';
+					p5frame.style.cursor = 'none';
 				}else{
 					p5f.cursor();
 					p5frameCover.style.cursor = 'crosshair';
+					p5frame.style.cursor = 'crosshair';
 				}
 			}
 		}
@@ -3409,15 +3411,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* iFrame magic */
 
 		// get mouse clicks on top
-		// *** crazy magic, inspired from here:
+		// initially inspired from here:
 		// https://stackoverflow.com/a/44143731/10885535
-		window.addEventListener('mousemove', passMouse);
+		window.addEventListener('mousemove', passMouseClick);
 		window.addEventListener('mouseup', passMouseClick);
 		window.addEventListener('mousedown', passMouseClick);
 		
-		let fields = ['pageX','pageY','screenX', 'screenY', 'clientX', 
-		'clientY','ctrlKey', 'altKey', 'shiftKey', 'metaKey',
-		'button', 'buttons', 'relatedTarget', 'region'];
 		
 		let pass = false;
 		function passMouse(event){
@@ -3430,8 +3429,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function passMouseClick(event){
 			processMouse(event);
 		};
-
-		function getOpts(event){
+		
+		let mouseFields = ['altKey', 'clientX', 'clientY', 'composed', 'ctrlKey', 'isTrusted', 'layerX', 'layerY', 'metaKey', 'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY', 'screenX', 'screenY', 'shiftKey', 'x', 'y', 'button', 'buttons', 'relatedTarget', 'region'];
+		
+		function getOpts(event, fields){
 			let opts = {};
 				fields.forEach(function(f) {
 					if (f in event) {
@@ -3440,11 +3441,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				});
 			return opts;
 		}
-
+		
 		function processMouse(event){
-			let opts = getOpts(event);
-			let copy = new MouseEvent(event.type, opts);
-			
+			let opts = getOpts(event, mouseFields);
+			let copy = new MouseEvent(event.type, event);
 			if(settings.cocoding.active && settings.cocoding.sync){
 				if(settings.cocoding.level == 'admin'){
 					p5f.dispatchEvent(copy);
@@ -3468,45 +3468,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// pass keys on down
 		// tips: https://stackoverflow.com/questions/596481/
-		window.addEventListener('keydown', function(ev) {
-			sendKey(ev.type, ev, p5f);
-		});
+		window.addEventListener('keydown', sendKey);
+		window.addEventListener('keyup', sendKey);
 
-		window.addEventListener('keyup', function(ev) {
-			sendKey(ev.type, ev, p5f);
-		});
+		let keyFields = ['altKey', 'bubbles', 'cancelBubble', 'cancelable', 'charCode', 'code', 'composed', 'ctrlKey', 'isTrusted', 'key', 'keyCode', 'location', 'metaKey', 'repeat', 'returnValue', 'shiftKey', 'type', 'which'];
+		
 
-		function keyOpts(ev){
-			let e = {};
-			e.key=ev.key; 
-			e.keyCode=ev.keyCode; 
-			e.which=ev.keyCode; 
-			e.altKey=ev.altKey; 
-			e.ctrlKey=ev.ctrlKey; 
-			e.shiftKey=ev.shiftKey; 
-			e.metaKey=ev.metaKey; 
-			e.code=ev.code; 
-			return e;
-		}
-
-		function sendKey(type, ev, elm){
-			let opts = keyOpts(ev);
-			let copy = new KeyboardEvent(type, opts);
+		function sendKey(event){
+			let opts = getOpts(event, keyFields);
+			let copy = new KeyboardEvent(event.type, event);
 
 			if(settings.cocoding.active && settings.cocoding.sync){
 				if(settings.cocoding.level == 'admin'){
-					elm.dispatchEvent(copy);
-					cocode.dispatchSyncEvent('keyboard', type, opts);
+					p5f.dispatchEvent(copy);
+					cocode.dispatchSyncEvent('keyboard', event.type, opts);
 				}
 			}else{
-				elm.dispatchEvent(copy);
+				p5f.dispatchEvent(copy);
 			}
-			
 		}
-
-
-
-		
 
 
 

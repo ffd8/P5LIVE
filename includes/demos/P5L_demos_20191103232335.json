@@ -1,6 +1,6 @@
 {
   "version": "1.1.1",
-  "revision": 14,
+  "revision": 18,
   "structure": [
     {
       "name": "demos",
@@ -45,6 +45,10 @@
         },
         {
           "name": "webgl_sphereBox",
+          "type": "sketch"
+        },
+        {
+          "name": "slidersGrid",
           "type": "sketch"
         },
         {
@@ -110,6 +114,10 @@
     {
       "sketchName": "webgl_sphereBox",
       "sketchCode": "/*\twebgl_sphereBox // cc teddavis.org 2019\t*/\n\nvar lc = 8;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL);\n\tnoCursor();\n\tnoStroke();\n\n}\n\nfunction draw() {\n\tortho();\n\tbackground(0);\n\tfor(var i = 0; i < lc; i++) {\n\t\tfor(var j = 0; j < lc; j++) {\n\t\t\tvar mx = map(i, 0, lc - 1, -width / 2, width / 2);\n\t\t\tvar my = map(j, 0, lc - 1, -height / 2, height / 2);\n\n\t\t\tboxsphere(mx, my);\n\t\t}\n\t}\n}\n\nfunction boxsphere(x, y) {\n\tpush();\n\ttranslate(x, y);\n\tvar mmx = map(mouseX, 0, width, -width / 2, width / 2);\n\tvar mmy = map(mouseY, 0, height, -height / 2, height / 2);\n\tvar roff = -dist(mmx, mmy, x, y) / 2;\n\trotateY(radians(frameCount + mouseX));\n\trotateX(radians(mouseY));\n\tvar s = (width / lc / 2) + roff;\n\n\tfill(255);\n\tif(mouseIsPressed) {\n\t\tfill(0);\n\t}\n\tbox(s);\n\n\tfill(0);\n\tif(mouseIsPressed) {\n\t\tfill(255);\n\t}\n\tsphere(s * 0.65);\n\tpop();\n}"
+    },
+    {
+      "sketchName": "slidersGrid",
+      "sketchCode": "/*\tslidersGrid // cc teddavis.org 2019\t*/\n/*\thide editor to adjust sliders\t\t*/\n\nlet x, y, xoff, border, grid = 40;\nlet sGrid, sModular, sSize, sSpeed, sSizeSpeed, cbSize;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoStroke();\n\n\tx = width * .05;\n\ty = height * .05;\n\txoff = width * .4;\n\tbuildGUI();\n}\n\nfunction draw() {\n\tbackground(0);\n\n\tlet c = 0;\n\tfor(let i = 0; i < width; i += grid) {\n\t\tfor(let j = 0; j < height; j += grid) {\n\t\t\tfill(abs(sin(frameCount * sSpeed.value() / 1000 + c * sModular.value())) * 255);\n\t\t\tlet s = grid;\n\t\t\tif(cbSize.checked()) {\n\t\t\t\ts = sin(c * sSpeed.value() / sSizeSpeed.value()) * grid;\n\t\t\t}\n\t\t\tellipse(border + i, border + j, s)\n\t\t\tc++;\n\t\t}\n\t}\n\n\tdrawLabel();\n}\n\nfunction buildGUI() {\n\tborder = grid / 2;\n\tsGrid = createSlider(20, 100, grid);\n\tsGrid.position(x + xoff, y);\n\tsGrid.input(updateGrid);\n\tsSpeed = createSlider(2, 100, 10);\n\tsSpeed.position(x + xoff, y * 2);\n\tsModular = createSlider(0, 100, 11);\n\tsModular.position(x + xoff, y * 3);\n\tsSizeSpeed = createSlider(1, 4000, 100);\n\tsSizeSpeed.position(x + xoff, y * 4);\n\tcbSize = createCheckbox('', false);\n\tcbSize.position(xoff + x * .7, y * 4)\n}\n\nfunction updateGrid() {\n\tgrid = sGrid.value();\n\tborder = grid / 2;\n}\n\nfunction drawLabel() {\n\tfill(0, 200);\n\trect(xoff + width * .02, height * .02, 200, 180, 20);\n\n\tfill(255, 200);\n\ttext(\"GRID\", xoff + x, y);\n\ttext(\"SPEED\", xoff + x, y * 2);\n\ttext(\"MODULATE\", xoff + x, y * 3);\n\ttext(\"SIZE OFFSET\", xoff + x, y * 4);\n}"
     },
     {
       "sketchName": "textToPoints",
