@@ -3169,6 +3169,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function saveHTML(){
 			let el = p5htmlTemplate.cloneNode(true);
+			el.getElementsByTagName('title')[0].innerHTML = settings.fileName;
 			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 
 			// check loadScripts;
