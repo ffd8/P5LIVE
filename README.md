@@ -176,6 +176,7 @@ Additional custom functions are available in every sketch:
 	- `Python 2.0+`, type `python -m SimpleHTTPServer 5000`, press `ENTER`    
 	- `Python 3.0+`, type `python -m http.server 5000`, press `ENTER`    
 - goto [http://localhost:5000](http://localhost:5000)
+- To quit, `CTRL + C` in Terminal (or command prompt)
 
 #### Fancy webserver using nodejs/npm (with COCODING/OSC):  
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
@@ -185,7 +186,8 @@ Additional custom functions are available in every sketch:
 - type `npm install`, press `ENTER`  
 - type `npm start`, press `ENTER`  
 - goto [http://localhost:5000](http://localhost:5000)
-    
+- To quit, `CTRL + C` in Terminal (or command prompt)
+
 
 ## TOOLS USED
 P5LIVE is possible thanks to these amazing open-source projects:  
