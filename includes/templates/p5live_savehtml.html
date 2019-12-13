@@ -22,6 +22,15 @@
 			margin:0;
 		}
 	</style>
+	<script type="text/javascript">
+		// eco-mode = only render if window focused
+		window.onblur = function () {
+			noLoop()
+		}
+		window.onfocus = function () {
+			loop();
+		}
+	</script>
 </head>
 <body>
 </body>
