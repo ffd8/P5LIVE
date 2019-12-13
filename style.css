@@ -781,6 +781,18 @@ li{
 	margin-bottom:5px;
 }
 
+/* DRAG + DROP */
+#p5-drop{
+	position:fixed;
+	width:100vw;
+	height:100vh;
+	opacity:.5;
+	background:#00ff00;
+	z-index:99999;
+	display:none;
+	pointer-events: none;
+}
+
 /* 
 ##Device = Tablets, Ipads (landscape)
 ##Screen = B/w 768px to 1024px
