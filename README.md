@@ -145,8 +145,12 @@ Load from a CORS friendly webserver (ie. [imgur](https://imgur.com) for images),
 Clone/download from GitHub and run locally.  
 Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
 
+### EXPORT / IMPORT
+Beyond exporting all sketches regularly (as backup) – you can export single sketches and/or entire folders (click the exprt icon next to their name). To re-import, click the import button in the Sketches panel or drag and drop the `P5L_***.json` file into the browser window.
+
 ### PERFORMANCE
-Set `pixelDensity(1);` in `setup()` if on a retina display and lagging.
+Ladding or retina display creates too large of a canvas?  
+Use `pixelDensity(1);` in `setup()`.
 
 ### OSC/MIDI
 OSC is implemented when running locally using node.js/npm.  
@@ -154,7 +158,7 @@ Load *osc_setup* demo and run Processing sketch, [p5live\_osc\_setup](https://gi
 or use the OSC snippet (`CTRL + SHIFT + O`) and adjust in/out ports within the setup.  
 MIDI is implemented with webmidi.js – see *midi_setup* demo.
 
-### Bug?! 
+### BUG/CRASH?! 
 Infinite loop? Broken code?  
 - Add `#bug` to URL and try refreshing to stop compiler to fix a bug/infinite-loop...  
 - Add `#new` to URL and refresh to force a fresh blank sketch. Then you can export and delete broken sketch, try fixing externally, and re-import.
@@ -162,9 +166,9 @@ Infinite loop? Broken code?
 
 ## FUNCTIONS
 Additional custom functions are available in every sketch:  
+- `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
-- `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.
 
 
 ## OFFLINE SERVER
@@ -209,6 +213,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [glitch.com](https://glitch.com), nodejs websocket hosting
 - [p5js-osc](https://github.com/genekogan/p5js-osc/), osc connection
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
+- [dropzone.js](https://www.dropzonejs.com/), drag + drop importing
 
 
 ## INSPIRATION
