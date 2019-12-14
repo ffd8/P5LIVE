@@ -146,7 +146,7 @@ Clone/download from GitHub and run locally.
 Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
 
 ### EXPORT / IMPORT
-Beyond exporting all sketches regularly (as backup) – you can export single sketches and/or entire folders (click the exprt icon next to their name). To re-import, click the import button in the Sketches panel or drag and drop the `P5L_***.json` file into the browser window.
+Beyond exporting all sketches regularly (as backup) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or drag and drop the `P5L_***.json` file into the browser window.
 
 ### PERFORMANCE
 Ladding or retina display creates too large of a canvas?  
