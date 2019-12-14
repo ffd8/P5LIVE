@@ -1616,7 +1616,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		var myDropzone = new Dropzone(document.body, {
 		  autoProcessQueue: false,
 		  url: '/data', // unused but needed for URL expectation
-		  maxFiles: 10,
 		  acceptedFiles:'.json',
 		  init: function() {
 		    this.on("addedfile", function(file, responseText) {
