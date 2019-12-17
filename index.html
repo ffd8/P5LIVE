@@ -292,7 +292,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 19;
+		let currentRevision = 20;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -329,7 +329,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'debugMode': false,
 			'safeMode': false,
 			'sketches': [],
-			'cocoding': {'active':false, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
+			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '#052544',
@@ -1239,6 +1239,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			// make sure all settings are there
 			if(settings.revision == undefined || settings.revision < currentRevision){
 				settings.revision = currentRevision;
+				settings.version = initSettings.version;
 				Object.keys(initSettings).forEach(function(k){
 					if(!settings.hasOwnProperty(k)){
 						settings[k] = initSettings[k];
@@ -1293,6 +1294,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					cocodingReset();
 				}
 				settings.cocoding.active = true;
+				if(settings.cocoding.timestamp == null){
+					settings.cocoding.timestamp = timeStamp();
+				}
 				menuCocode.style.display = 'block';
 				settings.fileName = ccSpace;
 				settings.cocoding.namespace = settings.fileName;
@@ -1350,25 +1354,54 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			initSortable();
 		}
 
-		// save skettch as...
+		// padding version numbers of sketch
+		function pad(num, size) {
+			var s = "0000" + num;
+			return s.substr(s.length-size);
+		}
+
+		// use sketch versions instead of timestamp
+		function versionCheck(sketchName){
+			let tempName = sketchName;
+			let forkScores = tempName.split('_');
+			if(forkScores.length > 0){
+				let forkVersion = forkScores[forkScores.length-1];
+				if(!isNaN(forkVersion) && forkVersion.length == 3){
+					forkScores[forkScores.length-1] = pad(parseInt(forkVersion)+1, 3);
+				}else{
+					forkScores.push('001');
+				}
+			}
+			tempName = forkScores.join('_');
+
+			// check entire sketches for dup version name
+			while(searchSketches(tempName, settings.sketches)){
+				tempName = versionCheck(tempName);
+			}
+				return tempName;
+		}
+
+		// save sketch as...
 		function cloneSketch(){
-			let forkName = settings.fileName;
-			settings.fileName = forkName+'_'+timeStamp();
+			let forkName = versionCheck(settings.fileName);			
+			settings.fileName = forkName;
 			settings.sketches.unshift({'type':'sketch', 'name':settings.fileName});
 			updateSketches();
 			localStorage[settings.fileName] = editor.getValue();
 			editor.focus(); 
 			editor.session.off('change', cloneSketch);
-			
 		}
 
 		function cloneSketchCOCODING(){
-			let forkSession = settings.cocoding.namespace;
+			let forkSession = 'cc_'+settings.cocoding.namespace+'_'+settings.cocoding.timestamp;
 			if(searchJSON(settings.sketches, 'name', forkSession).length == 0){
 				addFolder(forkSession);
 			}
-			let forkName = forkSession+'_'+timeStamp();
+			// let forkName = forkSession+'_'+timeStamp();
+			let forkName = versionCheck(settings.fileName);			
+
 			settings.fileName = forkName;
+			updateSettings();
 			let forkObj = searchJSON(settings.sketches, 'name', forkSession)[0];
 			forkObj.contents.unshift({'type':'sketch', 'name':forkName});
 			forkObj.toggle = 'expand';
@@ -1685,7 +1718,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 											// each base folder
 											if(searchSketches(jsonItem.name, settings.sketches)){ 
-												jsonItem.name += '_' + timeStamp();
+												jsonItem.name += '_'+ timeStamp(); //versionCheck(jsonItem.name);
 											}
 
 											// each recursive sketch/folder within
@@ -1750,7 +1783,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 				// if duplicate, give unique name
 				if(searchSketches(rnc.name, settings.sketches)){ // && rnc.type == 'sketch'
-					rnc.name += '_' + timeStamp();
+					rnc.name += '_'+ timeStamp(); // versionCheck(rnc.name);
 					fixNamecheck(objSketches, rncPName, rnc.name);
 				}
 
@@ -1775,7 +1808,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			let jsonSketches = obj.sketches;
 			for(let i=0; i < jsonSketches.length; i++){
 				if(searchSketches(jsonSketches[i][keyName], settings.sketches)){
-					jsonSketches[i][keyName] += '_' + timeStamp();
+					jsonSketches[i][keyName] = versionCheck(jsonSketches[i][keyName]);
 				}
 			}			
 		}
@@ -2136,11 +2169,27 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				k.remove();
 			});
 
+			// catch active sketch in trashed folder
+			// let dataIDType = searchJSON(settings.sketches, 'name', dataID)[0];
+			// if(dataIDType.type === 'folder'){
+			// 	for(let i=0; i < dataIDType.contents.length; i++){
+			// 		if(settings.fileName === dataIDType.contents[i].name){
+			// 			sketchInFolder = true;
+			// 		}
+			// 	}
+			// }
+
 			localStorage.removeItem(dataID);
 			selElm.remove();
 
 			getOrder();
-			if(dataID === settings.fileName && !settings.cocoding.active){
+
+			let sketchIsGone = false;
+			if(!searchSketches(settings.fileName, settings.sketches)){
+				sketchIsGone = true;
+			}
+
+			if((dataID === settings.fileName || sketchIsGone)&& !settings.cocoding.active){
 				// *** issue if trashing folder containing active sketch...
 				loadSketch(loadLatest());
 			}
