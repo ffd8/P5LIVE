@@ -144,6 +144,17 @@ hr{
 	height:calc(100vh - 45px);	
 	border:none;
 }
+.ace_selection{
+	background:rgba(255, 191, 0, .5) !important ;
+	border-radius:0 !important;
+
+}
+.ace_selected-word{
+	border:1px solid rgba(255, 191, 0, .25) !important;
+	border-radius:0 !important;
+	background:rgba(255, 191, 0, .1) !important ;
+
+}
 #p5-console{
 	height:auto;
 	min-height:10px;

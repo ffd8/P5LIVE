@@ -155,10 +155,6 @@
 									<option value="2000">2000ms</option>
 							</select>
 					</div>
-					<div class="tippy-left" style="cursor:help;display:none;" data-title="Toggle Fullscreen<div class='shortcut'>CTRL + F</div>" onclick="fullscreenToggle();">
-						<input type="checkbox" id="settings-fullscreen" name="settings-fullscreen" value="settings-fullscreen"> 
-						Fullscreen
-					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus" onclick="ecoRenderToggle();">
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender"> 
 						Eco Render
@@ -357,7 +353,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuBG = document.getElementById('menu-bg'),
 		settingsFontsize = document.getElementById('menu-settings-fontsize'),
 		settingsAutoMode = document.getElementById('settings-autocompile'),
-		settingsFullscreen = document.getElementById('settings-fullscreen'),
 		settingsEcoMode = document.getElementById('settings-ecorender'),
 		settingsCanvasCursor = document.getElementById('settings-canvascursor'),
 		settingsConsole = document.getElementById('settings-console'),
@@ -1111,7 +1106,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* CMD-KEYS (remove key conflicts) */
-		editor.commands.removeCommands(['gotoright','movelinesup', 'movelinesdown', 'gotolinestart', 'splitline', 'gotolineend', 'golineup', 'jumptomatching', 'golinedown', 'transposeletters', 'find']);
+		editor.commands.removeCommands(['gotoright','movelinesup', 'movelinesdown', 'gotolinestart', 'splitline', 'gotolineend', 'golineup', 'jumptomatching', 'golinedown', 'transposeletters']);
 
 		// replace backspace w/o ctrl + h
 		editor.commands.addCommand({
@@ -1270,7 +1265,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			fontSizeUpdate();
 			autoCompileUpdate();
 			compileTimerUpdate();
-			fullscreenUpdate();
 			menuToggleUpdate();
 			ecoRenderUpdate();
 			cursorToggleUpdate();
@@ -2242,9 +2236,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					event.preventDefault();
 				}else if(event.keyCode == 77){ // m = menu
 					menuToggle();
-					event.preventDefault();
-				}else if(event.keyCode == 70){ // f = fullscreen
-					fullscreenToggle();
 					event.preventDefault();
 				}else if(event.keyCode == 13){ // enter = recompile
 					forceRecompile = true;
