@@ -380,6 +380,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		paused = false,
 		markerID = [],
 		errorTimer,
+		consoleTimer,
 		snippets,
 		forceRecompile = false,
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
@@ -1058,6 +1059,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// check for errors
 		editor.getSession().on('changeAnnotation', function(){
 			let annot = editor.getSession().getAnnotations();
+			
+			// extra debug info (too raw.. but nice to have better p5.js specific debugging in console)
+			// for (var key in annot) {
+			// 	if (annot.hasOwnProperty(key))
+			// 	console.log(annot[key].text + "on line " + " " + annot[key].row);
+			// }
+
 			validCode = true;
 			for(let i=0; i < annot.length; i++){
 				if(annot[i].type === 'error'){
@@ -1143,6 +1151,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			scrollIntoView: 'cursor',
 			readOnly:!0
 		});
+
+		// fix german keyboard binding for /
+		editor.commands.bindKey("cmd-shift-7", "togglecomment")
+		editor.commands.bindKey("ctrl-shift-7", "togglecomment")
 
 		// beautify!
 		let beautifyOptions = {
@@ -1657,7 +1669,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		    	myDropzone.files = []; // clear list
 		    });
 		    this.on("dragenter", function(file, responseText) {
-		    	divDrop.style.display = "block";
+		    	if(event.dataTransfer.dropEffect != 'move'){
+		    		divDrop.style.display = "block";
+		    	}
 		    });
 		    this.on("dragleave", function(file, responseText) {
 		    	divDrop.style.display = "none";
@@ -1666,7 +1680,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		    	divDrop.style.display = "none";
 		    });
 		    this.on("dragover", function(file, responseText) {
-		    	divDrop.style.display = "block";
+		    	// event.preventDefault();
+		    	// console.log(event.dataTransfer.dropEffect);
+		    	if(event.dataTransfer.dropEffect != 'move'){
+		    		divDrop.style.display = "block";
+		    	}
 		    });
 		    this.on("error", function(file, responseText) {
 		    	vex.dialog.alert({
@@ -2312,6 +2330,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		function checkErrorsWorker(){
 			let annos = editor.getSession().getAnnotations();
+
 			if(settings.debugMode){console.log(annos)};
 			let errorsFound = false;
 			for(let i=0; i < annos.length; i++){
@@ -2341,6 +2360,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		});
 
+		function consoleMessage(msg, timeDelay){
+			p5console.value = msg;
+			p5console.style.display = 'block';
+			if(timeDelay != undefined && timeDelay != 0){
+				if(consoleTimer != undefined){
+					clearTimeout(consoleTimer);
+				}
+				consoleTimer = setTimeout(consoleHide, timeDelay*1000);
+			}
+		}
+
+		function consoleHide(){
+			if(consoleTimer != undefined){
+				clearTimeout(consoleTimer);
+			}
+			p5console.value = '';
+			p5console.style.display = 'none';
+		}
+
 
 
 		/* COMPILE CODE */
@@ -2358,7 +2396,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				r : (codeNoComments.match(/\}/g) || []).length
 			}
 			if(cbCount.l == 0 || cbCount.l != cbCount.r){
+				let missingBracket = "'}'";
+				if(cbCount.l < cbCount.r){
+					missingBracket = "'{'";
+				}
+				consoleMessage("Missing "+missingBracket+". Find mistake then recompile.", 0)
 				return false;
+			}else{
+				consoleHide();
 			}
 
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
@@ -3671,7 +3716,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			menuCocodeHolder.style.display = 'block';
 			editor.setValue('// Loading COCODING Session: '+settings.cocoding.namespace, 1);
 			cocode = new CocodeApp(settings.cocoding.namespace);
-			
+			// consoleMessage("When COCODING, code in editor is a sandbox. Clone it regularly to access later.", 0);
 		}
 
 		// reset all cocoding except nick + color
