@@ -103,6 +103,7 @@ hr{
 	height:100vh;
 	z-index:0;
 	pointer-events: all;
+	overflow:hidden;
 }
 .p5-frame-cocoding{
 	pointer-events: all;
