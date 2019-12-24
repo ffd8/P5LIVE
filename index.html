@@ -1390,8 +1390,20 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		// save sketch as...
 		function cloneSketch(){
 			let forkName = versionCheck(settings.fileName);			
+
+			let checkDir = searchJSON(settings.sketches, 'name', settings.fileName)[0];
+			console.log(checkDir)
 			settings.fileName = forkName;
-			settings.sketches.unshift({'type':'sketch', 'name':settings.fileName});
+			updateSettings();
+			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos'){
+				let useDir = searchJSON(settings.sketches, 'name', checkDir.parent)[0];
+				console.log(useDir)
+				useDir.contents.unshift({'type':'sketch', 'name':forkName});
+				useDir.toggle = 'expand';
+			}else{
+				settings.sketches.unshift({'type':'sketch', 'name':settings.fileName});
+			}
+			
 			updateSketches();
 			localStorage[settings.fileName] = editor.getValue();
 			editor.focus(); 
@@ -1542,24 +1554,28 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		function searchJSON(obj, key, value, out) {
+		function searchJSON(obj, key, value, out, dir) {
 			if(out == undefined){
 				out = [];
 			}
 			if(Array.isArray(obj)){
 				obj.forEach(function(o){
 					if(o[key] == value){
+						if(dir != undefined){
+							o.parent = dir;
+						}
 						out.push(o);
 					}else
 
 					if(o.contents){
-						searchJSON(o.contents, key, value, out);
+						searchJSON(o.contents, key, value, out, o.name);
 					}
 				});
 			}
 
 			return out;
 		}
+
 
 
 		/* IMPORT/EXPORT SKETCHES */
