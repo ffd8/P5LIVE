@@ -1681,7 +1681,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		    	myDropzone.files = []; // clear list
 		    });
 		    this.on("dragenter", function(file, responseText) {
-		    	if(event.dataTransfer.dropEffect != 'move'){
+		    	// console.log(event.dataTransfer.dropEffect)
+		    	if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
 		    		divDrop.style.display = "block";
 		    	}
 		    });
@@ -1694,13 +1695,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		    this.on("dragover", function(file, responseText) {
 		    	// event.preventDefault();
 		    	// console.log(event.dataTransfer.dropEffect);
-		    	if(event.dataTransfer.dropEffect != 'move'){
+		    	if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
 		    		divDrop.style.display = "block";
 		    	}
 		    });
 		    this.on("error", function(file, responseText) {
 		    	vex.dialog.alert({
-					unsafeMessage:"Error importing... <br>Only P5LIVE exports are accepted.",
+					unsafeMessage:"Error importing. <br>Only P5LIVE exports are accepted.",
 				})
 		    	myDropzone.files = []; // clear list
 		    });
