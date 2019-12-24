@@ -155,6 +155,9 @@ hr{
 	background:rgba(255, 191, 0, .1) !important ;
 
 }
+.ace_search.right{
+	right:40px;
+}
 #p5-console{
 	height:auto;
 	min-height:10px;
@@ -433,8 +436,8 @@ hr{
 }
 .menu-sketch-nav{
 	float:right;
-	width:35%;
-	min-width:75px;
+	width:38%;
+	min-width:80px;
 	height:100%;
 	display:none;
 	z-index:101;
@@ -573,7 +576,7 @@ li{
 	padding:0;
 }
 .item-folder svg, .item-sketch svg{
-	padding:2px 1px 0px 1px;
+	padding:0px 0px 0px 0px;
 	height:16px;
 }
 
@@ -605,7 +608,7 @@ li{
 }
 .menu-sketch-nav svg{
 	padding:4px 1px 0 1px;
-	width:24px;
+	width:18px;
 }
 .selsetting{
 	background:#444;
@@ -803,6 +806,38 @@ li{
 	z-index:99999;
 	display:none;
 	pointer-events: none;
+}
+.remove-header{
+	margin-top:15px;
+	margin-bottom:0;
+}
+.remove-dump{
+	margin-top:10px !important;
+}
+.remove-dump .importdump-dup{
+/*	text-decoration: line-through;
+	background:none;*/
+}
+.remove-dump svg{
+	stroke:#ff0000;
+}
+.remove-icon svg{
+	height:16pt;
+	stroke:#ff0000;
+}
+#inspectcode{
+	width:100%;
+	height:50vh;
+	border-bottom:1px solid #aaa;
+	max-height:70vh;
+	overflow-y:auto;
+	padding-bottom:10px;
+	font-size:10pt;
+	background:none;
+	color:#fff;
+	padding:5px;
+	box-sizing: border-box;
+	outline:none;
 }
 
 /* 

@@ -452,6 +452,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		let iconUserCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
 
+		let iconAlignLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-align-left"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>';
+
 		// code-line color picker
 		function loadColorPicker(){
 			let defaultColor = settings.themeBG;
@@ -2099,7 +2101,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(elmType == 'folder'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
 			}else if(elmType == 'sketch'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+iconAlignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
 			}else if(elmType == 'demos'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="refreshDemos(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconRefresh+'</a>';
 			}else if(elmType == 'user'){
@@ -2132,6 +2134,36 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(folderName == undefined){
 				renameItem(newID, 'folder');
 			}
+		}
+
+		function inspectItem(itemName){
+			let inspectCode = localStorage.getItem(itemName);
+
+			vex.dialog.alert({
+            	focusFirstInput : false,
+				unsafeMessage:'<div id="inspectcode">'+inspectCode+'</div>'
+			})
+			var inspectEditor = ace.edit("inspectcode");
+		    inspectEditor.setTheme(settings.theme);
+			inspectEditor.session.setMode('ace/mode/javascript');
+			inspectEditor.setOptions({
+				showPrintMargin: false,
+				animatedScroll: false,
+				displayIndentGuides: false,
+				useWorker: true,
+				showLineNumbers: false,
+				showGutter: false,
+				tabSize: 4, useSoftTabs: false,
+			});
+			tidyCode(inspectEditor);
+			// vex.dialog.alert({
+   //          	focusFirstInput : false,
+			// 	unsafeMessage:
+			// 		'<h2>'+curTool+'</h2>'
+			// 		+'<h6>'+tempAbout.names.join(" + ") +'<br>'+tempAbout.class+'</h6><hr>'
+			// 		+tempAbout.description+'<br>'
+			// 		,
+			// })
 		}
 
 		// rename sketch/folder
@@ -2180,8 +2212,29 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// taking out the trash
 		function removeItem(dataID, elmType){
+			let removeDetails = '';
+			let icon = iconFileLines;
+			if(elmType == 'folder'){
+				icon = iconFolderExpand;
+				// let importData = 'Import the following ('+count+') items?<br>';
+				// importData += '<span style="font-size:10pt;"><span class="importdump-dup">Duplicates</span> given a unique _timestamp</span><br>';
+				let elmContents = searchJSON(settings.sketches, 'name', dataID)[0];
+
+				removeDetails = '<div class="remove-header">Includes:</div>'
+				removeDetails += '<div id="importdump" class="remove-dump">';
+				removeDetails += recursiveImportCheck(elmContents.contents, '', '');
+				removeDetails += '</div>';
+
+
+				// removeDetails = '<div class="remove-header">Doing so removes sketches:</div><div class="remove-listing">'
+				// let elmContents = searchJSON(settings.sketches, 'name', dataID)[0].contents;
+				// elmContents.forEach(function(ec){
+				// 	removeDetails += ec.name+'<br>';
+				// })
+				// removeDetails += '</div>';
+			}
 			vex.dialog.confirm({
-				message: 'Are you sure you want to delete: ' + dataID + ' ?',
+				unsafeMessage: 'Delete '+elmType+': <br><span class="remove-icon">'+icon +'</span> <span class="remove-dump importdump-dup">'+ dataID + '</span><br>'+removeDetails,
 				callback: function (value) {
 					if (value) {
 						removeItemProcess(dataID);
@@ -2316,7 +2369,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					autoCompileToggle();
 					event.preventDefault();
 				}else if(event.keyCode == 84){ // t = tidy code
-					tidyCode();
+					tidyCode(editor);
 					event.preventDefault();
 				}
 			}
@@ -2658,9 +2711,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			return ps;
 		}
 
-		function tidyCode(){
-			let tempCode = js_beautify(editor.getValue(), beautifyOptions);
-			editor.setValue(tempCode, 1);
+		function tidyCode(aceEdit){
+			let tempCode = js_beautify(aceEdit.getValue(), beautifyOptions);
+			aceEdit.setValue(tempCode, 1);
 		}
 
 
@@ -2705,7 +2758,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			let codeGlobalBottom = codeDrawBottom + '\n\n' + addGlobalBottom;
 
 			editor.setValue(codeGlobalBottom, 1);
-			tidyCode();
+			tidyCode(editor);
 		}
 
 		function addCode(codeBase, codeInsert, funName, codePos){
