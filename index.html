@@ -474,14 +474,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					,'key':'ctrl+i'
 					,'callback':'pop720()'
 				}
-
-				/*
 				,'jump':{
 					'name':'Quick Jump'
 					,'key':'ctrl' // modifier for 1-0
-					,'callback':''
+					,'init':'setupJumpSketches(settings.shortcuts["jump"].key)'
+					,'tippy':'After, combo w/ 1, 2,...0 for quick jump to sketch'
 				}
-				 */
+				 
 			},
 			'sketches': [],
 			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
@@ -1619,7 +1618,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}).stopCallback = function(e, element, combo) {};
 				}
 
-				shortcutsList +='<div class="shortcut-item tippy-left" data-title="Click to modify shortcut" onclick="recordShortcut(this, \''+sc+'\')">'+shortcut.name + ' <div class="shortcut-keys" ><span id="shortcut-'+sc+'" class="shortcut-input">'+parseShortcut(shortcut.key)+'</span></div></div>';
+				let shortcutTippy = 'Click to modify shortcut';
+				if(shortcut.tippy != undefined){
+					shortcutTippy += '<br>'+shortcut.tippy;
+				}
+
+				shortcutsList +='<div class="shortcut-item tippy-left" data-title="'+shortcutTippy+'" onclick="recordShortcut(this, \''+sc+'\')">'+shortcut.name + ' <div class="shortcut-keys" ><span id="shortcut-'+sc+'" class="shortcut-input">'+parseShortcut(shortcut.key)+'</span></div></div>';
 			});
 			settingsShortcuts.innerHTML = shortcutsList;
 			loadTippy();
@@ -1667,6 +1671,25 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					updateShortcuts();
 				});
 			}
+		}
+
+		// setup quickjump shortcuts
+		function setupJumpSketches(key){
+			let keyBindings = [];
+			for(let i=0; i < 10;i++){
+				keyBindings.push(key+'+'+i);
+			}
+			Mousetrap.bind(keyBindings, function(e) {
+			    jumpSketches(e.key);
+			});
+		}
+
+		// quick jump
+		function jumpSketches(kc){
+			let keySketch = kc - 1;
+			if(keySketch == -1){keySketch = 9;}
+			console.log(keySketch);
+			loadSketch(listSketches(settings.sketches)[keySketch]);
 		}
 
 		// set sketches list to localstorage
@@ -1811,12 +1834,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 						editor.getSession().on('change', cloneSketch);
 					}
 					
-				}else if(!localStorage.hasOwnProperty(sketch) && searchSketches(settings.fileName, settings.sketches)){
+				}else if(!localStorage.hasOwnProperty(sketch) && searchSketches(sketch, settings.sketches)){
 					vex.dialog.confirm({
 						message:'Sketch code missing, remove from list?',
 						callback: function(value){
 							if(value){
-								removeItemProcess(settings.fileName);	
+								removeItemProcess(sketch);	
 							}
 						}
 					})
@@ -2600,56 +2623,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* EDITOR KEY-CMDS */
-
-		// mousetrap
-
 		let map = [];
 		window.onkeydown = function(event) {			
 			map[event.keyCode] = event.type == 'keydown';
 			
 			if(map[16] && map[17]){
-				if(event.keyCode == 13){
-					compileCodeShortcut(true);
-				}else{
-					addSnippet(event.key);
-				}
+				addSnippet(event.key);
 				event.preventDefault();
-			}else if(!map[16] && map[17]){ // check !shift and √control
-				// if(event.keyCode == 69){ // e = editor toggle
-				// 	editorToggle();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 67){ // c = editor toggle
-				// 	cursorToggle();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 79){ // o = open/import
-				// 	importSketchesDialog();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 77){ // m = menu
-				// 	menuToggle();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 13){ // enter = recompile
-				// 	compileCodeShortcut();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 80){ // p = pause
-				// 	pauseSketch();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 78){ // n = new
-				// 	loadDefault();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 83){ // s = save PNG
-				// 	savePNG();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 82){ // r = ref
-				// 	toggleRef();
-				// 	event.preventDefault();
-				// }else if((event.keyCode >= 48 && event.keyCode <= 57)){ // 	0-9 = preset sketches
-				// 	let keySketch = event.keyCode - 49;
-				// 	if(keySketch == -1){keySketch = 9;}
-				// 	loadSketch(listSketches(settings.sketches)[keySketch]); // FIX PRESETS
-				// 	event.preventDefault();
-				// }else if(event.key == 'i'){
-				// 	pop720(); // IG window size
-				// }
 			}
 
 			if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
@@ -2664,30 +2644,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			map[event.keyCode] = event.type == 'keydown';
 		}
 
-
-
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
-			
 			pLen = editor.getValue().length; // len of editor
-			if(settings.debugMode){console.log(event);}
-
-			if(!map[16] && map[17]){ // check for !shift + √control
-				// if((event.key == '+' || event.key == '=' )){ // up arrow = bigger font
-				// 	fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
-				// 	event.preventDefault();
-				// }else if((event.key == '-')){ // down arrow = smaller font
-				// 	fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 65){ // a = auto compile
-				// 	autoCompileToggle();
-				// 	event.preventDefault();
-				// }else if(event.keyCode == 84){ // t = tidy code
-				// 	tidyCode(editor);
-				// 	event.preventDefault();
-				// }
-			}
 		}
 
 		p5code.onkeyup = function(event) {
@@ -2695,7 +2655,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!settings.cocoding.active){
 				localStorage[settings.fileName] = editor.getValue();
 			}
-			// checkErrors();	// ** maybe turn back on>?		
 		};
 
 		function checkErrors(){
