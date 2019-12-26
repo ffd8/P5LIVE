@@ -1,10 +1,10 @@
 ## P5LIVE
-v 1.2.4  
+v 1.2.5  
 cc [teddavis.org](http://teddavis.org) – 2019  
 p5.js collaborative live-coding vj environment!
 
 
-## SHORTCUTS
+## SHORTCUTS (default)
 - `CTRL + N` » new sketch
 - `CTRL + ENTER` » softCompile
 - `CTRL + SHIFT + ENTER` » hardCompile
@@ -45,12 +45,12 @@ Live-coding active by default, `CTRL + ENTER` to force recompile.
 Sketch is auto-saved on every keystroke.  
   
 ### P5LIVE MENU  
-<img src="includes/images/menu-p5live-7.png" width="220px">  
+<img src="includes/images/menu-p5live-8.png" width="220px">  
 - About, what you're reading now.  
-- Reset, re-initialize P5LIVE (erases sketches/settings).  
+- Settings, adjust editor settings + shortcuts.  
 - Reference, `CTRL + R`, toggle p5.js reference list.  
-- Save PNG + CODE, `CTRL + S`, exports timestamped image and snapshot of code.  
-- Save HTML, export single-page website (re-link path to any assets).
+- Save PNG + CODE, `CTRL + S`, exports output image [and snapshot of code].  
+- Save HTML, export single-page website (re-link path to custom assets).
 
 ### COCODING MENU  
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
@@ -86,8 +86,9 @@ Sketch is auto-saved on every keystroke.
 - Export, exports entire sketches list as JSON for import.  
   
 ### SKETCH  
-<img src="includes/images/menu-sketch-nav-7.png" width="220px">  
+<img src="includes/images/menu-sketch-nav-8.png" width="220px">  
 Load, click on sketch name.  
+Inspect, click lines icon to view code as popup.  
 Rename, click pencil icon and type new name.  
 Export, click download icon to export sketch as JSON file.  
 Remove, click trash icon and confirm deletion.  
@@ -103,16 +104,19 @@ Remove, click trash icon and confirm deletion.
 Sort, click + hold + drag to desired order.  
   
 ### SETTINGS  
-Check short-cuts above for faster toggling:  
 - Live Coding, (auto-compiling mode), recompiles on error-free keyup.  
-- Fullscreen, toggle fullScreen(), ideal for VJing.  
 - Eco Render, toggle loop()/noLoop() if browser window is inactive.  
 - Cursor, toggle visibility of cursor when hiding editor.  
 - Console, toggle visibility of console incase of errors/warnings.  
-- Menu Tab, toggles menu tab. (hide if visible while VJ'ing).  
+- Menu Tab, toggles menu tab. (hide if visible while VJ'ing). 
+- Snapshot Code, export current code with every image snapshot. 
+- Line Numbers, toggle code editor gutter features + line numbers. 
 - Font Size, adjust size of editor text.  
 - Background, toggle + set color behind each line of code.  
 - Theme, select custom styling of code.
+
+Shortcuts can be customized within the settings panel.  
+Settings GUI: completely reset P5LIVE, reset settings to defaults, import/export settings.
 
 ### COMPILING
 There are two modes of compiling in P5LIVE:  
@@ -146,10 +150,10 @@ Clone/download from GitHub and run locally.
 Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
 
 ### EXPORT / IMPORT
-Beyond exporting all sketches regularly (as backup) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or drag and drop the `P5L_***.json` file into the browser window.
+Beyond exporting all sketches regularly (backup!) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or drag and drop the `P5L_***.json` file into the browser window.
 
 ### PERFORMANCE
-Ladding or retina display creates too large of a canvas?  
+Lagging or retina display creates too large of a canvas?  
 Use `pixelDensity(1);` in `setup()`.
 
 ### OSC/MIDI
@@ -166,7 +170,7 @@ Infinite loop? Broken code?
 
 ## FUNCTIONS
 Additional custom functions are available in every sketch:  
-- `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.
+- `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.  
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
 
@@ -214,6 +218,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [p5js-osc](https://github.com/genekogan/p5js-osc/), osc connection
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 - [dropzone.js](https://www.dropzonejs.com/), drag + drop importing
+- [mousetrap.js](https://craig.is/killing/mice), custom shortcut key bindings
 
 
 ## INSPIRATION

@@ -29,7 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?9">
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?10">
 </head>
 <body>
 	<div id="p5-drop"> </div>
@@ -52,25 +52,30 @@
 		<div id="ref-close" onclick="closeRef();">X</div>
 	</div>
 
-	<div id="menu">
-		<div id="menu-bg"></div>
+	<div id="settings-panel" class="panel" style="display:none;">
+		<div class="menu-bg"></div>
+		
+	</div>
+
+	<div id="menu" class="panel">
+		<div class="menu-bg"></div>
 		<div id="menu-switch" onclick="menuToggle();">X</div>
-		<div id="menu-sections">
+		<div id="panel-menu" class="menu-sections">
 
 			<div class="menu-section">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE</div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
-					<button class="menu-button tippy" onclick="loadAbout();" data-title="About P5LIVE">
+					<button class="menu-button tippy" onclick="loadAbout();" data-title="About">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="resetP5();" data-title="Reset P5LIVE">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-slash"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+					<button class="menu-button tippy" onclick="showSettings();" data-title="Settings">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
 					</button>
-					<button class="menu-button tippy" onclick="showRef();" data-title="p5.js Reference<div class='shortcut'>CTRL + R</div>">
+					<button class="menu-button tippy" onclick="showRef();" data-title="p5.js Reference">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button class="menu-button tippy" onclick="savePNG();" data-title="Export Snapshot<br>PNG [+ CODE]<div class='shortcut'>CTRL + S</div>">
+					<button class="menu-button tippy" onclick="savePNG();" data-title="Export Snapshot<br>PNG [+ CODE]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
 					<button class="menu-button tippy" onclick="saveHTML();" data-title="Export HTML">
@@ -117,7 +122,7 @@
 				<div class="menu-section-bg"></div>
 				<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
 				<div class="menu-sketches-buttons">
-					<button class="menu-button tippy" onclick="loadDefault();" data-title="New Sketch<div class='shortcut'>CTRL + N</div>">
+					<button class="menu-button tippy" onclick="loadDefault();" data-title="New Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
 					</button>
 					<button class="menu-button tippy" onclick="cloneSketch();" data-title="Clone Sketch">
@@ -127,7 +132,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>
 					</button>
 					<input id="file-input" type="file" name="name" multiple style="display: none;" onchange="importSketches(this.files);" onclick="this.value=null;" />
-					<button class="menu-button tippy" onclick="document.getElementById('file-input').click();" data-title="Import Sketches">
+					<button class="menu-button tippy" onclick="importSketchesDialog();" data-title="Import Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
 					</button>
 					<button class="menu-button tippy" onclick="exportAllSketches();" data-title="Export All Sketches">
@@ -140,15 +145,59 @@
 				</div>
 			</div>
 			
+			
+
+		</div>
+
+		<div id="panel-settings" class="menu-sections">
+
 			<div class="menu-section">
 				<div class="menu-section-bg"></div>
-				<div id="menu-settings-header" class="menu-header">SETTINGS</div>
-				<div id="menu-settings" class="menu-contents">
+				<div class="menu-header">P5LIVE</div>
+				<div class="menu-sketches-buttons" id="p5live-buttons">
+					<button class="menu-button tippy invisible" disabled onclick="loadAbout();" data-title="About P5LIVE">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
+					</button>
+					<button class="menu-button tippy" onclick="hideSettings();" data-title="Hide Settings">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+					</button>
+					<button class="menu-button tippy invisible" disabled onclick="showRef();" data-title="p5.js Referenc">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
+					</button>
+					<button class="menu-button tippy invisible" disabled onclick="savePNG();" data-title="Export Snapshot<br>PNG [+ CODE]">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+					</button>
+					<button class="menu-button tippy invisible" disabled onclick="saveHTML();" data-title="Export HTML">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+					</button>
+					
+				</div>
+			</div>
+
+			<div class="menu-section">
+				<div class="menu-section-bg"></div>
+				<div class="menu-header">SETTINGS</div>
+				<div class="menu-sketches-buttons">
+					<button class="menu-button tippy" onclick="resetP5();" data-title="Reset P5LIVE">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-slash"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+					</button>
+					<button class="menu-button tippy" onclick="resetSettings();" data-title="Reset Settings">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+					</button>
+					<input id="file-input-settings" type="file" name="name" style="display: none;" multiple onchange="importSettings(this.files);" onclick="this.value=null;" />
+					<button class="menu-button tippy" onclick="importSettingsDialog();" data-title="Import Settings">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+					</button>
+					<button class="menu-button tippy" onclick="exportSettings();" data-title="Export Settings">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+					</button>
+				</div>
+				<div class="menu-settings menu-contents">
 					<div>
-						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-Compile code on keyUp<div class='shortcut'>CTRL + A</div>" onclick="autoCompileToggle();">
+						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-Compile code on keyUp" onclick="autoCompileToggle();">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile"> 
 						Live Coding</div> 
-							<select id="settings-compiletimer" style="display:none;float:right;margin-right:10px;outline:none;border:1px solid #888;background:none;color:#fff;cursor:help;" class="tippy" data-title="Delay from keyUp to compile" onchange="compileTimerChange();">
+							<select id="settings-compiletimer" style="" class="tippy" data-title="Delay from keyUp to compile" onchange="compileTimerChange();">
 									<option value="250">250ms</option>
 									<option value="500">500ms</option>
 									<option value="1000">1000ms</option>
@@ -159,7 +208,7 @@
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender"> 
 						Eco Render
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Show Cursor <br>(when editor is hidden)<div class='shortcut'>CTRL + C</div>" onclick="cursorToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Show Cursor <br>(when editor is hidden)" onclick="cursorToggle();">
 						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor"> 
 						Cursor
 					</div>
@@ -167,22 +216,26 @@
 						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console"> 
 						Console
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Show Menu-Tab <br>If unchecked, must use shortcut<div class='shortcut'>CTRL + M</div>" onclick="menutabToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Display Menu-Tab <br>If unchecked, must use shortcut" onclick="menutabToggle();">
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab">
 						Menu Tab
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
-						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
-					</div>
+					
 					<div class="tippy-left" style="cursor:help;" data-title="Include sketch code with Snapshot" onclick="exportcodeToggle();">
 						<input type="checkbox" id="settings-exportcode" name="settings-exportcode" value="settings-exportcode"> Snapshot Code
 					</div>
-					<hr>
+					
+			
+					
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
+						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
+					</div>
+					
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size<div class='shortcut'>CTRL + +/-</div>">
+					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size">
 						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
 
@@ -200,8 +253,21 @@
 							<option value="ace/theme/twilight">Twilight</option>
 						</select>
 					</div>
+			<!-- 	</div>
+			</div>
+
+			<div class="menu-section">
+				<div class="menu-section-bg"></div> -->
+				<h2>SHORTCUTS</h2>
+				<!-- <div class="menu-settings menu-contents"> -->
+					
+					<div id="menu-shortcuts-holder">
+						
+					</div>
 				</div>
 			</div>
+
+
 
 		</div>
 	</div>
@@ -277,6 +343,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	<script src='includes/js/download.js'></script>
 	<script src="includes/js/vex/js/vex.combined.min.js"></script>
 	<script src="includes/js/dropzone.js"></script>
+	<script src="includes/js/mousetrap/mousetrap.min.js"></script>
+	<script src="includes/js/mousetrap/mousetrap-record.js"></script>
+	<script src="includes/js/mousetrap/mousetrap-pause.min.js"></script>
 
 	<!-- <script src="/socket.io/socket.io.js"></script> -->
 	<script src="includes/js/socket.io.js"></script>
@@ -288,7 +357,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 22;
+		let currentRevision = 23; // 23
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -307,7 +376,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		// settings
 		let initSettings = {
-			'version':'1.2.4',
+			'version':'1.2.5',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15, 
@@ -324,6 +393,96 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'exportCode':true,
 			'debugMode': false,
 			'safeMode': false,
+			'shortcuts':{
+				'softcompile':{
+					'name':'Soft-Compile'
+					,'key':'ctrl+enter'
+					,'callback':'recompile()'
+				}
+				,'hardcompile':{
+					'name':'Hard-Compile'
+					,'key':'ctrl+shift+enter'
+					,'callback':'recompile(true)'
+				}
+				,'editor':{
+					'name':'Editor Toggle'
+					,'key':'ctrl+e'
+					,'callback':'editorToggle()'
+				}
+				,'menu':{
+					'name':'Menu Toggle'
+					,'key':'ctrl+m'
+					,'callback':'menuToggle()'
+				}
+				,'cursor':{
+					'name':'Cursor Toggle'
+					,'key':'ctrl+c'
+					,'callback':'cursorToggle()'
+				}
+				,'references':{
+					'name':'References Toggle'
+					,'key':'ctrl+r'
+					,'callback':'toggleRef()'
+				}
+				,'autocompile':{
+					'name':'Live-Coding Toggle'
+					,'key':'ctrl+a'
+					,'callback':'autoCompileToggle()'
+				}
+				,'newsketch':{
+					'name':'New Sketch'
+					,'key':'ctrl+n'
+					,'callback':'loadDefault()'
+				}
+				,'tidy':{
+					'name':'Tidy Code'
+					,'key':'ctrl+t'
+					,'callback':'tidyCode(editor)'
+				}
+				,'codecomment':{
+					'name':'Comment Code'
+					,'key':'meta+/'
+					,'init': 'editor.commands.bindKey(settings.shortcuts["codecomment"].key, "togglecomment")'
+				}
+				,'fontbigger':{
+					'name':'Increase Fontsize'
+					,'key':'ctrl+='
+					,'callback':'fontSizeAdjust(parseFloat(settings.fontSize) + 0.25)'
+				}
+				,'fontsmaller':{
+					'name':'Decrease Fontsize'
+					,'key':'ctrl+-'
+					,'callback':'fontSizeAdjust(parseFloat(settings.fontSize) - 0.25)'
+				}
+				,'pause':{
+					'name':'Pause'
+					,'key':'ctrl+p'
+					,'callback':'pauseSketch()'
+				}
+				,'snapshot':{
+					'name':'Export Snapshot'
+					,'key':'ctrl+s'
+					,'callback':'savePNG()'
+				}
+				,'import':{
+					'name':'Import Sketch'
+					,'key':'ctrl+o'
+					,'callback':'importSketchesDialog()'
+				}
+				,'instagram':{
+					'name':'Instagram Window'
+					,'key':'ctrl+i'
+					,'callback':'pop720()'
+				}
+
+				/*
+				,'jump':{
+					'name':'Quick Jump'
+					,'key':'ctrl' // modifier for 1-0
+					,'callback':''
+				}
+				 */
+			},
 			'sketches': [],
 			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
@@ -349,8 +508,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
-		menuSettings = document.getElementById('menu-settings'),
-		menuBG = document.getElementById('menu-bg'),
 		settingsFontsize = document.getElementById('menu-settings-fontsize'),
 		settingsAutoMode = document.getElementById('settings-autocompile'),
 		settingsEcoMode = document.getElementById('settings-ecorender'),
@@ -361,13 +518,17 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
+		settingsShortcuts = document.getElementById('menu-shortcuts-holder'),
 		refHolder = document.getElementById('refholder'),
 		ref = document.getElementById('ref'),
 		menuPanel = document.getElementById('menu'),
+		panelMenu = document.getElementById('panel-menu'),
+		panelSettings = document.getElementById('panel-settings'),
 		menuSwitch = document.getElementById('menu-switch'),
 		menuTheme = document.getElementById('menu-settings-theme'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
 		loader = document.getElementById('loader'),
+		shortcutRecording = false,
 		settings = getSettings(),
 		validCode = true, 
 		sketchLoaded = false,
@@ -382,7 +543,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
-		demosLocked = true, curPos, curPositions = [], updateCursor, showCursors = false
+		demosLocked = false, curPos, curPositions = [], updateCursor, showCursors = false
 		;
 
 		// force off
@@ -1149,10 +1310,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			readOnly:!0
 		});
 
-		// fix german keyboard binding for /
-		editor.commands.bindKey("cmd-shift-7", "togglecomment")
-		editor.commands.bindKey("ctrl-shift-7", "togglecomment")
-
 		// beautify!
 		let beautifyOptions = {
 			'indent_size': '1',
@@ -1173,7 +1330,9 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'e4x': false
 		}
 
-
+		// fix german keyboard binding for /
+		// editor.commands.bindKey("cmd-shift-7", "togglecomment")
+		// editor.commands.bindKey("ctrl-shift-7", "togglecomment")
 
 		/* DEBUG EDITOR COMMANDS + STORAGE */
 
@@ -1249,6 +1408,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(settings.revision == undefined || settings.revision < currentRevision){
 				settings.revision = currentRevision;
 				settings.version = initSettings.version;
+				settings.welcome = true;
 				Object.keys(initSettings).forEach(function(k){
 					if(!settings.hasOwnProperty(k)){
 						settings[k] = initSettings[k];
@@ -1291,6 +1451,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 			settings.safeMode = false;
 			updateSketches();
+			updateShortcuts();
 			hideLoader();
 			if(getParam('cc') != undefined){
 				if(getParam('cc').length != 5){
@@ -1316,7 +1477,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}else if(settings.welcome){
 				loadAbout();
 				vex.dialog.alert({
-					unsafeMessage:'Welcome to P5LIVE! <br><br><div class="code-replace-header">Storage</div>Sketches are only stored your browser\'s localStorage, so export often.<br><br><div class="code-replace-header">Shortcuts (most important)</div>CTRL + N » new sketch<br>CTRL + ENTER » softCompile<br>CTRL + E » editor toggle<br>CTRL + M » menu toggle',
+					unsafeMessage:'Welcome to P5LIVE!<br>v'+settings.version+' <br><br><div class="code-replace-header">Storage</div>Sketches are only stored in your browser\'s localStorage, so export often!<br><br><div class="code-replace-header">Shortcuts (most important)</div>'+parseShortcut(settings.shortcuts['newsketch'].key)+' » new sketch<br>'+parseShortcut(settings.shortcuts['softcompile'].key)+' » softCompile<br>'+parseShortcut(settings.shortcuts['editor'].key)+' » editor toggle<br>'+parseShortcut(settings.shortcuts['menu'].key)+' » menu toggle',
 				})
 				settings.welcome = false;
 				updateSettings();
@@ -1354,6 +1515,158 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		function updateSettings(){
 			localStorage.setItem('settings', JSON.stringify(settings));
 			if(settings.debugMode){console.log(getSettings());}
+		}
+
+		function showSettings(){
+			panelSettings.style.display = 'block';
+			panelMenu.style.display = 'none';
+		}
+
+		function hideSettings(){
+			panelSettings.style.display = 'none';
+			panelMenu.style.display = 'block';
+		}
+
+		
+		// showSettings();
+		// *** auto size sketches list
+		// *** avoid eval??
+		
+		function resetSettings(){
+			vex.dialog.confirm({
+				unsafeMessage: 'Reset to default settings?<br>Sketches left untouched.',
+				callback: function (value) {
+					if (value) {
+						Object.keys(initSettings).forEach(function(k){
+							if(k != 'sketches' && k != 'welcome'){
+								settings[k] = initSettings[k];
+							}
+						});
+						updateSettings();
+						loadSettings();
+					}
+				}
+			})
+		}
+
+		function exportSettings(){
+			let jsonExport = {};
+			jsonExport.doctype = 'P5L_SETTINGS';
+			jsonExport.date = timeStamp();
+			jsonExport.settings = {}
+			Object.keys(settings).forEach(function(k){
+				if(k != 'sketches'){
+					jsonExport.settings[k] = settings[k];
+				}
+			});
+
+			exportJSON(jsonExport, 'P5L_SETTINGS_'+timeStamp()+'.json');			
+		}
+
+		function importSettings(data){
+			for(let i=0; i < data.length; i++){
+				let reader = new FileReader();
+				reader.onload = function(data) {
+					let tSettings = JSON.parse(data.target.result);
+					let jsonObjList = JSON.parse(data.target.result);
+					if(tSettings.hasOwnProperty('doctype') && tSettings.doctype == 'P5L_SETTINGS'){
+						let warnImport = 'Replace settings with imported file?';
+						if(tSettings.revision < initSettings.revision){
+							warnImport += '<br>Imported settings are from an earlier version of P5LIVE, hopefully this will work...';
+						}
+
+						// first confirm importing of settings
+						vex.dialog.confirm({
+							unsafeMessage:warnImport,
+							callback: function(value){
+								if(value){
+									Object.keys(tSettings.settings).forEach(function(k){
+										if(settings.hasOwnProperty(k)){
+											settings[k] = tSettings.settings[k];
+										}
+									});
+									updateSettings();
+									loadSettings();
+								}
+							}
+						})						
+					}else{
+						vex.dialog.alert({
+							message:"Oops, select a P5L_SETTINGS file."
+						})
+					}
+				}
+				reader.readAsText(data[i]);
+			}
+		}
+
+		function updateShortcuts(){
+			updateSettings();
+			shortcutRecording = false;
+			Mousetrap.reset();
+			Mousetrap.unpause();
+
+			let shortcutsList = '';
+			Object.keys(settings.shortcuts).forEach(function(sc, cc){
+				let shortcut = settings.shortcuts[sc];
+
+				if(shortcut.init != undefined){
+					eval(shortcut.init);
+				}else{
+					Mousetrap.bind(shortcut.key, function(){
+						eval(shortcut.callback);
+						return false;
+					}).stopCallback = function(e, element, combo) {};
+				}
+
+				shortcutsList +='<div class="shortcut-item tippy-left" data-title="Click to modify shortcut" onclick="recordShortcut(this, \''+sc+'\')">'+shortcut.name + ' <div class="shortcut-keys" ><span id="shortcut-'+sc+'" class="shortcut-input">'+parseShortcut(shortcut.key)+'</span></div></div>';
+			});
+			settingsShortcuts.innerHTML = shortcutsList;
+			loadTippy();
+		}
+
+		function parseShortcut(txt){
+			let scParts = txt.split('+');
+			for(let i=0; i<scParts.length;i++){
+				switch(scParts[i].toLowerCase()){
+					case 'meta':
+						scParts[i] = '<span class="shortcut-key">⌘</span>'
+					break;
+					case 'ctrl':
+						scParts[i] = '<span class="shortcut-key">CTRL</span>'
+					break;
+					default:
+						scParts[i] = '<span class="shortcut-key">'+scParts[i].toUpperCase()+'</span>';
+					break;
+				}
+			}
+			return scParts.join('+');
+		}
+
+		function recordShortcut(elm, sc){
+			if(shortcutRecording){
+				updateShortcuts();
+			}else{
+				elm.classList.add('shortcut-ani');
+				Mousetrap.pause();
+				let shortcut = settings.shortcuts[sc];
+				shortcutRecording = true;
+				Mousetrap.record(function(sequence) {
+					let repeatShortcut = false;
+					Object.keys(settings.shortcuts).forEach(function(ssc){
+						let sshortcut = settings.shortcuts[ssc];
+						if(sequence.join(' ') == sshortcut.key){
+							repeatShortcut = true;
+						}else if(sequence.join(' ') == shortcut.key){
+							repeatShortcut = false;
+						}
+					});
+					if(!repeatShortcut && shortcutRecording){
+						shortcut.key = sequence.join(' ');	
+					}
+					updateShortcuts();
+				});
+			}
 		}
 
 		// set sketches list to localstorage
@@ -1708,6 +2021,13 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		  },
 		});
 
+		function importSettingsDialog(){
+			document.getElementById('file-input-settings').click();
+		}
+
+		function importSketchesDialog(){
+			document.getElementById('file-input').click();
+		}
 
 		// import sketches from JSON
 		function importSketches(data){
@@ -2281,61 +2601,55 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 		/* EDITOR KEY-CMDS */
 
+		// mousetrap
+
 		let map = [];
 		window.onkeydown = function(event) {			
 			map[event.keyCode] = event.type == 'keydown';
 			
 			if(map[16] && map[17]){
 				if(event.keyCode == 13){
-					forceRecompile = true;
-					clearTimeout(errorTimer);
-					recompile(true);
+					compileCodeShortcut(true);
 				}else{
 					addSnippet(event.key);
 				}
 				event.preventDefault();
 			}else if(!map[16] && map[17]){ // check !shift and √control
-				if(event.keyCode == 69){ // e = editor toggle
-					editorToggle();
-					event.preventDefault();
-				}else if(event.keyCode == 67){ // c = editor toggle
-					cursorToggle();
-					event.preventDefault();
-				}else if(event.keyCode == 79){ // o = open
-					switchSketch();
-					event.preventDefault();
-				}else if(event.keyCode == 77){ // m = menu
-					menuToggle();
-					event.preventDefault();
-				}else if(event.keyCode == 13){ // enter = recompile
-					forceRecompile = true;
-					clearTimeout(errorTimer);
-					recompile();
-					event.preventDefault();
-				}else if(event.keyCode == 80){ // p = pause
-					pauseSketch();
-					event.preventDefault();
-				}else if(event.keyCode == 78){ // n = new
-					loadDefault();
-					event.preventDefault();
-				}else if(event.keyCode == 83){ // s = save PNG
-					savePNG();
-					event.preventDefault();
-				}else if(event.keyCode == 82){ // r = ref
-					if(refHolder.style.display == 'block'){
-						closeRef();
-					}else{
-						showRef();						
-					}
-					event.preventDefault();
-				}else if((event.keyCode >= 48 && event.keyCode <= 57)){ // 	0-9 = preset sketches
-					let keySketch = event.keyCode - 49;
-					if(keySketch == -1){keySketch = 9;}
-					loadSketch(listSketches(settings.sketches)[keySketch]); // FIX PRESETS
-					event.preventDefault();
-				}else if(event.key == 'i'){
-					pop720(); // IG window size
-				}
+				// if(event.keyCode == 69){ // e = editor toggle
+				// 	editorToggle();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 67){ // c = editor toggle
+				// 	cursorToggle();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 79){ // o = open/import
+				// 	importSketchesDialog();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 77){ // m = menu
+				// 	menuToggle();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 13){ // enter = recompile
+				// 	compileCodeShortcut();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 80){ // p = pause
+				// 	pauseSketch();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 78){ // n = new
+				// 	loadDefault();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 83){ // s = save PNG
+				// 	savePNG();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 82){ // r = ref
+				// 	toggleRef();
+				// 	event.preventDefault();
+				// }else if((event.keyCode >= 48 && event.keyCode <= 57)){ // 	0-9 = preset sketches
+				// 	let keySketch = event.keyCode - 49;
+				// 	if(keySketch == -1){keySketch = 9;}
+				// 	loadSketch(listSketches(settings.sketches)[keySketch]); // FIX PRESETS
+				// 	event.preventDefault();
+				// }else if(event.key == 'i'){
+				// 	pop720(); // IG window size
+				// }
 			}
 
 			if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
@@ -2360,19 +2674,19 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(settings.debugMode){console.log(event);}
 
 			if(!map[16] && map[17]){ // check for !shift + √control
-				if((event.key == '+' || event.key == '=' )){ // up arrow = bigger font
-					fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
-					event.preventDefault();
-				}else if((event.key == '-')){ // down arrow = smaller font
-					fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
-					event.preventDefault();
-				}else if(event.keyCode == 65){ // a = auto compile
-					autoCompileToggle();
-					event.preventDefault();
-				}else if(event.keyCode == 84){ // t = tidy code
-					tidyCode(editor);
-					event.preventDefault();
-				}
+				// if((event.key == '+' || event.key == '=' )){ // up arrow = bigger font
+				// 	fontSizeAdjust(parseFloat(settings.fontSize) + 0.25);
+				// 	event.preventDefault();
+				// }else if((event.key == '-')){ // down arrow = smaller font
+				// 	fontSizeAdjust(parseFloat(settings.fontSize) - 0.25);
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 65){ // a = auto compile
+				// 	autoCompileToggle();
+				// 	event.preventDefault();
+				// }else if(event.keyCode == 84){ // t = tidy code
+				// 	tidyCode(editor);
+				// 	event.preventDefault();
+				// }
 			}
 		}
 
@@ -2443,6 +2757,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* COMPILE CODE */
+
+		function compileCodeShortcut(hard){
+			forceRecompile = true;
+			clearTimeout(errorTimer);
+			recompile(hard);
+		}
 
 		function recompile(force){
 			let currline = editor.getSelectionRange().start.row;
@@ -3081,6 +3401,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			if(!settings.menuMode){
 				menuPanel.style.marginRight = '-250px';
 				menuSwitch.innerHTML = '«';
+				window.setTimeout(hideSettings, 500);
 				// menuPanel.style.overflow = "visible"; // test again w/ chromium
 			}else{
 				menuPanel.style.marginRight = '0px';
@@ -3361,6 +3682,14 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		/* p5.js REFERENCE */
 
 		window.onhashchange = getRef;
+
+		function toggleRef(){
+			if(refHolder.style.display == 'block'){
+				closeRef();
+			}else{
+				showRef();						
+			}
+		}
 
 		function showRef(){
 			if(!downloadedRef){

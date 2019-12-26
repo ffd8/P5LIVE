@@ -192,10 +192,16 @@ hr{
 }
 
 /* MENU */
-#menu, #menu-sketch-new{
+.panel, #menu-sketch-new{
 	font-size:10pt;
 }
-#menu{
+#panel-menu{
+
+}
+#panel-settings{
+	display:none;
+}
+.panel{
 	position:fixed;
 	top:0;
 	right:0;
@@ -205,6 +211,18 @@ hr{
 	color:#fff;
 	z-index:101;
 	transition: margin-right .5s ease;
+}
+#settings-panel{
+	/*background:#333;*/
+	/*z-index:103;*/
+	/*right:500px;*/
+	/*margin-right:0px;*/
+	/*height:90vh;
+	top:10vh;*/
+
+}
+#settings-panel .menu-sections{
+	/*top:85px;*/
 }
 #menu-switch{
 	position:absolute;
@@ -225,7 +243,7 @@ hr{
 .menu-switch{
 	opacity:.5;
 }
-#menu-bg{
+.menu-bg{
 	position:absolute;
 	top:0;
 	left:0;
@@ -235,7 +253,7 @@ hr{
 	z-index:-1;
 	opacity: .5;
 }
-#menu-sections{
+.menu-sections{
 	position:absolute;
 	left:0;
 	top:0;
@@ -257,7 +275,7 @@ hr{
 	background:#222;
 	opacity:.75;
 }
-.menu-header{
+.menu-header, h2{
 	font-size:14pt;
 	color:#fff;
 	border-bottom:1px solid #888;
@@ -269,9 +287,22 @@ hr{
 	letter-spacing: 1px;
 	opacity:.75;
 }
+h2{
+	font-size:14pt;
+	color:#fff;
+	opacity:.75;
+	border:none;
+	margin:10px 0 5px 0;
+	background:none;
+	padding-left:0;
+}
 .menu-contents{
 	padding-left:5px;
 	padding-bottom:5px;
+}
+.invisible:hover{
+	/*visibility:hidden;*/
+	opacity:0.3 !important;
 }
 .feather {
 	stroke:#fff;
@@ -291,7 +322,7 @@ hr{
 }
 .menu-sketches-holder{
 	color:#fff;
-	height:30vh;
+	height:50vh;
 	overflow:hidden;
 	overflow-y:auto;
 	position:relative;
@@ -500,11 +531,11 @@ button[disabled]{
 .write-access{
 	background:#008800 !important;
 }
-#menu-settings{
+.menu-settings{
 	position:relative;
 	line-height:1.6em;
 }
-#menu-settings div{
+.menu-settings div{
 	outline:none;
 }
 #menu-settings-theme{
@@ -544,6 +575,59 @@ button[disabled]{
 	border-bottom:1px solid #444;
 	color:#fff;
 }
+#settings-compiletimer{
+	display:none;
+	float:right;
+	margin:3px 10px 0;
+	outline:none;
+	border:1px solid #888;
+	background:none;
+	color:#fff;
+	cursor:help;
+}
+.shortcut-keys{
+	//width:60px;
+	/*outline:none;*/
+	margin-right:0px;
+	float:right;
+}
+.shortcut-key{
+	font-size:7pt;
+	width:12px;
+	background:#666;
+	border:1px solid #888;
+	border-radius: 3px;
+	color:#fff;
+	text-align:center;
+	padding:0px 3px 0 3px;
+	margin:0 2px 0 2px;
+}
+.shortcut-item{
+	font-size:8pt;
+	padding:1px;
+	border-bottom:1px solid #333;
+	/*line-height:;*/
+	cursor:pointer;
+}
+.shortcut-item:hover{
+	background:#888;
+}
+.shortcut-ani{
+	animation: shortcut-record 1.2s linear infinite;
+}
+
+@keyframes shortcut-record {
+	0% {
+		background: #333333;
+	}
+	50% {
+		background: #008800;
+	}
+	100% {
+		background: #333333;
+	}
+}
+
 .tippy-tooltip{
 	font-size:8pt;
 	border:1px solid #fff;
@@ -853,7 +937,7 @@ li{
 
 /* MOBILE */
 @media (max-width: 767px) {
-	#menu-bg{
+	.menu-bg{
 		opacity:.9;
 	}
 	.menu-header{
