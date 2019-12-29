@@ -651,13 +651,13 @@ function println(msg){
 		}
 
 		function vexSmall(){
-			var elements = document.getElementsByClassName('vex');
-			for (var i in elements) {
-			  if (elements.hasOwnProperty(i)) {
-			    elements[i].classList.add('vex-small')// += ' vex-small';
-			  }
+			let elements = document.getElementsByClassName('vex');
+			for (let i in elements) {
+				if (elements.hasOwnProperty(i)) {
+				elements[i].classList.add('vex-small')// += ' vex-small';
 			}
 		}
+	}
 
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
@@ -1669,7 +1669,7 @@ function println(msg){
 				keyBindings.push(key+'+'+i);
 			}
 			Mousetrap.bind(keyBindings, function(e) {
-			    jumpSketches(e.key);
+				jumpSketches(e.key);
 			});
 		}
 
@@ -1689,7 +1689,7 @@ function println(msg){
 
 		// padding version numbers of sketch
 		function pad(num, size) {
-			var s = "0000" + num;
+			let s = "0000" + num;
 			return s.substr(s.length-size);
 		}
 
@@ -1995,43 +1995,43 @@ function println(msg){
 
 
 		// DRAG + DROP
-		var divDrop = document.getElementById('p5-drop');
-		var myDropzone = new Dropzone(document.body, {
-		  autoProcessQueue: false,
-		  url: '/data', // unused but needed for URL expectation
-		  acceptedFiles:'.json',
-		  init: function() {
-		    this.on("addedfile", function(file, responseText) {
-		    	importSketches(myDropzone.files);
-		    	divDrop.style.display = "none";
-		    	myDropzone.files = []; // clear list
-		    });
-		    this.on("dragenter", function(file, responseText) {
-		    	// console.log(event.dataTransfer.dropEffect)
-		    	if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
-		    		divDrop.style.display = "block";
-		    	}
-		    });
-		    this.on("dragleave", function(file, responseText) {
-		    	divDrop.style.display = "none";
-		    });
-		    this.on("drop", function(file, responseText) {
-		    	divDrop.style.display = "none";
-		    });
-		    this.on("dragover", function(file, responseText) {
-		    	// event.preventDefault();
-		    	// console.log(event.dataTransfer.dropEffect);
-		    	if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
-		    		divDrop.style.display = "block";
-		    	}
-		    });
-		    this.on("error", function(file, responseText) {
-		    	vex.dialog.alert({
-					unsafeMessage:"Error importing. <br>Only P5LIVE exports are accepted.",
-				})
-		    	myDropzone.files = []; // clear list
-		    });
-		  },
+		let divDrop = document.getElementById('p5-drop');
+		let myDropzone = new Dropzone(document.body, {
+			autoProcessQueue: false,
+			url: '/data', // unused but needed for URL expectation
+			acceptedFiles:'.json',
+			init: function() {
+				this.on("addedfile", function(file, responseText) {
+					importSketches(myDropzone.files);
+					divDrop.style.display = "none";
+					myDropzone.files = []; // clear list
+				});
+				this.on("dragenter", function(file, responseText) {
+					// console.log(event.dataTransfer.dropEffect)
+					if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
+						divDrop.style.display = "block";
+					}
+				});
+				this.on("dragleave", function(file, responseText) {
+					divDrop.style.display = "none";
+				});
+				this.on("drop", function(file, responseText) {
+					divDrop.style.display = "none";
+				});
+				this.on("dragover", function(file, responseText) {
+					// event.preventDefault();
+					// console.log(event.dataTransfer.dropEffect);
+					if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
+						divDrop.style.display = "block";
+					}
+				});
+				this.on("error", function(file, responseText) {
+					vex.dialog.alert({
+						unsafeMessage:"Error importing. <br>Only P5LIVE exports are accepted.",
+					})
+					myDropzone.files = []; // clear list
+				});
+			},
 		});
 
 		function importSettingsDialog(){
@@ -2472,9 +2472,10 @@ function println(msg){
 
 		function inspectItem(itemName){
 			let inspectCode = localStorage.getItem(itemName);
+			let inspectEditor;
 
 			vex.dialog.confirm({
-            	focusFirstInput : false,
+				focusFirstInput : false,
 				unsafeMessage:'Inspect Code:<br><br><div id="inspectcode" class="vex-long">'+inspectCode+'</div>',
 				callback: function (value) {},
 				buttons: [
@@ -2495,8 +2496,8 @@ function println(msg){
 					className: 'my-button-class-name'
 				}]
 			})
-			var inspectEditor = ace.edit("inspectcode");
-		    inspectEditor.setTheme(settings.theme);
+			inspectEditor = ace.edit("inspectcode");
+			inspectEditor.setTheme(settings.theme);
 			inspectEditor.session.setMode('ace/mode/javascript');
 			inspectEditor.setOptions({
 				showPrintMargin: false,
