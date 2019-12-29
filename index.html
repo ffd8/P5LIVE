@@ -1464,18 +1464,13 @@ function println(msg){
 			}else if(settings.welcome){
 				loadDefault();
 				loadAbout();
-				// vex.dialog.alert({
-				// 	unsafeMessage:'Welcome to P5LIVE!<br>v'+settings.version+' <br><br><div class="code-replace-header">Storage</div>Sketches are only stored in your browser\'s localStorage, so export often!<br><br><div class="code-replace-header">Shortcuts (most important)</div>'+parseShortcut(settings.shortcuts['newsketch'].key)+' » new sketch<br>'+parseShortcut(settings.shortcuts['softcompile'].key)+' » softCompile<br>'+parseShortcut(settings.shortcuts['editor'].key)+' » editor toggle<br>'+parseShortcut(settings.shortcuts['menu'].key)+' » menu toggle',
-				// })
 				settings.welcome = false;
 				updateSettings();
 			}else if(window.location.hash){
 				if(window.location.hash.substring(1) === 'new'){
 					loadDefault();
 				}else if(window.location.hash.substring(1).toLowerCase() === 'bug'){
-					settings.safeMode = true;
-					updateSettings();
-					loadSketch(settings.fileName);
+					loadBug();
 				}else{
 					loadRef();
 					loadSketch(settings.fileName);
@@ -1677,8 +1672,16 @@ function println(msg){
 		function jumpSketches(kc){
 			let keySketch = kc - 1;
 			if(keySketch == -1){keySketch = 9;}
-			console.log(keySketch);
 			loadSketch(listSketches(settings.sketches)[keySketch]);
+		}
+
+		// bug
+		function loadBug(){
+			settings.safeMode = true;
+			let bugName = settings.fileName;
+			updateSettings();
+			loadDefault();
+			inspectItem(bugName)
 		}
 
 		// set sketches list to localstorage
@@ -1719,12 +1722,10 @@ function println(msg){
 			let forkName = versionCheck(settings.fileName);			
 
 			let checkDir = searchJSON(settings.sketches, 'name', settings.fileName)[0];
-			console.log(checkDir)
 			settings.fileName = forkName;
 			updateSettings();
 			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos'){
 				let useDir = searchJSON(settings.sketches, 'name', checkDir.parent)[0];
-				console.log(useDir)
 				useDir.contents.unshift({'type':'sketch', 'name':forkName});
 				useDir.toggle = 'expand';
 			}else{
@@ -1755,7 +1756,7 @@ function println(msg){
 		}
 
 		// load sketch
-		function loadSketch(sketch){
+		function loadSketch(sketch, lineNum){
 			if(settings.cocoding.active){
 
 				vex.dialog.confirm({
@@ -1818,8 +1819,16 @@ function println(msg){
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
 					editor.focus();
+					let lineCount = editor.session.getLines(0, editor.session.getLength()).length;
+					if(lineNum != undefined && lineCount >= lineNum){
+						editor.gotoLine(lineNum, 1, false);
+					}
+
 					let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
 					if(searchSketches(settings.fileName, checkDemo) && demosLocked){
+						if(settings.fileName == 'new'){
+							window.location.hash = '#';
+						}
 						editor.getSession().on('change', cloneSketch);
 					}
 					
@@ -2197,7 +2206,7 @@ function println(msg){
 
 		// load demos
 		function loadDemos(){
-			let demosPath = 'includes/demos/P5L_demos_20191103232335.json?' + currentRevision;
+			let demosPath = 'includes/demos/P5L_demos_20191229172219.json?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send()
@@ -2485,7 +2494,13 @@ function println(msg){
 					className: 'my-button-class-name',
 					click: function updateCode () {
 						localStorage[itemName] = inspectEditor.getValue();
-						if(itemName == settings.fileName){
+						if(settings.safeMode){
+							settings.fileName = itemName;
+							settings.safeMode = false;
+							updateSettings();
+							window.location.hash = '#';
+							loadSketch(settings.fileName);
+						}else if(itemName == settings.fileName){
 							setTimeout(function(){editor.setValue(localStorage.getItem(itemName), 1);}, 100);
 						}
 					}
@@ -2586,7 +2601,6 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					// alert('hi')
 					vexSmall();
 				}
 			})
@@ -2997,8 +3011,10 @@ function println(msg){
 		}
 
 		function tidyCode(aceEdit){
+			let tempPos = editor.getCursorPosition();
 			let tempCode = js_beautify(aceEdit.getValue(), beautifyOptions);
 			aceEdit.setValue(tempCode, 1);
+			aceEdit.gotoLine(tempPos.row+1, tempPos.column, false);
 		}
 
 
@@ -3473,19 +3489,24 @@ function println(msg){
 		/* LOAD VARIOUS SKETCHES */
 		function loadDefault(){
 			if(!settings.cocoding.active){
-				let newID = 'sketch_' + timeStamp();
-				let newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
-				let tempHTML = menuSketches.innerHTML;
-				menuSketches.innerHTML = newSketch + tempHTML;
+				// let newID = 'sketch_' + timeStamp();
+				// let newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
+				// let tempHTML = menuSketches.innerHTML;
+				// menuSketches.innerHTML = newSketch + tempHTML;
 				
-				settings.fileName = newID;
-				localStorage.setItem(settings.fileName, p5template);
-				editor.setValue(p5template, 1);
-				editor.gotoLine(7, 1, false);
+				// settings.fileName = newID;
+				// localStorage.setItem(settings.fileName, p5template);
+				// editor.setValue(p5template, 1);
+				// editor.gotoLine(7, 1, false);
+				// updateSettings();
+				// editor.focus();
+				// getOrder();
+				// setTimeout(function(){ recompile(true); }, 100);
+
+				settings.fileName = 'new'; // jump to demos/new
 				updateSettings();
-				editor.focus();
-				getOrder();
-				setTimeout(function(){ recompile(true); }, 100);
+				loadSketch(settings.fileName, 7); // put cursor in draw
+
 			}else if(settings.cocoding.level == 'admin'){
 				vex.dialog.confirm({
 					message:'Replace code with default template?',
@@ -3650,12 +3671,18 @@ function println(msg){
 		}
 
 		function getRef(){
-			if(location.hash != undefined && location.hash.length > 1){
-				let refPieces = location.hash.split('/');
+			if(window.location.hash != undefined && window.location.hash.length > 1){
+				let refPieces = window.location.hash.split('/');
 				let grabRef = '';
-				if(refPieces.length == 3){
+				if(window.location.hash == '#new'){
+					loadDefault();
+					return false;
+				}else if(window.location.hash == '#bug'){
+					loadBug();
+					return false;
+				}else if(refPieces.length == 3){
 					ref.innerHTML = '';
-					grabRef = location.hash.split('/')[2];
+					grabRef = window.location.hash.split('/')[2];
 				}else{
 					allRef();
 					// window.location = window.location.hash;
@@ -3763,10 +3790,10 @@ function println(msg){
 			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
 
 			// jump to category of viewed ref
-			if(location.hash != undefined && location.hash.length > 1){
-				let refPieces = location.hash.split('/');
+			if(window.location.hash != undefined && window.location.hash.length > 1){
+				let refPieces = window.location.hash.split('/');
 				if(refPieces.length == 1){
-					let refTopic = location.hash.substring(1);
+					let refTopic = window.location.hash.substring(1);
 
 					const overflow = document.getElementById('refholder');
 					let anchor = document.getElementById(refTopic);
