@@ -2473,9 +2473,27 @@ function println(msg){
 		function inspectItem(itemName){
 			let inspectCode = localStorage.getItem(itemName);
 
-			vex.dialog.alert({
+			vex.dialog.confirm({
             	focusFirstInput : false,
-				unsafeMessage:'<div id="inspectcode" class="vex-long">'+inspectCode+'</div>'
+				unsafeMessage:'Inspect Code:<br><br><div id="inspectcode" class="vex-long">'+inspectCode+'</div>',
+				callback: function (value) {},
+				buttons: [
+			    {
+			        type: 'submit',
+			        text: 'SAVE',
+			        className: 'my-button-class-name',
+			        click: function updateCode () {
+			        	localStorage[itemName] = inspectEditor.getValue();
+			        	if(itemName == settings.fileName){
+			        		setTimeout(function(){editor.setValue(localStorage.getItem(itemName), 1);}, 100);
+			        	}
+					}
+			    }
+			    ,{
+			        type: 'close',
+			        text: 'CLOSE',
+			        className: 'my-button-class-name'
+			    }]
 			})
 			var inspectEditor = ace.edit("inspectcode");
 		    inspectEditor.setTheme(settings.theme);
@@ -2485,8 +2503,8 @@ function println(msg){
 				animatedScroll: false,
 				displayIndentGuides: false,
 				useWorker: true,
-				showLineNumbers: false,
-				showGutter: false,
+				showLineNumbers: true,
+				showGutter: true,
 				tabSize: 4, useSoftTabs: false,
 			});
 			tidyCode(inspectEditor);

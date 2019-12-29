@@ -973,6 +973,10 @@ li{
 	clear: left;
 	margin:15px 0 15px 0;*/
 }
+#inspectcode .ace_gutter-layer, #inspectcode .ace_gutter{
+	background:none !important;
+	border-right:1px solid #aaa;
+}
 
 /* 
 ##Device = Tablets, Ipads (landscape)
