@@ -2478,22 +2478,22 @@ function println(msg){
 				unsafeMessage:'Inspect Code:<br><br><div id="inspectcode" class="vex-long">'+inspectCode+'</div>',
 				callback: function (value) {},
 				buttons: [
-			    {
-			        type: 'submit',
-			        text: 'SAVE',
-			        className: 'my-button-class-name',
-			        click: function updateCode () {
-			        	localStorage[itemName] = inspectEditor.getValue();
-			        	if(itemName == settings.fileName){
-			        		setTimeout(function(){editor.setValue(localStorage.getItem(itemName), 1);}, 100);
-			        	}
+				{
+					type: 'submit',
+					text: 'SAVE',
+					className: 'my-button-class-name',
+					click: function updateCode () {
+						localStorage[itemName] = inspectEditor.getValue();
+						if(itemName == settings.fileName){
+							setTimeout(function(){editor.setValue(localStorage.getItem(itemName), 1);}, 100);
+						}
 					}
-			    }
-			    ,{
-			        type: 'close',
-			        text: 'CLOSE',
-			        className: 'my-button-class-name'
-			    }]
+				}
+				,{
+					type: 'close',
+					text: 'CLOSE',
+					className: 'my-button-class-name'
+				}]
 			})
 			var inspectEditor = ace.edit("inspectcode");
 		    inspectEditor.setTheme(settings.theme);
@@ -2508,14 +2508,6 @@ function println(msg){
 				tabSize: 4, useSoftTabs: false,
 			});
 			tidyCode(inspectEditor);
-			// vex.dialog.alert({
-   //          	focusFirstInput : false,
-			// 	unsafeMessage:
-			// 		'<h2>'+curTool+'</h2>'
-			// 		+'<h6>'+tempAbout.names.join(" + ") +'<br>'+tempAbout.class+'</h6><hr>'
-			// 		+tempAbout.description+'<br>'
-			// 		,
-			// })
 		}
 
 		// rename sketch/folder
