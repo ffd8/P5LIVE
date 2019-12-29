@@ -26,6 +26,10 @@ html {
 	font-family: 'roboto_mono', 'Monaco', monospace;
 	font-weight: 200;
 }
+textarea, pre, code{
+	font-family: 'roboto_mono', 'Monaco' !important;
+	font-weight: 400 !important;	
+}
 body {
 	margin: 0;
 	padding: 0;
@@ -533,7 +537,7 @@ button[disabled]{
 }
 .menu-settings{
 	position:relative;
-	line-height:1.6em;
+	line-height:1.8em;
 }
 .menu-settings div{
 	outline:none;
@@ -578,7 +582,7 @@ button[disabled]{
 #settings-compiletimer{
 	display:none;
 	float:right;
-	margin:3px 10px 0;
+	margin:5px 10px 0;
 	outline:none;
 	border:1px solid #888;
 	background:none;
@@ -586,8 +590,6 @@ button[disabled]{
 	cursor:help;
 }
 .shortcut-keys{
-	//width:60px;
-	/*outline:none;*/
 	margin-right:0px;
 	float:right;
 }
@@ -606,7 +608,6 @@ button[disabled]{
 	font-size:8pt;
 	padding:1px;
 	border-bottom:1px solid #333;
-	/*line-height:;*/
 	cursor:pointer;
 }
 .shortcut-item:hover{
@@ -909,7 +910,7 @@ li{
 	height:16pt;
 	stroke:#ff0000;
 }
-#inspectcode{
+.vex-long{
 	width:100%;
 	height:50vh;
 	border-bottom:1px solid #aaa;
@@ -922,6 +923,55 @@ li{
 	padding:5px;
 	box-sizing: border-box;
 	outline:none;
+}
+.vex-content{
+	/*width:auto !important;*/
+}
+.vex{
+	overflow: hidden !important;
+}
+.vex-small{
+	width:450px;
+	margin: 0 auto;
+}
+#about-alert{
+	font-size:10pt;
+	line-height:13pt;
+	/*width:45vw;*/
+}
+#about-alert pre, #about-alert code{
+	font-family: 'roboto_mono', 'Monaco', monospace;
+	font-weight: 200;
+}
+#about-alert a{
+	color:#fff;
+}
+#about-alert ul{
+	list-style-type: none;
+  	margin-left: 15px;
+  	padding-left: 0px;
+  /*list-style-type: square;*/
+}
+#about-alert li:before { 
+	content:"– "; 
+	margin-left:-15px;
+}
+#about-alert h2{
+	margin-top:15px;
+	border-top:1px solid #aaa;
+	padding-top:15px;
+}
+#about-alert h3{
+	margin-top:25px;
+}
+#about-alert h4{
+	font-size:14pt;
+}
+#about-alert img{
+	/*margin-right:100%;*/
+	/*display: block; 
+	clear: left;
+	margin:15px 0 15px 0;*/
 }
 
 /* 

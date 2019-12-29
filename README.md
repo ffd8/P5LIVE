@@ -21,13 +21,10 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + 1, 2, 3...0` » load first 10 sketches
 
 
-## LOCALSTORAGE
-Sketches are ONLY stored in your browser's localStorage,   
-so export sketches/folders often!  
-Clearing browser history/data will likely erase all sketches.  
+## SAVING
+Sketches are ONLY saved in your browser's localStorage so export all sketches regularly! Clearing browser history/data will likely erase all sketches.  
 
-This means sketches are isolated to the localStorage per domain:port,  
-so export/import all sketches to migrate between online/offline/browsers.
+This means sketches are isolated to the localStorage per domain:port, so export/import all sketches to migrate between online/offline/browsers.
 
 
 ## INSTALL
@@ -38,14 +35,16 @@ Details below to run via python webserver or nodejs/npm (for complete functional
 
 
 ## GETTING STARTED
-### LIVE-CODE IN 5... 4... 3... 2...
+### LIVE-CODE IN 5... 4... 3...  
 <img src="includes/images/menu-sketches-new-7.png" width="220px">  
+
 Create New Sketch via GUI icon or `CTRL + N` and start coding!  
 Live-coding active by default, `CTRL + ENTER` to force recompile.  
 Sketch is auto-saved on every keystroke.  
   
 ### P5LIVE MENU  
 <img src="includes/images/menu-p5live-8.png" width="220px">  
+
 - About, what you're reading now.  
 - Settings, adjust editor settings + shortcuts.  
 - Reference, `CTRL + R`, toggle p5.js reference list.  
@@ -54,9 +53,11 @@ Sketch is auto-saved on every keystroke.
 
 ### COCODING MENU  
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
+
 - Start, click the single 'network' button.  
 
 <img src="includes/images/menu-cocoding-active-7.png" width="220px">  
+
 - Exit, click the green 'network' button.  
 - Share, click copy URL and share with friends.  
 - Clone sketch, saves current co-code to local sketches within session folder.  
@@ -64,44 +65,51 @@ Sketch is auto-saved on every keystroke.
 - Broadcast (admin + lockdown), sync mouseX/Y/frameCount with users.
 
 <img src="includes/images/menu-cocoding-req-pre-7.png" width="220px">  
+
 - Rename, click on your name (very top) to select a new nickname and cursor color.
 
 #### Lockdown (user)
 <img src="includes/images/menu-cocoding-req-7.png" width="220px">  
+
 - Request Write-access, click edit button and wait for admin to allow.
 
 #### Lockdown (admin)
 <img src="includes/images/menu-cocoding-admin-vote-7.png" width="220px">  
+
 - Request Deny/Accept, reject or grant write-access from users.
 
 <img src="includes/images/menu-cocoding-admin-allow-7.png" width="220px">  
+
 - Toggle Write-access, admin can always toggle write access of user.  
   
 #### SKETCHES MENU 
 <img src="includes/images/menu-sketches-7.png" width="220px">  
+
 - New sketch.  
 - Clone sketch, duplicates active sketch.  
-- New folder, used to nest sketches/folders within others.  
+- New folder, nest sketches/folders within others.  
 - Import, select JSON files from export (single/folder/all).  
-- Export, exports entire sketches list as JSON for import.  
+- Export, exports entire sketches list for import/backup.  
   
 ### SKETCH  
 <img src="includes/images/menu-sketch-nav-8.png" width="220px">  
-Load, click on sketch name.  
-Inspect, click lines icon to view code as popup.  
-Rename, click pencil icon and type new name.  
-Export, click download icon to export sketch as JSON file.  
-Remove, click trash icon and confirm deletion.  
-Sort, click + hold + drag to desired order.  
-Add to folder, careully drag + drop into/over folder.
+
+- Load, click on sketch name.  
+- Inspect, click lines icon to view code as popup.  
+- Rename, click pencil icon and type new name.  
+- Export, click download icon to export sketch as JSON file.  
+- Remove, click trash icon and confirm deletion.  
+- Sort, click + hold + drag to desired order.  
+- Add to folder, careully drag + drop into/over folder.
 
 ### FOLDER  
 <img src="includes/images/menu-folder-nav-7.png" width="220px">  
-Expand/collapse, click on folder name.  
-Rename, click pencil icon and type new name.  
-Export, click download icon to export entire contents as JSON file.  
-Remove, click trash icon and confirm deletion.  
-Sort, click + hold + drag to desired order.  
+
+- Expand/collapse, click on folder name.  
+- Rename, click pencil icon and type new name.  
+- Export, click download icon to export entire contents as JSON file.  
+- Remove, click trash icon and confirm deletion.  
+- Sort, click + hold + drag to desired order.  
   
 ### SETTINGS  
 - Live Coding, (auto-compiling mode), recompiles on error-free keyup.  
@@ -111,6 +119,7 @@ Sort, click + hold + drag to desired order.
 - Menu Tab, toggles menu tab. (hide if visible while VJ'ing). 
 - Snapshot Code, export current code with every image snapshot. 
 - Line Numbers, toggle code editor gutter features + line numbers. 
+- Lock Code on Drag, toggle locked code editor on mouse drag. 
 - Font Size, adjust size of editor text.  
 - Background, toggle + set color behind each line of code.  
 - Theme, select custom styling of code.
@@ -120,6 +129,7 @@ Settings GUI: completely reset P5LIVE, reset settings to defaults, import/export
 
 ### COMPILING
 There are two modes of compiling in P5LIVE:  
+
 - softCompile, `CTRL + ENTER`, (default) only replaces changed functions (smooth refresh).  
 - hardCompile, `CTRL + SHIFT + ENTER`, forces entire sketch to recompile.  
 
@@ -164,12 +174,14 @@ MIDI is implemented with webmidi.js – see *midi_setup* demo.
 
 ### BUG/CRASH?! 
 Infinite loop? Broken code?  
+
 - Add `#bug` to URL and try refreshing to stop compiler to fix a bug/infinite-loop...  
 - Add `#new` to URL and refresh to force a fresh blank sketch. Then you can export and delete broken sketch, try fixing externally, and re-import.
 
 
 ## FUNCTIONS
 Additional custom functions are available in every sketch:  
+
 - `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.  
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
@@ -210,7 +222,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [tippy](https://atomiks.github.io/tippyjs/), tooltips
 - [download.js](http://danml.com/download.html), exporting html file
 - [vex](https://github.com/HubSpot/vex), custom dialog boxes
-- [markdown.js](https://github.com/cadorn/markdown-js), parsing this readme into about section
+- [marked.js](https://marked.js.org/), parsing this readme into about
 - [Roboto Mono](https://github.com/google/roboto), font
 - [Feather Icons](https://feathericons.com), gui icons 
 - [loading.io](https://loading.io/css/), css spinning intro loader

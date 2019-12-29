@@ -25,7 +25,8 @@
     position: relative;
     margin: 0 auto;
     max-width: 100%;
-    width: 450px;
+    width: 50vw;
+    min-width: 450px;
     font-size: 1.1em;
     line-height: 1.5em;
     border:1px solid #888; }

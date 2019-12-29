@@ -225,10 +225,12 @@
 						<input type="checkbox" id="settings-exportcode" name="settings-exportcode" value="settings-exportcode"> Snapshot Code
 					</div>
 					
-			
-					
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
 						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
+					</div>
+
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle code locked on mouse drag" onclick="lockDragToggle();">
+						<input type="checkbox" id="settings-lockdrag" name="settings-lockdrag" value="settings-lockdrag"> Lock Code on Drag
 					</div>
 					
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
@@ -299,32 +301,6 @@ function println(msg){
 	print(msg);
 }
 </textarea>
-<textarea style="display:none;" id="p5live-about">
-function setup() {
-	createCanvas(windowWidth, windowHeight);
-	noStroke();
-	mouseX = width/2;
-	mouseY = height/2;
-	pixelDensity(1);
-}
-
-function draw() {
-	background(0);
-	tri(0, 0, mouseX, mouseY, 0, height, 100);
-	tri(0, 0, mouseX, mouseY, width, 0, 200);
-	tri(width, height, mouseX, mouseY, 0, height, 0);
-	tri(width, height, mouseX, mouseY, width, 0, 255);
-}
-
-function tri(x1, y1, x2, y2, x3, y3, fc){
-	let v = 0.002;
-	fill(abs(sin(fc+(frameCount*v)))*255);
-	beginShape();
-	vertex(x1, y1);
-	vertex(x2, y2);
-	vertex(x3, y3);
-	endShape();
-}</textarea>
 
 	<!-- Script Styles -->
 	<link rel="stylesheet" href="includes/css/nano.min.css"/>
@@ -339,7 +315,8 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 	<script src="includes/js/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
-	<script src="includes/js/markdown.min.js"></script>
+	<script src="includes/js/marked.min.js"></script>
+
 	<script src='includes/js/download.js'></script>
 	<script src="includes/js/vex/js/vex.combined.min.js"></script>
 	<script src="includes/js/dropzone.js"></script>
@@ -357,7 +334,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 
 		/* INIT */
-		let currentRevision = 23; // 23
+		let currentRevision = 24; // 23
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -388,6 +365,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			'fullscreenMode':false,
 			'fileName': '',
 			'linenumbers': false,
+			'lockcode':true,
 			'menuMode': true,
 			'menutab':true,
 			'exportCode':true,
@@ -500,7 +478,6 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		p5frame = document.getElementById('p5-frame'),
 		p5frameCover = document.getElementById('p5-frame-cover'),
 		p5f = p5frame.contentWindow,
-		p5liveaboutSketch = document.getElementById('p5live-about').value,
 		p5script = document.getElementById('holdscript'),
 		menuCocode = document.getElementById('menu-cocode'),
 		menuCocodeCounter = document.getElementById('menu-cocode-counter'),
@@ -514,6 +491,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 		settingsConsole = document.getElementById('settings-console'),
 		settingsMenutab = document.getElementById('settings-menutab'),
 		settingsLinenumbers = document.getElementById('settings-linenumbers'),
+		settingsLockDrag = document.getElementById('settings-lockdrag'),
 		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
@@ -669,6 +647,15 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				set: function (sortable) {
 					getOrder();
 				}
+			}
+		}
+
+		function vexSmall(){
+			var elements = document.getElementsByClassName('vex');
+			for (var i in elements) {
+			  if (elements.hasOwnProperty(i)) {
+			    elements[i].classList.add('vex-small')// += ' vex-small';
+			  }
 			}
 		}
 
@@ -1432,6 +1419,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			consoleToggleUpdate();
 			menutabToggleUpdate();
 			linenumbersUpdate();
+			lockDragUpdate();
 			exportcodeUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
@@ -1474,10 +1462,11 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 				updateSketches();
 				cocoding();
 			}else if(settings.welcome){
+				loadDefault();
 				loadAbout();
-				vex.dialog.alert({
-					unsafeMessage:'Welcome to P5LIVE!<br>v'+settings.version+' <br><br><div class="code-replace-header">Storage</div>Sketches are only stored in your browser\'s localStorage, so export often!<br><br><div class="code-replace-header">Shortcuts (most important)</div>'+parseShortcut(settings.shortcuts['newsketch'].key)+' » new sketch<br>'+parseShortcut(settings.shortcuts['softcompile'].key)+' » softCompile<br>'+parseShortcut(settings.shortcuts['editor'].key)+' » editor toggle<br>'+parseShortcut(settings.shortcuts['menu'].key)+' » menu toggle',
-				})
+				// vex.dialog.alert({
+				// 	unsafeMessage:'Welcome to P5LIVE!<br>v'+settings.version+' <br><br><div class="code-replace-header">Storage</div>Sketches are only stored in your browser\'s localStorage, so export often!<br><br><div class="code-replace-header">Shortcuts (most important)</div>'+parseShortcut(settings.shortcuts['newsketch'].key)+' » new sketch<br>'+parseShortcut(settings.shortcuts['softcompile'].key)+' » softCompile<br>'+parseShortcut(settings.shortcuts['editor'].key)+' » editor toggle<br>'+parseShortcut(settings.shortcuts['menu'].key)+' » menu toggle',
+				// })
 				settings.welcome = false;
 				updateSettings();
 			}else if(window.location.hash){
@@ -1835,11 +1824,12 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					}
 					
 				}else if(!localStorage.hasOwnProperty(sketch) && searchSketches(sketch, settings.sketches)){
+					
 					vex.dialog.confirm({
 						message:'Sketch code missing, remove from list?',
 						callback: function(value){
 							if(value){
-								removeItemProcess(sketch);	
+								removeItemProcess(sketch);
 							}
 						}
 					})
@@ -2485,7 +2475,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 
 			vex.dialog.alert({
             	focusFirstInput : false,
-				unsafeMessage:'<div id="inspectcode">'+inspectCode+'</div>'
+				unsafeMessage:'<div id="inspectcode" class="vex-long">'+inspectCode+'</div>'
 			})
 			var inspectEditor = ace.edit("inspectcode");
 		    inspectEditor.setTheme(settings.theme);
@@ -2583,6 +2573,10 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 					if (value) {
 						removeItemProcess(dataID);
 					}
+				},
+				afterOpen: function(){
+					// alert('hi')
+					vexSmall();
 				}
 			})
 		}
@@ -3250,6 +3244,16 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}	
 		}
 
+		// lockCode toggle
+		function lockDragToggle(){
+			settings.lockcode = !settings.lockcode;
+			lockDragUpdate();
+		}
+
+		function lockDragUpdate(){
+			checkToggle('lockcode', settings.lockcode, settingsLockDrag);
+		}
+
 		//exportcode toggle
 		function exportcodeToggle(){
 			settings.exportCode = !settings.exportCode;
@@ -3486,51 +3490,24 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 		}
 
-		function loadAbout(){
-			settings.fileName = 'p5liveabout';
 
+		
+		function loadAbout(){
 			let demosPath = 'README.md?' + settings.revision;
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send();
-			let ptContent = htmlToText(markdown.toHTML( request.responseText ));
+			
+			let ptContent = '<div id="about-alert" class="vex-long">'+marked(request.responseText)+'</div>';
 
-			let p5liveabout = '/*\n\n' + ptContent + '*/\n\n' + p5liveaboutSketch;
-			localStorage.setItem(settings.fileName, p5liveabout);
-			editor.setValue(p5liveabout, 1);
-			editor.focus();
-			updateSettings();
-			setTimeout(function(){ recompile(true); }, 100);
+			let p5liveabout = ptContent;
+			vex.dialog.alert({
+				focusFirstInput : false,
+				unsafeMessage:p5liveabout
+			})
 		}
 
-		// HTML to TXT
-		function htmlToText(html){
-			//remove code brakes and tabs
-			html = html.replace(/\n/g, '');
-			html = html.replace(/\t/g, '');
-
-			//keep html brakes and tabs
-			html = html.replace(/<\/td>/g, '\t');
-			html = html.replace(/<\/table>/g, '\n');
-			html = html.replace(/<\/tr>/g, '\n');
-			html = html.replace(/<\/p>/g, '\n\n');
-			html = html.replace(/<\/li>/g, '\n');
-			html = html.replace(/<\/ul>/g, '\n\n');
-			html = html.replace(/<\/div>/g, '\n');
-			html = html.replace(/&lt;img([\w\W]+?)&gt;<br\/>/g, '');
-			html = html.replace(/<\/h.>/g, '\n----------------\n');
-			html = html.replace(/<br>/g, '\n'); 
-			html = html.replace(/<br( )*\/>/g, '\n');
-			html = html.replace(/(.{80}.\s)/g, "$1\n");
-
-			//parse html into text
-			let dom = (new DOMParser()).parseFromString('<!doctype html><body>' + html, 'text/html');
-			let links = dom.querySelectorAll('a');
-			for(let i=0; i < links.length; ++i){
-				links[i].innerHTML = links[i].href;
-			}
-			return dom.body.textContent;
-		}
+		
 
 		// Tooltips via tippy
 		function loadTippy(){
@@ -3939,7 +3916,7 @@ function tri(x1, y1, x2, y2, x3, y3, fc){
 			}
 
 			// prevent drag+drop+shift of code, while mouseDragging visuals
-			if(event.type == 'mousedown'){
+			if(event.type == 'mousedown' && settings.lockdown){
 				editor.setReadOnly(true);
 			}else if(event.type == 'mouseup'){
 				if(!settings.cocoding.active || (settings.cocoding.active && (settings.cocoding.level == 'admin' || settings.cocoding.writemode || !settings.cocoding.lockdown))){
