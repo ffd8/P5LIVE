@@ -52,11 +52,6 @@
 		<div id="ref-close" onclick="closeRef();">X</div>
 	</div>
 
-	<div id="settings-panel" class="panel" style="display:none;">
-		<div class="menu-bg"></div>
-		
-	</div>
-
 	<div id="menu" class="panel">
 		<div class="menu-bg"></div>
 		<div id="menu-switch" onclick="menuToggle();">X</div>
@@ -334,7 +329,7 @@ function println(msg){
 
 
 		/* INIT */
-		let currentRevision = 24; // 23
+		let currentRevision = 25; // 23
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -2466,7 +2461,7 @@ function println(msg){
 		}
 
 		function addFolder(folderName){
-			let newID = 'folder ' + Math.floor(Math.random()*99);
+			let newID = versionCheck('folder');//'folder ' + Math.floor(Math.random()*99);
 			if(folderName != undefined){
 				newID = folderName;
 			}
@@ -3524,13 +3519,19 @@ function println(msg){
 
 
 		
+		
 		function loadAbout(){
+			let markedOptions = {
+				headerPrefix:'marked-'
+			};
 			let demosPath = 'README.md?' + settings.revision;
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, false);
 			request.send();
-			
-			let ptContent = '<div id="about-alert" class="vex-long">'+marked(request.responseText)+'</div>';
+			let markedReadme = marked(request.responseText, markedOptions);
+			let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
+			markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
+			let ptContent = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
 
 			let p5liveabout = ptContent;
 			vex.dialog.alert({

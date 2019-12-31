@@ -216,18 +216,6 @@ hr{
 	z-index:101;
 	transition: margin-right .5s ease;
 }
-#settings-panel{
-	/*background:#333;*/
-	/*z-index:103;*/
-	/*right:500px;*/
-	/*margin-right:0px;*/
-	/*height:90vh;
-	top:10vh;*/
-
-}
-#settings-panel .menu-sections{
-	/*top:85px;*/
-}
 #menu-switch{
 	position:absolute;
 	font-size:50px;
@@ -305,7 +293,6 @@ h2{
 	padding-bottom:5px;
 }
 .invisible:hover{
-	/*visibility:hidden;*/
 	opacity:0.3 !important;
 }
 .feather {
@@ -648,8 +635,16 @@ button[disabled]{
 	display:block;
 	background:#333;
 	margin:0px 0 0px 0;
-	padding:0px 0 0px 0;
-	min-height:2px;
+	padding:0px 0 2px 0;
+	min-height:35px;
+	border-top:1px solid #555;
+	border-bottom:1px solid #111;
+}
+.item-folder > .item-folder{
+	border-top:1px solid #555;
+	border-bottom:1px solid #555;
+	border:none;
+	border-left:1px solid #555;
 }
 .item-sketch{
 	height:22px;
@@ -900,8 +895,7 @@ li{
 	margin-top:10px !important;
 }
 .remove-dump .importdump-dup{
-/*	text-decoration: line-through;
-	background:none;*/
+
 }
 .remove-dump svg{
 	stroke:#ff0000;
@@ -925,7 +919,6 @@ li{
 	outline:none;
 }
 .vex-content{
-	/*width:auto !important;*/
 }
 .vex{
 	overflow: hidden !important;
@@ -937,7 +930,6 @@ li{
 #about-alert{
 	font-size:10pt;
 	line-height:13pt;
-	/*width:45vw;*/
 }
 #about-alert pre, #about-alert code{
 	font-family: 'roboto_mono', 'Monaco', monospace;
@@ -950,7 +942,6 @@ li{
 	list-style-type: none;
   	margin-left: 15px;
   	padding-left: 0px;
-  /*list-style-type: square;*/
 }
 #about-alert li:before { 
 	content:"– "; 
@@ -968,10 +959,7 @@ li{
 	font-size:14pt;
 }
 #about-alert img{
-	/*margin-right:100%;*/
-	/*display: block; 
-	clear: left;
-	margin:15px 0 15px 0;*/
+
 }
 #inspectcode .ace_gutter-layer, #inspectcode .ace_gutter{
 	background:none !important;

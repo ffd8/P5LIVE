@@ -222,7 +222,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [tippy](https://atomiks.github.io/tippyjs/), tooltips
 - [download.js](http://danml.com/download.html), exporting html file
 - [vex](https://github.com/HubSpot/vex), custom dialog boxes
-- [marked.js](https://marked.js.org/), parsing this readme into about
+- [marked.js](https://github.com/markedjs/marked), parsing this readme into about
 - [Roboto Mono](https://github.com/google/roboto), font
 - [Feather Icons](https://feathericons.com), gui icons 
 - [loading.io](https://loading.io/css/), css spinning intro loader
