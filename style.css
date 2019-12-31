@@ -328,7 +328,33 @@ h2{
 	position:relative;
 	width:100%;
 	height:30px;
-
+}
+#menu-sketches-search{
+	position:relative;
+	width:100%;
+	height:25px;
+	background:#222;
+	color:#fff;
+	border:none;
+	outline:none;
+	box-sizing: border-box;
+	padding-left:5px;
+	border-bottom:1px solid #333;
+}
+#menu-sketches-search-clear svg{
+	padding:4px 0px 0px 0px;
+	height:20px;
+}
+#menu-sketches-search-clear{
+	position:absolute;
+	display:none;
+	right:2px;
+	z-index:999;
+	cursor:pointer;
+	opacity:.75;
+}
+#menu-sketches-search-clear:hover{
+	opacity:1;
 }
 .menu-button{
 	color:#fff;
@@ -647,6 +673,7 @@ button[disabled]{
 	border-left:1px solid #555;
 }
 .item-sketch{
+	display:block;
 	height:22px;
 	margin-bottom:1px;
 	list-style-type:none;

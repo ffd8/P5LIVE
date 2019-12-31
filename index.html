@@ -135,6 +135,9 @@
 					</button>
 				</div>
 
+				<div id="menu-sketches-search-clear" onclick="filterSketchesClear()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-delete"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg></div>
+				<input type="text" name="" placeholder="Filter..." id="menu-sketches-search" onkeyup="filterSketches()">
+
 				<div id="menu-sketches-holder" class="menu-sketches-holder">
 					<div id="menu-sketches" class="menu-sketches"></div>
 				</div>
@@ -342,6 +345,9 @@ function println(msg){
 						localStorage.clear();
 						location.reload();
 					}
+				},
+				afterOpen: function(){
+					vexSmall();
 				}
 			})
 		}
@@ -479,6 +485,7 @@ function println(msg){
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
+		menuSketchesSearch = document.getElementById('menu-sketches-search'),
 		settingsFontsize = document.getElementById('menu-settings-fontsize'),
 		settingsAutoMode = document.getElementById('settings-autocompile'),
 		settingsEcoMode = document.getElementById('settings-ecorender'),
@@ -1685,6 +1692,42 @@ function println(msg){
 			initSortable();
 		}
 
+		// search laundry list of sketches
+		function filterSketches(){
+			let demosFolder = document.getElementById('demofolder');
+			let filterClear = document.getElementById('menu-sketches-search-clear');
+			let filterFound = false;
+			let filter = menuSketchesSearch.value.toUpperCase();
+			
+			if(filter != ''){
+				filterFound = true;
+			}
+			
+			let filterItems = menuSketches.getElementsByClassName('drag-item');
+
+			for (let i = 0; i < filterItems.length; i++) {
+				let filterItemName = filterItems[i].getAttribute('data-id');
+				if (filterItemName.toUpperCase().indexOf(filter) > -1) {
+					filterItems[i].style.display = '';
+				} else {
+					filterItems[i].style.display = 'none';
+				}
+			}
+			if(filterFound){
+				demosFolder.style.display = 'none';
+				filterClear.style.display = 'block';
+			}else{
+				demosFolder.style.display = '';
+				filterClear.style.display = 'none';
+			}
+		}
+
+		// clear filter
+		function filterSketchesClear(){
+			menuSketchesSearch.value = '';
+			filterSketches();
+		}
+
 		// padding version numbers of sketch
 		function pad(num, size) {
 			let s = "0000" + num;
@@ -1714,6 +1757,10 @@ function println(msg){
 
 		// save sketch as...
 		function cloneSketch(){
+			if(settings.cocoding.active){
+				cloneSketchCOCODING();
+				return false;
+			}
 			let forkName = versionCheck(settings.fileName);			
 
 			let checkDir = searchJSON(settings.sketches, 'name', settings.fileName)[0];
@@ -1761,6 +1808,9 @@ function println(msg){
 							cocodingExit(sketch);
 
 						}
+					},
+					afterOpen: function(){
+						vexSmall();
 					}
 				})
 
@@ -2387,6 +2437,7 @@ function println(msg){
 					refreshDemos();
 				}
 				loadTippy();
+				filterSketches();
 			}
 		}
 
@@ -3501,10 +3552,10 @@ function println(msg){
 				settings.fileName = 'new'; // jump to demos/new
 				updateSettings();
 				loadSketch(settings.fileName, 7); // put cursor in draw
-
+				filterSketchesClear();
 			}else if(settings.cocoding.level == 'admin'){
 				vex.dialog.confirm({
-					message:'Replace code with default template?',
+					message:'Replace COCODING code with template?',
 					callback: function(value){
 						if(value){
 							cocode.codeReplace({'code':p5template});
@@ -3512,6 +3563,9 @@ function println(msg){
 							// editor.gotoLine(7, 1, false);
 							// editor.focus();
 						}
+					},
+					afterOpen: function(){
+						vexSmall();
 					}
 				})
 			}
@@ -4048,6 +4102,9 @@ function println(msg){
 						if (value) {
 							cocodingExit(loadLatest());
 						}
+					},
+					afterOpen: function(){
+						vexSmall();
 					}
 				})
 			}else{
