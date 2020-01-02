@@ -135,8 +135,8 @@
 					</button>
 				</div>
 
-				<div id="menu-sketches-search-clear" onclick="filterSketchesClear()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-delete"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></svg></div>
-				<input type="text" name="" placeholder="Filter..." id="menu-sketches-search" onkeyup="filterSketches()">
+				<div id="menu-sketches-filter-clear" class="tippy-left" data-title="Filter Sketches" onclick="filterSketchesClear()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+				<input type="text" class="tippy-left" data-title="Filter Sketches" name="" placeholder="Filter..." id="menu-sketches-filter" onkeyup="filterSketches()">
 
 				<div id="menu-sketches-holder" class="menu-sketches-holder">
 					<div id="menu-sketches" class="menu-sketches"></div>
@@ -485,7 +485,7 @@ function println(msg){
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
-		menuSketchesSearch = document.getElementById('menu-sketches-search'),
+		menuSketchesFilter = document.getElementById('menu-sketches-filter'),
 		settingsFontsize = document.getElementById('menu-settings-fontsize'),
 		settingsAutoMode = document.getElementById('settings-autocompile'),
 		settingsEcoMode = document.getElementById('settings-ecorender'),
@@ -593,6 +593,12 @@ function println(msg){
 		let iconUserCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
 
 		let iconAlignLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-align-left"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>';
+
+		let iconFilter = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>';
+
+		let iconX = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+
+
 
 		// code-line color picker
 		function loadColorPicker(){
@@ -1696,37 +1702,66 @@ function println(msg){
 		// inspired by: https://www.w3schools.com/howto/howto_js_filter_lists.asp
 		function filterSketches(){
 			let demosFolder = document.getElementById('demofolder');
-			let filterClear = document.getElementById('menu-sketches-search-clear');
+			let filterClear = document.getElementById('menu-sketches-filter-clear');
 			let filterFound = false;
-			let filter = menuSketchesSearch.value.toUpperCase();
+			let filter = menuSketchesFilter.value.toUpperCase();
 			
 			if(filter != ''){
 				filterFound = true;
 			}
 			
 			let filterItems = menuSketches.getElementsByClassName('drag-item');
+			
+			// clear previous filtered items within folders
+			let clearFilters = menuSketches.getElementsByClassName('filter');
+			for(let i=0; i < clearFilters.length;i++){
+				clearFilters[i].classList.remove('filter');
+			}
 
 			for (let i = 0; i < filterItems.length; i++) {
 				let filterItemName = filterItems[i].getAttribute('data-id');
-				if (filterItemName.toUpperCase().indexOf(filter) > -1) {
+				if (filterItemName.toUpperCase().indexOf(filter) > -1 || filterItems[i].classList.value.indexOf('filter') > -1) {
 					filterItems[i].style.display = '';
+
+					// dig into folders and show those items too (incase folder name was filtered)
+					if(filterItems[i].getAttribute('data-type') == 'folder'){
+						let filterChildren = filterItems[i].children;
+						for(let i=0; i < filterChildren.length;i++){
+							let fc = filterChildren[i];
+							if(fc.tagName != undefined && (fc.tagName.toUpperCase() == 'LI' || fc.tagName.toUpperCase() == 'UL')){
+								filterChildren[i].classList.add('filter')
+							}
+						}
+					}
 				} else {
 					filterItems[i].style.display = 'none';
 				}
 			}
+
+			// cycle through child elements of filtered folder and show
+			let getFilters = menuSketches.getElementsByClassName('filter');
+			for(let i=0; i < getFilters.length;i++){
+				getFilters[i].style.display = 'block';
+			}
+			
+			// change filter icon based on state
 			if(filterFound){
 				demosFolder.style.display = 'none';
-				filterClear.style.display = 'block';
+				filterClear.innerHTML = iconX;
 			}else{
 				demosFolder.style.display = '';
-				filterClear.style.display = 'none';
+				filterClear.innerHTML = iconFilter;
 			}
 		}
 
 		// clear filter
 		function filterSketchesClear(){
-			menuSketchesSearch.value = '';
-			filterSketches();
+			if(menuSketchesFilter.value == ''){
+				menuSketchesFilter.focus();
+			}else{
+				menuSketchesFilter.value = '';
+				filterSketches();
+			}
 		}
 
 		// padding version numbers of sketch
@@ -2514,16 +2549,34 @@ function println(msg){
 
 		function addFolder(folderName){
 			let newID = versionCheck('folder');//'folder ' + Math.floor(Math.random()*99);
-			if(folderName != undefined){
-				newID = folderName;
+			if(menuSketchesFilter.value != ''){
+				newID = versionCheck(menuSketchesFilter.value);
 			}
+			
+			if(folderName == undefined){
+				vex.dialog.prompt({
+					message: 'Add Folder:',
+					value: newID, // placeholder
+					callback: function (value) {
+						if(value){
+							addFolderProcess(value);
+						}
+					},
+					afterOpen: function(){
+						document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+					}
+				})
+			}else{
+				newID = folderName;
+				addFolderProcess(newID);
+			}
+		}
+
+		function addFolderProcess(newID){
 			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
 			let tempHTML = menuSketches.innerHTML;
 			menuSketches.innerHTML = newFolder + tempHTML;
 			getOrder();
-			if(folderName == undefined){
-				renameItem(newID, 'folder');
-			}
 		}
 
 		function inspectItem(itemName){

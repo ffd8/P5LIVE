@@ -329,7 +329,7 @@ h2{
 	width:100%;
 	height:30px;
 }
-#menu-sketches-search{
+#menu-sketches-filter{
 	position:relative;
 	width:100%;
 	height:25px;
@@ -338,22 +338,22 @@ h2{
 	border:none;
 	outline:none;
 	box-sizing: border-box;
-	padding-left:5px;
+	padding-left:25px;
 	border-bottom:1px solid #333;
 }
-#menu-sketches-search-clear svg{
+#menu-sketches-filter-clear svg{
 	padding:4px 0px 0px 0px;
 	height:20px;
 }
-#menu-sketches-search-clear{
+#menu-sketches-filter-clear{
 	position:absolute;
-	display:none;
-	right:2px;
+	left:0px;
 	z-index:999;
 	cursor:pointer;
-	opacity:.75;
+	opacity:.5;
+	outline:none;
 }
-#menu-sketches-search-clear:hover{
+#menu-sketches-filter-clear:hover{
 	opacity:1;
 }
 .menu-button{
