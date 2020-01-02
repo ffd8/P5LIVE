@@ -1703,13 +1703,7 @@ function println(msg){
 		function filterSketches(){
 			let demosFolder = document.getElementById('demofolder');
 			let filterClear = document.getElementById('menu-sketches-filter-clear');
-			let filterFound = false;
 			let filter = menuSketchesFilter.value.toUpperCase();
-			
-			if(filter != ''){
-				filterFound = true;
-			}
-			
 			let filterItems = menuSketches.getElementsByClassName('drag-item');
 			
 			// clear previous filtered items within folders
@@ -1718,37 +1712,41 @@ function println(msg){
 				clearFilters[i].classList.remove('filter');
 			}
 
-			for (let i = 0; i < filterItems.length; i++) {
-				let filterItemName = filterItems[i].getAttribute('data-id');
-				if (filterItemName.toUpperCase().indexOf(filter) > -1 || filterItems[i].classList.value.indexOf('filter') > -1) {
-					filterItems[i].style.display = '';
+			if(filter != ''){
+				for (let i = 0; i < filterItems.length; i++) {
+					let filterItemName = filterItems[i].getAttribute('data-id');
+					if (filterItemName.toUpperCase().indexOf(filter) > -1 || filterItems[i].classList.value.indexOf('filter') > -1) {
+						filterItems[i].style.display = '';
 
-					// dig into folders and show those items too (incase folder name was filtered)
-					if(filterItems[i].getAttribute('data-type') == 'folder'){
-						let filterChildren = filterItems[i].children;
-						for(let i=0; i < filterChildren.length;i++){
-							let fc = filterChildren[i];
-							if(fc.tagName != undefined && (fc.tagName.toUpperCase() == 'LI' || fc.tagName.toUpperCase() == 'UL')){
-								filterChildren[i].classList.add('filter')
+						// dig into folders and show those items too (incase folder name was filtered)
+						if(filterItems[i].getAttribute('data-type') == 'folder'){
+							let filterChildren = filterItems[i].children;
+							for(let i=0; i < filterChildren.length;i++){
+								let fc = filterChildren[i];
+								if(fc.tagName != undefined && (fc.tagName.toUpperCase() == 'LI' || fc.tagName.toUpperCase() == 'UL')){
+									filterChildren[i].classList.add('filter')
+								}
 							}
 						}
+					} else {
+						filterItems[i].style.display = 'none';
 					}
-				} else {
-					filterItems[i].style.display = 'none';
 				}
-			}
 
-			// cycle through child elements of filtered folder and show
-			let getFilters = menuSketches.getElementsByClassName('filter');
-			for(let i=0; i < getFilters.length;i++){
-				getFilters[i].style.display = 'block';
-			}
+				// cycle through child elements of filtered folder and show
+				let getFilters = menuSketches.getElementsByClassName('filter');
+				for(let i=0; i < getFilters.length;i++){
+					getFilters[i].style.display = 'block';
+				}
 			
 			// change filter icon based on state
-			if(filterFound){
 				demosFolder.style.display = 'none';
 				filterClear.innerHTML = iconX;
 			}else{
+				// show all if filter empty
+				for (let i = 0; i < filterItems.length; i++) {
+					filterItems[i].style.display = '';
+				}
 				demosFolder.style.display = '';
 				filterClear.innerHTML = iconFilter;
 			}
