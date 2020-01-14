@@ -57,7 +57,7 @@
 		<div id="menu-switch" onclick="menuToggle();">X</div>
 		<div id="panel-menu" class="menu-sections">
 
-			<div class="menu-section">
+			<div class="menu-section" id="menu-section-p5live">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE</div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
@@ -80,7 +80,7 @@
 				</div>
 			</div>
 
-			<div class="menu-section" id="menu-cocode">
+			<div class="menu-section" id="menu-section-cocode">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter"></span></div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
@@ -113,7 +113,7 @@
 				</div>
 			</div>
 
-			<div class="menu-section">
+			<div class="menu-section" id="menu-section-sketches">
 				<div class="menu-section-bg"></div>
 				<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
 				<div class="menu-sketches-buttons">
@@ -480,7 +480,9 @@ function println(msg){
 		p5frameCover = document.getElementById('p5-frame-cover'),
 		p5f = p5frame.contentWindow,
 		p5script = document.getElementById('holdscript'),
-		menuCocode = document.getElementById('menu-cocode'),
+		menuCocode = document.getElementById('menu-section-cocode'),
+		menuSectionP5live = document.getElementById('menu-section-p5live'),
+		menuSectionSketches = document.getElementById('menu-section-sketches'),
 		menuCocodeCounter = document.getElementById('menu-cocode-counter'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
@@ -1446,6 +1448,7 @@ function println(msg){
 			}
 			settings.safeMode = false;
 			updateSketches();
+			filterSketches();
 			updateShortcuts();
 			hideLoader();
 			if(getParam('cc') != undefined){
@@ -1487,6 +1490,7 @@ function println(msg){
 				cocodingReset();
 				loadSketch(settings.fileName);
 			}
+			resizeSketchesHolder();
 		}
 
 		function getParam(paramSearch){
@@ -1517,12 +1521,16 @@ function println(msg){
 			panelSettings.style.display = 'none';
 			panelMenu.style.display = 'block';
 		}
+				
+		function resizeSketchesHolder(){
+			let sketchesHolder = document.getElementById('menu-sketches-holder');
+			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
+			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
+			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2) + "px";
+		}
+		
+		window.onresize = resizeSketchesHolder;
 
-		
-		// showSettings();
-		// *** auto size sketches list
-		// *** avoid eval??
-		
 		function resetSettings(){
 			vex.dialog.confirm({
 				unsafeMessage: 'Reset to default settings?<br>Sketches left untouched.',
@@ -1720,11 +1728,15 @@ function println(msg){
 
 						// dig into folders and show those items too (incase folder name was filtered)
 						if(filterItems[i].getAttribute('data-type') == 'folder'){
+							filterItems[i].getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
 							let filterChildren = filterItems[i].children;
 							for(let i=0; i < filterChildren.length;i++){
 								let fc = filterChildren[i];
 								if(fc.tagName != undefined && (fc.tagName.toUpperCase() == 'LI' || fc.tagName.toUpperCase() == 'UL')){
 									filterChildren[i].classList.add('filter')
+									if(fc.tagName.toUpperCase() == 'UL'){
+										fc.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+									}
 								}
 							}
 						}
@@ -1737,9 +1749,9 @@ function println(msg){
 				let getFilters = menuSketches.getElementsByClassName('filter');
 				for(let i=0; i < getFilters.length;i++){
 					getFilters[i].style.display = 'block';
-				}
+				}				
 			
-			// change filter icon based on state
+				// change filter icon based on state
 				demosFolder.style.display = 'none';
 				filterClear.innerHTML = iconX;
 			}else{
@@ -1749,6 +1761,7 @@ function println(msg){
 				}
 				demosFolder.style.display = '';
 				filterClear.innerHTML = iconFilter;
+				initSortable();
 			}
 		}
 
@@ -2393,7 +2406,6 @@ function println(msg){
 		function initSortable(){
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
 				let selSelected = false;
-				//let curFolder = "";
 				let htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
 				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
 				initFolders(menuSketches);
@@ -2441,7 +2453,7 @@ function println(msg){
 								d.toggle = 'collapse';
 							}
 							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
-							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'">'+icon+'' +d.name + '</div></div> ';
+							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span>' +d.name + '</div></div> ';
 							html += recurse(d.contents, curFolder);
 							html += '</ul>';
 							curFolder = '';
@@ -2471,7 +2483,9 @@ function println(msg){
 					refreshDemos();
 				}
 				loadTippy();
-				filterSketches();
+				if(menuSketchesFilter.value != ''){
+					filterSketches();
+				}
 			}
 		}
 
@@ -2500,23 +2514,25 @@ function println(msg){
 
 		// expand/collapse folders
 		function toggle(elm){
-			let divFolder = elm.parentNode.parentNode;
-			if(divFolder.dataset.toggle == 'expand'){
-				divFolder.dataset.toggle = 'collapse';
-				elm.innerHTML = iconFolderExpand;
-				divFolder.childNodes.forEach((k) => {
-					if(k.tagName == 'UL' || k.tagName == 'LI')
-						k.style.display = 'none';
-				});
-			}else{
-				divFolder.dataset.toggle = 'expand';
-				elm.innerHTML = iconFolderCollapse;
-				divFolder.childNodes.forEach((k) => {
-					if(k.tagName == 'UL' || k.tagName == 'LI')
-						k.style.display = 'block';
-				});
+			if(menuSketchesFilter.value == ''){
+				let divFolder = elm.parentNode.parentNode;
+				if(divFolder.dataset.toggle == 'expand'){
+					divFolder.dataset.toggle = 'collapse';
+					elm.innerHTML = iconFolderExpand;
+					divFolder.childNodes.forEach((k) => {
+						if(k.tagName == 'UL' || k.tagName == 'LI')
+							k.style.display = 'none';
+					});
+				}else{
+					divFolder.dataset.toggle = 'expand';
+					elm.innerHTML = iconFolderCollapse;
+					divFolder.childNodes.forEach((k) => {
+						if(k.tagName == 'UL' || k.tagName == 'LI')
+							k.style.display = 'block';
+					});
+				}
+				getOrder();
 			}
-			getOrder();
 		}
 
 		function showNav(elm, elmID, elmType){
@@ -2673,23 +2689,16 @@ function println(msg){
 			let removeDetails = '';
 			let icon = iconFileLines;
 			if(elmType == 'folder'){
-				icon = iconFolderExpand;
-				// let importData = 'Import the following ('+count+') items?<br>';
-				// importData += '<span style="font-size:10pt;"><span class="importdump-dup">Duplicates</span> given a unique _timestamp</span><br>';
+				icon = iconFolderCollapse;
 				let elmContents = searchJSON(settings.sketches, 'name', dataID)[0];
-
-				removeDetails = '<div class="remove-header">Includes:</div>'
-				removeDetails += '<div id="importdump" class="remove-dump">';
-				removeDetails += recursiveImportCheck(elmContents.contents, '', '');
-				removeDetails += '</div>';
-
-
-				// removeDetails = '<div class="remove-header">Doing so removes sketches:</div><div class="remove-listing">'
-				// let elmContents = searchJSON(settings.sketches, 'name', dataID)[0].contents;
-				// elmContents.forEach(function(ec){
-				// 	removeDetails += ec.name+'<br>';
-				// })
-				// removeDetails += '</div>';
+				if(elmContents.type == 'folder' && elmContents.contents.length > 0){
+					removeDetails = '<div class="remove-header">Includes:</div>'
+					removeDetails += '<div id="importdump" class="remove-dump">';
+					removeDetails += recursiveImportCheck(elmContents.contents, '', '');
+					removeDetails += '</div>';
+				}else{
+					icon = iconFolderEmpty;
+				}
 			}
 			vex.dialog.confirm({
 				unsafeMessage: 'Delete '+elmType+': <br><span class="remove-icon">'+icon +'</span> <span class="remove-dump importdump-dup">'+ dataID + '</span><br>'+removeDetails,
@@ -2732,7 +2741,6 @@ function println(msg){
 			}
 
 			if((dataID === settings.fileName || sketchIsGone)&& !settings.cocoding.active){
-				// *** issue if trashing folder containing active sketch...
 				loadSketch(loadLatest());
 			}
 		}
