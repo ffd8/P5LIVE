@@ -459,6 +459,16 @@ function println(msg){
 					,'init':'setupJumpSketches(settings.shortcuts["jump"].key)'
 					,'tippy':'After, combo w/ 1, 2,...0 for quick jump to sketch'
 				}
+				,'endline':{
+					'name':'GoToLineEnd'
+					,'key':'ctrl+shift+right'
+					,'callback':'gotoLineEnd()'
+				}
+				,'startline':{
+					'name':'GoToLineStart'
+					,'key':'ctrl+shift+left'
+					,'callback':'gotoLineStart()'
+				}
 				 
 			},
 			'sketches': [],
@@ -1260,6 +1270,16 @@ function println(msg){
 					pitem.innerHTML = '<span class="ace_line_bg" style="background:'+settings.themeBG+'">' + pcontents + '</span>';
 				}
 			}
+		}
+
+		function gotoLineEnd(){
+			let tempPos = editor.getCursorPosition();
+			editor.selection.moveTo(tempPos.row, editor.session.getLine(tempPos.row).length);
+		}
+
+		function gotoLineStart(){
+			let tempPos = editor.getCursorPosition();
+			editor.selection.moveTo(tempPos.row, 0);
 		}
 
 
