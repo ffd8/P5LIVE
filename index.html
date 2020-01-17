@@ -1424,6 +1424,7 @@ function println(msg){
 			if(settings.revision == undefined || settings.revision < currentRevision){
 				settings.revision = currentRevision;
 				settings.version = initSettings.version;
+				settings.fileName = 'new';
 				settings.welcome = true;
 				Object.keys(initSettings).forEach(function(k){
 					if(!settings.hasOwnProperty(k)){
@@ -1438,6 +1439,7 @@ function println(msg){
 					settings.refresh = true;
 				});
 				updateSettings();
+				loadDemos();
 			}
 
 			fontSizeUpdate();
@@ -1470,7 +1472,7 @@ function println(msg){
 			updateSketches();
 			filterSketches();
 			updateShortcuts();
-			hideLoader();
+			
 			if(getParam('cc') != undefined){
 				if(getParam('cc').length != 5){
 					cocodingExit(loadLatest());
@@ -1511,6 +1513,7 @@ function println(msg){
 				loadSketch(settings.fileName);
 			}
 			resizeSketchesHolder();
+			hideLoader();
 		}
 
 		function getParam(paramSearch){
@@ -1772,14 +1775,18 @@ function println(msg){
 				}				
 			
 				// change filter icon based on state
-				demosFolder.style.display = 'none';
+				if(demosFolder != undefined){
+					demosFolder.style.display = 'none';
+				}
 				filterClear.innerHTML = iconX;
 			}else{
 				// show all if filter empty
 				for (let i = 0; i < filterItems.length; i++) {
 					filterItems[i].style.display = '';
 				}
-				demosFolder.style.display = '';
+				if(demosFolder != undefined){
+					demosFolder.style.display = '';
+				}
 				filterClear.innerHTML = iconFilter;
 				initSortable();
 			}
@@ -1970,11 +1977,13 @@ function println(msg){
 		function loadSketchTemplate(){
 			let tempPath = 'includes/templates/p5live_sketch.html';
 			let request = new XMLHttpRequest();
-			request.open('GET', tempPath, false);
+			request.open('GET', tempPath, true);
 			request.send();
-			let el = document.createElement('html');
-			el.innerHTML = request.responseText;
-			p5frameTemplate = el;
+			request.addEventListener("load", function(){
+				let el = document.createElement('html');
+				el.innerHTML = request.responseText;
+				p5frameTemplate = el;
+			});
 		}
 
 		// load top sketch
@@ -2211,7 +2220,6 @@ function println(msg){
 
 											// add structure to top of sketches list
 											settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
-
 											
 										}else if(jsonItem.type == 'sketch'){
 											settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name});
@@ -2320,18 +2328,20 @@ function println(msg){
 		function loadDemos(){
 			let demosPath = 'includes/demos/P5L_demos_20191229172219.json?' + currentRevision;
 			let request = new XMLHttpRequest();
-			request.open('GET', demosPath, false);
-			request.send()
-			let jsonObj = JSON.parse(request.responseText);
-			recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
+			request.open('GET', demosPath, true);
+			request.send();
+			request.addEventListener("load", function(){
+				let jsonObj = JSON.parse(request.responseText);
+				recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
 
-			//add structure to top of sketches list
-			settings.sketches.push({'type':'folder', 'name':jsonObj.structure[0].name, 'toggle':jsonObj.structure[0].toggle, 'contents':jsonObj.structure[0].contents});
+				//add structure to top of sketches list
+				settings.sketches.push({'type':'folder', 'name':jsonObj.structure[0].name, 'toggle':jsonObj.structure[0].toggle, 'contents':jsonObj.structure[0].contents});
 
-			updateSettings();
-			initSortable();
+				updateSettings();
+				initSortable();
 
-			parseSketches(jsonObj);
+				parseSketches(jsonObj);
+			});
 		}
 
 		function refreshDemos(){
@@ -3149,20 +3159,23 @@ function println(msg){
 		function loadSnippets(){
 			let snippetsPath = 'includes/demos/P5L_snippets_20191214.json?' + currentRevision;
 			let request = new XMLHttpRequest();
-			request.open('GET', snippetsPath, false);
+			request.open('GET', snippetsPath, true);
 			request.send();
-			let jsonObj = JSON.parse(request.responseText);
-			snippets = jsonObj.snippets;
-			let dropCommands = [];
-			let cmds = editor.commands;
-			for(let i=0; i < snippets.length; i++){
-				let snippetKey = snippets[i].key+'';
-				let findCommand = cmds.commandKeyBinding['ctrl-shift-'+snippetKey.toLowerCase()];
-				if(findCommand != undefined){
-					dropCommands.push(findCommand.name);
+			request.addEventListener("load", function(){
+				let jsonObj = JSON.parse(request.responseText);
+				snippets = jsonObj.snippets;
+				let dropCommands = [];
+				let cmds = editor.commands;
+				for(let i=0; i < snippets.length; i++){
+					let snippetKey = snippets[i].key+'';
+					let findCommand = cmds.commandKeyBinding['ctrl-shift-'+snippetKey.toLowerCase()];
+					if(findCommand != undefined){
+						dropCommands.push(findCommand.name);
+					}
 				}
-			}
-			editor.commands.removeCommands(dropCommands);
+				editor.commands.removeCommands(dropCommands);
+			});
+			
 		}
 
 		function addSnippet(loadSnippet){
@@ -3615,23 +3628,11 @@ function println(msg){
 		/* LOAD VARIOUS SKETCHES */
 		function loadDefault(){
 			if(!settings.cocoding.active){
-				// let newID = 'sketch_' + timeStamp();
-				// let newSketch = '<li class="item-sketch" data-type="sketch" data-id="'+newID+'">'+iconFileLines + ' ' +newID+'</li>';
-				// let tempHTML = menuSketches.innerHTML;
-				// menuSketches.innerHTML = newSketch + tempHTML;
-				
-				// settings.fileName = newID;
-				// localStorage.setItem(settings.fileName, p5template);
-				// editor.setValue(p5template, 1);
-				// editor.gotoLine(7, 1, false);
-				// updateSettings();
-				// editor.focus();
-				// getOrder();
-				// setTimeout(function(){ recompile(true); }, 100);
-
 				settings.fileName = 'new'; // jump to demos/new
 				updateSettings();
-				loadSketch(settings.fileName, 7); // put cursor in draw
+				if(settings.sketches.length > 0){
+					loadSketch(settings.fileName, 7); // put cursor in draw
+				}
 				filterSketchesClear();
 			}else if(settings.cocoding.level == 'admin'){
 				vex.dialog.confirm({
@@ -3660,18 +3661,20 @@ function println(msg){
 			};
 			let demosPath = 'README.md?' + settings.revision;
 			let request = new XMLHttpRequest();
-			request.open('GET', demosPath, false);
+			request.open('GET', demosPath, true);
 			request.send();
-			let markedReadme = marked(request.responseText, markedOptions);
-			let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
-			markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
-			let ptContent = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
+			request.addEventListener("load", function(){
+				let markedReadme = marked(request.responseText, markedOptions);
+				let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
+				markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
+				let ptContent = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
 
-			let p5liveabout = ptContent;
-			vex.dialog.alert({
-				focusFirstInput : false,
-				unsafeMessage:p5liveabout
-			})
+				let p5liveabout = ptContent;
+				vex.dialog.alert({
+					focusFirstInput : false,
+					unsafeMessage:p5liveabout
+				})
+			});
 		}
 
 		
@@ -3738,11 +3741,13 @@ function println(msg){
 		function loadHTMLTemplate(){
 			let tempPath = 'includes/templates/p5live_savehtml.html';
 			let request = new XMLHttpRequest();
-			request.open('GET', tempPath, false);
+			request.open('GET', tempPath, true);
 			request.send();
-			let el = document.createElement('html');
-			el.innerHTML = request.responseText;
-			p5htmlTemplate = el;
+			request.addEventListener("load", function(){
+				let el = document.createElement('html');
+				el.innerHTML = request.responseText;
+				p5htmlTemplate = el;
+			});
 		}
 
 		function saveHTML(){
@@ -3946,78 +3951,81 @@ function println(msg){
 		function loadRef(){
 			let refPath = 'includes/p5/data.js';
 			let request = new XMLHttpRequest();
-			request.open('GET', refPath, false);
-			request.send()
-			let jsonObj = JSON.parse(request.responseText.replace('referenceData = ', '')).classitems;
-			let grouped = groupBy(jsonObj, (c) => c.module);
-			
-			// filter to own needs
-			Object.keys(grouped).forEach(function(k){
-				grouped[k].forEach(function(ci){
-					let classItem = {};
-					classItem.module = k;
-					if(ci.name != undefined){
-						classItem.name = ci.name;
-					}else{
-						classItem.name = '';
-					}
-					if(ci.description != undefined){
-						classItem.description = ci.description.replace(/<(?:.|\n)*?>/gm, '').replace(/\n/gi, ' ');
-						classItem.descriptionHTML = ci.description;
-					}else{
-						classItem.description = '';
-					}
-					let classCode = [];
-					let classParams = [];
-					let paramsCollect = [];
+			request.open('GET', refPath, true);
+			request.send();
+			request.addEventListener("load", function(){
+				let jsonObj = JSON.parse(request.responseText.replace('referenceData = ', '')).classitems;
+				let grouped = groupBy(jsonObj, (c) => c.module);
+				
+				// filter to own needs
+				Object.keys(grouped).forEach(function(k){
+					grouped[k].forEach(function(ci){
+						let classItem = {};
+						classItem.module = k;
+						if(ci.name != undefined){
+							classItem.name = ci.name;
+						}else{
+							classItem.name = '';
+						}
+						if(ci.description != undefined){
+							classItem.description = ci.description.replace(/<(?:.|\n)*?>/gm, '').replace(/\n/gi, ' ');
+							classItem.descriptionHTML = ci.description;
+						}else{
+							classItem.description = '';
+						}
+						let classCode = [];
+						let classParams = [];
+						let paramsCollect = [];
 
-					if(ci.overloads != undefined || ci.params != undefined){
-						if(ci.overloads != undefined){
-							ci.overloads.forEach(function(ol){
+						if(ci.overloads != undefined || ci.params != undefined){
+							if(ci.overloads != undefined){
+								ci.overloads.forEach(function(ol){
+									let params = [];
+									ol.params.forEach(function(param){
+										if(param.optional){
+											params.push('[' + param.name + ']');
+										}else{
+											params.push(param.name);
+										}
+										
+										if(paramsCollect.indexOf(param.name) === -1){
+											paramsCollect.push(param.name);						
+											let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+											classParams.push({'name':param.name, 'description':paramDesc});
+										}
+									})
+									classCode.push(ci.name + '(' + params.join(', ') + ')');
+								})
+							}else{
 								let params = [];
-								ol.params.forEach(function(param){
-									if(param.optional){
-										params.push('[' + param.name + ']');
-									}else{
-										params.push(param.name);
-									}
-									
+								ci.params.forEach(function(param){
 									if(paramsCollect.indexOf(param.name) === -1){
-										paramsCollect.push(param.name);						
+										if(param.optional){
+											params.push('[' + param.name + ']');
+										}else{
+											params.push(param.name);
+										}
+										paramsCollect.push(param.name);
 										let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
 										classParams.push({'name':param.name, 'description':paramDesc});
 									}
 								})
 								classCode.push(ci.name + '(' + params.join(', ') + ')');
-							})
-						}else{
-							let params = [];
-							ci.params.forEach(function(param){
-								if(paramsCollect.indexOf(param.name) === -1){
-									if(param.optional){
-										params.push('[' + param.name + ']');
-									}else{
-										params.push(param.name);
-									}
-									paramsCollect.push(param.name);
-									let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
-									classParams.push({'name':param.name, 'description':paramDesc});
-								}
-							})
-							classCode.push(ci.name + '(' + params.join(', ') + ')');
+							}
 						}
-					}
-					classItem.code = classCode;
-					classItem.params = classParams;
-					refList.push(classItem);
-					
+						classItem.code = classCode;
+						classItem.params = classParams;
+						refList.push(classItem);
+						
+					});
 				});
+				allRef();
+				hideLoader();
+				// display once downloaded
+				refHolder.style.display = 'block';
+				getRef();
 			});
-			allRef();
-			hideLoader();
-			// display once downloaded
-			refHolder.style.display = 'block';
-			getRef();
+			
 		}
 
 		// close references

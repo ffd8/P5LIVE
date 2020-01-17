@@ -31,16 +31,16 @@ This means sketches are isolated to the localStorage per domain:port, so export/
 Online: [p5live.org](https://p5live.org)
 
 Offline: [Github Repo](https://github.com/ffd8/p5live)   
-Details below to run via python webserver or nodejs/npm (for complete functionality).
+Details below to run via python webserver or nodejs/npm.
 
 
 ## GETTING STARTED
 ### LIVE-CODE IN 5... 4... 3...  
 <img src="includes/images/menu-sketches-new-7.png" width="220px">  
 
-Create New Sketch via GUI icon or `CTRL + N` and start coding!  
-Live-coding active by default, `CTRL + ENTER` to force recompile.  
-Sketch is auto-saved on every keystroke.  
+- Create New Sketch via GUI icon or `CTRL + N` and start coding!  
+- Live-coding active by default, `CTRL + ENTER` to force recompile.  
+- Sketch is auto-saved on every keystroke.  
   
 ### P5LIVE MENU  
 <img src="includes/images/menu-p5live-8.png" width="220px">  
@@ -91,6 +91,12 @@ Sketch is auto-saved on every keystroke.
 - Import, select JSON files from export (single/folder/all).  
 - Export, exports entire sketches list for import/backup.  
   
+### FILTER
+<img src="includes/images/menu-sketch-filter-blank.png" width="220px">  
+<img src="includes/images/menu-sketch-filter.png" width="220px">  
+
+Lost the overview of your sketches? Just type in keywords to match names of folders or sketches to filter and only show those results. To organize them, create a new folder with that word in the title and you can drag + drop them into it. 
+
 ### SKETCH  
 <img src="includes/images/menu-sketch-nav-8.png" width="220px">  
 
@@ -130,7 +136,7 @@ Settings GUI: completely reset P5LIVE, reset settings to defaults, import/export
 ### COMPILING
 There are two modes of compiling in P5LIVE:  
 
-- softCompile, `CTRL + ENTER`, (default) only replaces changed functions (smooth refresh).  
+- softCompile, `CTRL + ENTER`, (default) replaces changed functions (smooth refresh).  
 - hardCompile, `CTRL + SHIFT + ENTER`, forces entire sketch to recompile.  
 
 Changes to global variables and `setup()`/`preload()` automatically perform a hardCompile since the entire sketch needs it. If your change only occurs within the `draw()` and custom functions (that aren't used in `setup()`), you should see a smooth transition. This is especially useful if using preloaded assets or drawing without a background during a performance, as it allows things to keep flowing. `Classes` are also softCompiled, but remember that each instance will still hold the old variables/methods, so replace each instance as needed (you'll see the updates on each new copy). If in doubt or not seeing changes, run a hardCompile, `CTRL + SHIFT + ENTER`. 
