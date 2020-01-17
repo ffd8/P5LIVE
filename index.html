@@ -30,6 +30,18 @@
 
 	<!-- Style -->
 	<link rel="stylesheet" type="text/css" media="all" href="style.css?10">
+	<style type="text/css">
+		.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line{
+			background:rgba(150, 191, 0, .5) !important;
+		}
+		.ace_doc-tooltip{
+			background:rgba(150, 191, 0, .5);
+			border:1px solid rgba(150, 121, 0, .5);
+		}
+		.ace_editor.ace_autocomplete{
+			width:400px;
+		}
+	</style>
 </head>
 <body>
 	<div id="p5-drop"> </div>
@@ -553,7 +565,45 @@ function println(msg){
 			showLineNumbers: false,
 			showGutter: false,
 			tabSize: 4, useSoftTabs: false,
+			// enableBasicAutocompletion: true,
+			// enableSnippets: true,
+			// enableLiveAutocompletion: true
 		});
+		
+		// *** start of auto-completion! (load p5.js functions into here...)
+		// var langTools = ace.require("ace/ext/language_tools");
+		// var stringFunctions = [
+		// 	{
+		// 		snip:'ellipse()', cap:'ellipse()'
+		// 	}
+		// 	,{
+		// 		snip:'ellipse(${1:x}, ${2:y}, ${3:w}, ${4:h})', cap:'ellipse(x, y, w, h)'
+		// 	}
+		// 	,{
+		// 		snip:'rect()', cap:'rect(x, y, w, h)'
+		// 	}
+		// 	,{
+		// 		snip:'random()', cap:'random(min, max)'
+		// 	}
+		// 	,{
+		// 		snip:'torus()', cap:'torus(radius, tubeRadius, detailX, detailY)'
+		// 	}
+		// ]
+		// var completer = { 
+		// 	getCompletions: function(editor, session, pos, prefix, callback) { 
+		// 		var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return } 
+		// 		var completions = []; 
+		// 		for(let wl of stringFunctions){
+		// 			completions.push({caption: wl.cap, snippet: wl.snip,  meta: "p5.js", score:1 });
+		// 		}
+		// 		callback(null, completions);
+				
+		// 		// completions.push({caption: "ellipse(x, y, w, h);", snippet: "ellipse();",  meta: "p5.js", type:"snippet", description:"Draw an ellipse", parameters: "x, y, w, h" }); callback(null, completions); 
+		// 		// completions.push({ caption: "ellipse", snippet: "ellipse(x, y, w, h);", meta: "p5.js", description:"Draw an ellipse", parameters: "x, y, w, h" }); callback(null, completions); 
+		// 	} 
+		// } 
+		
+		// langTools.addCompleter(completer);
 		
 		p5editor.style.visibility = 'visible';
 
