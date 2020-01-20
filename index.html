@@ -30,18 +30,6 @@
 
 	<!-- Style -->
 	<link rel="stylesheet" type="text/css" media="all" href="style.css?10">
-	<style type="text/css">
-		.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line{
-			background:rgba(150, 191, 0, .5) !important;
-		}
-		.ace_doc-tooltip{
-			background:rgba(150, 191, 0, .5);
-			border:1px solid rgba(150, 121, 0, .5);
-		}
-		.ace_editor.ace_autocomplete{
-			width:400px;
-		}
-	</style>
 </head>
 <body>
 	<div id="p5-drop"> </div>
@@ -269,14 +257,8 @@
 							<option value="ace/theme/twilight">Twilight</option>
 						</select>
 					</div>
-			<!-- 	</div>
-			</div>
 
-			<div class="menu-section">
-				<div class="menu-section-bg"></div> -->
-				<h2>SHORTCUTS</h2>
-				<!-- <div class="menu-settings menu-contents"> -->
-					
+				<h2>SHORTCUTS</h2>					
 					<div id="menu-shortcuts-holder">
 						
 					</div>
@@ -562,7 +544,7 @@ function println(msg){
 		
 		// init editor 
 		let Range = ace.require('ace/range').Range;
-		let langTools = ace.require("ace/ext/language_tools");
+		let langTools = ace.require('ace/ext/language_tools');
 		let editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
@@ -584,7 +566,7 @@ function println(msg){
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
-			request.addEventListener("load", function(){
+			request.addEventListener('load', function(){
 				let acOBJ = JSON.parse(request.responseText);
 				let acList = [];
 				let curFunction = '';
@@ -620,7 +602,7 @@ function println(msg){
 						var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return } 
 						var completions = []; 
 						for(let wl of acList){
-							completions.push({caption: wl.cap, snippet: wl.snip,  meta: "p5", score:1});
+							completions.push({caption: wl.cap, snippet: wl.snip,  meta: 'p5', score:1});
 						}
 						callback(null, completions);
 					} 
@@ -797,21 +779,21 @@ function println(msg){
 					// can add any html here
 					let el = document.createElement('div');
 					el.id = 'cursor_'+pos.id;
-					el.className = "cursor"
+					el.className = 'cursor';
 					el.style.position = 'absolute';
-					el.style.height = height+"px";
-					el.style.width = width+"px";
-					el.style.top = top+"px";
-					el.style.left = left+"px";
+					el.style.height = height + 'px';
+					el.style.width = width + 'px';
+					el.style.top = top + 'px';
+					el.style.left = left + 'px';
 					if(pos.id != settings.cocoding.nick){
-						el.style.borderLeft = "3px solid "+pos.color;
+						el.style.borderLeft = '3px solid ' + pos.color;
 					}else{
 						let cursorSelf = document.getElementsByClassName('ace_cursor')[0];
 						cursorSelf.style.borderColor = pos.color;
-						el.style.left = (left+3) + "px";
+						el.style.left = (left+3) + 'px';
 					}
 					el.style.zIndex = 9999999;
-					el.style.color = "#000";
+					el.style.color = '#000';
 					el.style.cursor = 'help';
 					if(!showCursors){
 						el.style.display = 'none';
@@ -822,7 +804,7 @@ function println(msg){
 			}
 		}
 		marker.redraw = function() {
-			this.session._signal("changeFrontMarker");
+			this.session._signal('changeFrontMarker');
 		}
 		marker.session = editor.session;
 		marker.session.addDynamicMarker(marker, true);
@@ -937,7 +919,7 @@ function println(msg){
 
 				this.socket.on('codeReplaceRequest', (data)=>{
 					vex.dialog.confirm({
-						unsafeMessage:'Replace code request<br><hr><div class="code-replace-header">User </div>'+data.userID+'<br><div class="code-replace-header">SketchName</div>'+data.sketchName+'<br><div class="code-replace-header">SketchCode</div> <textarea id="code-replace-textarea" class="code-replace-textarea">'+data.sketchCode+'</textarea>',
+						unsafeMessage:'Replace code request<br><hr><div class="code-replace-header">User </div>' + data.userID + '<br><div class="code-replace-header">SketchName</div>' + data.sketchName + '<br><div class="code-replace-header">SketchCode</div> <textarea id="code-replace-textarea" class="code-replace-textarea">' + data.sketchCode + '</textarea>',
 						callback: function (value) {
 							if (value) {
 								let checkedCode = document.getElementById('code-replace-textarea').value;
@@ -954,14 +936,14 @@ function println(msg){
 
 				this.socket.on('codeReplaceReject', (data)=>{
 					vex.dialog.alert({
-						message:"Request denied.",
+						message:'Request denied.',
 						callback: function(){}
 					})
 				});
 
 				this.socket.on('codeReplaceBusy', ()=>{
 					vex.dialog.alert({
-						message:"Busy with another request, try later.",
+						message:'Busy with another request, try later.',
 						callback: function(){}
 					})
 				});
@@ -1102,7 +1084,7 @@ function println(msg){
 				vex.dialog.open({
 					input:[
 					'<label for="nick">Nickname</label><br>',
-					'<input id="cocodingnick" name="nick" type="text" value="'+settings.cocoding.nick+'">',
+					'<input id="cocodingnick" name="nick" type="text" value="' + settings.cocoding.nick + '">',
 					'<br><br>',
 					
 					'<label for="color" style="display:block;">Cursor Color</label><br>',
@@ -1133,7 +1115,7 @@ function println(msg){
 					afterOpen: function(){
 						document.getElementById('cocodingnick').select();
 						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
-						let defaultColor = "00aa00";
+						let defaultColor = '00aa00';
 
 						if(settings.cocoding.color != null){
 							defaultColor = settings.cocoding.color;
@@ -1167,9 +1149,9 @@ function println(msg){
 
 						pickr2.on('change', (color, instance) => {
 						}).on('save', (color, instance) => {
-							document.getElementById('cocodingcolor').value = "#" + color.toHEXA().join('');
-							document.getElementById('cocodingcolor').style.background = "#" + color.toHEXA().join('');
-							document.getElementById('cocodingcolor').style.color = "#" + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').value = '#' + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').style.background = '#' + color.toHEXA().join('');
+							document.getElementById('cocodingcolor').style.color = '#' + color.toHEXA().join('');
 							instance.hide();
 						}).on('cancel', instance => {
 							instance.hide();
@@ -1278,7 +1260,7 @@ function println(msg){
 
 		/* FANCY EDITOR FUNCTIONS */
 
-		editor.getSession().selection.on("changeCursor", function(){
+		editor.getSession().selection.on('changeCursor', function(){
 			//console.log(editor.getCursorPosition());
 			curPos = editor.getCursorPosition();
 
@@ -1343,7 +1325,7 @@ function println(msg){
 				let pitem = pcode[i];
 				let pcontents = pitem.innerHTML;
 				if(settings.themeBGactive){
-					pitem.innerHTML = '<span class="ace_line_bg" style="background:'+settings.themeBG+'">' + pcontents + '</span>';
+					pitem.innerHTML = '<span class="ace_line_bg" style="background:' + settings.themeBG + '">' + pcontents + '</span>';
 				}
 			}
 		}
@@ -1627,7 +1609,7 @@ function println(msg){
 			let sketchesHolder = document.getElementById('menu-sketches-holder');
 			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
 			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
-			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2) + "px";
+			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2) + 'px';
 		}
 		
 		window.onresize = resizeSketchesHolder;
@@ -1692,7 +1674,7 @@ function println(msg){
 						})						
 					}else{
 						vex.dialog.alert({
-							message:"Oops, select a P5L_SETTINGS file."
+							message:'Oops, select a P5L_SETTINGS file.'
 						})
 					}
 				}
@@ -1724,7 +1706,7 @@ function println(msg){
 					shortcutTippy += '<br>'+shortcut.tippy;
 				}
 
-				shortcutsList +='<div class="shortcut-item tippy-left" data-title="'+shortcutTippy+'" onclick="recordShortcut(this, \''+sc+'\')">'+shortcut.name + ' <div class="shortcut-keys" ><span id="shortcut-'+sc+'" class="shortcut-input">'+parseShortcut(shortcut.key)+'</span></div></div>';
+				shortcutsList +='<div class="shortcut-item tippy-left" data-title="' + shortcutTippy + '" onclick="recordShortcut(this, \''+sc+'\')">' + shortcut.name + ' <div class="shortcut-keys" ><span id="shortcut-' + sc + '" class="shortcut-input">' + parseShortcut(shortcut.key) + '</span></div></div>';
 			});
 			settingsShortcuts.innerHTML = shortcutsList;
 			loadTippy();
@@ -1741,7 +1723,7 @@ function println(msg){
 						scParts[i] = '<span class="shortcut-key">CTRL</span>'
 					break;
 					default:
-						scParts[i] = '<span class="shortcut-key">'+scParts[i].toUpperCase()+'</span>';
+						scParts[i] = '<span class="shortcut-key">' + scParts[i].toUpperCase() + '</span>';
 					break;
 				}
 			}
@@ -1882,7 +1864,7 @@ function println(msg){
 
 		// padding version numbers of sketch
 		function pad(num, size) {
-			let s = "0000" + num;
+			let s = '0000' + num;
 			return s.substr(s.length-size);
 		}
 
@@ -2057,7 +2039,7 @@ function println(msg){
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
-			request.addEventListener("load", function(){
+			request.addEventListener('load', function(){
 				let el = document.createElement('html');
 				el.innerHTML = request.responseText;
 				p5frameTemplate = el;
@@ -2083,7 +2065,7 @@ function println(msg){
 
 		function searchSketches(sketchName, obj){
 			let sketchesFlat = JSON.stringify(obj);
-			if( sketchesFlat.indexOf('"'+sketchName+'"') > -1 ) {
+			if( sketchesFlat.indexOf('"' + sketchName + '"') > -1 ) {
 				return true;
 			}else{
 				return false;
@@ -2209,33 +2191,33 @@ function println(msg){
 			url: '/data', // unused but needed for URL expectation
 			acceptedFiles:'.json',
 			init: function() {
-				this.on("addedfile", function(file, responseText) {
+				this.on('addedfile', function(file, responseText) {
 					importSketches(myDropzone.files);
-					divDrop.style.display = "none";
+					divDrop.style.display = 'none';
 					myDropzone.files = []; // clear list
 				});
-				this.on("dragenter", function(file, responseText) {
+				this.on('dragenter', function(file, responseText) {
 					// console.log(event.dataTransfer.dropEffect)
 					if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
-						divDrop.style.display = "block";
+						divDrop.style.display = 'block';
 					}
 				});
-				this.on("dragleave", function(file, responseText) {
-					divDrop.style.display = "none";
+				this.on('dragleave', function(file, responseText) {
+					divDrop.style.display = 'none';
 				});
-				this.on("drop", function(file, responseText) {
-					divDrop.style.display = "none";
+				this.on('drop', function(file, responseText) {
+					divDrop.style.display = 'none';
 				});
-				this.on("dragover", function(file, responseText) {
+				this.on('dragover', function(file, responseText) {
 					// event.preventDefault();
 					// console.log(event.dataTransfer.dropEffect);
 					if(event.dataTransfer.dropEffect != 'move' && !document.hasFocus()){
-						divDrop.style.display = "block";
+						divDrop.style.display = 'block';
 					}
 				});
-				this.on("error", function(file, responseText) {
+				this.on('error', function(file, responseText) {
 					vex.dialog.alert({
-						unsafeMessage:"Error importing. <br>Only P5LIVE exports are accepted.",
+						unsafeMessage:'Error importing. <br>Only P5LIVE exports are accepted.',
 					})
 					myDropzone.files = []; // clear list
 				});
@@ -2408,7 +2390,7 @@ function println(msg){
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, true);
 			request.send();
-			request.addEventListener("load", function(){
+			request.addEventListener('load', function(){
 				let jsonObj = JSON.parse(request.responseText);
 				recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
 
@@ -2531,7 +2513,7 @@ function println(msg){
 						if(d.type == 'sketch'){
 							sketchCount+=1;
 							let selClass = '';
-							let navSketch = 'onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"';
+							let navSketch = 'onmouseenter="showNav(this, \'' + d.name + '\', \'sketch\');" onmouseleave="hideNav(this);"';
 							if(curFolder == 'demos'){
 								if(demosLocked){
 									navSketch = '';
@@ -2905,7 +2887,7 @@ function println(msg){
 			if(settings.debugMode){console.log(annos)};
 			let errorsFound = false;
 			for(let i=0; i < annos.length; i++){
-				if(annos[i].type == "error"){
+				if(annos[i].type == 'error'){
 					errorsFound = true;
 				}
 			}
@@ -2977,7 +2959,7 @@ function println(msg){
 				if(cbCount.l < cbCount.r){
 					missingBracket = "'{'";
 				}
-				consoleMessage("Missing "+missingBracket+". Find mistake then recompile.", 0)
+				consoleMessage('Missing ' + missingBracket + '. Find mistake then recompile.', 0)
 				return false;
 			}else{
 				consoleHide();
@@ -3182,11 +3164,11 @@ function println(msg){
 
 		// softCompile function or class changes
 		function softCompile(codeType, codeName, codeStart, codeEnd){
-			let curCodeTemp = "";
+			let curCodeTemp = '';
 			if(codeType == 'function'){
 				curCodeTemp = editor.session.getLines(codeStart, codeEnd).join('\n');
 			}else if(codeType == 'class'){
-				curCodeTemp = codeName + " = class {" + editor.session.getLines(codeStart+1, codeEnd).join('\n');
+				curCodeTemp = codeName + ' = class {' + editor.session.getLines(codeStart+1, codeEnd).join('\n');
 			}
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
@@ -3251,7 +3233,7 @@ function println(msg){
 			let request = new XMLHttpRequest();
 			request.open('GET', snippetsPath, true);
 			request.send();
-			request.addEventListener("load", function(){
+			request.addEventListener('load', function(){
 				let jsonObj = JSON.parse(request.responseText);
 				snippets = jsonObj.snippets;
 				let dropCommands = [];
@@ -3294,9 +3276,9 @@ function println(msg){
 		function addCode(codeBase, codeInsert, funName, codePos){
 			let tempCode, tempPos = addPosition(codeBase, funName);
 			if(codePos === 'bottom'){
-				tempCode = [codeBase.slice(0, tempPos[1]), ""+codeInsert+"\n", codeBase.slice(tempPos[1])].join('');
+				tempCode = [codeBase.slice(0, tempPos[1]), '' + codeInsert + "\n", codeBase.slice(tempPos[1])].join('');
 			}else if(codePos === 'top'){
-				tempCode = [codeBase.slice(0, tempPos[0]), codeInsert+"", codeBase.slice(tempPos[0])].join('');
+				tempCode = [codeBase.slice(0, tempPos[0]), codeInsert + '', codeBase.slice(tempPos[0])].join('');
 			}
 			return tempCode;
 		}
@@ -3341,7 +3323,7 @@ function println(msg){
 		}
 
 		function autoCompileUpdate(){
-			checkToggle("autoCompile", settings.autoCompile, settingsAutoMode);
+			checkToggle('autoCompile', settings.autoCompile, settingsAutoMode);
 			if(settings.autoCompile){
 				settingsCompileTimer.style.display = 'block';
 			}else{
@@ -3372,7 +3354,7 @@ function println(msg){
 		}
 
 		function ecoRenderUpdate(){
-			checkToggle("ecoRender", settings.ecoRender, settingsEcoMode);
+			checkToggle('ecoRender', settings.ecoRender, settingsEcoMode);
 		}
 
 
@@ -3772,7 +3754,7 @@ function println(msg){
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, true);
 			request.send();
-			request.addEventListener("load", function(){
+			request.addEventListener('load', function(){
 				let markedReadme = marked(request.responseText, markedOptions);
 				let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
 				markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
@@ -3852,7 +3834,7 @@ function println(msg){
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
-			request.addEventListener("load", function(){
+			request.addEventListener('load', function(){
 				let el = document.createElement('html');
 				el.innerHTML = request.responseText;
 				p5htmlTemplate = el;
@@ -4332,14 +4314,14 @@ function println(msg){
 			if(sketchCount > 100){
 				txtSuggest = '!!<br>Have ideas for P5LIVE? <br><a href="https://github.com/ffd8/p5live/issues" target="_blank" style="color:#fff;">Suggest features on Github</a>.';
 			}
-			let txtMsg = 'You\'ve created '+sketchCount+' sketches'+txtSuggest;
+			let txtMsg = 'You\'ve created ' + sketchCount + ' sketches' + txtSuggest;
 			alertMsg(txtMsg);
 		}
 
 
 		/*	COCODING */
 		function makeid(charCount){
-			let text = "";
+			let text = '';
 			for( let i=0; i < charCount; i++ )
 				text += chars.charAt(Math.floor(Math.random() * chars.length));
 			return text;
@@ -4480,9 +4462,9 @@ function println(msg){
 
 		function toggleButtonActive(elm, toggleMode){
 			if(toggleMode){
-				elm.classList.add("cocoding-active");
+				elm.classList.add('cocoding-active');
 			}else{
-				elm.classList.remove("cocoding-active");
+				elm.classList.remove('cocoding-active');
 			}
 		}
 

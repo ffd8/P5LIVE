@@ -162,6 +162,16 @@ hr{
 .ace_search.right{
 	right:40px;
 }
+.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line{
+	background:rgba(150, 191, 0, .5) !important;
+}
+.ace_doc-tooltip{
+	background:rgba(150, 191, 0, .5);
+	border:1px solid rgba(150, 121, 0, .5);
+}
+.ace_editor.ace_autocomplete{
+	width:400px;
+}
 #p5-console{
 	height:auto;
 	min-height:10px;
