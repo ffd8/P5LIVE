@@ -392,6 +392,11 @@ function println(msg){
 					,'key':'ctrl+m'
 					,'callback':'menuToggle()'
 				}
+				,'settings':{
+					'name':'Settings Toggle'
+					,'key':'ctrl+,'
+					,'callback':'showSettings(true)'
+				}
 				,'cursor':{
 					'name':'Cursor Toggle'
 					,'key':'ctrl+c'
@@ -602,7 +607,7 @@ function println(msg){
 						var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return } 
 						var completions = []; 
 						for(let wl of acList){
-							completions.push({caption: wl.cap, snippet: wl.snip,  meta: 'p5', score:1});
+							completions.push({caption: wl.cap, snippet: wl.snip, meta: 'p5', score:1});
 						}
 						callback(null, completions);
 					} 
@@ -1595,7 +1600,15 @@ function println(msg){
 			if(settings.debugMode){console.log(getSettings());}
 		}
 
-		function showSettings(){
+		function showSettings(show){
+			if(show){
+				if(panelSettings.style.display == 'block'){
+					hideSettings();
+					menuToggle(false);
+				}else{
+					menuToggle(true);
+				}
+			}
 			panelSettings.style.display = 'block';
 			panelMenu.style.display = 'none';
 		}
@@ -3611,8 +3624,13 @@ function println(msg){
 
 
 		// hide/show menu
-		function menuToggle(){
-			settings.menuMode = !settings.menuMode;
+		function menuToggle(show){
+			if(panelSettings.style.display == 'block'){
+				hideSettings();
+			}else{
+				settings.menuMode = show || !settings.menuMode;
+			}
+			
 			updateSettings();
 			menuToggleUpdate();
 		}
