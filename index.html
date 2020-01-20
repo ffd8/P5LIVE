@@ -94,7 +94,7 @@
 
 			<div class="menu-section" id="menu-section-cocode">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter"></span></div>
+				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter" class="counters"></span></div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
 					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop COCODING">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
@@ -127,7 +127,7 @@
 
 			<div class="menu-section" id="menu-section-sketches">
 				<div class="menu-section-bg"></div>
-				<div id="menu-sketches-header" class="menu-header">SKETCHES</div>
+				<div id="menu-sketches-header" onclick="sketchesCounter();" class="menu-header">SKETCHES<span id="menu-sketches-counter" class="counters"></span></div>
 				<div class="menu-sketches-buttons">
 					<button class="menu-button tippy" onclick="loadDefault();" data-title="New Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>
@@ -239,6 +239,10 @@
 						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle constant autocomplete<br>If disabled, use autocomplete by <div class='shortcut'>CTRL + SPACE</div>" onclick="autocompleteToggle();">
+						<input type="checkbox" id="settings-autocomplete" name="settings-autocomplete" value="settings-autocomplete"> Autocomplete
+					</div>
+
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle code locked on mouse drag" onclick="lockDragToggle();">
 						<input type="checkbox" id="settings-lockdrag" name="settings-lockdrag" value="settings-lockdrag"> Lock Code on Drag
 					</div>
@@ -344,7 +348,7 @@ function println(msg){
 
 
 		/* INIT */
-		let currentRevision = 25; // 23
+		let currentRevision = 26; // 23
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -378,6 +382,7 @@ function println(msg){
 			'fullscreenMode':false,
 			'fileName': '',
 			'linenumbers': false,
+			'autocomplete': false,
 			'lockcode':true,
 			'menuMode': true,
 			'menutab':true,
@@ -466,10 +471,10 @@ function println(msg){
 					,'callback':'pop720()'
 				}
 				,'jump':{
-					'name':'Quick Jump'
+					'name':'Quick Sketch Jump'
 					,'key':'ctrl' // modifier for 1-0
 					,'init':'setupJumpSketches(settings.shortcuts["jump"].key)'
-					,'tippy':'After, combo w/ 1, 2,...0 for quick jump to sketch'
+					,'tippy':'Then combine w/ 1, 2,...0 to jump thru sketches'
 				}
 				,'endline':{
 					'name':'GoToLineEnd'
@@ -510,6 +515,7 @@ function println(msg){
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSketchesFilter = document.getElementById('menu-sketches-filter'),
+		menuSketchesCounter = document.getElementById('menu-sketches-counter'),
 		settingsFontsize = document.getElementById('menu-settings-fontsize'),
 		settingsAutoMode = document.getElementById('settings-autocompile'),
 		settingsEcoMode = document.getElementById('settings-ecorender'),
@@ -517,6 +523,7 @@ function println(msg){
 		settingsConsole = document.getElementById('settings-console'),
 		settingsMenutab = document.getElementById('settings-menutab'),
 		settingsLinenumbers = document.getElementById('settings-linenumbers'),
+		settingsAutocomplete = document.getElementById('settings-autocomplete'),
 		settingsLockDrag = document.getElementById('settings-lockdrag'),
 		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsBGactive = document.getElementById('settings-usebg'),
@@ -546,7 +553,8 @@ function println(msg){
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
-		demosLocked = true, curPos, curPositions = [], updateCursor, showCursors = false
+		curPos, curPositions = [], updateCursor, showCursors = false, sketchCount = 0,
+		demosLocked = true, autoCompleteExport = false
 		;
 
 		// force off
@@ -554,6 +562,7 @@ function println(msg){
 		
 		// init editor 
 		let Range = ace.require('ace/range').Range;
+		let langTools = ace.require("ace/ext/language_tools");
 		let editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
@@ -565,45 +574,62 @@ function println(msg){
 			showLineNumbers: false,
 			showGutter: false,
 			tabSize: 4, useSoftTabs: false,
-			// enableBasicAutocompletion: true,
-			// enableSnippets: true,
-			// enableLiveAutocompletion: true
+			enableBasicAutocompletion: true,
+			enableSnippets: true
 		});
 		
-		// *** start of auto-completion! (load p5.js functions into here...)
-		// var langTools = ace.require("ace/ext/language_tools");
-		// var stringFunctions = [
-		// 	{
-		// 		snip:'ellipse()', cap:'ellipse()'
-		// 	}
-		// 	,{
-		// 		snip:'ellipse(${1:x}, ${2:y}, ${3:w}, ${4:h})', cap:'ellipse(x, y, w, h)'
-		// 	}
-		// 	,{
-		// 		snip:'rect()', cap:'rect(x, y, w, h)'
-		// 	}
-		// 	,{
-		// 		snip:'random()', cap:'random(min, max)'
-		// 	}
-		// 	,{
-		// 		snip:'torus()', cap:'torus(radius, tubeRadius, detailX, detailY)'
-		// 	}
-		// ]
-		// var completer = { 
-		// 	getCompletions: function(editor, session, pos, prefix, callback) { 
-		// 		var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return } 
-		// 		var completions = []; 
-		// 		for(let wl of stringFunctions){
-		// 			completions.push({caption: wl.cap, snippet: wl.snip,  meta: "p5.js", score:1 });
-		// 		}
-		// 		callback(null, completions);
-				
-		// 		// completions.push({caption: "ellipse(x, y, w, h);", snippet: "ellipse();",  meta: "p5.js", type:"snippet", description:"Draw an ellipse", parameters: "x, y, w, h" }); callback(null, completions); 
-		// 		// completions.push({ caption: "ellipse", snippet: "ellipse(x, y, w, h);", meta: "p5.js", description:"Draw an ellipse", parameters: "x, y, w, h" }); callback(null, completions); 
-		// 	} 
-		// } 
-		
-		// langTools.addCompleter(completer);
+		function loadAutoComplete(){
+			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
+			let tempPath = 'includes/p5/P5L_AUTOCOMPLETE_20200120084059.JSON';
+			let request = new XMLHttpRequest();
+			request.open('GET', tempPath, true);
+			request.send();
+			request.addEventListener("load", function(){
+				let acOBJ = JSON.parse(request.responseText);
+				let acList = [];
+				let curFunction = '';
+
+				// cycle through auto complete list
+				acOBJ.code.forEach(function (ac){
+
+					// if method/function
+					if(ac.t == 'm'){
+						// add once without params for easy adding
+						if(ac.n != curFunction){
+							acList.push({'cap':ac.n + '()', 'snip':ac.n + '()'});
+							curFunction = ac.n;
+						}
+						
+						// add w/ params using tab feature
+						let acParamsTab = []
+						for(let i=0; i < ac.p.length; i++){
+							acParamsTab.push('${'+(i+1)+':'+ac.p[i]+'}');
+						}
+						let acParamsListTab = ac.n + '(' +acParamsTab.join(', ')+ ')';					
+						let acParamsList = ac.n + '(' +ac.p.join(', ')+ ')';					
+						acList.push({'cap':acParamsList, 'snip':acParamsListTab});
+					}else{
+						// add constants/misc
+						acList.push({'cap':ac.n, 'snip':ac.n});						
+					}
+				});
+
+				// create custom completer
+				var completer = { 
+					getCompletions: function(editor, session, pos, prefix, callback) { 
+						var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return } 
+						var completions = []; 
+						for(let wl of acList){
+							completions.push({caption: wl.cap, snippet: wl.snip,  meta: "p5", score:1});
+						}
+						callback(null, completions);
+					} 
+				} 
+
+				// add list to auto completer
+				langTools.addCompleter(completer);
+			});
+		}
 		
 		p5editor.style.visibility = 'visible';
 
@@ -1500,6 +1526,7 @@ function println(msg){
 			cursorToggleUpdate();
 			consoleToggleUpdate();
 			menutabToggleUpdate();
+			autocompleteUpdate();
 			linenumbersUpdate();
 			lockDragUpdate();
 			exportcodeUpdate();
@@ -1508,6 +1535,7 @@ function println(msg){
 			loadSnippets();
 			loadSketchTemplate();
 			loadHTMLTemplate(); 
+			loadAutoComplete();
 			loadColorPicker();
 			vex.defaultOptions.className = 'vex-theme-plain'
 			legacySettings(); // update sketches from 1.0.2
@@ -2484,11 +2512,13 @@ function println(msg){
 
 		// initialize sortable 
 		function initSortable(){
+			sketchCount = 0;
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
 				let selSelected = false;
 				let htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
 				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
 				initFolders(menuSketches);
+
 
 				function recurse(data, curFolder) {
 					let html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
@@ -2499,6 +2529,7 @@ function println(msg){
 						let demoFolder = '';
 						if(d.name.length > 15){marq = 'marq';}
 						if(d.type == 'sketch'){
+							sketchCount+=1;
 							let selClass = '';
 							let navSketch = 'onmouseenter="showNav(this, \''+d.name+'\', \'sketch\');" onmouseleave="hideNav(this);"';
 							if(curFolder == 'demos'){
@@ -2542,6 +2573,7 @@ function println(msg){
 					html += '';
 					return( html );
 				}
+				menuSketchesCounter.innerHTML = sketchCount;
 
 				// main folder
 				new Sortable(menuSketches, options);
@@ -2949,6 +2981,14 @@ function println(msg){
 				return false;
 			}else{
 				consoleHide();
+			}
+
+			// prevent compile while autocomplete popup visible
+			let acPopup = document.getElementsByClassName('ace_autocomplete')[0];
+			if(acPopup != undefined){
+				if(acPopup.style.display != 'none'){
+					return false;
+				}				
 			}
 
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
@@ -3456,6 +3496,25 @@ function println(msg){
 				editor.setOptions({
 					showLineNumbers: true, // false
 					showGutter: true, // false
+				});
+			}	
+		}
+
+		//autoComplete toggle
+		function autocompleteToggle(){
+			settings.autocomplete = !settings.autocomplete;
+			autocompleteUpdate();
+		}
+
+		function autocompleteUpdate(){
+			checkToggle('autocomplete', settings.autocomplete, settingsAutocomplete);
+			if(!settings.autocomplete){
+				editor.setOptions({
+					enableLiveAutocompletion: false
+				});
+			}else{
+				editor.setOptions({
+					enableLiveAutocompletion: true
 				});
 			}	
 		}
@@ -4004,8 +4063,9 @@ function println(msg){
 			request.open('GET', refPath, true);
 			request.send();
 			request.addEventListener("load", function(){
-				let jsonObj = JSON.parse(request.responseText.replace('referenceData = ', '')).classitems;
-				let grouped = groupBy(jsonObj, (c) => c.module);
+				let jsonObj = JSON.parse(request.responseText.replace('referenceData = ', ''));
+				let grouped = groupBy(jsonObj.classitems, (c) => c.module);
+				let autoCompleteList = {'revision':currentRevision, 'version':jsonObj.project.version, 'codeKey':[{'[n]ame':'function/constant', '[p]arams':'params/module', '[t]ype':'[m]ethod'}], 'code':[]};
 				
 				// filter to own needs
 				Object.keys(grouped).forEach(function(k){
@@ -4031,11 +4091,13 @@ function println(msg){
 							if(ci.overloads != undefined){
 								ci.overloads.forEach(function(ol){
 									let params = [];
+									let acParams = [];
 									ol.params.forEach(function(param){
 										if(param.optional){
 											params.push('[' + param.name + ']');
 										}else{
 											params.push(param.name);
+											acParams.push(param.name);
 										}
 										
 										if(paramsCollect.indexOf(param.name) === -1){
@@ -4045,15 +4107,23 @@ function println(msg){
 										}
 									})
 									classCode.push(ci.name + '(' + params.join(', ') + ')');
+
+									// autoComplete list
+									autoCompleteList.code.push({'n':ci.name, 'p':acParams, 't':'m'});
+									if(acParams.length != params.length){
+										autoCompleteList.code.push({'n':ci.name, 'p':params, 't':'m'});
+									}
 								})
 							}else{
 								let params = [];
+								let acParams = [];
 								ci.params.forEach(function(param){
 									if(paramsCollect.indexOf(param.name) === -1){
 										if(param.optional){
 											params.push('[' + param.name + ']');
 										}else{
 											params.push(param.name);
+											acParams.push(param.name);
 										}
 										paramsCollect.push(param.name);
 										let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
@@ -4061,7 +4131,21 @@ function println(msg){
 									}
 								})
 								classCode.push(ci.name + '(' + params.join(', ') + ')');
+
+								// autoComplete list
+								autoCompleteList.code.push({'n':ci.name, 'p':acParams, 't':'m'});
+								if(acParams.length != params.length){
+									autoCompleteList.code.push({'n':ci.name, 'p':params, 't':'m'});
+								}								
 							}
+						}else if(ci.name != undefined && classItem.module != 'p5.sound' && classItem.module != 'Foundation'){
+							let acParam = classItem.module;
+							let acType = '';
+							if(ci.itemtype == 'method'){
+								acParam = [];
+								acType = 'm';
+							}
+							autoCompleteList.code.push({'n':ci.name, 'p':acParam, 't':acType});								
 						}
 						classItem.code = classCode;
 						classItem.params = classParams;
@@ -4069,6 +4153,13 @@ function println(msg){
 						
 					});
 				});
+
+				// autoCompleteExport = true;
+				if(autoCompleteExport){
+					exportJSON(autoCompleteList, 'P5L_AUTOCOMPLETE_'+timeStamp()+'.json');			
+				}else{					
+					// console.log(autoCompleteList.code);
+				}
 				allRef();
 				hideLoader();
 				// display once downloaded
@@ -4222,6 +4313,28 @@ function println(msg){
 			}
 		}
 
+		/* General Alert */
+		function alertMsg(txt){
+			vex.dialog.alert({
+				unsafeMessage:txt,
+				afterOpen: function(){
+					vexSmall();
+				}
+			})
+		}
+
+		/* Sketches Congrats */
+		function sketchesCounter(){
+			let txtSuggest = '.';
+			if(sketchCount > 50){
+				txtSuggest = '!<br>Have fun + happy coding!';
+			}
+			if(sketchCount > 100){
+				txtSuggest = '!!<br>Have ideas for P5LIVE? <br><a href="https://github.com/ffd8/p5live/issues" target="_blank" style="color:#fff;">Suggest features on Github</a>.';
+			}
+			let txtMsg = 'You\'ve created '+sketchCount+' sketches'+txtSuggest;
+			alertMsg(txtMsg);
+		}
 
 
 		/*	COCODING */

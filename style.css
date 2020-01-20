@@ -518,7 +518,16 @@ h2{
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
-#menu-cocode-counter{
+#menu-sketches-header:hover{
+	cursor:help;
+}
+#menu-sketches-header .counters{
+	display:none;
+}
+#menu-sketches-header:hover .counters{
+	display:inline;
+}
+.counters{
 	font-size:8pt;
 	padding-left:.3em;
 	vertical-align: super;

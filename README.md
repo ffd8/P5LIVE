@@ -1,4 +1,4 @@
-## P5LIVE
+# P5LIVE
 v 1.2.5  
 cc [teddavis.org](http://teddavis.org) – 2019  
 p5.js collaborative live-coding vj environment!
@@ -12,6 +12,7 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + E` » editor toggle
 - `CTRL + M` » menu toggle
 - `CTRL + T` » tidy code
+- `CTRL + SPACE` » autocomplete
 - `CTRL + R` » references toggle
 - `CTRL + C` » cursor toggle
 - `CTRL + -` » decrease fontsize
@@ -42,11 +43,12 @@ Details below to run via python webserver or nodejs/npm.
 - Live-coding active by default, `CTRL + ENTER` to force recompile.  
 - Sketch is auto-saved on every keystroke.  
   
+## MENU
 ### P5LIVE MENU  
 <img src="includes/images/menu-p5live-8.png" width="220px">  
 
 - About, what you're reading now.  
-- Settings, adjust editor settings + shortcuts.  
+- Settings, adjust editor settings + shortcuts (see details below).  
 - Reference, `CTRL + R`, toggle p5.js reference list.  
 - Save PNG + CODE, `CTRL + S`, exports output image [and snapshot of code].  
 - Save HTML, export single-page website (re-link path to custom assets).
@@ -82,7 +84,7 @@ Details below to run via python webserver or nodejs/npm.
 
 - Toggle Write-access, admin can always toggle write access of user.  
   
-#### SKETCHES MENU 
+### SKETCHES MENU 
 <img src="includes/images/menu-sketches-7.png" width="220px">  
 
 - New sketch.  
@@ -91,24 +93,24 @@ Details below to run via python webserver or nodejs/npm.
 - Import, select JSON files from export (single/folder/all).  
 - Export, exports entire sketches list for import/backup.  
   
-### FILTER
+#### Filter
 <img src="includes/images/menu-sketch-filter-blank.png" width="220px">  
 <img src="includes/images/menu-sketch-filter.png" width="220px">  
 
 Lost the overview of your sketches? Just type in keywords to match names of folders or sketches to filter and only show those results. To organize them, create a new folder with that word in the title and you can drag + drop them into it. 
 
-### SKETCH  
+#### Sketch  
 <img src="includes/images/menu-sketch-nav-8.png" width="220px">  
 
 - Load, click on sketch name.  
-- Inspect, click lines icon to view code as popup.  
+- Inspect, click lines icon to view/edit code as popup.  
 - Rename, click pencil icon and type new name.  
 - Export, click download icon to export sketch as JSON file.  
 - Remove, click trash icon and confirm deletion.  
 - Sort, click + hold + drag to desired order.  
 - Add to folder, careully drag + drop into/over folder.
 
-### FOLDER  
+#### Folder  
 <img src="includes/images/menu-folder-nav-7.png" width="220px">  
 
 - Expand/collapse, click on folder name.  
@@ -117,7 +119,15 @@ Lost the overview of your sketches? Just type in keywords to match names of fold
 - Remove, click trash icon and confirm deletion.  
 - Sort, click + hold + drag to desired order.  
   
-### SETTINGS  
+### SETTINGS PANEL  
+<img src="includes/images/menu-settings-nav.png" width="220px">
+
+- Completely reset P5LIVE (deletes all sketches!)
+- Reset Settings to defaults
+- Import Settings
+- Export Settings
+  
+### Settings
 - Live Coding, (auto-compiling mode), recompiles on error-free keyup.  
 - Eco Render, toggle loop()/noLoop() if browser window is inactive.  
 - Cursor, toggle visibility of cursor when hiding editor.  
@@ -125,28 +135,38 @@ Lost the overview of your sketches? Just type in keywords to match names of fold
 - Menu Tab, toggles menu tab. (hide if visible while VJ'ing). 
 - Snapshot Code, export current code with every image snapshot. 
 - Line Numbers, toggle code editor gutter features + line numbers. 
+- Autocomplete, toggle constant autocomplete suggestions. 
 - Lock Code on Drag, toggle locked code editor on mouse drag. 
-- Font Size, adjust size of editor text.  
-- Background, toggle + set color behind each line of code.  
+- Code Size, adjust font size of editor text.  
+- Code Background, toggle + set color behind each line of code.  
 - Theme, select custom styling of code.
 
-Shortcuts can be customized within the settings panel.  
-Settings GUI: completely reset P5LIVE, reset settings to defaults, import/export settings.
+### Shortcuts
+Shortcuts can be customized by clicking on name, then pressing new key combination.  
 
+## DETAILS
 ### COMPILING
 There are two modes of compiling in P5LIVE:  
 
 - softCompile, `CTRL + ENTER`, (default) replaces changed functions (smooth refresh).  
 - hardCompile, `CTRL + SHIFT + ENTER`, forces entire sketch to recompile.  
 
-Changes to global variables and `setup()`/`preload()` automatically perform a hardCompile since the entire sketch needs it. If your change only occurs within the `draw()` and custom functions (that aren't used in `setup()`), you should see a smooth transition. This is especially useful if using preloaded assets or drawing without a background during a performance, as it allows things to keep flowing. `Classes` are also softCompiled, but remember that each instance will still hold the old variables/methods, so replace each instance as needed (you'll see the updates on each new copy). If in doubt or not seeing changes, run a hardCompile, `CTRL + SHIFT + ENTER`. 
+Changes to global variables and `setup()`/`preload()` automatically perform a hardCompile since the entire sketch needs it. If your change only occurs within the `draw()` and custom functions (that aren't used in `setup()`), you should see a smooth transition. This is especially useful if using preloaded assets or drawing without a background during a performance, as it allows things to keep flowing. `Classes` are also softCompiled, but remember that each instance will still hold the old variables/methods, so replace each instance as needed (you'll see the updates on each new copy).  
+
+If in doubt or not seeing changes, run a hardCompile, `CTRL + SHIFT + ENTER`. 
+	
+### AUTOCOMPLETE
+Custom autocomplete with p5.js functions and constants has been implemented.  
+
+To activate, enter the first few characters of a function and press `CTRL + SPACE`, then select function alone or with parameters. If selecting with parameters, use `TAB` to cycle through each one.  
+
+If you forget the name of a function, simply view the p5.js references `CTRL + R`.
 	
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
 Load snippet via shortcut, `CTRL + SHIFT + key`  
 
 - `CTRL + SHIFT + A`, adds audio-reactive code.  
-- `CTRL + SHIFT + D`, adds WEBGL code to disable depth-test.
 - `CTRL + SHIFT + O`, adds OSC communication code.
 
 ### LIBRARIES
@@ -181,11 +201,11 @@ MIDI is implemented with webmidi.js – see *midi_setup* demo.
 ### BUG/CRASH?! 
 Infinite loop? Broken code?  
 
-- Add `#bug` to URL and try refreshing to stop compiler to fix a bug/infinite-loop...  
-- Add `#new` to URL and refresh to force a fresh blank sketch. Then you can export and delete broken sketch, try fixing externally, and re-import.
+- Add `#bug` to URL and refresh URL to stop compiler to fix a bug/infinite-loop...  
+- Add `#new` to URL and refresh URL to force a fresh blank sketch. Then you can inspect and fix broken sketch.
 
 
-## FUNCTIONS
+### FUNCTIONS
 Additional custom functions are available in every sketch:  
 
 - `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.  
@@ -194,7 +214,7 @@ Additional custom functions are available in every sketch:
 
 
 ## OFFLINE SERVER
-#### Basic webserver using Python (without COCODING/OSC):  
+### Basic webserver using Python (without COCODING/OSC):  
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER` 
@@ -204,7 +224,7 @@ Additional custom functions are available in every sketch:
 - goto [http://localhost:5000](http://localhost:5000)
 - To quit, `CTRL + C` in Terminal (or command prompt)
 
-#### Fancy webserver using nodejs/npm (with COCODING/OSC):  
+### Fancy webserver using nodejs/npm (with COCODING/OSC):  
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - Install Node.js + NPM ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) / [binary installers](https://nodejs.org/en/download/))  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
