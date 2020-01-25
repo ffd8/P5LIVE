@@ -1,6 +1,6 @@
 # P5LIVE
 v 1.2.5  
-cc [teddavis.org](http://teddavis.org) – 2019  
+cc [teddavis.org](http://teddavis.org) – 2019-2020  
 p5.js collaborative live-coding vj environment!
 
 
@@ -11,6 +11,7 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + A` » autocompile toggle
 - `CTRL + E` » editor toggle
 - `CTRL + M` » menu toggle
+- `CTRL + ,` » settings toggle
 - `CTRL + T` » tidy code
 - `CTRL + SPACE` » autocomplete
 - `CTRL + R` » references toggle
@@ -137,12 +138,13 @@ Lost the overview of your sketches? Just type in keywords to match names of fold
 - Line Numbers, toggle code editor gutter features + line numbers. 
 - Autocomplete, toggle constant autocomplete suggestions. 
 - Lock Code on Drag, toggle locked code editor on mouse drag. 
+- Pass Editor Keys, toggle passing keyPress from editor to p5 canvas. 
 - Code Size, adjust font size of editor text.  
 - Code Background, toggle + set color behind each line of code.  
 - Theme, select custom styling of code.
 
 ### Shortcuts
-Shortcuts can be customized by clicking on name, then pressing new key combination.  
+Customize by clicking on name, then press a new key combination.  
 
 ## DETAILS
 ### COMPILING
@@ -170,20 +172,24 @@ Load snippet via shortcut, `CTRL + SHIFT + key`
 - `CTRL + SHIFT + O`, adds OSC communication code.
 
 ### LIBRARIES
-P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, there's an experimental mode for loading external [CDN hosted](https://www.jsdelivr.com/) javascript files (or local if running offline). Use the following syntax at the top of your sketch, placing each link into the following array:  
+P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, load them remotely via [CDN hosted](https://www.jsdelivr.com/) or locally if running offline (placing in a `/data` folder.  
+
+Use the following snippet at the top of your sketch, placing one URL/path per array item:  
 
 ```
-let loadScripts = [
-	"", 
+let libs = [
 	""
+	,""
 ];
 ```
 
 ### ASSETS
-Want custom assets (fonts/images/...)?   
-Load from a CORS friendly webserver (ie. [imgur](https://imgur.com) for images), or better yet,  
-Clone/download from GitHub and run locally.  
-Drop files into folder and link relatively, ie: `loadImage('data/fish.png');`
+Load custom assets (image/font/obj/audio/...):  
+ 
+- Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server (ie. [imgur](https://imgur.com) for images)  
+`loadImage('https://i.imgur.com/ijQzwsx.jpeg');`
+- Locally, clone/download from GitHub and follow guide below for offline use.  
+Drop files into a folder and link relatively, ie: `loadImage('data/images/fish.png');`
 
 ### EXPORT / IMPORT
 Beyond exporting all sketches regularly (backup!) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or drag and drop the `P5L_***.json` file into the browser window.

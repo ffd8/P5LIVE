@@ -234,6 +234,10 @@
 					<div class="tippy-left" style="cursor:help;" data-title="Toggle code locked on mouse drag" onclick="lockDragToggle();">
 						<input type="checkbox" id="settings-lockdrag" name="settings-lockdrag" value="settings-lockdrag"> Lock Code on Drag
 					</div>
+
+					<div class="tippy-left" style="cursor:help;" data-title="Pass keyPress from editor to p5 canvas" onclick="passEditorKeysToggle();">
+						<input type="checkbox" id="settings-passeditorkeys" name="settings-passeditorkeys" value="settings-passeditorkeys"> Pass Editor Keys
+					</div>
 					
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
@@ -330,7 +334,7 @@ function println(msg){
 
 
 		/* INIT */
-		let currentRevision = 26; // 23
+		let currentRevision = 27; // 23
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -366,6 +370,7 @@ function println(msg){
 			'linenumbers': false,
 			'autocomplete': false,
 			'lockcode':true,
+			'passEditorKeys':false,
 			'menuMode': true,
 			'menutab':true,
 			'exportCode':true,
@@ -512,6 +517,7 @@ function println(msg){
 		settingsLinenumbers = document.getElementById('settings-linenumbers'),
 		settingsAutocomplete = document.getElementById('settings-autocomplete'),
 		settingsLockDrag = document.getElementById('settings-lockdrag'),
+		settingsPassEditorKeys = document.getElementById('settings-passeditorkeys'),
 		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
@@ -1517,6 +1523,7 @@ function println(msg){
 			linenumbersUpdate();
 			lockDragUpdate();
 			exportcodeUpdate();
+			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
 			loadSnippets();
@@ -2986,7 +2993,7 @@ function println(msg){
 				}				
 			}
 
-			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile){
+			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile || force){
 				if(validCode){
 					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
 						// buildSketch(); // 
@@ -3020,6 +3027,9 @@ function println(msg){
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
 		function buildSketch(force){
+			// replace single + multiline comments with \n to avoid processing + keep line numbers same
+			let codeNoComments = editor.getValue().replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'));
+
 			// softCompile
 			if(force == undefined && sketchLoaded){
 				// technique to only update draw if code changed there (= continous background!)
@@ -3031,8 +3041,6 @@ function println(msg){
 				let softFunction = false;
 				let softClass = false;
 
-				// replace single + multiline comments with \n to avoid processing + keep line numbers same
-				let codeNoComments = editor.getValue().replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'));
 
 				let allLines = codeNoComments.split('\n');
 				
@@ -3141,10 +3149,11 @@ function println(msg){
 				iFrameBody.appendChild(s);
 			}
 
-			// check loadScripts;
-			let sketchTest = editor.getValue();
+			// check loadScripts / libs / scripts;
+			let sketchTest = codeNoComments;//editor.getValue();
 			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
-			let sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*["']\])/
+			// console.log(sketchTest)
+			let sketchLoadScriptsRegEx = /(?:loadScripts|libs|scripts)\s+=\s+\[(.*["']\])/
 			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
 			if(sketchLoadScripts !=undefined){
 				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
@@ -3522,6 +3531,16 @@ function println(msg){
 
 		function lockDragUpdate(){
 			checkToggle('lockcode', settings.lockcode, settingsLockDrag);
+		}
+
+		// passEditorKeys toggle
+		function passEditorKeysToggle(){
+			settings.passEditorKeys = !settings.passEditorKeys;
+			passEditorKeysUpdate();
+		}
+
+		function passEditorKeysUpdate(){
+			checkToggle('passeditorkeys', settings.passEditorKeys, settingsPassEditorKeys);
 		}
 
 		//exportcode toggle
@@ -4261,13 +4280,15 @@ function println(msg){
 			let opts = getOpts(event, keyFields);
 			let copy = new KeyboardEvent(event.type, event);
 
-			if(settings.cocoding.active && settings.cocoding.sync){
-				if(settings.cocoding.level == 'admin'){
+			if(p5editor.style.visibility != 'visible' || settings.passEditorKeys){
+				if(settings.cocoding.active && settings.cocoding.sync){
+					if(settings.cocoding.level == 'admin'){
+						p5f.dispatchEvent(copy);
+						cocode.dispatchSyncEvent('keyboard', event.type, opts);
+					}
+				}else{
 					p5f.dispatchEvent(copy);
-					cocode.dispatchSyncEvent('keyboard', event.type, opts);
 				}
-			}else{
-				p5f.dispatchEvent(copy);
 			}
 		}
 
