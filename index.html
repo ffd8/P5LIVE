@@ -29,7 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?10">
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?11">
 </head>
 <body>
 	<div id="p5-drop"> </div>
@@ -51,6 +51,8 @@
 		<div id="ref"></div>
 		<div id="ref-close" onclick="closeRef();">X</div>
 	</div>
+
+	<div id="notify"></div>
 
 	<div id="menu" class="panel">
 		<div class="menu-bg"></div>
@@ -238,6 +240,10 @@
 					<div class="tippy-left" style="cursor:help;" data-title="Pass keyPress from editor to p5 canvas" onclick="passEditorKeysToggle();">
 						<input type="checkbox" id="settings-passeditorkeys" name="settings-passeditorkeys" value="settings-passeditorkeys"> Pass Editor Keys
 					</div>
+
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Shortcut Notifications" onclick="notifyToggle();">
+						<input type="checkbox" id="settings-notifytoggle" name="settings-notifytoggle" value="settings-notifytoggle"> Notifications
+					</div>
 					
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span> 
@@ -334,7 +340,7 @@ function println(msg){
 
 
 		/* INIT */
-		let currentRevision = 27; // 23
+		let currentRevision = 28; // 23
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -374,6 +380,7 @@ function println(msg){
 			'menuMode': true,
 			'menutab':true,
 			'exportCode':true,
+			'notifyToggle':true,
 			'debugMode': false,
 			'safeMode': false,
 			'shortcuts':{
@@ -516,9 +523,10 @@ function println(msg){
 		settingsMenutab = document.getElementById('settings-menutab'),
 		settingsLinenumbers = document.getElementById('settings-linenumbers'),
 		settingsAutocomplete = document.getElementById('settings-autocomplete'),
+		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsLockDrag = document.getElementById('settings-lockdrag'),
 		settingsPassEditorKeys = document.getElementById('settings-passeditorkeys'),
-		settingsExportcode = document.getElementById('settings-exportcode'),
+		settingsNotify = document.getElementById('settings-notifytoggle'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsShortcuts = document.getElementById('menu-shortcuts-holder'),
@@ -531,6 +539,7 @@ function println(msg){
 		menuTheme = document.getElementById('menu-settings-theme'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
 		loader = document.getElementById('loader'),
+		notify = document.getElementById('notify'),
 		shortcutRecording = false,
 		settings = getSettings(),
 		validCode = true, 
@@ -545,8 +554,8 @@ function println(msg){
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
 		refList = [],
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false,
-		curPos, curPositions = [], updateCursor, showCursors = false, sketchCount = 0,
+		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false, showNotify = false,
+		curPos, curPositions = [], updateCursor, showCursors = false, sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false
 		;
 
@@ -1523,6 +1532,7 @@ function println(msg){
 			linenumbersUpdate();
 			lockDragUpdate();
 			exportcodeUpdate();
+			notifyToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
@@ -1716,6 +1726,9 @@ function println(msg){
 					eval(shortcut.init);
 				}else{
 					Mousetrap.bind(shortcut.key, function(){
+						if(settings.notifyToggle){
+							showNotify = true;
+						}
 						eval(shortcut.callback);
 						return false;
 					}).stopCallback = function(e, element, combo) {};
@@ -2077,8 +2090,14 @@ function println(msg){
 				paused = !paused;
 				if(paused){
 					p5f.noLoop();
+					if(showNotify){
+						notifyMsg('Paused');
+					}
 				}else{
 					p5f.loop();
+					if(showNotify){
+						notifyMsg('Resumed');
+					}
 				}
 			}
 		}
@@ -3405,7 +3424,7 @@ function println(msg){
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'focus');
 			}
-			if(sketchLoaded){
+			if(sketchLoaded && !paused){
 				p5f.loop();
 			}
 		}
@@ -3543,6 +3562,16 @@ function println(msg){
 			checkToggle('passeditorkeys', settings.passEditorKeys, settingsPassEditorKeys);
 		}
 
+		// notify toggle
+		function notifyToggle(){
+			settings.notifyToggle = !settings.notifyToggle;
+			notifyToggleUpdate();
+		}
+
+		function notifyToggleUpdate(){
+			checkToggle('notifytoggle', settings.notifyToggle, settingsNotify);
+		}
+
 		//exportcode toggle
 		function exportcodeToggle(){
 			settings.exportCode = !settings.exportCode;
@@ -3574,6 +3603,16 @@ function println(msg){
 			}
 			settings[checkName] = checkVar;
 			updateSettings();
+
+			// show notify of changed prefs by shortcut
+			if(showNotify){
+				let notifyChecked = '';
+				if(checkVar){
+					notifyChecked = 'checked';
+				}
+				let notifyTxt = '<input type="checkbox" ' + notifyChecked + '> ' + checkName;
+				notifyMsg(notifyTxt);
+			}
 			if(settings.debugMode){console.log(checkName+': '+settings[checkName]);}
 		}
 
@@ -3658,7 +3697,7 @@ function println(msg){
 			if(!settings.menuMode){
 				menuPanel.style.marginRight = '-250px';
 				menuSwitch.innerHTML = '«';
-				window.setTimeout(hideSettings, 500);
+				window.setTimeout(hideSettings, 200);
 				// menuPanel.style.overflow = "visible"; // test again w/ chromium
 			}else{
 				menuPanel.style.marginRight = '0px';
@@ -3862,6 +3901,9 @@ function println(msg){
 				p5f.save('P5L_' + settings.fileName + '_' + timeStamp() + '.png');
 				if(settings.exportCode){
 					exportSketch(settings.fileName);
+					if(showNotify){
+						notifyMsg('Snapshot Saved');
+					}
 				}
 			}
 		}
@@ -4342,6 +4384,17 @@ function println(msg){
 					vexSmall();
 				}
 			})
+		}
+
+		/* Notification for settings changed by shortcut */
+		function notifyMsg(txt){
+			notify.innerHTML = txt;
+			notify.style.opacity = 1.0;
+			clearTimeout(notifyTimer);
+			notifyTimer = setTimeout(function(){
+				notify.style.opacity = 0;
+			}, 1500);
+			showNotify = false;
 		}
 
 		/* Sketches Congrats */

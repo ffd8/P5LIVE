@@ -218,13 +218,13 @@ hr{
 .panel{
 	position:fixed;
 	top:0;
-	right:0;
 	margin-right:-250px;
+	right:0;
 	height:100vh;
 	width:250px;
 	color:#fff;
 	z-index:101;
-	transition: margin-right .5s ease;
+	transition: margin-right .25s ease;
 }
 #menu-switch{
 	position:absolute;
@@ -1004,6 +1004,21 @@ li{
 }
 #about-alert img{
 
+}
+#notify{
+	position:fixed;
+	right:5px;
+	top:5px;
+	border:1px solid #888;
+	border-radius: 5px;
+	color:#eee;
+	background:#000;
+	font-size:8pt;
+	text-align:center;
+	padding:5px 5px 8px 5px;
+	box-sizing: border-box;
+	opacity:0;
+	transition: .25s linear;
 }
 #inspectcode .ace_gutter-layer, #inspectcode .ace_gutter{
 	background:none !important;

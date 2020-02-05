@@ -138,7 +138,8 @@ Lost the overview of your sketches? Just type in keywords to match names of fold
 - Line Numbers, toggle code editor gutter features + line numbers. 
 - Autocomplete, toggle constant autocomplete suggestions. 
 - Lock Code on Drag, toggle locked code editor on mouse drag. 
-- Pass Editor Keys, toggle passing keyPress from editor to p5 canvas. 
+- Pass Editor Keys, toggle passing keyPress from editor to p5 canvas.
+- Notifications, toggle notifications of setting changing shortcuts. 
 - Code Size, adjust font size of editor text.  
 - Code Background, toggle + set color behind each line of code.  
 - Theme, select custom styling of code.
