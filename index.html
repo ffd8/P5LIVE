@@ -549,6 +549,7 @@ function println(msg){
 		markerID = [],
 		errorTimer,
 		consoleTimer,
+		braketError,
 		snippets,
 		forceRecompile = false,
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
@@ -2998,10 +2999,15 @@ function println(msg){
 				if(cbCount.l < cbCount.r){
 					missingBracket = "'{'";
 				}
-				consoleMessage('Missing ' + missingBracket + '. Find mistake then recompile.', 0)
+				consoleMessage('Missing ' + missingBracket + '. Find mistake then recompile.', 0);
+				braketError = true;
 				return false;
 			}else{
-				consoleHide();
+				if(braketError){
+					consoleHide();
+					braketError = false;
+				}
+				
 			}
 
 			// prevent compile while autocomplete popup visible
