@@ -41,7 +41,7 @@
 
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
-		<textarea id="p5-console" class="p5-ta" disabled></textarea>
+		<textarea id="p5-console"></textarea>
 	</div>
 
 	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" srcdoc="" ></iframe>
@@ -543,20 +543,16 @@ function println(msg){
 		shortcutRecording = false,
 		settings = getSettings(),
 		validCode = true, 
-		sketchLoaded = false,
-		pLen = 0, 
-		paused = false,
-		markerID = [],
-		errorTimer,
-		consoleTimer,
-		braketError,
-		snippets,
-		forceRecompile = false,
-		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
-		refList = [],
+		sketchLoaded = false, forceRecompile = false,
+		pLen = 0, paused = false,
+		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
+		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
+		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0}, 
+		refList = [], downloadedRef = false,
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		cocode, editorId, p5frameTemplate, p5htmlTemplate, downloadedRef = false, showNotify = false,
-		curPos, curPositions = [], updateCursor, showCursors = false, sketchCount = 0, notifyTimer,
+		showNotify = false,
+		curPos, curPositions = [], updateCursor, showCursors = false, 
+		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false
 		;
 
@@ -1641,6 +1637,7 @@ function println(msg){
 			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
 			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
 			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2) + 'px';
+			// p5code.style.height = "100vh"; // *** check if this is right??
 		}
 		
 		window.onresize = resizeSketchesHolder;
@@ -2955,7 +2952,11 @@ function println(msg){
 
 		function consoleMessage(msg, timeDelay){
 			p5console.value = msg;
-			p5console.style.display = 'block';
+			if(consoleVisible == false){
+				p5console.style.display = 'block';
+				resizeEditor();
+				consoleVisible = true;
+			}
 			if(timeDelay != undefined && timeDelay != 0){
 				if(consoleTimer != undefined){
 					clearTimeout(consoleTimer);
@@ -2970,8 +2971,19 @@ function println(msg){
 			}
 			p5console.value = '';
 			p5console.style.display = 'none';
+			consoleVisible = false;
 		}
 
+		function resizeEditor(){
+				if(p5console.style.display == 'block'){
+					p5code.style.height = 'calc(100vh - '+ p5console.offsetHeight +'px)';
+				}else{
+					p5code.style.height = '100vh';
+				}
+			
+				editor.resize();
+		}
+		
 
 
 		/* COMPILE CODE */

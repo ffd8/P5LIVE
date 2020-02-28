@@ -145,7 +145,7 @@ hr{
 }
 #p5-code {
 	top:0vh;
-	height:calc(100vh - 45px);	
+	height:100vh;	
 	border:none;
 }
 .ace_selection{
@@ -173,15 +173,22 @@ hr{
 	width:400px;
 }
 #p5-console{
+	position:fixed;
+	width:100%;
+	z-index:9999;
 	height:auto;
 	min-height:10px;
-	bottom:0;
+	bottom:0px;
 	font-size:9pt;
-	padding:5px 5px 5px 10px;
+	padding:2px 5px 10px 5px;
 	resize:none;
-	pointer-events: none;
-	background:none;
+	color:#aaa;
+	outline:none;
+	/*pointer-events: none;*/
+	background:#000;
 	border:none;
+	border-top:1px solid #444;
+	display:none;
 }
 .myMarker {
 	position:fixed;
