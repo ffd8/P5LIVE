@@ -2,18 +2,23 @@
 let online = false; // set online
 let debugStats = false; // report glitch.com limits
 
+let tPort = process.env.PORT || 5000;
+if(process.argv.slice(2).length > 0){
+	tPort = process.argv.slice(2)[0];
+}
+
 const express = require('express')
 , app = express()
 , server = require('http').Server(app)
 , io = require('socket.io')(server)
 , RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
-, port = process.env.PORT || 5000
+, port = tPort
 , requestStats = require('request-stats')
 
 // OSC
 let iop, osc, oscServer, oscClient, isConnected;
 if(!online){
-	iop = require('socket.io')(8082);
+	iop = require('socket.io', {transports: ['WebSocket'] }).listen(8082);
 	osc = require('node-osc');
 }
 
@@ -95,6 +100,7 @@ io.origins((origin, callback) => {
 if(!online){
 	iop.sockets.on('connection', function (socket) {
 		socket.on("config", function (obj) {
+			// *** find source of random OSC crash...
 			isConnected = true;
 	    	oscServer = new osc.Server(obj.server.port, obj.server.host);
 		    oscClient = new osc.Client(obj.client.host, obj.client.port);
@@ -379,5 +385,9 @@ class Namespace {
 module.exports = Namespace;
 
 const listener = server.listen(port, function() {
-  console.log('Your app is listening on port ' + listener.address().port);
+	if(!online){
+  		console.log('P5LIVE is live! visit » http://localhost:' + listener.address().port);
+	}else{
+		console.log('P5LIVE is live! Running on port: ' + listener.address().port);
+	}
 });

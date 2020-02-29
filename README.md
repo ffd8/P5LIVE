@@ -61,11 +61,11 @@ Details below to run via python webserver or nodejs/npm.
 
 <img src="includes/images/menu-cocoding-active-7.png" width="220px">  
 
-- Exit, click the green 'network' button.  
-- Share, click copy URL and share with friends.  
+- Exit, click the green 'power' button.  
+- Share, click to copy URL and share with friends.  
 - Clone sketch, saves current co-code to local sketches within session folder.  
 - Lockdown (admin), limit editing, toggling privledges per user.  
-- Broadcast (admin + lockdown), sync mouseX/Y/frameCount with users.
+- Broadcast (admin + lockdown), sync mouseX/Y/frameCount/recompile with users.
 
 <img src="includes/images/menu-cocoding-req-pre-7.png" width="220px">  
 
@@ -173,9 +173,9 @@ Load snippet via shortcut, `CTRL + SHIFT + key`
 - `CTRL + SHIFT + O`, adds OSC communication code.
 
 ### LIBRARIES
-P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, load them remotely via [CDN hosted](https://www.jsdelivr.com/) or locally if running offline (placing in a `/data` folder.  
+P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, load them remotely via [CDN hosted](https://www.jsdelivr.com/) or locally if running offline (ie `/data/libs/`).  
 
-Use the following snippet at the top of your sketch, placing one URL/path per array item:  
+Add this snippet to the top of your sketch, placing one URL/path per array item:  
 
 ```
 let libs = [
@@ -228,7 +228,7 @@ Additional custom functions are available in every sketch:
 - check Python version, type `python --version`, press `ENTER` 
 	- `Python 2.0+`, type `python -m SimpleHTTPServer 5000`, press `ENTER`    
 	- `Python 3.0+`, type `python -m http.server 5000`, press `ENTER`    
-- goto [http://localhost:5000](http://localhost:5000)
+- P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
 - To quit, `CTRL + C` in Terminal (or command prompt)
 
 ### Fancy webserver using nodejs/npm (with COCODING/OSC):  
@@ -237,8 +237,8 @@ Additional custom functions are available in every sketch:
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER`  
 - type `npm install`, press `ENTER`  
-- type `npm start`, press `ENTER`  
-- goto [http://localhost:5000](http://localhost:5000)
+- type `npm start`, press `ENTER`  (for custom port: `npm start ####`)
+- P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
 - To quit, `CTRL + C` in Terminal (or command prompt)
 
 
@@ -260,7 +260,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [Feather Icons](https://feathericons.com), gui icons 
 - [loading.io](https://loading.io/css/), css spinning intro loader
 - [glitch.com](https://glitch.com), nodejs websocket hosting
-- [p5js-osc](https://github.com/genekogan/p5js-osc/), osc connection
+- [node-osc](https://github.com/MylesBorins/node-osc), osc connection
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 - [dropzone.js](https://www.dropzonejs.com/), drag + drop importing
 - [mousetrap.js](https://craig.is/killing/mice), custom shortcut key bindings

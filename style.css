@@ -999,15 +999,17 @@ li{
 	margin-left:-15px;
 }
 #about-alert h2{
+	font-size:16pt;
 	margin-top:15px;
 	border-top:1px solid #aaa;
 	padding-top:15px;
 }
 #about-alert h3{
 	margin-top:25px;
+	font-size:14pt;
 }
 #about-alert h4{
-	font-size:14pt;
+	font-size:12pt;
 }
 #about-alert img{
 
