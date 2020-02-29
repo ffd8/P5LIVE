@@ -245,7 +245,7 @@ Additional custom functions are available in every sketch:
 ## TOOLS USED
 P5LIVE is possible thanks to these amazing open-source projects:  
 
-- [p5.js](https://p5js.org), magic – v0.10.2
+- [p5.js](https://p5js.org), magic – v1.0.0
 - [ace editor](https://ace.c9.io), code editor on top
 - [peeredit / rga.js](https://github.com/jorendorff/peeredit), syncing text for cocoding
 - [socket.io](https://socket.io/), websockets for cocoding

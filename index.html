@@ -340,7 +340,7 @@ function println(msg){
 
 
 		/* INIT */
-		let currentRevision = 28; // 23
+		let currentRevision = 29; // 23
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -579,7 +579,7 @@ function println(msg){
 		
 		function loadAutoComplete(){
 			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
-			let tempPath = 'includes/p5/P5L_AUTOCOMPLETE_20200120084059.json';
+			let tempPath = 'includes/p5/P5L_AUTOCOMPLETE_20200229201725.json';
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -756,14 +756,13 @@ function println(msg){
 
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
-			'remote':'https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/p5.min.js'
-		},{
-			'local':'includes/p5/addons/p5.dom.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.9.0/addons/p5.dom.min.js'
+			'remote':'https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.min.js'
 		}, {
 			'local':'includes/p5/addons/p5.sound.min.js',
-			'remote':'https://cdn.jsdelivr.net/npm/p5@0.10.2/lib/addons/p5.sound.min.js'
+			'remote':'https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/addons/p5.sound.min.js'
 		}];
+
+
 
 		// markers for COCODING
 		// built upon: https://stackoverflow.com/a/24812641/10885535
@@ -4137,7 +4136,7 @@ function println(msg){
 		}
 
 		function loadRef(){
-			let refPath = 'includes/p5/data.js';
+			let refPath = 'includes/p5/data.json';
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
 			request.send();
