@@ -26,6 +26,10 @@ html {
 	font-family: 'roboto_mono', 'Monaco', monospace;
 	font-weight: 200;
 }
+textarea, pre, code{
+	font-family: 'roboto_mono', 'Monaco' !important;
+	font-weight: 400 !important;	
+}
 body {
 	margin: 0;
 	padding: 0;
@@ -141,7 +145,7 @@ hr{
 }
 #p5-code {
 	top:0vh;
-	height:calc(100vh - 45px);	
+	height:100vh;	
 	border:none;
 }
 .ace_selection{
@@ -155,16 +159,36 @@ hr{
 	background:rgba(255, 191, 0, .1) !important ;
 
 }
+.ace_search.right{
+	right:40px;
+}
+.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line{
+	background:rgba(150, 191, 0, .5) !important;
+}
+.ace_doc-tooltip{
+	background:rgba(150, 191, 0, .5);
+	border:1px solid rgba(150, 121, 0, .5);
+}
+.ace_editor.ace_autocomplete{
+	width:400px;
+}
 #p5-console{
+	position:fixed;
+	width:100%;
+	z-index:9999;
 	height:auto;
 	min-height:10px;
-	bottom:0;
+	bottom:0px;
 	font-size:9pt;
-	padding:5px 5px 5px 10px;
+	padding:2px 5px 10px 5px;
 	resize:none;
-	pointer-events: none;
-	background:none;
+	color:#aaa;
+	outline:none;
+	/*pointer-events: none;*/
+	background:#000;
 	border:none;
+	border-top:1px solid #444;
+	display:none;
 }
 .myMarker {
 	position:fixed;
@@ -189,19 +213,25 @@ hr{
 }
 
 /* MENU */
-#menu, #menu-sketch-new{
+.panel, #menu-sketch-new{
 	font-size:10pt;
 }
-#menu{
+#panel-menu{
+
+}
+#panel-settings{
+	display:none;
+}
+.panel{
 	position:fixed;
 	top:0;
-	right:0;
 	margin-right:-250px;
+	right:0;
 	height:100vh;
 	width:250px;
 	color:#fff;
 	z-index:101;
-	transition: margin-right .5s ease;
+	transition: margin-right .25s ease;
 }
 #menu-switch{
 	position:absolute;
@@ -222,7 +252,7 @@ hr{
 .menu-switch{
 	opacity:.5;
 }
-#menu-bg{
+.menu-bg{
 	position:absolute;
 	top:0;
 	left:0;
@@ -232,7 +262,7 @@ hr{
 	z-index:-1;
 	opacity: .5;
 }
-#menu-sections{
+.menu-sections{
 	position:absolute;
 	left:0;
 	top:0;
@@ -254,7 +284,7 @@ hr{
 	background:#222;
 	opacity:.75;
 }
-.menu-header{
+.menu-header, h2{
 	font-size:14pt;
 	color:#fff;
 	border-bottom:1px solid #888;
@@ -266,9 +296,21 @@ hr{
 	letter-spacing: 1px;
 	opacity:.75;
 }
+h2{
+	font-size:14pt;
+	color:#fff;
+	opacity:.75;
+	border:none;
+	margin:10px 0 5px 0;
+	background:none;
+	padding-left:0;
+}
 .menu-contents{
 	padding-left:5px;
 	padding-bottom:5px;
+}
+.invisible:hover{
+	opacity:0.3 !important;
 }
 .feather {
 	stroke:#fff;
@@ -288,7 +330,7 @@ hr{
 }
 .menu-sketches-holder{
 	color:#fff;
-	height:30vh;
+	height:50vh;
 	overflow:hidden;
 	overflow-y:auto;
 	position:relative;
@@ -303,7 +345,33 @@ hr{
 	position:relative;
 	width:100%;
 	height:30px;
-
+}
+#menu-sketches-filter{
+	position:relative;
+	width:100%;
+	height:25px;
+	background:#222;
+	color:#fff;
+	border:none;
+	outline:none;
+	box-sizing: border-box;
+	padding-left:25px;
+	border-bottom:1px solid #333;
+}
+#menu-sketches-filter-clear svg{
+	padding:4px 0px 0px 0px;
+	height:20px;
+}
+#menu-sketches-filter-clear{
+	position:absolute;
+	left:0px;
+	z-index:999;
+	cursor:pointer;
+	opacity:.5;
+	outline:none;
+}
+#menu-sketches-filter-clear:hover{
+	opacity:1;
 }
 .menu-button{
 	color:#fff;
@@ -433,8 +501,8 @@ hr{
 }
 .menu-sketch-nav{
 	float:right;
-	width:35%;
-	min-width:75px;
+	width:38%;
+	min-width:80px;
 	height:100%;
 	display:none;
 	z-index:101;
@@ -467,7 +535,16 @@ hr{
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
-#menu-cocode-counter{
+#menu-sketches-header:hover{
+	cursor:help;
+}
+#menu-sketches-header .counters{
+	display:none;
+}
+#menu-sketches-header:hover .counters{
+	display:inline;
+}
+.counters{
 	font-size:8pt;
 	padding-left:.3em;
 	vertical-align: super;
@@ -497,11 +574,11 @@ button[disabled]{
 .write-access{
 	background:#008800 !important;
 }
-#menu-settings{
+.menu-settings{
 	position:relative;
-	line-height:1.6em;
+	line-height:1.8em;
 }
-#menu-settings div{
+.menu-settings div{
 	outline:none;
 }
 #menu-settings-theme{
@@ -541,6 +618,56 @@ button[disabled]{
 	border-bottom:1px solid #444;
 	color:#fff;
 }
+#settings-compiletimer{
+	display:none;
+	float:right;
+	margin:5px 10px 0;
+	outline:none;
+	border:1px solid #888;
+	background:none;
+	color:#fff;
+	cursor:help;
+}
+.shortcut-keys{
+	margin-right:0px;
+	float:right;
+}
+.shortcut-key{
+	font-size:7pt;
+	width:12px;
+	background:#666;
+	border:1px solid #888;
+	border-radius: 3px;
+	color:#fff;
+	text-align:center;
+	padding:0px 3px 0 3px;
+	margin:0 2px 0 2px;
+}
+.shortcut-item{
+	font-size:8pt;
+	padding:1px;
+	border-bottom:1px solid #333;
+	cursor:pointer;
+}
+.shortcut-item:hover{
+	background:#888;
+}
+.shortcut-ani{
+	animation: shortcut-record 1.2s linear infinite;
+}
+
+@keyframes shortcut-record {
+	0% {
+		background: #333333;
+	}
+	50% {
+		background: #008800;
+	}
+	100% {
+		background: #333333;
+	}
+}
+
 .tippy-tooltip{
 	font-size:8pt;
 	border:1px solid #fff;
@@ -560,10 +687,19 @@ button[disabled]{
 	display:block;
 	background:#333;
 	margin:0px 0 0px 0;
-	padding:0px 0 0px 0;
-	min-height:2px;
+	padding:0px 0 2px 0;
+	min-height:35px;
+	border-top:1px solid #555;
+	border-bottom:1px solid #111;
+}
+.item-folder > .item-folder{
+	border-top:1px solid #555;
+	border-bottom:1px solid #555;
+	border:none;
+	border-left:1px solid #555;
 }
 .item-sketch{
+	display:block;
 	height:22px;
 	margin-bottom:1px;
 	list-style-type:none;
@@ -573,7 +709,7 @@ li{
 	padding:0;
 }
 .item-folder svg, .item-sketch svg{
-	padding:2px 1px 0px 1px;
+	padding:0px 0px 0px 0px;
 	height:16px;
 }
 
@@ -605,7 +741,7 @@ li{
 }
 .menu-sketch-nav svg{
 	padding:4px 1px 0 1px;
-	width:24px;
+	width:18px;
 }
 .selsetting{
 	background:#444;
@@ -643,8 +779,6 @@ li{
 #menu-cocode-sketches-holder{
 	height:20vh;
 	max-height:20vh;
-}
-#menu-cocode{
 }
 .cocoding-inactive:hover{
 	background:#008800;
@@ -804,6 +938,101 @@ li{
 	display:none;
 	pointer-events: none;
 }
+.remove-header{
+	margin-top:15px;
+	margin-bottom:0;
+}
+.remove-dump{
+	margin-top:10px !important;
+}
+.remove-dump .importdump-dup{
+
+}
+.remove-dump svg{
+	stroke:#ff0000;
+}
+.remove-icon svg{
+	height:16pt;
+	stroke:#ff0000;
+}
+.vex-long{
+	width:100%;
+	height:50vh;
+	border-bottom:1px solid #aaa;
+	max-height:70vh;
+	overflow-y:auto;
+	padding-bottom:10px;
+	font-size:10pt;
+	background:none;
+	color:#fff;
+	padding:5px;
+	box-sizing: border-box;
+	outline:none;
+}
+.vex-content{
+}
+.vex{
+	overflow: hidden !important;
+}
+.vex-small{
+	width:450px;
+	margin: 0 auto;
+}
+#about-alert{
+	font-size:10pt;
+	line-height:13pt;
+}
+#about-alert pre, #about-alert code{
+	font-family: 'roboto_mono', 'Monaco', monospace;
+	font-weight: 200;
+}
+#about-alert a{
+	color:#fff;
+}
+#about-alert ul{
+	list-style-type: none;
+  	margin-left: 15px;
+  	padding-left: 0px;
+}
+#about-alert li:before { 
+	content:"– "; 
+	margin-left:-15px;
+}
+#about-alert h2{
+	font-size:16pt;
+	margin-top:15px;
+	border-top:1px solid #aaa;
+	padding-top:15px;
+}
+#about-alert h3{
+	margin-top:25px;
+	font-size:14pt;
+}
+#about-alert h4{
+	font-size:12pt;
+}
+#about-alert img{
+
+}
+#notify{
+	position:fixed;
+	right:5px;
+	top:5px;
+	border:1px solid #888;
+	border-radius: 5px;
+	color:#eee;
+	background:#000;
+	font-size:8pt;
+	text-align:center;
+	padding:5px 5px 8px 5px;
+	box-sizing: border-box;
+	opacity:0;
+	transition: .25s linear;
+}
+#inspectcode .ace_gutter-layer, #inspectcode .ace_gutter{
+	background:none !important;
+	border-right:1px solid #aaa;
+}
 
 /* 
 ##Device = Tablets, Ipads (landscape)
@@ -818,7 +1047,7 @@ li{
 
 /* MOBILE */
 @media (max-width: 767px) {
-	#menu-bg{
+	.menu-bg{
 		opacity:.9;
 	}
 	.menu-header{

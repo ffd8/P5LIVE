@@ -6,6 +6,10 @@
 	<style type="text/css">
 		body{
 			margin:0;
+			width:100vw;
+			height:100vh;
+			overflow:hidden;
+			cursor:crosshair;
 		}
 		canvas{
 			width:100vw;
@@ -21,7 +25,8 @@
 		var p5p = parent.document;
 		var p5console = p5p.getElementById('p5-console');
 		var p5code = p5p.getElementById('p5-code');
-		var p5consoleTimer, p5consoleDelay = 2000;
+		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
+		var pmsg = '';
 
 		// clear console if all good
 		if(p5console != null){
@@ -62,13 +67,13 @@
 		var console = {
 			log: function(m){
 				if(m != "p5.RendererGL: enabled webgl context"){
-					p5console.value = m;
-					p5console.style.opacity = .75;
-					p5console.style.background = "#000";
-					p5console.style.borderTop = "1px solid #444";
-					p5console.style.pointerEvents = "all";
-					p5code.style.height = "calc(100vh - 40px)"; // calc(100vh - 40px)
-					window.parent.console.log(m); // also send to parent console!
+					consoleMessage(m, .1);
+					
+					// only send to window console if unique!
+					if(m != pmsg){
+						window.parent.console.log(m); // also send to parent console!
+						pmsg = m;
+					}
 					clearTimeout(p5consoleTimer);
 					p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
 				}
@@ -76,11 +81,36 @@
 		};
 
 		function clearConsole(){
-			p5console.value = "";
-			p5console.style.background = "none";
-			p5console.style.borderTop = "none";
-			p5console.style.pointerEvents = "none";
-			p5code.style.height = "100vh";
+			p5console.value = '';
+			p5console.style.display = 'none';
+			window.parent.resizeEditor();
+		}
+
+		function consoleMessage(msg, timeDelay){
+			p5console.value = msg;
+			if(consoleVisible == false){
+				p5console.style.display = 'block';
+				window.parent.resizeEditor();
+				consoleVisible = true;
+			}
+			if(timeDelay != undefined && timeDelay != 0){
+				if(consoleTimer != undefined){
+					clearTimeout(consoleTimer);
+				}
+				consoleTimer = setTimeout(consoleHide, timeDelay*1000);
+			}
+		}
+
+		
+
+		function consoleHide(){
+			if(consoleTimer != undefined){
+				clearTimeout(consoleTimer);
+			}
+			p5console.value = '';
+			p5console.style.display = 'none';
+			window.parent.resizeEditor();
+			consoleVisible = false;
 		}
 
 
@@ -96,6 +126,7 @@
 		// test if focus lost
 		window.onfocus = function() {
 		  // console.log('stole lost!');
+		  loop();
 		};
 
 		// forward mouse/key events to parent
