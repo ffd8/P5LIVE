@@ -29,7 +29,7 @@
   "homepage": "https://github.com/ffd8/p5live/",
   "dependencies": {
     "express": "^4.17.1",
-    "node-osc": "^4.1.5",
+    "node-osc": "^4.1.6",
     "request-stats": "^3.0.0",
     "socket.io": "^2.3.0"
   }
