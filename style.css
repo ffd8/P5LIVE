@@ -184,7 +184,6 @@ hr{
 	resize:none;
 	color:#aaa;
 	outline:none;
-	/*pointer-events: none;*/
 	background:#000;
 	border:none;
 	border-top:1px solid #444;

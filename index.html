@@ -297,9 +297,7 @@ function windowResized() {
 
 // custom ease function
 function ease(iVal, oVal, eVal){
-	let targetX = iVal;
-	let dx = targetX - oVal; 
-	return oVal += dx * eVal;
+	return oVal += (iVal - oVal) * eVal;
 }
 
 // processing compatibility
@@ -340,7 +338,7 @@ function println(msg){
 
 
 		/* INIT */
-		let currentRevision = 29; // 23
+		let currentRevision = 30;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -362,7 +360,7 @@ function println(msg){
 
 		// settings
 		let initSettings = {
-			'version':'1.2.5',
+			'version':'1.2.6',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15, 
@@ -1574,6 +1572,7 @@ function println(msg){
 				cocoding();
 			}else if(settings.welcome){
 				loadDefault();
+				menuToggle(true);
 				loadAbout();
 				settings.welcome = false;
 				updateSettings();

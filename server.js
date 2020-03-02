@@ -97,29 +97,45 @@ io.origins((origin, callback) => {
 });
 
 // OSC
+// let oscConnected = 0, oscDisconnected = 0; // debugger... fixed now??
 if(!online){
 	iop.sockets.on('connection', function (socket) {
 		socket.on("config", function (obj) {
-			// *** find source of random OSC crash...
-			isConnected = true;
+			if(isConnected){
+				closeOSC();
+			}
+			// oscConnected++;
+			// console.log('OSC - connected - ' + oscConnected);
 	    	oscServer = new osc.Server(obj.server.port, obj.server.host);
 		    oscClient = new osc.Client(obj.client.host, obj.client.port);
-		    oscClient.send('/status', socket.sessionId + ' connected');
+			isConnected = true;
+		    // oscClient.send('/status', socket.id + ' connected');
 			oscServer.on('message', function(msg, rinfo) {
 				socket.emit("message", msg);
 			});
 			socket.emit("connected", 1);
 		});
 	 	socket.on("message", function (obj) {
-			oscClient.send.apply(oscClient, obj);
+	 		if(isConnected){
+				oscClient.send.apply(oscClient, obj);
+			}
 	  	});
 		socket.on('disconnect', function(){
 			if (isConnected) {
-				oscServer.close();
-				oscClient.close();
+				closeOSC()
+				// oscDisconnected++;
+				// console.log('OSC - disconnected - ' + oscDisconnected);
 			}
 	  	});
 	});
+}
+
+function closeOSC(){
+	oscServer.close();
+	oscClient.close();
+	oscServer = undefined;
+	oscClient = undefined;
+	isConnected = false;
 }
 
 
@@ -386,8 +402,8 @@ module.exports = Namespace;
 
 const listener = server.listen(port, function() {
 	if(!online){
-  		console.log('P5LIVE is live! visit » http://localhost:' + listener.address().port);
+  		console.log('P5 is LIVE! visit » http://localhost:' + listener.address().port);
 	}else{
-		console.log('P5LIVE is live! Running on port: ' + listener.address().port);
+		console.log('P5 is LIVE! Running on port: ' + listener.address().port);
 	}
 });
