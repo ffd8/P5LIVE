@@ -34,7 +34,10 @@
 <body>
 	<div id="p5-drop"> </div>
 	<div id="loader">
-		<div id="loader-msg">P5LIVE</div>
+		<div id="loader-msg">
+			P5LIVE
+			<div id="loader-sub">loading...</div>
+		</div>
 		<div class="lds-dual-ring"></div>
 		<div id="loader-bg"> </div>
 	</div>
@@ -537,6 +540,7 @@ function println(msg){
 		menuTheme = document.getElementById('menu-settings-theme'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
 		loader = document.getElementById('loader'),
+		loaderSub = document.getElementById('loader-sub'),
 		notify = document.getElementById('notify'),
 		shortcutRecording = false,
 		settings = getSettings(),
@@ -1512,7 +1516,7 @@ function println(msg){
 				});
 				updateSettings();
 			}
-
+			loaderSub.innerHTML = 'settings...';
 			fontSizeUpdate();
 			autoCompileUpdate();
 			compileTimerUpdate();
@@ -1529,9 +1533,12 @@ function println(msg){
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
-			loadSnippets();
+			loaderSub.innerHTML = 'templates...';
 			loadSketchTemplate();
 			loadHTMLTemplate(); 
+			loaderSub.innerHTML = 'snippets...';
+			loadSnippets();
+			loaderSub.innerHTML = 'autocomplete...';
 			loadAutoComplete();
 			loadColorPicker();
 			vex.defaultOptions.className = 'vex-theme-plain'
@@ -1546,9 +1553,11 @@ function println(msg){
 			settings.safeMode = false;
 			updateSketches();
 			filterSketches();
+			loaderSub.innerHTML = 'shortcuts...';
 			updateShortcuts();
 			
 			if(getParam('cc') != undefined){
+				loaderSub.innerHTML = 'cocoding...';
 				if(getParam('cc').length != 5){
 					cocodingExit(loadLatest());
 					return false;
@@ -1570,9 +1579,9 @@ function println(msg){
 				updateSketches();
 				cocoding();
 			}else if(settings.welcome){
+				loadAbout();
 				loadDefault();
 				menuToggle(true);
-				loadAbout();
 				settings.welcome = false;
 				updateSettings();
 			}else if(window.location.hash){
@@ -1581,6 +1590,7 @@ function println(msg){
 				}else if(window.location.hash.substring(1).toLowerCase() === 'bug'){
 					loadBug();
 				}else{
+					loaderSub.innerHTML = 'p5 references...';
 					loadRef();
 					loadSketch(settings.fileName);
 				}
@@ -1634,7 +1644,6 @@ function println(msg){
 			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
 			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
 			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2) + 'px';
-			// p5code.style.height = "100vh"; // *** check if this is right??
 		}
 		
 		window.onresize = resizeSketchesHolder;
@@ -4357,11 +4366,12 @@ function println(msg){
 		}
 
 		function showLoader(){
-			loader.style.display = 'block';
+			loader.style.display = 'flex';
 		}
 
 		function hideLoader(){
 			loader.style.display = 'none';
+			loaderSub.innerHTML = '';
 		}
 
 		/* View in fullscreen */
