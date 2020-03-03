@@ -122,7 +122,7 @@ if(!online){
 	  	});
 		socket.on('disconnect', function(){
 			if (isConnected) {
-				closeOSC()
+				closeOSC();
 				// oscDisconnected++;
 				// console.log('OSC - disconnected - ' + oscDisconnected);
 			}
