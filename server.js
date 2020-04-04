@@ -58,7 +58,7 @@ setupStats();
 
 function hashCode(s) {
 	let h;
-	for(let i = 0; i < s.length; i++) 
+	for(let i = 0; i < s.length; i++)
 		h = Math.imul(31, h) + s.charCodeAt(i) | 0;
 
 	return h;
@@ -66,7 +66,7 @@ function hashCode(s) {
 
 app.get('/', function (req, res) {
 	if(online){
-		res.redirect('https://teddavis.org/p5live');	
+		res.redirect('https://teddavis.org/p5live');
 	}else{
 		res.sendFile(__dirname + "/index.html");
 
@@ -82,12 +82,12 @@ app.get('/', function (req, res) {
 					  socket.emit("full");
 					});
 				}
-			}		 
+			}
 		}
 	}
 })
 
-io.set('transports', ['websocket']); 
+io.set('transports', ['websocket']);
 
 io.origins((origin, callback) => {
   if (online && origin !== 'https://teddavis.org') {
@@ -166,7 +166,7 @@ function reportStats(){
 			}
 		}
 	}
-	ccStats.rooms.sort(function(a, b){return b-a});	
+	ccStats.rooms.sort(function(a, b){return b-a});
 }
 
 requestStats(server, function (stats) {
@@ -176,7 +176,7 @@ requestStats(server, function (stats) {
 
 // must be after app.get()!
 if(!online){
-	app.use(express.static('./'));	
+	app.use(express.static('./'));
 }
 
 // *** remove RGA / data
@@ -233,7 +233,7 @@ class Namespace {
 				delete settings.people[socket.id];
 				syncUsers(); // ALL in namespace
 
-				// set timer to trash namespace... 
+				// set timer to trash namespace...
 				if(Object.keys(settings.people).length == 0){
 					//console.log('purging: ' + namespace);
 					settings.purgeTimer = setTimeout(function(){
@@ -264,13 +264,13 @@ class Namespace {
 					newid += "_"+suffix;
 					socket.emit('rename', newid);
 				}
-				settings.people[socket.id].nick = newid;				
-				syncSettings();				
+				settings.people[socket.id].nick = newid;
+				syncSettings();
 			})
 
 			socket.on('updateColor', function(newcolor){
 				settings.people[socket.id].color = newcolor;
-				syncSettings();				
+				syncSettings();
 			})
 
 			socket.on('token', function(token){
@@ -343,7 +343,7 @@ class Namespace {
 			socket.on('codeReplace', function(reqData){
 				io.of(settings.name).emit('codeReplace', reqData);
 			})
-			
+
 			socket.on('editRequest', function(reqData){
 				settings.people[socket.id].request = reqData.mode;
 				syncUsers();
@@ -378,7 +378,11 @@ class Namespace {
 			socket.on('cursor', function(pos){
 				settings.people[socket.id].cursor = pos;
 				syncCursors();
-			})
+			});
+
+			socket.on('syncData', function(obj){
+				io.of(settings.name).emit('syncData', obj);
+			});
 		});
 
 		let syncUsers = function(){

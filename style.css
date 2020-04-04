@@ -28,7 +28,7 @@ html {
 }
 textarea, pre, code{
 	font-family: 'roboto_mono', 'Monaco' !important;
-	font-weight: 400 !important;	
+	font-weight: 400 !important;
 }
 body {
 	margin: 0;
@@ -148,7 +148,7 @@ hr{
 }
 #p5-code {
 	top:0vh;
-	height:100vh;	
+	height:100vh;
 	border:none;
 }
 .ace_selection{
@@ -390,6 +390,7 @@ h2{
 	height:30px;
 	opacity:.75;
 	flex: 1;
+	outline:none;
 }
 #p5live-buttons .menu-button{
 	border-bottom:none;
@@ -511,7 +512,7 @@ h2{
 	text-align:right;
 	cursor:pointer;
 }
-.menu-sketch-button{	
+.menu-sketch-button{
 	color:#fff;
 	flex:1;
 	padding:2px 0 0px 0;
@@ -550,6 +551,22 @@ h2{
 	font-size:8pt;
 	padding-left:.3em;
 	vertical-align: super;
+}
+.sync{
+	opacity:.25;
+	/*animation: request .25s linear infinite;*/
+	transition: .1s linear;
+}
+#menu-cocode-sync-up{
+	/*opacity:.25;*/
+}
+#menu-cocode-sync-down{
+	/*color:#fff;*/
+}
+@keyframes sync {
+	0%	 { opacity: .25 }
+	50%	 { opacity: 1 }
+	100% { opacity: .25 }
 }
 button:disabled,
 button[disabled]{
@@ -791,6 +808,9 @@ li{
 .cocoding-active:hover{
 	background:#880000;
 }
+.cocoding-local{
+	background:#008800 !important;
+}
 .code-replace-header{
 	font-size:10pt;
 	text-decoration: underline;
@@ -813,17 +833,17 @@ li{
 
 /* Track */
 #importdump::-webkit-scrollbar-track, .menu-sketches-holder::-webkit-scrollbar-track {
-  background: #444; 
+  background: #444;
 }
 
 /* Handle */
 #importdump::-webkit-scrollbar-thumb, .menu-sketches-holder::-webkit-scrollbar-thumb {
-  background: #aaa; 
+  background: #aaa;
 }
 
 /* Handle on hover */
 #importdump::-webkit-scrollbar-thumb:hover, .menu-sketches-holder::-webkit-scrollbar-thumb:hover {
-  background: #aaa; 
+  background: #aaa;
 }
 
 /* IMPORT */
@@ -996,8 +1016,8 @@ li{
   	margin-left: 15px;
   	padding-left: 0px;
 }
-#about-alert li:before { 
-	content:"– "; 
+#about-alert li:before {
+	content:"– ";
 	margin-left:-15px;
 }
 #about-alert h2{
@@ -1031,20 +1051,24 @@ li{
 	opacity:0;
 	transition: .25s linear;
 }
-#inspectcode .ace_gutter-layer, #inspectcode .ace_gutter{
+.popup-editor .ace_gutter-layer, .popup-editor .ace_gutter{
 	background:none !important;
 	border-right:1px solid #aaa;
 }
+.popup-editor{
+	background:#333 !important;
+	border:1px solid #aaa;
+}
 
-/* 
+/*
 ##Device = Tablets, Ipads (landscape)
 ##Screen = B/w 768px to 1024px
 */
 
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-	
-	
-	
+
+
+
 }
 
 /* MOBILE */
