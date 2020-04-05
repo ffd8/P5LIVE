@@ -116,6 +116,13 @@
 				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;" onmouseenter="showUsers();" onmouseleave="hideUsers();">
 					<div id="menu-cocode-sketches" class="menu-sketches"></div>
 				</div>
+				<div id="menu-cocode-chat-holder" class="" style="display:none;">
+					<div class="menu-cocode-chat-title"></div>
+					<div id="menu-cocode-chat-dialog" class="menu-cocode-chat menu-sketches-holder">
+
+					</div>
+					<input id="chat-input" class="tippy-left" type="text" name="chat-input" placeholder="Message" data-title="Type + Enter to chat">
+				</div>
 			</div>
 
 			<div class="menu-section" id="menu-section-sketches">
@@ -347,6 +354,11 @@ function println(msg){
 		// resetP5(); // manual reset
 
 		function resetP5(){
+			if(settings.cocoding.active){
+				settingsCocodingWarning();
+				return false;
+			}
+
 			vex.dialog.confirm({
 				unsafeMessage: 'Completely reset P5LIVE?<br><i>All sketches will be removed.</i>',
 				callback: function (value) {
@@ -516,6 +528,9 @@ function println(msg){
 		menuCocodeLocal = document.getElementById('cocode-local-button'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
+		menuCocodeChatHolder = document.getElementById('menu-cocode-chat-holder'),
+		menuCocodeChatInput = document.getElementById('chat-input'),
+		menuCocodeChatDialog = document.getElementById('menu-cocode-chat-dialog'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSketchesFilter = document.getElementById('menu-sketches-filter'),
 		menuSketchesCounter = document.getElementById('menu-sketches-counter'),
@@ -559,7 +574,7 @@ function println(msg){
 		curPos, curPositions = [], updateCursor, showCursors = false,
 		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
-		useLocalCode = false, cocodingLocalEditor
+		useLocalCode = false, cocodingLocalEditor, cocodingFirstTime = false
 		;
 
 		// force off
@@ -1027,6 +1042,11 @@ function println(msg){
 					}
 				});
 
+				this.socket.on('syncChat', (obj)=>{
+					syncDown();
+					this.parseChat(obj);
+				});
+
 				this.socket.on('syncUsers', (usersRaw) => {
 					syncDown();
 					this.users = JSON.parse(usersRaw);
@@ -1183,15 +1203,16 @@ function println(msg){
 								// Input / output Options
 								interaction: {
 									input: true,
-									cancel:true,
-									save: true
+									save: true,
+									cancel:true
 								},
 							},
 
 							// rename buttons
 							strings: {
+								cancel: 'Cancel', // Default for cancel button
 								save: 'Set', // Default for save button
-								cancel: 'Close' // Default for cancel button
+
 							}
 						});
 
@@ -1215,6 +1236,11 @@ function println(msg){
 
 			updateColor(){
 				syncUp();
+				// first time cocoder = random color
+				if(settings.cocoding.color != null && settings.cocoding.color == '#00aa00'){
+					settings.cocoding.color = '#'+Math.floor(Math.random()*16777215).toString(16);
+				}
+				updateSettings();
 				this.socket.emit('updateColor', settings.cocoding.color);
 			}
 
@@ -1284,6 +1310,31 @@ function println(msg){
 				this.socket.emit('cursor', pos);
 			}
 
+			parseChat(chatObj){
+				/*
+					- *****
+					- limit length of name in chat.. ~10 char
+					- only append messages per message..
+					- on name/color change, sync all chat
+					- look into p2p encryption of chat.. necessary?
+					-
+
+				 */
+				menuCocodeChatDialog.innerHTML = '';
+				for(let msg of chatObj){
+					let msgHTML = '<div class="chat-item">';
+					msgHTML += '<div class="chatmsg">';
+					let marq = '';
+					if(msg.nick.length > 9){marq = 'longname marq';}
+					msgHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
+					msgHTML += '<span class="chattext">'+linkify(msg.text)+'</span>';
+					msgHTML += '</div>';
+					msgHTML += '</div>';
+					menuCocodeChatDialog.innerHTML += msgHTML;
+				}
+				menuCocodeChatDialog.scrollTop = menuCocodeChatDialog.scrollHeight;
+			}
+
 			syncCursors(usersRaw){
 				this.users = JSON.parse(usersRaw);
 					marker.cursors = [];
@@ -1301,6 +1352,13 @@ function println(msg){
 		};
 
 		// cocode extras
+
+		function linkify(text) {
+			var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+			return text.replace(urlRegex, function(url) {
+				return '<a href="' + url + '" target="_blank">' + url + '</a>';
+			});
+		}
 
 		function showUsers(){
 			let cursorSel = document.getElementsByClassName('cursor');
@@ -1639,6 +1697,7 @@ function println(msg){
 				settings.cocoding.namespace = settings.fileName;
 				if(settings.cocoding.nick == undefined || settings.cocoding.nick == ''){
 					settings.cocoding.nick = makeid(6);
+					cocodingFirstTime = true;
 				}
 				updateSketches();
 				cocoding();
@@ -1707,14 +1766,18 @@ function println(msg){
 			let sketchesHolder = document.getElementById('menu-sketches-holder');
 			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
 			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
-			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2) + 'px';
+			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2)-5 + 'px';
 		}
 
 		window.onresize = resizeSketchesHolder;
 
 		function resetSettings(){
+			if(settings.cocoding.active){
+				settingsCocodingWarning();
+				return false;
+			}
 			vex.dialog.confirm({
-				unsafeMessage: 'Reset to default settings?<br>Sketches left untouched.',
+				unsafeMessage: 'Reset to default settings?<br>Sketches will be left untouched.',
 				callback: function (value) {
 					if (value) {
 						Object.keys(initSettings).forEach(function(k){
@@ -1727,6 +1790,12 @@ function println(msg){
 					}
 				}
 			})
+		}
+
+		function settingsCocodingWarning(){
+			vex.dialog.alert({
+				unsafeMessage:'Exit COCODING to change settings.'
+			});
 		}
 
 		function exportSettings(){
@@ -1744,6 +1813,11 @@ function println(msg){
 		}
 
 		function importSettings(data){
+			if(settings.cocoding.active){
+				settingsCocodingWarning();
+				return false;
+			}
+
 			for(let i=0; i < data.length; i++){
 				let reader = new FileReader();
 				reader.onload = function(data) {
@@ -2982,6 +3056,17 @@ function println(msg){
 				localStorage[settings.fileName] = editor.getValue();
 			}
 		};
+
+		menuCocodeChatInput.onkeydown = function(event){
+			if(event.keyCode == 13){
+				event.preventDefault();
+				if(settings.cocoding.active){
+					syncUp();
+					cocode.socket.emit('chat', {'text':menuCocodeChatInput.value});
+					menuCocodeChatInput.value = '';
+				}
+			}
+		}
 
 		function checkErrors(){
 			clearTimeout(errorTimer);
@@ -4562,8 +4647,14 @@ function println(msg){
 
 		function cocoding(){
 			menuCocodeHolder.style.display = 'block';
+			menuCocodeChatHolder.style.display = 'block';
 			editor.setValue('// Loading COCODING Session: '+settings.cocoding.namespace, 1);
 			cocode = new CocodeApp(settings.cocoding.namespace);
+			if(cocodingFirstTime){
+				setTimeout(function(){
+					cocode.rename();
+				}, 500);
+			}
 			// consoleMessage("When COCODING, code in editor is a sandbox. Clone it regularly to access later.", 0);
 		}
 
@@ -4589,12 +4680,12 @@ function println(msg){
 
 			vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Use  editor below to sync data via \'syncData(obj)\' function to all user.<br>Ideally a Javascript object to parse within the shared COCODING editor.</div>Presets: <select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select</option>'+cocodingLocalPresetsOptions+'</select><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
+				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Objects sent to \'syncData(obj)\' are accessible by all users. <br>Parse it within shared COCODING editor.</div>Presets: <select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select</option>'+cocodingLocalPresetsOptions+'</select><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
 				callback: function (value) {},
 				buttons: [
 				{
 					type: 'submit',
-					text: '► RUN', // iconPlay
+					text: useLocalCode ? '► REPLACE' : '► RUN', // iconPlay
 					className: 'cocoding-local-run',
 					click: function updateCode () {
 						/*
@@ -4623,10 +4714,22 @@ function println(msg){
 						// parseCocodingLocal();
 					}
 				}
+				, useLocalCode ? {
+					type: 'stop',
+					text: '◼ STOP',
+					click: function updateCode () {
+						useLocalCode = false;
+						settings.cocoding.locallibs = [];
+						updateSettings();
+						disabledCocodingButton();
+						recompile(true);
+					}
+				} : {
+					className: 'hide-button' // hide if unused
+				}
 				,{
 					type: 'close',
 					text: 'CLOSE',
-					// className: 'my-button-class-name'
 				}]
 			})
 			cocodingLocalEditor = ace.edit("cocoding-localcode");

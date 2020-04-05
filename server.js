@@ -195,6 +195,7 @@ class Namespace {
 			, "token" : hashCode(name)
 			, "users" : {}
 			, "people" : {}
+			, "chat" : []
 			, "rga": new RGA(0)
 			, "userId": 0
 			, "lockdown" : false
@@ -248,6 +249,7 @@ class Namespace {
 
 			socket.emit("welcome", {id: settings.userId, history: settings.rga.history()})
 			socket.emit("cocodeReady");
+			socket.emit('syncChat', settings.chat);
 
 			if(settings.userId == 1){
 				socket.emit('init');
@@ -265,11 +267,13 @@ class Namespace {
 					socket.emit('rename', newid);
 				}
 				settings.people[socket.id].nick = newid;
+				syncChat();
 				syncSettings();
 			})
 
 			socket.on('updateColor', function(newcolor){
 				settings.people[socket.id].color = newcolor;
+				syncChat();
 				syncSettings();
 			})
 
@@ -383,6 +387,22 @@ class Namespace {
 			socket.on('syncData', function(obj){
 				io.of(settings.name).emit('syncData', obj);
 			});
+
+			socket.on('chat', function(obj){
+				/*
+					**** TODO
+					- find way to update chat array if nick + color changes...
+
+				 */
+				let chatMsg = {
+					'nick': settings.people[socket.id].nick,
+					'color': settings.people[socket.id].color,
+					'id':socket.id,
+					'text': obj.text
+				}
+				settings.chat.push(chatMsg);
+				syncChat();
+			});
 		});
 
 		let syncUsers = function(){
@@ -397,6 +417,23 @@ class Namespace {
 
 		let syncCursors = function(){
 			io.of(settings.name).emit("syncCursors", JSON.stringify(settings.people)); // update users for all
+		}
+
+		let syncChat = function(){
+			let chatMsgs = [];
+			for(let c of settings.chat){
+				if(settings.people[c.id] != undefined){
+					c.nick =  settings.people[c.id].nick;
+					c.color =  settings.people[c.id].color;
+				}
+				let chatMsg = {
+					'nick': c.nick,
+					'color': c.color,
+					'text': c.text
+				}
+				chatMsgs.push(chatMsg);
+			}
+			io.of(settings.name).emit('syncChat', chatMsgs);
 		}
 
 	}

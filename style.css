@@ -205,6 +205,7 @@ hr{
 	border-width:3px;
 }
 .cursor-label{
+	color:#fff;
 	padding:2px;
 	font-size:8pt;
 	position:absolute;
@@ -271,7 +272,7 @@ hr{
 	width:100%;
 	height:100%;
 	box-sizing: border-box;
-	padding:15px;
+	padding:15px 15px 0 15px;
 	overflow-y:auto;
 }
 .menu-section{
@@ -547,6 +548,78 @@ h2{
 #menu-sketches-header:hover .counters{
 	display:inline;
 }
+#menu-cocode-chat-holder{
+	opacity:1;
+	color:#fff;
+	cursor:crosshair;
+}
+.menu-cocode-chat-title{
+	color:#fff;
+	font-size:14pt;
+
+	border-bottom:1px solid #fff;
+}
+.menu-cocode-chat{
+	/*border:1px solid #aaa;*/
+
+}
+#chat-input{
+	width:100%;
+	font-size:10pt;
+	position:relative;
+	outline:none;
+	background:#333;
+	color:#fff;
+	border:none;
+	border:1px solid #666;
+	padding:2px;
+	margin:0;
+}
+#menu-cocode-chat-dialog{
+	max-height:200px;
+	font-size:8pt;
+	color:#fff;
+	height:150px;
+	min-height:150px;
+	max-height:250px !important;
+	border-top:1px solid #888;
+	background:#444;
+}
+#menu-cocode-chat-dialog span{
+}
+.chatname{
+	padding:0 2px 0 2px;
+	box-sizing: border-box;
+	font-weight:bold;
+	margin-right:0px;
+	max-width:60px !important;
+	height:14px;
+	overflow:hidden;
+	float:left;
+	/*margin-right:3px;*/
+}
+.longname{
+	width:50px !important;
+	border-right:1px dashed #444;
+}
+.chattext{
+	padding:0 2px 0 2px;
+	box-sizing: border-box;
+	/*width:75% !important;*/
+}
+.chattext a{
+	color:#fff;
+	font-style:italic;
+}
+.chat-item{
+	margin-bottom:1px;
+	/*border-bottom:1px solid #333;*/
+}
+.chat-item-self{
+	/*text-align:right;*/
+}
+.chat-item:nth-child(even) {background: #333}
+.chat-item:nth-child(odd) {background: #333}
 .counters{
 	font-size:8pt;
 	padding-left:.3em;
@@ -554,7 +627,7 @@ h2{
 }
 .sync{
 	opacity:.25;
-	/*animation: request .25s linear infinite;*/
+	/*animation: sync 1s linear infinite;*/
 	transition: .1s linear;
 }
 #menu-cocode-sync-up{
@@ -738,7 +811,9 @@ li{
 }
 .item-folder > .item-sketch .menu-sketch{
 }
+.menu-sketch{
 
+}
 .item-folder > .item-folder{
 	margin-left:15px;
 	display:none;
@@ -810,6 +885,9 @@ li{
 }
 .cocoding-local{
 	background:#008800 !important;
+}
+.hide-button{
+	display:none;
 }
 .code-replace-header{
 	font-size:10pt;
