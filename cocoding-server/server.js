@@ -58,7 +58,7 @@ setupStats();
 
 function hashCode(s) {
 	let h;
-	for(let i = 0; i < s.length; i++) 
+	for(let i = 0; i < s.length; i++)
 		h = Math.imul(31, h) + s.charCodeAt(i) | 0;
 
 	return h;
@@ -66,7 +66,7 @@ function hashCode(s) {
 
 app.get('/', function (req, res) {
 	if(online){
-		res.redirect('https://teddavis.org/p5live');	
+		res.redirect('https://teddavis.org/p5live');
 	}else{
 		res.sendFile(__dirname + "/index.html");
 
@@ -82,12 +82,12 @@ app.get('/', function (req, res) {
 					  socket.emit("full");
 					});
 				}
-			}		 
+			}
 		}
 	}
 })
 
-io.set('transports', ['websocket']); 
+io.set('transports', ['websocket']);
 
 io.origins((origin, callback) => {
   if (online && origin !== 'https://teddavis.org') {
@@ -122,7 +122,7 @@ if(!online){
 	  	});
 		socket.on('disconnect', function(){
 			if (isConnected) {
-				closeOSC()
+				closeOSC();
 				// oscDisconnected++;
 				// console.log('OSC - disconnected - ' + oscDisconnected);
 			}
@@ -166,7 +166,7 @@ function reportStats(){
 			}
 		}
 	}
-	ccStats.rooms.sort(function(a, b){return b-a});	
+	ccStats.rooms.sort(function(a, b){return b-a});
 }
 
 requestStats(server, function (stats) {
@@ -176,7 +176,7 @@ requestStats(server, function (stats) {
 
 // must be after app.get()!
 if(!online){
-	app.use(express.static('./'));	
+	app.use(express.static('./'));
 }
 
 // *** remove RGA / data
@@ -195,6 +195,7 @@ class Namespace {
 			, "token" : hashCode(name)
 			, "users" : {}
 			, "people" : {}
+			, "chat" : []
 			, "rga": new RGA(0)
 			, "userId": 0
 			, "lockdown" : false
@@ -233,7 +234,7 @@ class Namespace {
 				delete settings.people[socket.id];
 				syncUsers(); // ALL in namespace
 
-				// set timer to trash namespace... 
+				// set timer to trash namespace...
 				if(Object.keys(settings.people).length == 0){
 					//console.log('purging: ' + namespace);
 					settings.purgeTimer = setTimeout(function(){
@@ -248,6 +249,7 @@ class Namespace {
 
 			socket.emit("welcome", {id: settings.userId, history: settings.rga.history()})
 			socket.emit("cocodeReady");
+			socket.emit('syncChat', settings.chat);
 
 			if(settings.userId == 1){
 				socket.emit('init');
@@ -264,13 +266,15 @@ class Namespace {
 					newid += "_"+suffix;
 					socket.emit('rename', newid);
 				}
-				settings.people[socket.id].nick = newid;				
-				syncSettings();				
+				settings.people[socket.id].nick = newid;
+				syncChat();
+				syncSettings();
 			})
 
 			socket.on('updateColor', function(newcolor){
 				settings.people[socket.id].color = newcolor;
-				syncSettings();				
+				syncChat();
+				syncSettings();
 			})
 
 			socket.on('token', function(token){
@@ -343,7 +347,7 @@ class Namespace {
 			socket.on('codeReplace', function(reqData){
 				io.of(settings.name).emit('codeReplace', reqData);
 			})
-			
+
 			socket.on('editRequest', function(reqData){
 				settings.people[socket.id].request = reqData.mode;
 				syncUsers();
@@ -378,7 +382,22 @@ class Namespace {
 			socket.on('cursor', function(pos){
 				settings.people[socket.id].cursor = pos;
 				syncCursors();
-			})
+			});
+
+			socket.on('syncData', function(obj){
+				io.of(settings.name).emit('syncData', obj);
+			});
+
+			socket.on('chat', function(obj){
+				let chatMsg = {
+					'nick': settings.people[socket.id].nick,
+					'color': settings.people[socket.id].color,
+					'id':socket.id,
+					'text': obj.text
+				}
+				settings.chat.push(chatMsg);
+				addChat(chatMsg);
+			});
 		});
 
 		let syncUsers = function(){
@@ -393,6 +412,27 @@ class Namespace {
 
 		let syncCursors = function(){
 			io.of(settings.name).emit("syncCursors", JSON.stringify(settings.people)); // update users for all
+		}
+
+		let addChat = function(obj){
+			io.of(settings.name).emit('addChat', obj);
+		}
+
+		let syncChat = function(){
+			let chatMsgs = [];
+			for(let c of settings.chat){
+				if(settings.people[c.id] != undefined){
+					c.nick =  settings.people[c.id].nick;
+					c.color =  settings.people[c.id].color;
+				}
+				let chatMsg = {
+					'nick': c.nick,
+					'color': c.color,
+					'text': c.text
+				}
+				chatMsgs.push(chatMsg);
+			}
+			io.of(settings.name).emit('syncChat', chatMsgs);
 		}
 
 	}

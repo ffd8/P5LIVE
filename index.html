@@ -1318,16 +1318,7 @@ function println(msg){
 			}
 
 			parseChat(chatObj){
-				/*
-					- *****
-					- only append messages per message..
-					- look into p2p encryption of chat.. necessary?
-					-
-
-				 */
-				// if(chatReset){
 				menuCocodeChatDialog.innerHTML = '';
-				// }
 				for(let chatItem of chatObj){
 					cocode.addChat(chatItem);
 				}
@@ -3402,7 +3393,7 @@ function println(msg){
 				if(useLocalCode){
 					disabledCocodingButton();
 				}
-				setTimeout(function(){parseCocodingLocal();}, 500); // ****
+				setTimeout(function(){parseCocodingLocal();}, 500); // *** find ideal time or promise
 			}
 			curPositions = [];
 		}
@@ -4723,22 +4714,11 @@ function println(msg){
 					text: useLocalCode ? '► REPLACE' : '► RUN', // iconPlay
 					className: 'cocoding-local-run',
 					click: function updateCode () {
-						/*
-						// *** todo and Qs...
-						- create template loaded as presets
-							- load file at beginning
-							- search how exported json saves w/ special chars
-							- dynamically build presets menu + adjust function to grab obj name
-
-						- option to save as preset?? (part of settings) - localstorage structure?? online vs local?
-
-						 */
 						useLocalCode = true;
 						disabledCocodingButton();
 
 						// hardCompile = better to overwrite global vars on changes
 						recompile(true);
-						// parseCocodingLocal();
 					}
 				}
 				, useLocalCode ? {

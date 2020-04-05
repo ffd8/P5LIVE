@@ -389,11 +389,6 @@ class Namespace {
 			});
 
 			socket.on('chat', function(obj){
-				/*
-					**** TODO
-					- find way to update chat array if nick + color changes...
-
-				 */
 				let chatMsg = {
 					'nick': settings.people[socket.id].nick,
 					'color': settings.people[socket.id].color,
