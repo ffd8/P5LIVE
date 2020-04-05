@@ -574,7 +574,8 @@ function println(msg){
 		curPos, curPositions = [], updateCursor, showCursors = false,
 		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
-		useLocalCode = false, cocodingLocalEditor, cocodingFirstTime = false
+		useLocalCode = false, cocodingLocalEditor, cocodingLocalPresets = {},
+		cocodingFirstTime = false
 		;
 
 		// force off
@@ -1670,6 +1671,8 @@ function println(msg){
 			loadHTMLTemplate();
 			loaderSub.innerHTML = 'snippets...';
 			loadSnippets();
+			loaderSub.innerHTML = 'sync data presets...';
+			loadSyncDataPresets();
 			loaderSub.innerHTML = 'autocomplete...';
 			loadAutoComplete();
 			loadColorPicker();
@@ -4678,13 +4681,35 @@ function println(msg){
 			updateSettings();
 		}
 
+		// load demos
+		function loadSyncDataPresets(){
+			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + currentRevision;
+			let request = new XMLHttpRequest();
+			request.open('GET', syncdataPresetsPath, true);
+			request.send();
+			request.addEventListener('load', function(){
+				let jsonObj = JSON.parse(request.responseText);
+				cocodingLocalPresets.presetList = [];
+				for(let p of jsonObj.sketches){
+					let presetName = p.sketchName.replace('syncdata-', '');
+					// let presetItem = {
+					// 	name : presetName,
+					// 	code : p.sketchCode
+					// }
+					cocodingLocalPresets[presetName] = {code:p.sketchCode};
+					cocodingLocalPresets.presetList.push(presetName);
+				}
+				console.log(cocodingLocalPresets);
+			});
+		}
+
 		function cocodingLocalCode(elm){
-			let cocodingLocalPresets = [
-				'template', 'midi', 'osc'
-			];
+			// let cocodingLocalPresets = [
+			// 	'template', 'midi', 'osc'
+			// ];
 
 			let cocodingLocalPresetsOptions = '';
-			for(let clp of cocodingLocalPresets){
+			for(let clp of cocodingLocalPresets.presetList){
 				cocodingLocalPresetsOptions += '<option name="'+clp+'" value="'+clp+'">'+clp+'</option>'
 			}
 
@@ -4754,13 +4779,8 @@ function println(msg){
 		}
 
 		function cocodingLocalPreset(presetVal, localEditor){
-			// alert(presetVal);
 			if(presetVal != 'select'){
-				if(presetVal == 'template'){
-					let presetTemplate = '// parseData(obj);\n//hello';
-					cocodingLocalEditor.setValue(presetTemplate);
-				}
-				// cocodingLocalEditor.setValue(presetVal); // grab template
+				cocodingLocalEditor.setValue(cocodingLocalPresets[presetVal].code, 1);
 			}
 
 		}
