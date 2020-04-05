@@ -401,7 +401,7 @@ class Namespace {
 					'text': obj.text
 				}
 				settings.chat.push(chatMsg);
-				syncChat();
+				addChat(chatMsg);
 			});
 		});
 
@@ -417,6 +417,10 @@ class Namespace {
 
 		let syncCursors = function(){
 			io.of(settings.name).emit("syncCursors", JSON.stringify(settings.people)); // update users for all
+		}
+
+		let addChat = function(obj){
+			io.of(settings.name).emit('addChat', obj);
 		}
 
 		let syncChat = function(){

@@ -793,7 +793,7 @@ button[disabled]{
 .item-sketch{
 	display:block;
 	height:22px;
-	margin-bottom:1px;
+	margin-top:1px;
 	list-style-type:none;
 	padding:0;
 }

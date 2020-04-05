@@ -95,7 +95,7 @@
 					<button class="menu-button tippy" onclick="cloneSketchCOCODING();this.blur();" data-title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
-					<button id="cocode-local-button" class="menu-button tippy" onclick="cocodingLocalCode(this);this.blur();" data-title="Sync Data">
+					<button class="menu-button tippy" id="cocode-local-button" onclick="cocodingLocalCode(this);this.blur();" data-title="Sync Data">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-align-left"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
 					</button>
 					<button class="menu-button tippy admin-lock" id="cocode-layers" onclick="cocodeLayers();" data-title="Load CoCodeLayers" style="display:none;">
@@ -525,7 +525,7 @@ function println(msg){
 		menuCocodeCounter = document.getElementById('menu-cocode-counter'),
 		menuCocodeUp = document.getElementById('menu-cocode-sync-up'),
 		menuCocodeDown = document.getElementById('menu-cocode-sync-down'),
-		menuCocodeLocal = document.getElementById('cocode-local-button'),
+		// settingsLocalButton = document.getElementById('cocode-local-button'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuCocodeChatHolder = document.getElementById('menu-cocode-chat-holder'),
@@ -1021,6 +1021,7 @@ function println(msg){
 					if(writeMode){
 						settings.cocoding.writemode = true;
 						settings.cocoding.request = false;
+						document.getElementById('cocode-local-button').removeAttribute('disabled');
 						updateSettings();
 						editor.setReadOnly(false);
 					}else{
@@ -1040,6 +1041,11 @@ function println(msg){
 					if(sketchLoaded){
 						p5f.parseData(obj);
 					}
+				});
+
+				this.socket.on('addChat', (obj)=>{
+					syncDown();
+					this.addChat(obj, true);
 				});
 
 				this.socket.on('syncChat', (obj)=>{
@@ -1313,16 +1319,21 @@ function println(msg){
 			parseChat(chatObj){
 				/*
 					- *****
-					- limit length of name in chat.. ~10 char
 					- only append messages per message..
-					- on name/color change, sync all chat
 					- look into p2p encryption of chat.. necessary?
 					-
 
 				 */
+				// if(chatReset){
 				menuCocodeChatDialog.innerHTML = '';
-				for(let msg of chatObj){
-					let msgHTML = '<div class="chat-item">';
+				// }
+				for(let chatItem of chatObj){
+					cocode.addChat(chatItem);
+				}
+			}
+
+			addChat(msg){
+				let msgHTML = '<div class="chat-item">';
 					msgHTML += '<div class="chatmsg">';
 					let marq = '';
 					if(msg.nick.length > 9){marq = 'longname marq';}
@@ -1331,8 +1342,7 @@ function println(msg){
 					msgHTML += '</div>';
 					msgHTML += '</div>';
 					menuCocodeChatDialog.innerHTML += msgHTML;
-				}
-				menuCocodeChatDialog.scrollTop = menuCocodeChatDialog.scrollHeight;
+					menuCocodeChatDialog.scrollTop = menuCocodeChatDialog.scrollHeight;
 			}
 
 			syncCursors(usersRaw){
@@ -4661,7 +4671,7 @@ function println(msg){
 		// reset all cocoding except nick + color
 		function cocodingReset(){
 			Object.keys(initSettings.cocoding).forEach(function(cc){
-				if(cc != 'nick' && cc != 'color'){
+				if(cc != 'nick' && cc != 'color' && cc != 'localcode'){
 					settings.cocoding[cc] = initSettings.cocoding[cc];
 				}
 			});
@@ -4696,14 +4706,6 @@ function println(msg){
 							- dynamically build presets menu + adjust function to grab obj name
 
 						- option to save as preset?? (part of settings) - localstorage structure?? online vs local?
-
-
-						WORKFLOW
-						- cocode lib has 'syncData()' func localcode sends obj to
-						- syncData() emits message to socket
-						- this.socket.on('syncData', obj)... -> 'parseData()' func in p5Frame
-						- (p5Frame might need generic 'parseData()' until overridden in cocode)
-						- parseData() knows what to do with incoming obj and calls cocode funcs
 
 						 */
 						useLocalCode = true;
@@ -4765,7 +4767,7 @@ function println(msg){
 
 		function disabledCocodingButton(){
 			// document.getElementsByClassName('cocoding-local-run')[0]
-			document.getElementById('cocode-local-button').style.backgroundColor = '#444';
+			document.getElementById('cocode-local-button').style.backgroundColor = '#666';
 		}
 
 		function parseCocodingLocal(){
@@ -4821,7 +4823,7 @@ function println(msg){
 
 		function syncData(obj){
 			if(settings.cocoding.lockdown){
-				if(settings.cocoding.level != 'admin'){
+				if(settings.cocoding.level != 'admin' && !settings.cocoding.writemode){
 					return false;
 				}
 			}
@@ -4873,10 +4875,17 @@ function println(msg){
 
 		function updateToggleLockdown(){
 			let settingsLockdown = document.getElementById('cocode-lockdown');
+			let settingsLocalButton = document.getElementById('cocode-local-button');
 			if(settings.cocoding.lockdown){
 				settingsLockdown.innerHTML = iconLock;
+				if(settings.cocoding.level != 'admin'){
+					settingsLocalButton.setAttribute('disabled', 'disabled');
+				}else if(settings.cocoding.writemode){
+					settingsLocalButton.removeAttribute('disabled');
+				}
 			}else{
 				settingsLockdown.innerHTML = iconUnlock;
+				settingsLocalButton.removeAttribute('disabled');
 			}
 			toggleButtonActive(settingsLockdown, settings.cocoding.lockdown);
 
@@ -4884,6 +4893,7 @@ function println(msg){
 				let settingsSync = document.getElementById('cocode-sync');
 				if(settings.cocoding.lockdown){
 					settingsSync.removeAttribute('disabled');
+
 				}else{
 					settingsSync.setAttribute('disabled', 'disabled');
 					settings.cocoding.sync = false;
