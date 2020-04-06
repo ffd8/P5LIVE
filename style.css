@@ -405,7 +405,7 @@ h2{
 	background:#444;
 }
 .menu-sketches{
-	height:100%;
+	height:99%;
 }
 #menu-sketches-new{
 	background:#222;
@@ -565,11 +565,11 @@ h2{
 }
 #chat-input{
 	width:100%;
-	height:25px;
-	font-size:10pt;
+	height:20px;
+	font-size:8pt;
 	position:relative;
 	outline:none;
-	background:#333;
+	background:#444;
 	color:#fff;
 	border:none;
 	border:1px solid #666;
