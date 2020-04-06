@@ -116,7 +116,7 @@
 				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;" onmouseenter="showUsers();" onmouseleave="hideUsers();">
 					<div id="menu-cocode-sketches" class="menu-sketches"></div>
 				</div>
-				<div id="menu-cocode-chat-holder" class="" style="display:none;">
+				<div id="menu-cocode-chat-holder" class="" style="display:none;" onmouseleave="chatBlur();">
 					<div class="menu-cocode-chat-title"></div>
 					<div id="menu-cocode-chat-dialog" class="menu-cocode-chat menu-sketches-holder" onclick="document.getElementById('chat-input').focus();">
 
@@ -3064,12 +3064,16 @@ function println(msg){
 		menuCocodeChatInput.onkeydown = function(event){
 			if(event.keyCode == 13){
 				event.preventDefault();
-				if(settings.cocoding.active){
+				if(settings.cocoding.active && menuCocodeChatInput.value.trim() != ''){
 					syncUp();
 					cocode.socket.emit('chat', {'text':menuCocodeChatInput.value});
 					menuCocodeChatInput.value = '';
 				}
 			}
+		}
+
+		function chatBlur(){
+			menuCocodeChatInput.blur();
 		}
 
 		function checkErrors(){
@@ -4690,7 +4694,7 @@ function println(msg){
 					cocodingLocalPresets[presetName] = {code:p.sketchCode};
 					cocodingLocalPresets.presetList.push(presetName);
 				}
-				console.log(cocodingLocalPresets);
+				// console.log(cocodingLocalPresets);
 			});
 		}
 
@@ -4711,7 +4715,7 @@ function println(msg){
 				buttons: [
 				{
 					type: 'submit',
-					text: useLocalCode ? '► REPLACE' : '► RUN', // iconPlay
+					text: useLocalCode ? '► RE-RUN' : '► RUN', // iconPlay
 					className: 'cocoding-local-run',
 					click: function updateCode () {
 						useLocalCode = true;
