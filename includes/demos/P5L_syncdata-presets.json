@@ -30,7 +30,7 @@
     },
     {
       "sketchName": "syncdata-mouseXY",
-      "sketchCode": "/* syncData Preset : mouseXY\nSends your mouseX/mouseY + random color to all users.\nDraws each received signal as ellipse on demand.\n\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (paste in COCODING session and uncomment)\n*/\n\n/* 1 - SYNC DATA */\nlet delay = 0.05; // time in sec\nlet randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);\n\nsetInterval(function() {\n\tsendMouse();\n}, delay * 1000);\n\nfunction sendMouse() {\n\tlet obj = {\n\t\tx: mouseX,\n\t\ty: mouseY,\n\t\tcolor: randomColor\n\t};\n\tsyncData(obj); // transmit to others\n}\n\n/* 2 - COCODE */\n// function parseData(obj){\n// \tfill(obj.color)\n// \tellipse(obj.x, obj.y, 20);\n// }\n"
+      "sketchCode": "/* syncData Preset : mouseXY\nSends your mouseX/mouseY + random color to all users.\nDraws each received signal as ellipse on demand.\n\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (paste in COCODING session and uncomment)\n*/\n\n/* 1 - SYNC DATA */\nlet delay = 0.05; // time in sec\nlet obj = {\n\tx: 0,\n\ty: 0,\n\tcolor: '#' + Math.floor(Math.random() * 16777215).toString(16)\n};\n\nsetInterval(function() {\n\tsendMouse();\n}, delay * 1000);\n\nfunction sendMouse() {\n\tif(mouseX != obj.x && mouseY != obj.y) {\n\t\tobj.x = mouseX;\n\t\tobj.y = mouseY;\n\t\tsyncData(obj); // transmit to others on change\n\t}\n}\n\n/* 2 - COCODE */\n// function parseData(obj){\n// \tfill(obj.color)\n// \tellipse(obj.x, obj.y, 20);\n// }"
     },
     {
       "sketchName": "syncdata-midi",
