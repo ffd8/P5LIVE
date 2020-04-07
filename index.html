@@ -501,7 +501,7 @@ function println(msg){
 
 			},
 			'sketches': [],
-			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'localcode':'// send to syncData(obj)', 'locallibs':[]},
+			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'localcode':'', 'locallibs':[], 'uselocalcode':false},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '#052544',
@@ -574,7 +574,7 @@ function println(msg){
 		curPos, curPositions = [], updateCursor, showCursors = false,
 		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
-		useLocalCode = false, cocodingLocalEditor, cocodingLocalPresets = {},
+		cocodingLocalEditor, cocodingLocalPresets = {},
 		cocodingFirstTime = false
 		;
 
@@ -1100,11 +1100,12 @@ function println(msg){
 									writeClass = ' write-req ';
 								}else if(users[i].writemode || users[i].level == 'admin'){
 									writeClass = ' write-access ';
-									if(users[i].level == 'admin'){
-										userIcon = iconShield;
-									}
 								}
 							}
+							if(users[i].level == 'admin'){
+								userIcon = iconShield;
+							}
+
 							if(users[i].nick.length > 10){marq = 'marq';}
 							if(users[i].status == 'blur'){
 								active = 'style="opacity:.5;"';
@@ -3394,7 +3395,7 @@ function println(msg){
 			p5frame.srcdoc = el.innerHTML;
 
 			if(settings.cocoding.active){
-				if(useLocalCode){
+				if(settings.cocoding.uselocalcode){
 					disabledCocodingButton();
 				}
 				setTimeout(function(){parseCocodingLocal();}, 500); // *** find ideal time or promise
@@ -4715,21 +4716,23 @@ function println(msg){
 				buttons: [
 				{
 					type: 'submit',
-					text: useLocalCode ? '► RE-RUN' : '► RUN', // iconPlay
+					text: settings.cocoding.uselocalcode ? '► RE-RUN' : '► RUN', // iconPlay
 					className: 'cocoding-local-run',
 					click: function updateCode () {
-						useLocalCode = true;
+						settings.cocoding.uselocalcode = true;
+						updateSettings();
 						disabledCocodingButton();
 
 						// hardCompile = better to overwrite global vars on changes
 						recompile(true);
+						cocode.recompile();
 					}
 				}
-				, useLocalCode ? {
+				, settings.cocoding.uselocalcode ? {
 					type: 'stop',
 					text: '◼ STOP',
 					click: function updateCode () {
-						useLocalCode = false;
+						settings.cocoding.uselocalcode = false;
 						settings.cocoding.locallibs = [];
 						updateSettings();
 						disabledCocodingButton();
@@ -4776,7 +4779,7 @@ function println(msg){
 
 		function parseCocodingLocal(){
 			disabledCocodingButton();
-			if(!useLocalCode){
+			if(!settings.cocoding.uselocalcode){
 				return false;
 			}
 			// parse scripts to p5Frame
