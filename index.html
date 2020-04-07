@@ -348,7 +348,7 @@ function println(msg){
 
 
 		/* INIT */
-		let currentRevision = 31;
+		let currentRevision = 32;
 		let developBranch = true;
 
 		// resetP5(); // manual reset
@@ -2571,7 +2571,7 @@ function println(msg){
 
 		// load demos
 		function loadDemos(){
-			let demosPath = 'includes/demos/P5L_demos_20191229172219.json?' + currentRevision;
+			let demosPath = 'includes/demos/P5L_demos_20191229172219.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, true);
 			request.send();
@@ -3469,7 +3469,7 @@ function println(msg){
 
 		/* SNIPPETS */
 		function loadSnippets(){
-			let snippetsPath = 'includes/demos/P5L_snippets_20191214.json?' + currentRevision;
+			let snippetsPath = 'includes/demos/P5L_snippets_20191214.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', snippetsPath, true);
 			request.send();
@@ -4678,7 +4678,7 @@ function println(msg){
 
 		// load demos
 		function loadSyncDataPresets(){
-			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + currentRevision;
+			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', syncdataPresetsPath, true);
 			request.send();
