@@ -322,7 +322,6 @@ function println(msg){
 	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
 
 	<!-- Scripts -->
-	<script src="includes/js/load-js.js"></script>
 	<script src="includes/js/src-noconflict/ace.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/src-noconflict/ext-language_tools.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
@@ -339,14 +338,11 @@ function println(msg){
 	<script src="includes/js/mousetrap/mousetrap-record.js"></script>
 	<script src="includes/js/mousetrap/mousetrap-pause.min.js"></script>
 
-	<!-- <script src="/socket.io/socket.io.js"></script> -->
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
 
 	<script type="text/javascript">
 		'use strict'
-
-
 
 		/* INIT */
 		let currentRevision = 32;
@@ -564,7 +560,7 @@ function println(msg){
 		shortcutRecording = false,
 		settings = getSettings(),
 		validCode = true,
-		codeBuffer, sketchLoaded = false, forceRecompile = false,
+		sketchLoaded = false, forceRecompile = false,
 		pLen = 0, paused = false,
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
@@ -1624,6 +1620,7 @@ function println(msg){
 		// init settings
 		loadSettings();
 
+
 		// get settings from localstorage
 		function getSettings(){
 			let tempSettings = initSettings;
@@ -2187,7 +2184,7 @@ function println(msg){
 					pLen = editor.getValue().length;
 					updateSketches();
 
-					setTimeout(function(){p5varsReset();recompile(true);}, 200);
+					setTimeout(function(){p5varsReset();}, 200);
 
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
@@ -3394,9 +3391,9 @@ function println(msg){
 			// check loadScripts / libs / scripts;
 			let scriptsList = processLibs(codeNoComments);
 			for(let i=0; i < scriptsList.length; i++){
-				let s = document.createElement('script');
-				s.type = 'text/javascript';
-				s.src = scriptsList[i];
+				// let s = document.createElement('script');
+				// s.type = 'text/javascript';
+				// s.src = scriptsList[i];
 				scriptsCol.push(scriptsList[i]);
 				// iFrameBody.appendChild(s); // *** temp disabled
 			}
@@ -3407,9 +3404,11 @@ function println(msg){
 			let sketchCode = editor.getValue();
 			let updateVars = '\npmouseX='+p5vars.mouseX+';\npmouseY='+p5vars.mouseY+';\nmouseX='+p5vars.mouseX+';\nmouseY='+p5vars.mouseY+';\nframeCount='+p5vars.frameCount+';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
-			codeBuffer = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+
+			let fullCode = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+
 			let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
-			let sLoader = 'loadJS(['+scriptsColJoin+']).then(function() {pingReady();})';
+			let sLoader = 'let mainJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("p5Main", '+JSON.stringify(fullCode)+');})';
 			s.innerHTML = sLoader;
 
 			// old way w/ appendedChildren above...
@@ -3431,15 +3430,17 @@ function println(msg){
 		}
 
 		// compiling code after promise of loaded libs!
-		function pongReady(){
-			if(codeBuffer != undefined){
+		function pongReady(scriptName, scriptCode){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
-				s.innerHTML = codeBuffer;
-				p5f.document.head.appendChild(s);
-				console.log("loaded!");
-			}
-			codeBuffer = undefined;
+				s.id = scriptName;
+				s.innerHTML = scriptCode;
+				if(p5f.document.getElementById(scriptName) == null){
+					p5f.document.head.appendChild(s);
+				}else{
+					p5f.document.getElementById(scriptName).innerHTML = scriptCode;
+				}
+				// console.log("loaded "+scriptName);
 		}
 
 		// softCompile function or class changes
@@ -4821,50 +4822,35 @@ function println(msg){
 			if(!settings.cocoding.uselocalcode){
 				return false;
 			}
+
 			// parse scripts to p5Frame
 			settings.cocoding.locallibs = processLibs(removeComments(settings.cocoding.localcode));
 			updateSettings();
-			let localCodeDelay = 0;
 
-			for(let i=0; i < settings.cocoding.locallibs.length; i++){
-				let s = document.createElement('script');
-				s.id = 'cocoding-local-libs-'+i;
-				s.type = 'text/javascript';
-				s.src = settings.cocoding.locallibs[i];
-				s.async = false;
-				if(sketchLoaded){
-					p5f.document.head.appendChild(s);
-				}
-
-				//optional overwrite...
-				// if(p5f.document.getElementById(s.id) == null){
-				// 	p5f.document.head.appendChild(s);
-				// }else{
-				// 	p5f.document.getElementById(s.id).src = settings.cocoding.locallibs[i];
-				// }
-
-				localCodeDelay += 500; // give time for script to load
+			let scriptsCol = [];
+			for(let ccll of settings.cocoding.locallibs){
+				scriptsCol.push(ccll);
 			}
 
-			// add code to p5Frame
-			setTimeout(function(){
-				let s = document.createElement('script');
-				s.type = 'text/javascript';
-				s.id = 'cocoding-local-code';
-				s.innerHTML = settings.cocoding.localcode;
+			let localID = 'cocoding-local-code';
+			let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
 
-				// overwrite if already exists
-				if(sketchLoaded){
-					if(p5f.document.getElementById(s.id) == null){
-						p5f.document.head.appendChild(s);
-					}else{
-						p5f.document.getElementById(s.id).innerHTML = settings.cocoding.localcode;
-					}
+			let s = document.createElement('script');
+			s.type = 'text/javascript';
+
+			let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+localID+'", '+JSON.stringify(settings.cocoding.localcode)+');console.log("hellooooolocal")})';
+
+			s.innerHTML = sLoader;
+
+			if(sketchLoaded){
+				if(scriptsCol.length > 0){
+					p5f.document.head.appendChild(s);
+				}else{
+					pongReady(localID, settings.cocoding.localcode);
 				}
+			}
 
-				// set button status to green
-				document.getElementById('cocode-local-button').style.backgroundColor = '#008800';
-			}, localCodeDelay);
+			document.getElementById('cocode-local-button').style.backgroundColor = '#008800';
 		}
 
 		function syncData(obj){

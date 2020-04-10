@@ -30,8 +30,8 @@
 		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
 		var pmsg = '';
 
-		function pingReady(){
-			window.parent.pongReady();
+		function pingReady(scriptName, scriptCode){
+			window.parent.pongReady(scriptName, scriptCode);
 		}
 
 		// clear console if all good

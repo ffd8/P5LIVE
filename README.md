@@ -264,6 +264,7 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 - [dropzone.js](https://www.dropzonejs.com/), drag + drop importing
 - [mousetrap.js](https://craig.is/killing/mice), custom shortcut key bindings
+- [load-js](https://github.com/MiguelCastillo/load-js), promise loading of libs + sketch
 
 
 ## INSPIRATION
