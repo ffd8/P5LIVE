@@ -21,12 +21,18 @@
 			cursor:crosshair;
 		}
 	</style>
+	<script src="includes/js/load-js.js"></script>
+
 	<script type="text/javascript">
 		var p5p = parent.document;
 		var p5console = p5p.getElementById('p5-console');
 		var p5code = p5p.getElementById('p5-code');
 		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
 		var pmsg = '';
+
+		function pingReady(){
+			window.parent.pongReady();
+		}
 
 		// clear console if all good
 		if(p5console != null){

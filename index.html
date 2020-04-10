@@ -322,6 +322,7 @@ function println(msg){
 	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
 
 	<!-- Scripts -->
+	<script src="includes/js/load-js.js"></script>
 	<script src="includes/js/src-noconflict/ace.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/src-noconflict/ext-language_tools.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
@@ -563,7 +564,7 @@ function println(msg){
 		shortcutRecording = false,
 		settings = getSettings(),
 		validCode = true,
-		sketchLoaded = false, forceRecompile = false,
+		codeBuffer, sketchLoaded = false, forceRecompile = false,
 		pLen = 0, paused = false,
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
@@ -678,6 +679,10 @@ function println(msg){
 		let iconUnlock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>';
 
 		let iconLock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+
+		let iconMicOff = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic-off"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
+
+		let iconMic = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
 
 		let iconEdit = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
 
@@ -1141,7 +1146,16 @@ function println(msg){
 						let marq = '';
 						if(settings.cocoding.nick.length > 10){marq = 'marq';}
 
-						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();"><span id="cocodingself" style="padding-top:4px;background:'+settings.cocoding.color+';">'+userIcon+ '</span> ' +settings.cocoding.nick+'</div></li>' + usersHTML;
+						let extraIcons = {};
+						extraIcons.count = 0;
+						extraIcons.html = '';//'<div class="cocoding-name-icons tippy" data-title="Toggle Audio">'+iconMicOff+'</div>'; //
+
+						let ccNameStyle = {};
+						ccNameStyle.width = 'calc(100% - '+(extraIcons.count*25)+'px)';
+						ccNameStyle.left = 25 + (extraIcons.count*25) + 1 + 'px';
+						//console.log(ccNameStyle.width);
+
+						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch"><div class="cocoding-name-badge tippy" data-title="Set Cursor Color" id="cocodingself" style="background:'+settings.cocoding.color+';" onclick="cocode.rename();">'+userIcon+ '</div>'+extraIcons.html+'<div class="cocoding-name  '+marq+' tippy" data-title="Set Nickname" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div></div></li>' + usersHTML;
 						loadTippy();
 						this.syncCursors(usersRaw);
 					});
@@ -3235,10 +3249,14 @@ function println(msg){
 			let sketchLoadScriptsRegEx = /(?:loadScripts|libs|scripts)\s+=\s+\[(.*["']\])/
 			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
 			let scriptsList = [];
-			if(sketchLoadScripts !=undefined){
-				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
+			if(sketchLoadScripts != undefined){
+				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '');
+				sketchLoadScripts = sketchLoadScripts.split(',');
+
 				for(let i=0; i < sketchLoadScripts.length; i++){
-					scriptsList.push(sketchLoadScripts[i]);
+					if(sketchLoadScripts[i] != ''){
+						scriptsList.push(sketchLoadScripts[i]);
+					}
 				}
 			}
 			return scriptsList;
@@ -3356,27 +3374,31 @@ function println(msg){
 			let el = p5frameTemplate.cloneNode(true);
 			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 
+			let scriptsCol = [];
+
 			// load scripts remote vs local (*** add custom options here)
 			for(let i=0; i < includeScripts.length; i++){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
 				if(window.location.hostname.includes('teddavis.org')){
 					s.src = includeScripts[i].remote;
+					scriptsCol.push(includeScripts[i].remote);
 				}else{
 					s.src = includeScripts[i].local;
+					scriptsCol.push(includeScripts[i].local);
 					document.title = 'P5LIVE – OFFLINE';
 				}
-				iFrameBody.appendChild(s);
+				//iFrameBody.appendChild(s); // *** temp disabled
 			}
 
 			// check loadScripts / libs / scripts;
 			let scriptsList = processLibs(codeNoComments);
-
 			for(let i=0; i < scriptsList.length; i++){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
 				s.src = scriptsList[i];
-				iFrameBody.appendChild(s);
+				scriptsCol.push(scriptsList[i]);
+				// iFrameBody.appendChild(s); // *** temp disabled
 			}
 
 			// load sketch
@@ -3385,8 +3407,13 @@ function println(msg){
 			let sketchCode = editor.getValue();
 			let updateVars = '\npmouseX='+p5vars.mouseX+';\npmouseY='+p5vars.mouseY+';\nmouseX='+p5vars.mouseX+';\nmouseY='+p5vars.mouseY+';\nframeCount='+p5vars.frameCount+';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
+			codeBuffer = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+			let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
+			let sLoader = 'loadJS(['+scriptsColJoin+']).then(function() {pingReady();})';
+			s.innerHTML = sLoader;
 
-			s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+			// old way w/ appendedChildren above...
+			// s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
 			if(!settings.safeMode){
 				iFrameBody.appendChild(s);
 			}
@@ -3398,9 +3425,21 @@ function println(msg){
 				if(settings.cocoding.uselocalcode){
 					disabledCocodingButton();
 				}
-				setTimeout(function(){parseCocodingLocal();}, 500); // *** find ideal time or promise
+				setTimeout(function(){parseCocodingLocal();}, 500); // *** replace w/ promise!
 			}
 			curPositions = [];
+		}
+
+		// compiling code after promise of loaded libs!
+		function pongReady(){
+			if(codeBuffer != undefined){
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+				s.innerHTML = codeBuffer;
+				p5f.document.head.appendChild(s);
+				console.log("loaded!");
+			}
+			codeBuffer = undefined;
 		}
 
 		// softCompile function or class changes

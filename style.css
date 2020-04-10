@@ -472,7 +472,7 @@ h2{
 .menu-sketch-holder#menu-sketches-new:hover{
 	background:#fff;
 }
-.menu-sketch, .menu-folder{
+.menu-sketch, .menu-folder, .cocoding-name{
 	position: relative;
 	height:100%;
 	float:none;
@@ -485,6 +485,29 @@ h2{
 	text-transform: uppercase;
 }
 .menu-sketch:hover, .menu-folder:hover{
+}
+.cocoding-name-badge, .cocoding-name-sync{
+	width:25px;
+	padding-top:1px;
+}
+.cocoding-name-badge, .cocoding-name{
+	float:left;
+}
+.cocoding-name-icons{
+	position:absolute;
+	/*color:#00aa00;*/
+	left:25px;
+}
+.cocoding-name-icons svg{
+	stroke:#ff0000;
+}
+.cocoding-name{
+	position:absolute;
+	/*width:calc(100% - 75px);*/
+	/*left:75px;*/
+}
+.cocoding-name.marq{
+	border-right:1px dashed #888;
 }
 .marq:hover{
 	animation: marquee 5s linear infinite;
