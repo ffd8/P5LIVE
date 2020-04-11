@@ -30,8 +30,8 @@
 		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
 		var pmsg = '';
 
-		function pingReady(scriptName, scriptCode){
-			window.parent.pongReady(scriptName, scriptCode);
+		function pingReady(scriptName, scriptCode, scriptCallback){
+			window.parent.pongReady(scriptName, scriptCode, scriptCallback);
 		}
 
 		// clear console if all good
@@ -53,7 +53,7 @@
 			if(n != null){
 				myCustomData = { 'lineNumber': n }
 			}
-			var event = new CustomEvent('myEvent', { detail: myCustomData });
+			var event = new CustomEvent('p5Status', { detail: myCustomData });
 			window.parent.document.dispatchEvent(event);
 		}
 
@@ -62,7 +62,7 @@
 			if(p5.instance._setupDone){
 				clearTimeout(statusTimer);
 				var myCustomData = {'status': true};
-				var event = new CustomEvent('myEvent', { detail: myCustomData });
+				var event = new CustomEvent('p5Status', { detail: myCustomData });
 				window.parent.document.dispatchEvent(event);
 			}else{
 				statusTimer = setTimeout(function(){sketchStatus();}, 50);

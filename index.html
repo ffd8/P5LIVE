@@ -1590,7 +1590,7 @@ function println(msg){
 		/* p5 iframe communication */
 
 		// mark error line
-		window.document.addEventListener('myEvent', handleEvent, false)
+		window.document.addEventListener('p5Status', handleEvent, false)
 		function handleEvent(e) {
 			if(e.detail.lineNumber != undefined){
 				let errorLine = parseInt(e.detail.lineNumber)-1;
@@ -1606,7 +1606,9 @@ function println(msg){
 
 				// p5f.setup(); // better than clear/background, reinit w/ updated vars
 				//p5varsReset();
+
 				sketchLoaded = true;
+				prepCocodingLocal(); // promise fr localCode if active
 			}else{
 				sketchLoaded = false;
 				// set timer for refreshing if error
@@ -3410,6 +3412,9 @@ function println(msg){
 			let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
 			let sLoader = 'let mainJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("p5Main", '+JSON.stringify(fullCode)+');})';
 			s.innerHTML = sLoader;
+			if(settings.cocoding.uselocalcode){
+				toggleCocodingLocalButton();
+			}
 
 			// old way w/ appendedChildren above...
 			// s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
@@ -3420,17 +3425,11 @@ function println(msg){
 			// set dynamic html as iframe srcdoc
 			p5frame.srcdoc = el.innerHTML;
 
-			if(settings.cocoding.active){
-				if(settings.cocoding.uselocalcode){
-					disabledCocodingButton();
-				}
-				setTimeout(function(){parseCocodingLocal();}, 500); // *** replace w/ promise!
-			}
 			curPositions = [];
 		}
 
 		// compiling code after promise of loaded libs!
-		function pongReady(scriptName, scriptCode){
+		function pongReady(scriptName, scriptCode, scriptCallback){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
 				s.id = scriptName;
@@ -3439,6 +3438,10 @@ function println(msg){
 					p5f.document.head.appendChild(s);
 				}else{
 					p5f.document.getElementById(scriptName).innerHTML = scriptCode;
+				}
+
+				if(scriptCallback){
+					scriptCallback();
 				}
 				// console.log("loaded "+scriptName);
 		}
@@ -4752,6 +4755,8 @@ function println(msg){
 			vex.dialog.confirm({
 				focusFirstInput : false,
 				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Objects sent to \'syncData(obj)\' are accessible by all users. <br>Parse it within shared COCODING editor.</div>Presets: <select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select</option>'+cocodingLocalPresetsOptions+'</select><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
+
+				// *** cocodingLocalClipboard(); // copy cocode part to clipboard..
 				callback: function (value) {},
 				buttons: [
 				{
@@ -4761,7 +4766,7 @@ function println(msg){
 					click: function updateCode () {
 						settings.cocoding.uselocalcode = true;
 						updateSettings();
-						disabledCocodingButton();
+						toggleCocodingLocalButton();
 
 						// hardCompile = better to overwrite global vars on changes
 						recompile(true);
@@ -4775,7 +4780,7 @@ function println(msg){
 						settings.cocoding.uselocalcode = false;
 						settings.cocoding.locallibs = [];
 						updateSettings();
-						disabledCocodingButton();
+						toggleCocodingLocalButton();
 						recompile(true);
 					}
 				} : {
@@ -4812,13 +4817,23 @@ function println(msg){
 
 		}
 
-		function disabledCocodingButton(){
-			// document.getElementsByClassName('cocoding-local-run')[0]
-			document.getElementById('cocode-local-button').style.backgroundColor = '#666';
+		function toggleCocodingLocalButton(){
+			let localCodeBtn = document.getElementById('cocode-local-button');
+			if(settings.cocoding.uselocalcode){
+				localCodeBtn.style.backgroundColor = '#aaaa00';
+			}else{
+				localCodeBtn.style.backgroundColor = '#666';
+			}
+		}
+
+		function prepCocodingLocal(){
+			if(settings.cocoding.active && settings.cocoding.uselocalcode){
+				parseCocodingLocal();
+			}
 		}
 
 		function parseCocodingLocal(){
-			disabledCocodingButton();
+			toggleCocodingLocalButton();
 			if(!settings.cocoding.uselocalcode){
 				return false;
 			}
@@ -4834,11 +4849,11 @@ function println(msg){
 
 			let localID = 'cocoding-local-code';
 			let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
-
+			scriptsColJoin += ",'includes/js/p5live.cocoding.js'";
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
 
-			let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+localID+'", '+JSON.stringify(settings.cocoding.localcode)+');console.log("hellooooolocal")})';
+			let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+localID+'", '+JSON.stringify(settings.cocoding.localcode)+');})';
 
 			s.innerHTML = sLoader;
 
@@ -4851,6 +4866,23 @@ function println(msg){
 			}
 
 			document.getElementById('cocode-local-button').style.backgroundColor = '#008800';
+		}
+
+		function cocodingLocalClipboard(){
+			let cocodeBreak = '/* 2 - COCODE */';
+			var cocodeClipboard = settings.cocoding.localcode.substr(settings.cocoding.localcode.indexOf(cocodeBreak) + cocodeBreak.length);
+			var cocodeClipboard = cocodeClipboard.split('\n');
+			for(let i = 0; i < cocodeClipboard.length; i++){
+				cocodeClipboard[i] = cocodeClipboard[i].substring(3, cocodeClipboard[i].length);
+			}
+			// console.log(cocodeClipboard)
+			// cocodeClipboard = cocodeClipboard.join('\n');
+			let dummy = document.createElement('textarea');
+			document.body.appendChild(dummy);
+			dummy.innerHTML = cocodeClipboard.join('\n');
+			dummy.select();
+			document.execCommand('copy');
+			document.body.removeChild(dummy);
 		}
 
 		function syncData(obj){
