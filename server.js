@@ -393,11 +393,26 @@ class Namespace {
 					'nick': settings.people[socket.id].nick,
 					'color': settings.people[socket.id].color,
 					'id':socket.id,
-					'text': obj.text
+					'text': obj.text,
+					'type':obj.type,
+					'msgID':obj.msgID
 				}
-				settings.chat.push(chatMsg);
-				addChat(chatMsg);
+				if(obj.type == 'send'){
+					settings.chat.push(chatMsg);
+					addChat(chatMsg);
+				}else if(obj.type == 'pending' || obj.type == 'clear'){
+					let selMsg = {
+						'nick': chatMsg.nick,
+						'color': chatMsg.color,
+						'text': chatMsg.text,
+						'type':chatMsg.type,
+						'msgID':chatMsg.msgID
+					}
+					socket.broadcast.emit('addChat', selMsg);
+				}
+
 			});
+
 		});
 
 		let syncUsers = function(){
@@ -415,7 +430,7 @@ class Namespace {
 		}
 
 		let addChat = function(obj){
-			io.of(settings.name).emit('addChat', obj);
+			io.of(settings.name).emit('addChat', obj); // update users for all
 		}
 
 		let syncChat = function(){
@@ -428,7 +443,8 @@ class Namespace {
 				let chatMsg = {
 					'nick': c.nick,
 					'color': c.color,
-					'text': c.text
+					'text': c.text,
+					'msgID':c.msgID
 				}
 				chatMsgs.push(chatMsg);
 			}

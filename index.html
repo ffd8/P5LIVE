@@ -498,7 +498,7 @@ function println(msg){
 
 			},
 			'sketches': [],
-			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'localcode':'', 'locallibs':[], 'uselocalcode':false},
+			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'localcode':'', 'locallibs':[], 'uselocalcode':false, 'msgID':-1},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '#052544',
@@ -1336,12 +1336,27 @@ function println(msg){
 			}
 
 			addChat(msg){
-				let msgHTML = '<div class="chat-item">';
-					msgHTML += '<div class="chatmsg">';
+				let msgID = '', pendingChat = '';
+				let pendingMsg = document.getElementById(msg.msgID);
+				if(msg.type && msg.type == 'pending'){
+					msgID = 'id="'+msg.msgID+'"';
+					pendingChat = 'pending-chat';
+				}else if(msg.type && msg.type == 'clear'){
+					if(pendingMsg != undefined){
+						pendingMsg.remove();
+						return false;
+					}
+				}else{
+					if(pendingMsg != undefined){
+						pendingMsg.remove();
+					}
+				}
+				let msgHTML = '<div class="chat-item" '+msgID+'>';
+					msgHTML += '<div class="chatmsg '+pendingChat+'">';
 					let marq = '';
 					if(msg.nick.length > 9){marq = 'longname marq';}
 					msgHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
-					msgHTML += '<span class="chattext">'+linkify(msg.text)+'</span>';
+					msgHTML += '<span class="chattext ">'+linkify(msg.text)+'</span>';
 					msgHTML += '</div>';
 					msgHTML += '</div>';
 					menuCocodeChatDialog.innerHTML += msgHTML;
@@ -3080,14 +3095,48 @@ function println(msg){
 				event.preventDefault();
 				if(settings.cocoding.active && menuCocodeChatInput.value.trim() != ''){
 					syncUp();
-					cocode.socket.emit('chat', {'text':menuCocodeChatInput.value});
+					cocode.socket.emit('chat', {'type':'send', 'text':menuCocodeChatInput.value, 'msgID':settings.cocoding.msgID});
 					menuCocodeChatInput.value = '';
+					settings.cocoding.msgID = -1;
+					updateSettings();
 				}
+			}else{
+				chatPending();
 			}
+		}
+
+		menuCocodeChatInput.addEventListener('focus', () => {
+			chatPending();
+		});
+
+		menuCocodeChatInput.addEventListener('blur', () => {
+		  chatPendingClear();
+		});
+
+		function chatPending(){
+			if(settings.cocoding.msgID == -1){
+				syncUp();
+				settings.cocoding.msgID = Math.floor(Math.random()*999)
+				updateSettings();
+				cocode.socket.emit('chat', {'type':'pending', 'text':'...', 'msgID':settings.cocoding.msgID});
+			}
+		}
+
+		function chatPendingClear(){
+			if(settings.cocoding.msgID != -1){
+				cocode.socket.emit('chat', {'type':'clear', 'text':'', 'msgID':settings.cocoding.msgID});
+			}
+			settings.cocoding.msgID = -1;
+			updateSettings();
 		}
 
 		function chatBlur(){
 			menuCocodeChatInput.blur();
+			if(settings.cocoding.msgID != -1){
+				cocode.socket.emit('chatPendingClear', {'msgID':settings.cocoding.msgID});
+			}
+			settings.cocoding.msgID = -1;
+			updateSettings();
 		}
 
 		function checkErrors(){
@@ -4742,17 +4791,15 @@ function println(msg){
 			});
 		}
 
-		function cocodingLocalCode(elm){
-			// let cocodingLocalPresets = [
-			// 	'template', 'midi', 'osc'
-			// ];
-
+		function cocodingLocalCode(){
 			let cocodingLocalPresetsOptions = '';
 			for(let clp of cocodingLocalPresets.presetList){
 				cocodingLocalPresetsOptions += '<option name="'+clp+'" value="'+clp+'">'+clp+'</option>'
 			}
 
-			vex.dialog.confirm({
+			// let localCodeDialogOptions = ;
+
+			let localCodeVex = vex.dialog.confirm({
 				focusFirstInput : false,
 				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Objects sent to \'syncData(obj)\' are accessible by all users. <br>Parse it within shared COCODING editor.</div>Presets: <select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select</option>'+cocodingLocalPresetsOptions+'</select><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
 
@@ -4768,9 +4815,13 @@ function println(msg){
 						updateSettings();
 						toggleCocodingLocalButton();
 
-						// hardCompile = better to overwrite global vars on changes
 						recompile(true);
 						cocode.recompile();
+						// vex.close(localCodeVex);
+						// vex.buttonsToDOM();
+						//console.log(localCodeVex.form.appendChild())
+						//setTimeout(function(){cocodingLocalCode();}, 50);
+						// *** here should be function to redraw buttons
 					}
 				}
 				, settings.cocoding.uselocalcode ? {
@@ -4782,6 +4833,7 @@ function println(msg){
 						updateSettings();
 						toggleCocodingLocalButton();
 						recompile(true);
+
 					}
 				} : {
 					className: 'hide-button' // hide if unused
@@ -4789,7 +4841,13 @@ function println(msg){
 				,{
 					type: 'close',
 					text: 'CLOSE',
-				}]
+					click: function(){
+						vex.close(localCodeVex);
+					}
+				}],
+				onSubmit: function(e) {
+			        e.preventDefault();
+			    }
 			})
 			cocodingLocalEditor = ace.edit("cocoding-localcode");
 			cocodingLocalEditor.setTheme(settings.theme);

@@ -644,6 +644,10 @@ h2{
 }
 .chat-item:nth-child(even) {background: #333}
 .chat-item:nth-child(odd) {background: #333}
+.pending-chat{
+	opacity:.25;
+	animation: sync 1.5s linear infinite;
+}
 .counters{
 	font-size:8pt;
 	padding-left:.3em;
@@ -1152,6 +1156,7 @@ li{
 	box-sizing: border-box;
 	opacity:0;
 	transition: .25s linear;
+	z-index:9999;
 }
 .popup-editor .ace_gutter-layer, .popup-editor .ace_gutter{
 	background:none !important;
