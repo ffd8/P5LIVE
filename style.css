@@ -518,11 +518,11 @@ h2{
 }
 /* COCODING RENAME */
 #cocoding-rename-nick{
-	width:calc(100% - 90px);
+	width:calc(100% - 75px);
 }
 #cocoding-rename-color{
 	margin-right:15px;
-	width:75px;
+	width:60px;
 }
 #cocoding-rename-admin{
 	margin-left:5px;

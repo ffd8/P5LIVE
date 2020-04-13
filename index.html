@@ -1163,7 +1163,7 @@ function println(msg){
 						ccNameStyle.left = 25 + (extraIcons.count*25) + 1 + 'px';
 						//console.log(ccNameStyle.width);
 
-						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch"><div class="cocoding-name-badge tippy" data-title="Set Cursor Color" id="cocodingself" style="background:'+settings.cocoding.color+';" onclick="cocode.rename();">'+userIcon+ '</div>'+extraIcons.html+'<div class="cocoding-name  '+marq+' tippy" data-title="Set Nickname" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div></div></li>' + usersHTML;
+						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch"><div class="cocoding-name-badge tippy" data-title="Set Color" id="cocodingself" style="background:'+settings.cocoding.color+';" onclick="cocode.rename(1);">'+userIcon+ '</div>'+extraIcons.html+'<div class="cocoding-name  '+marq+' tippy" data-title="Set Nickname" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div></div></li>' + usersHTML;
 						loadTippy();
 						this.syncCursors(usersRaw);
 					});
@@ -1178,7 +1178,7 @@ function println(msg){
 				document.getElementById('cocodingself').style.background = newVal;
 			}
 
-			rename(){
+			rename(mode){
 				// incase no admin is present, offer it
 				let renameAdmin = '';
 				if(!settings.cocoding.hasAdmin){
@@ -1221,7 +1221,6 @@ function println(msg){
 					afterOpen: function(){
 						loadTippy();
 						vexSmall();
-						document.getElementById('cocodingnick').select();
 						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
 						let defaultColor = '00aa00';
 
@@ -1243,25 +1242,32 @@ function println(msg){
 								// Input / output Options
 								interaction: {
 									input: true,
-									save: true,
+									save: false,
 									cancel:true
 								},
 							},
 
 							// rename buttons
 							strings: {
-								cancel: 'Cancel', // Default for cancel button
+								cancel: 'Close', // Default for cancel button
 								save: 'Set', // Default for save button
 
 							}
 						});
 
+						if(mode == 1){
+							pickr2.show();
+						}else{
+							setTimeout(function(){document.getElementById('cocodingnick').select();}, 100);
+						}
+
 						pickr2.on('change', (color, instance) => {
-						}).on('save', (color, instance) => {
 							document.getElementById('cocodingcolor').value = '#' + color.toHEXA().join('');
 							document.getElementById('cocodingcolor').style.background = '#' + color.toHEXA().join('');
 							document.getElementById('cocodingcolor').style.color = '#' + color.toHEXA().join('');
-							instance.hide();
+						}).on('save', (color, instance) => {
+
+							// instance.hide();
 						}).on('cancel', instance => {
 							instance.hide();
 						})
@@ -1387,15 +1393,12 @@ function println(msg){
 					autoScroll = true;
 				}
 
-				let notifyHTML = '';
 				let msgHTML = '<div class="chat-item" '+msgID+'>';
 					msgHTML += '<div class="chatmsg '+pendingChat+'">';
 					let marq = '';
 					if(msg.nick.length > 9){marq = 'longname marq';}
 					msgHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
-					notifyHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
 					msgHTML += '<span class="chattext ">'+linkify(msg.text)+'</span>';
-					notifyHTML += '<br><span class="chattext ">'+linkify(msg.text)+'</span>';
 					msgHTML += '</div>';
 					msgHTML += '</div>';
 					menuCocodeChatDialog.innerHTML += msgHTML;
@@ -1409,6 +1412,10 @@ function println(msg){
 
 					// check if settings.. + if menu hidden...
 					if(settings.notifyToggle && (menuPanel.style.marginRight == '-250px' || panelSettings.style.display == 'block') && notifyChat){
+						let notifyHTML = '';
+						notifyHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
+						notifyHTML += '<br><span class="chattext ">'+linkify(msg.text)+'</span>';
+
 						notifyMsg(notifyHTML);
 					}
 			}
@@ -3191,7 +3198,14 @@ function println(msg){
 
 		function checkErrors(){
 			clearTimeout(errorTimer);
-			errorTimer = setTimeout(function(){checkErrorsWorker();}, settings.compileTimer);
+			let checkErrorsDelay = settings.compileTimer;
+			if(settings.cocoding.active){
+				checkErrorsDelay = 1000;
+				settingsCompileTimer.value = 1000;
+				settingsCompileTimer.setAttribute('disabled', 'disabled');
+				settingsCompileTimer.style.opacity = .5;
+			}
+			errorTimer = setTimeout(function(){checkErrorsWorker();}, checkErrorsDelay);
 		}
 
 		function checkErrorsWorker(){
