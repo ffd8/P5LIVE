@@ -1155,8 +1155,9 @@ li{
 	padding:5px 5px 8px 5px;
 	box-sizing: border-box;
 	opacity:0;
-	transition: .25s linear;
+	transition: opacity .25s linear;
 	z-index:9999;
+	max-width:250px;
 }
 .popup-editor .ace_gutter-layer, .popup-editor .ace_gutter{
 	background:none !important;

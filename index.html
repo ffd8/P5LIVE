@@ -1338,6 +1338,7 @@ function println(msg){
 			addChat(msg){
 				let msgID = '', pendingChat = '';
 				let pendingMsg = document.getElementById(msg.msgID);
+				let notifyChat = false;
 				if(msg.type && msg.type == 'pending'){
 					msgID = 'id="'+msg.msgID+'"';
 					pendingChat = 'pending-chat';
@@ -1349,18 +1350,40 @@ function println(msg){
 				}else{
 					if(pendingMsg != undefined){
 						pendingMsg.remove();
+						notifyChat = true;
 					}
 				}
+
+				// check if at bottom of chat
+				let autoScroll = false;
+				if(menuCocodeChatDialog.scrollHeight - menuCocodeChatDialog.scrollTop < 200){
+					autoScroll = true;
+				}
+
+				let notifyHTML = '';
 				let msgHTML = '<div class="chat-item" '+msgID+'>';
 					msgHTML += '<div class="chatmsg '+pendingChat+'">';
 					let marq = '';
 					if(msg.nick.length > 9){marq = 'longname marq';}
 					msgHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
+					notifyHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
 					msgHTML += '<span class="chattext ">'+linkify(msg.text)+'</span>';
+					notifyHTML += '<br><span class="chattext ">'+linkify(msg.text)+'</span>';
 					msgHTML += '</div>';
 					msgHTML += '</div>';
 					menuCocodeChatDialog.innerHTML += msgHTML;
-					menuCocodeChatDialog.scrollTop = menuCocodeChatDialog.scrollHeight;
+
+					// only auto scroll if at bottom, otherwise small offset for feedback
+					if(autoScroll){
+						menuCocodeChatDialog.scrollTop = menuCocodeChatDialog.scrollHeight;
+					}else{
+						menuCocodeChatDialog.scrollTop += 10;
+					}
+
+					// check if settings.. + if menu hidden...
+					if(settings.notifyToggle && (menuPanel.style.marginRight == '-250px' || panelSettings.style.display == 'block') && notifyChat){
+						notifyMsg(notifyHTML);
+					}
 			}
 
 			syncCursors(usersRaw){
@@ -4677,10 +4700,16 @@ function println(msg){
 		function notifyMsg(txt){
 			notify.innerHTML = txt;
 			notify.style.opacity = 1.0;
+			if(menuPanel.style.marginRight == '0px'){
+				notify.style.right = '255px';
+			}else{
+				notify.style.right = '5px';
+			}
 			clearTimeout(notifyTimer);
+			let notifyDelay = txt.length*20;
 			notifyTimer = setTimeout(function(){
 				notify.style.opacity = 0;
-			}, 1500);
+			}, notifyDelay);
 			showNotify = false;
 		}
 
