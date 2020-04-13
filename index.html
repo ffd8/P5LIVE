@@ -118,7 +118,7 @@
 					<div id="menu-cocode-chat-dialog" class="menu-cocode-chat menu-sketches-holder" onclick="document.getElementById('chat-input').focus();">
 
 					</div>
-					<input id="chat-input" type="text" name="chat-input" placeholder="Message">
+					<input id="chat-input" type="text" name="chat-input" placeholder="Chat...">
 				</div>
 			</div>
 
@@ -5041,22 +5041,6 @@ function println(msg){
 				elm._tippy.hide();
 				elm._tippy.setContent(oldContent);
 			}, 800);
-		}
-
-		function cocodeLayers(){
-			vex.dialog.confirm({
-				message: 'Replace current code with CoCodeLayers?',
-				callback: function (value) {
-					if (value) {
-						let collabPath = 'includes/demos/P5L_cocodeLayers_20190429.json';
-						let request = new XMLHttpRequest();
-						request.open('GET', collabPath, false);
-						request.send()
-						let jsonObj = JSON.parse(request.responseText);
-						editor.setValue(jsonObj.sketches[0].sketchCode, 1);
-					}
-				}
-			})
 		}
 
 		function toggleLockdown(){
