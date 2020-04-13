@@ -203,6 +203,7 @@ class Namespace {
 			, "sync" : false
 			, "fc" : 0
 			, "request" : false
+			, 'hasAdmin' : false
 		}
 
 		if(online){
@@ -278,10 +279,12 @@ class Namespace {
 			})
 
 			socket.on('token', function(token){
-				if(token == settings.token){
+				// check credentials + allow only one admin
+				if(token == settings.token && !settings.hasAdmin){
 					settings.people[socket.id].level = 'admin';
 					settings.people[socket.id].writemode = true;
 					settings.request = false;
+					// console.log(settings.people[socket.id].nick);
 				}else{
 					settings.people[socket.id].level = 'user';
 					if(settings.lockdown){
@@ -290,7 +293,14 @@ class Namespace {
 				}
 				socket.emit('setLevel', settings.people[socket.id].level);
 				syncSettings();
-				//syncUsers();
+
+				checkAdmin();
+			})
+
+			socket.on('checkAdmin', function(){
+				if(!settings.hasAdmin){
+					socket.emit('checkAdmin', settings.token);
+				}
 			})
 
 			socket.on('lockdown', function(lockMode){
@@ -415,12 +425,30 @@ class Namespace {
 
 		});
 
+		let checkAdmin = function(){
+			// keep track of an admin in room
+			let hasAdmin = false;
+			Object.keys(settings.people).forEach(function(k){
+				if(settings.people[k].level == 'admin'){
+					hasAdmin = true;
+				}
+			});
+
+			if(hasAdmin){
+				settings.hasAdmin = true;
+			}else{
+				settings.hasAdmin = false;
+			}
+		}
+
 		let syncUsers = function(){
+			checkAdmin();
 			io.of(settings.name).emit("syncUsers", JSON.stringify(settings.people)); // update users for all
 		}
 
 		let syncSettings = function(){
-			let tempSettings = {"lockdown" : settings.lockdown, "sync" : settings.sync, "fc" : settings.fc};
+			checkAdmin();
+			let tempSettings = {"lockdown" : settings.lockdown, "sync" : settings.sync, "fc" : settings.fc, "hasAdmin":settings.hasAdmin};
 			io.of(settings.name).emit("syncSettings", JSON.stringify(tempSettings)); // update users for all
 			syncUsers();
 		}

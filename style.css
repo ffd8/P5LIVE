@@ -516,6 +516,42 @@ h2{
 	0%	 { text-indent: 0em }
 	100% { text-indent: -20em }
 }
+/* COCODING RENAME */
+#cocoding-rename-nick{
+	width:calc(100% - 90px);
+}
+#cocoding-rename-color{
+	margin-right:15px;
+	width:75px;
+}
+#cocoding-rename-admin{
+	margin-left:5px;
+	outline:none;
+}
+#cocoding-rename-admin svg{
+	height:16px;
+	stroke:gold;
+	fill:gold;
+}
+#cocoding-rename-admin svg:hover{
+	fill:none;
+}
+#cocodingnick{
+	width:100%;
+}
+.cocoding-rename-input{
+	position:relative;
+	float:left;
+	margin-bottom:25px;
+}
+.cocoding-rename-input label{
+	/*display:block;*/
+	/*margin-bottom:15px;*/
+	font-size:12pt;
+}
+.cocode-pickr{
+	width:50px;
+}
 .sketch-selected{
 	background:#006600;
 	border-top:1px solid #888;
