@@ -1142,6 +1142,22 @@ li{
 	width:450px;
 	margin: 0 auto;
 }
+.vex .svg{
+	filter:invert();
+}
+.vex pre{
+	border:1px solid #888;
+	background:#666;
+	padding:5px;
+}
+.vex code{
+	font-size:8pt;
+	border:1px solid #888;
+	border-radius:4px;
+	background:#666;
+	padding:0 1px 0 1px;
+	box-sizing: border-box;
+}
 #about-alert{
 	font-size:10pt;
 	line-height:13pt;

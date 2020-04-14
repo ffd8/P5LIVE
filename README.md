@@ -40,7 +40,7 @@ Details below to run via python webserver or nodejs/npm.
 ### LIVE-CODE IN 5... 4... 3...  
 <img src="includes/images/menu-sketches-new-7.png" width="220px">  
 
-- Create New Sketch via GUI icon or `CTRL + N` and start coding!  
+- <img class="svg" src="includes/icons/file-plus.svg" height="12px"> Create New Sketch or `CTRL + N` and start coding!  
 - Live-coding active by default, `CTRL + ENTER` to force recompile.  
 - Sketch is auto-saved on every keystroke.  
   
@@ -48,51 +48,66 @@ Details below to run via python webserver or nodejs/npm.
 ### P5LIVE MENU  
 <img src="includes/images/menu-p5live-8.png" width="220px">  
 
-- About, what you're reading now.  
-- Settings, adjust editor settings + shortcuts (see details below).  
-- Reference, `CTRL + R`, toggle p5.js reference list.  
-- Save PNG + CODE, `CTRL + S`, exports output image [and snapshot of code].  
-- Save HTML, export single-page website (re-link path to custom assets).
+- <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About, what you're reading now.  
+- <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts (see details below).  
+- <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle p5.js reference list.  
+- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png + .json, `CTRL + S`, exports image [and snapshot of code].  
+- <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export single-page website (re-link path to custom assets).
 
 ### COCODING MENU  
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
 
-- Start, click the single 'network' button.  
+- <img class="svg" src="includes/icons/share-2.svg" height="12px"> Press to start COCODING.  
 
-<img src="includes/images/menu-cocoding-active-7.png" width="220px">  
+<img src="includes/images/menu-cocoding-active-8.png" width="220px">  
 
-- Exit, click the green 'power' button.  
-- Share, click to copy URL and share with friends.  
-- Clone sketch, saves current co-code to local sketches within session folder.  
-- Lockdown (admin), limit editing, toggling privledges per user.  
-- Broadcast (admin + lockdown), sync mouseX/Y/frameCount/recompile with users.
+- COCODING <sup>#</sub> of users - ⇡⇣ syncing up/down-stream.
+- <img class="svg" src="includes/icons/power.svg" height="12px"> Exit, click the green 'power' button.  
+- <img class="svg" src="includes/icons/copy.svg" height="12px"> Clone sketch, saves current co-code to local sketches within session folder.  
+- <img class="svg" src="includes/icons/radio.svg" height="12px"> Sync Data, set local code for syncing local signals (midi, osc, mouse, etc.).  
+- <img class="svg" src="includes/icons/unlock-mod.svg" height="12px"> Lockdown (admin), limit editing, toggle write privledges per user.  
+- <img class="svg" src="includes/icons/cast.svg" height="12px"> Broadcast (admin + lockdown), sync mouseX/Y/frameCount/recompile with users.
 
 <img src="includes/images/menu-cocoding-req-pre-7.png" width="220px">  
 
-- Rename, click on your name (very top) to select a new nickname and cursor color.
+- Rename, click on your name (very top) to select a new nickname and color.
 
 #### Lockdown (user)
 <img src="includes/images/menu-cocoding-req-7.png" width="220px">  
 
-- Request Write-access, click edit button and wait for admin to allow.
+- Request write-access, click edit button and wait for admin to allow.
 
 #### Lockdown (admin)
 <img src="includes/images/menu-cocoding-admin-vote-7.png" width="220px">  
 
-- Request Deny/Accept, reject or grant write-access from users.
+- Decide write-access, reject or grant write-access from users.
 
 <img src="includes/images/menu-cocoding-admin-allow-7.png" width="220px">  
 
-- Toggle Write-access, admin can always toggle write access of user.  
+- Toggle write-access, admin can always toggle write access per user. 
+
+#### Chat
+<img src="includes/images/menu-cocoding-chat-1.png" width="220px">   
+
+Beyond chatting, you can send parsed links to external references. Nickname + color will update when changed. Chat displayed as notification (when active) if menu is hidden.
+
+#### Sync Data
+<img src="includes/images/menu-cocoding-syncdata-1.png" width="220px">  
+
+<img class="svg" src="includes/icons/radio.svg" height="12px"> Press to launch Sync Data window.  
+
+<img src="includes/images/menu-cocoding-syncdata-window-1.png" width="220px">   
+
+Here you can enter custom local code used the COCODING session to send/get data. View preset `template` for guide on making your own, `mouseXY` and `midi` for syncing those signals. Any local data sent, needs to `parseData()` in COCODING session to access it. Further you can use `parseData()` to call `getData()` to locally process that shared data. This offers a way to control custom code parallel to the shared COCODE. Especially useful to give all users access to local siganls like MIDI or OSC. 
   
 ### SKETCHES MENU 
 <img src="includes/images/menu-sketches-7.png" width="220px">  
 
-- New sketch.  
-- Clone sketch, duplicates active sketch.  
-- New folder, nest sketches/folders within others.  
-- Import, select JSON files from export (single/folder/all).  
-- Export, exports entire sketches list for import/backup.  
+- <img class="svg" src="includes/icons/file-plus.svg" height="12px"> New sketch.  
+- <img class="svg" src="includes/icons/copy.svg" height="12px"> Clone sketch, duplicates active sketch.  
+- <img class="svg" src="includes/icons/folder-plus.svg" height="12px"> New folder, nest sketches/folders within others.  
+- <img class="svg" src="includes/icons/upload.svg" height="12px"> Import, select JSON files from export (single/folder/all).  
+- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, exports entire sketches list for import/backup.  
   
 #### Filter
 <img src="includes/images/menu-sketch-filter-blank.png" width="220px">  
@@ -104,29 +119,29 @@ Lost the overview of your sketches? Just type in keywords to match names of fold
 <img src="includes/images/menu-sketch-nav-8.png" width="220px">  
 
 - Load, click on sketch name.  
-- Inspect, click lines icon to view/edit code as popup.  
-- Rename, click pencil icon and type new name.  
-- Export, click download icon to export sketch as JSON file.  
-- Remove, click trash icon and confirm deletion.  
+- <img class="svg" src="includes/icons/align-left.svg" height="12px"> Inspect,  view/edit code as popup.  
+- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give sketch new name.  
+- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export sketch as JSON file.  
+- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete sketch after confirmation.  
 - Sort, click + hold + drag to desired order.  
-- Add to folder, careully drag + drop into/over folder.
+- Place in folder, slowly drag + drop into/over folder.
 
 #### Folder  
 <img src="includes/images/menu-folder-nav-7.png" width="220px">  
 
 - Expand/collapse, click on folder name.  
-- Rename, click pencil icon and type new name.  
-- Export, click download icon to export entire contents as JSON file.  
-- Remove, click trash icon and confirm deletion.  
+- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give folder new name.  
+- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export entire contents as JSON file.  
+- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete folder + contents after confirmation.  
 - Sort, click + hold + drag to desired order.  
   
 ### SETTINGS PANEL  
 <img src="includes/images/menu-settings-nav.png" width="220px">
 
-- Completely reset P5LIVE (deletes all sketches!)
-- Reset Settings to defaults
-- Import Settings
-- Export Settings
+- <img class="svg" src="includes/icons/slash.svg" height="12px"> Completely reset P5LIVE (deletes all sketches!)
+- <img class="svg" src="includes/icons/refresh-cw.svg" height="12px"> Reset Settings to defaults
+- <img class="svg" src="includes/icons/upload.svg" height="12px"> Import Settings
+- <img class="svg" src="includes/icons/download.svg" height="12px"> Export Settings
   
 ### Settings
 - Live Coding, (auto-compiling mode), recompiles on error-free keyup.  
