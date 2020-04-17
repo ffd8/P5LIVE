@@ -163,7 +163,7 @@ hr{
 
 }
 .ace_search.right{
-	right:40px;
+	right:250px;
 }
 .ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line{
 	background:rgba(150, 191, 0, .5) !important;
@@ -476,7 +476,7 @@ h2{
 	position: relative;
 	height:100%;
 	float:none;
-	padding:2px 5px 5px 0;
+	padding:0px 5px 5px 0;
 	overflow: hidden;
 	white-space: nowrap;
 	cursor:pointer;
@@ -493,21 +493,34 @@ h2{
 .cocoding-name-badge, .cocoding-name{
 	float:left;
 }
+.cocoding-name-badge{
+	padding-top:2px;
+	margin-right:2px;
+}
 .cocoding-name-icons{
-	position:absolute;
-	/*color:#00aa00;*/
-	left:25px;
+	float:left;
+	/*position:absolute;*/
+	padding-top:2px;
+	/*left:25px;*/
 }
 .cocoding-name-icons svg{
-	stroke:#ff0000;
+	/*border:1px solid #aaa;*/
+	padding:0;
+	height:20px;
+	width:20px;
+	/*background:#00aa00;*/
+	stroke:#fff;
 }
 .cocoding-name{
+	padding-top:2px;
 	position:absolute;
+	margin-top:-2px;
+	padding-left:3px;
 	/*width:calc(100% - 75px);*/
 	/*left:75px;*/
 }
 .cocoding-name.marq{
-	border-right:1px dashed #888;
+	/*border-right:1px dashed #888;*/
 }
 .marq:hover{
 	animation: marquee 5s linear infinite;
@@ -572,12 +585,64 @@ h2{
 	text-align:right;
 	cursor:pointer;
 }
-.menu-sketch-button{
+.menu-sketch-button, .cocoding-sketch-button{
 	color:#fff;
 	flex:1;
 	padding:2px 0 0px 0;
 	border-left:1px solid #888;
 	opacity:.75;
+}
+
+.cocoding-nav{
+	position:absolute;
+	right:0;
+	display:block;
+	float:right;
+	height:100%;
+	z-index:101;
+	text-align:right;
+	cursor:pointer;
+}
+.cocoding-sketch-button{
+	float:left;
+}
+.user-radio-toggle{
+}
+.cocoding-sketch-button-radio{
+	position:relative;
+	left:0;
+	opacity:0;
+	animation: button-radio 2s linear infinite;
+}
+.cocoding-sketch-button-user{
+	position:absolute;
+	left:0;
+	opacity:1;
+	animation: button-user 2s linear infinite;
+}
+@keyframes button-radio {
+	0%	 { opacity: .0 }
+	25%	 { opacity: .0 }
+	50%	 { opacity: 1 }
+	75%	 { opacity: 1 }
+	100% { opacity: .0 }
+}
+
+@keyframes button-user {
+	0%	 { opacity: 1 }
+	25%	 { opacity: 1 }
+	50%	 { opacity: .0 }
+	75%	 { opacity: .0 }
+	100% { opacity: 1 }
+}
+
+.cocoding-sketch-button svg{
+	/*position:absolute;*/
+	/*left:0;*/
+}
+
+.cocoding-user .menu-sketch-button{
+	/*border-left:1px solid #888 !important;*/
 }
 .menu-sketch-button:hover{
 	background:#444;
@@ -711,15 +776,9 @@ button[disabled]{
 	//pointer-events: none;
 }
 
-.self{
-	background:#444;
-}
-.self:hover{
-	background:#444;
-}
 .write-req, .write-req:hover{
 	opacity:1;
-	background:#888800;
+	/*background:#888800;*/
 	animation: request 2s linear infinite;
 }
 @keyframes request {
@@ -728,7 +787,7 @@ button[disabled]{
 	100% { opacity: 1 }
 }
 .write-access{
-	background:#008800 !important;
+	/*background:#008800 !important;*/
 }
 .menu-settings{
 	position:relative;
@@ -897,7 +956,7 @@ li{
 	cursor:pointer;
 	float:left;
 }
-.menu-sketch-nav svg{
+.menu-sketch-nav svg, .cocoding-nav svg{
 	padding:4px 1px 0 1px;
 	width:18px;
 }

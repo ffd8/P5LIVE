@@ -87,7 +87,7 @@
 
 			<div class="menu-section" id="menu-section-cocode">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter" class="counters"></span><span id="menu-cocode-sync" class="counters"> – <span id="menu-cocode-sync-up" class="sync">⇡</span><span id="menu-cocode-sync-down" class="sync">⇣</span></span></div>
+				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter" class="counters"></span><span id="menu-cocode-sync" class="counters" style="display:none;"> – <span id="menu-cocode-sync-up" class="sync">⇡</span><span id="menu-cocode-sync-down" class="sync">⇣</span></span></div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
 					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop COCODING">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
@@ -334,6 +334,7 @@ function println(msg){
 	<script src="includes/js/mousetrap/mousetrap.min.js"></script>
 	<script src="includes/js/mousetrap/mousetrap-record.js"></script>
 	<script src="includes/js/mousetrap/mousetrap-pause.min.js"></script>
+	<script src="includes/js/name_generator.js"></script>
 
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
@@ -369,7 +370,7 @@ function println(msg){
 
 		// settings
 		let initSettings = {
-			'version':'1.2.7',
+			'version':'1.3.0',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15,
@@ -389,6 +390,7 @@ function println(msg){
 			'exportCode':true,
 			'notifyToggle':true,
 			'debugMode': false,
+			'editMode':true,
 			'safeMode': false,
 			'shortcuts':{
 				'softcompile':{
@@ -517,6 +519,7 @@ function println(msg){
 		menuSectionP5live = document.getElementById('menu-section-p5live'),
 		menuSectionSketches = document.getElementById('menu-section-sketches'),
 		menuCocodeCounter = document.getElementById('menu-cocode-counter'),
+		menuCocodeSync = document.getElementById('menu-cocode-sync'),
 		menuCocodeUp = document.getElementById('menu-cocode-sync-up'),
 		menuCocodeDown = document.getElementById('menu-cocode-sync-down'),
 		// settingsLocalButton = document.getElementById('cocode-local-button'),
@@ -569,7 +572,8 @@ function println(msg){
 		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
 		cocodingLocalEditor, cocodingLocalPresets = {},
-		cocodingFirstTime = false
+		cocodingFirstTime = false, cocodingShowMic = false,
+		cocodingRecompile = false;
 		;
 
 		// force off
@@ -649,6 +653,10 @@ function println(msg){
 		p5editor.style.visibility = 'visible';
 
 		// ICONS!
+		let iconCheckSquare = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-square"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
+
+		let iconEye = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+
 		let iconFolderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
 
 		let iconFolderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
@@ -1040,6 +1048,7 @@ function println(msg){
 						editor.setReadOnly(false);
 					}else{
 						settings.cocoding.writemode = false;
+						document.getElementById('cocode-local-button').setAttribute('disabled', 'disabled');
 						updateSettings();
 						editor.setReadOnly(true);
 					}
@@ -1095,11 +1104,7 @@ function println(msg){
 									if(users[i].writemode){
 										userNav = '<a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleRight+'</a>';
 									}else{
-										if(users[i].request){
-											userNav = '<a class="menu-sketch-button tippy" onclick="cocode.requestReject(\''+users[i].nick+'\')" data-title="Reject Request">'+iconXCircle+'</a><a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconCheckCircle+'</a>';
-										}else{
-											userNav = '<a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleLeft+'</a>';
-										}
+										userNav = '<a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleLeft+'</a>';
 									}
 								}
 							}
@@ -1123,7 +1128,44 @@ function println(msg){
 							if(users[i].status == 'blur'){
 								active = 'style="opacity:.5;"';
 							}
-							usersHTML += '<li id="user-'+users[i].nick+'" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch-nav">' +userNav+'</div><div class="menu-sketch '+marq+'" '+active+ '><span style="padding-top:4px;background:'+users[i].color+';">'+userIcon+ '</span> ' +users[i].nick+'</div></li>';
+
+							let userNavIconsCount = 1;
+							let userNavIcons = '<div class="cocoding-nav">';
+							if(users[i].uselocalcode && (!settings.cocoding.lockdown || users[i].writemode)){
+								userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
+									userNavIcons += '<div class="cocoding-sketch-button-user">'+userIcon+'</div>';
+									userNavIcons += '<div class="cocoding-sketch-button-radio">'+iconRadio+'</div>';
+								userNavIcons += '</div>';
+							}else{
+								userNavIcons += '<div class="cocoding-sketch-button">'+userIcon+'</div>';
+							}
+
+							if(cocodingShowMic){
+								userNavIconsCount++;
+								if(1==1){
+									userNavIcons += '<div class="cocoding-sketch-button">'+iconMicOff+'</div>';
+								}else{
+									userNavIcons += '<div class="cocoding-sketch-button">'+iconMic+'</div>';
+								}
+							}
+
+							if(settings.cocoding.lockdown){
+									userNavIcons += '<div class="cocoding-sketch-button">'+userNav+'</div>';
+							}
+							userNavIcons += '</div>';
+
+							let ccNameStyle = {};
+							ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
+
+
+							let singleUserHTML = '<li id="user-'+users[i].nick+'" style="background:'+users[i].color+';" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch"><div class="cocoding-name  '+marq+'" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';">' +users[i].nick+'</div>'+userNavIcons+'</div></li>';
+
+							if(users[i].level == 'admin'){
+								usersHTML = singleUserHTML + usersHTML;
+							}else{
+								usersHTML += singleUserHTML;
+							}
+
 						}else{
 							usersSelf = users[i];
 							if(usersSelf.status == 'blur'){
@@ -1133,9 +1175,7 @@ function println(msg){
 					}
 						let selfNav = '';
 						let userIcon = iconUser;
-						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown && !settings.cocoding.writemode){
-							selfNav = '<div class="menu-sketch-nav"><a id="request-'+settings.cocoding.nick+'" class="menu-sketch-button tippy " onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')" data-title="Request Edit">'+iconEdit+'</a></div>';
-						}
+
 
 						let writeClass = '';
 						if(settings.cocoding.lockdown && settings.cocoding.level != 'admin'){
@@ -1143,7 +1183,6 @@ function println(msg){
 								writeClass = ' write-req ';
 							}else if(settings.cocoding.writemode){
 								writeClass = ' write-access ';
-								userIcon = iconUserCheck;
 							}
 						}
 
@@ -1154,16 +1193,40 @@ function println(msg){
 						let marq = '';
 						if(settings.cocoding.nick.length > 10){marq = 'marq';}
 
-						let extraIcons = {};
-						extraIcons.count = 0;
-						extraIcons.html = '';//'<div class="cocoding-name-icons tippy" data-title="Toggle Audio">'+iconMicOff+'</div>'; //
+						let userNavIconsCount = 1;
+						let userNavIcons = '<div class="cocoding-nav">';
+						if(settings.cocoding.uselocalcode && (!settings.cocoding.lockdown || settings.cocoding.writemode)){
+							userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
+								userNavIcons += '<div class="cocoding-sketch-button-user">'+iconRadio+'</div>';
+								userNavIcons += '<div class="cocoding-sketch-button-radio">'+userIcon+'</div>';
+							userNavIcons += '</div>';
+						}else{
+							userNavIcons += '<div class="cocoding-sketch-button">'+userIcon+'</div>';
+						}
+
+						if(cocodingShowMic){
+							userNavIconsCount++;
+							if(1==1){
+								userNavIcons += '<div class="cocoding-sketch-button">'+iconMicOff+'</div>';
+							}else{
+								userNavIcons += '<div class="cocoding-sketch-button">'+iconMic+'</div>';
+							}
+						}
+
+						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown){
+							let userEditIcon = iconEdit;
+							if(settings.cocoding.writemode){
+								userEditIcon = iconCheckSquare
+							}
+							userNavIcons += '<div class="cocoding-sketch-button" id="request-'+settings.cocoding.nick+'" onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')" data-title="Request Edit">'+userEditIcon+'</div>';
+						}
+
+						userNavIcons += '</div>';
 
 						let ccNameStyle = {};
-						ccNameStyle.width = 'calc(100% - '+(extraIcons.count*25)+'px)';
-						ccNameStyle.left = 25 + (extraIcons.count*25) + 1 + 'px';
-						//console.log(ccNameStyle.width);
+						ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
 
-						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch"><div class="cocoding-name-badge tippy" data-title="Set Color" id="cocodingself" style="background:'+settings.cocoding.color+';" onclick="cocode.rename(1);">'+userIcon+ '</div>'+extraIcons.html+'<div class="cocoding-name  '+marq+' tippy" data-title="Set Nickname" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div></div></li>' + usersHTML;
+						menuCocodeSketches.innerHTML = '<li id="cocodingself" style="background:'+settings.cocoding.color+';" class="item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch cocoding-user"><div class="cocoding-name  '+marq+' tippy" data-title="Set Color + Nickname" style="width:'+ccNameStyle.width+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div>'+userNavIcons+'</div></li>' + usersHTML;
 						loadTippy();
 						this.syncCursors(usersRaw);
 					});
@@ -1681,6 +1744,10 @@ function println(msg){
 
 				sketchLoaded = true;
 				prepCocodingLocal(); // promise fr localCode if active
+				if(sketchLoaded && cocodingRecompile && settings.cocoding.level == 'admin'){
+					cocode.recompile(true);
+					cocodingRecompile = false;
+				}
 			}else{
 				sketchLoaded = false;
 				// set timer for refreshing if error
@@ -1765,8 +1832,19 @@ function println(msg){
 			settings.safeMode = false;
 			updateSketches();
 			filterSketches();
-			loaderSub.innerHTML = 'shortcuts...';
-			updateShortcuts();
+
+
+			settings.editMode = true;
+			if(getParam('edit') != undefined && getParam('edit') == 0){
+				settings.editMode = false;
+				editor.setReadOnly(true);
+				p5editor.style.display = 'none';
+				menuPanel.style.display = 'none';
+				updateSettings();
+			}else{
+				loaderSub.innerHTML = 'shortcuts...';
+				updateShortcuts();
+			}
 
 			if(getParam('cc') != undefined){
 				loaderSub.innerHTML = 'cocoding...';
@@ -1779,6 +1857,7 @@ function println(msg){
 					cocodingReset();
 				}
 				settings.cocoding.active = true;
+				menuCocodeSync.style.display = 'inline';
 				if(settings.cocoding.timestamp == null){
 					settings.cocoding.timestamp = timeStamp();
 				}
@@ -1786,17 +1865,11 @@ function println(msg){
 				settings.fileName = ccSpace;
 				settings.cocoding.namespace = settings.fileName;
 				if(settings.cocoding.nick == undefined || settings.cocoding.nick == ''){
-					settings.cocoding.nick = makeid(6);
+					settings.cocoding.nick = generateName();//makeid(6);
 					cocodingFirstTime = true;
 				}
 				updateSketches();
 				cocoding();
-			}else if(settings.welcome){
-				loadAbout();
-				loadDefault();
-				menuToggle(true);
-				settings.welcome = false;
-				updateSettings();
 			}else if(window.location.hash){
 				if(window.location.hash.substring(1) === 'new'){
 					loadDefault();
@@ -1810,6 +1883,14 @@ function println(msg){
 			}else{
 				cocodingReset();
 				loadSketch(settings.fileName);
+			}
+
+			if(settings.welcome){
+				loadAbout();
+				loadDefault();
+				menuToggle(true);
+				settings.welcome = false;
+				updateSettings();
 			}
 			resizeSketchesHolder();
 			hideLoader();
@@ -3483,6 +3564,7 @@ function println(msg){
 
 			// hardCompile
 			sketchLoaded = false;
+			cocodingRecompile = true;
 			let el = p5frameTemplate.cloneNode(true);
 			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 
@@ -3765,7 +3847,7 @@ function println(msg){
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'blur');
 			}
-			if(settings.ecoRender && sketchLoaded && !settings.cocoding.sync){
+			if(settings.ecoRender && sketchLoaded && !settings.cocoding.sync && settings.editMode){
 				if(document.activeElement !== p5frame){
 					p5f.noLoop();
 				}
@@ -4739,6 +4821,9 @@ function println(msg){
 
 		/* Notification for settings changed by shortcut */
 		function notifyMsg(txt){
+			if(!settings.editMode){
+				return false;
+			}
 			notify.innerHTML = txt;
 			notify.style.opacity = 1.0;
 			if(menuPanel.style.marginRight == '0px'){
@@ -4826,6 +4911,7 @@ function println(msg){
 					cocode.rename();
 				}, 500);
 			}
+
 			// consoleMessage("When COCODING, code in editor is a sandbox. Clone it regularly to access later.", 0);
 		}
 
@@ -4900,6 +4986,7 @@ function println(msg){
 					click: function updateCode () {
 						settings.cocoding.uselocalcode = false;
 						settings.cocoding.locallibs = [];
+						syncData({meta:'stop'});
 						updateSettings();
 						toggleCocodingLocalButton();
 						recompile(true);
@@ -5020,6 +5107,7 @@ function println(msg){
 				}
 			}
 			syncUp();
+			obj.uselocalcode = settings.cocoding.uselocalcode;
 			cocode.socket.emit('syncData', obj);
 		}
 

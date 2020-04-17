@@ -395,6 +395,11 @@ class Namespace {
 			});
 
 			socket.on('syncData', function(obj){
+				let localUse = settings.people[socket.id].uselocalcode;
+				if((localUse && localUse != obj.uselocalcode) || localUse == undefined){
+					settings.people[socket.id].uselocalcode = obj.uselocalcode;
+					syncSettings();
+				}
 				io.of(settings.name).emit('syncData', obj);
 			});
 
