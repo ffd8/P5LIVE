@@ -343,7 +343,7 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentRevision = 32;
+		let currentRevision = 33;
 		let developBranch = true;
 
 		// resetP5(); // manual reset
@@ -363,7 +363,7 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall();
+					vexSmall(this.rootEl);
 				}
 			})
 		}
@@ -497,6 +497,7 @@ function println(msg){
 
 			},
 			'sketches': [],
+			'syncdataSketches':[],
 			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'localcode':'', 'locallibs':[], 'uselocalcode':false, 'msgID':-1, 'hasAdmin':false},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
@@ -571,7 +572,7 @@ function println(msg){
 		curPos, curPositions = [], updateCursor, showCursors = false,
 		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
-		cocodingLocalEditor, cocodingLocalPresets = {},
+		cocodingLocalEditor, cocodingLocalPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false,
 		cocodingRecompile = false;
 		;
@@ -777,14 +778,15 @@ function println(msg){
 			}
 		}
 
-		function vexSmall(){
-			let elements = document.getElementsByClassName('vex');
-			for (let i in elements) {
-				if (elements.hasOwnProperty(i)) {
-				elements[i].classList.add('vex-small')// += ' vex-small';
-			}
+		function vexSmall(elm){
+			elm.classList.add('vex-small');
+			// let elements = document.getElementsByClassName('vex');
+			// for (let i in elements) {
+			// 	if (elements.hasOwnProperty(i)) {
+			// 		elements[i].classList.add('vex-small')// += ' vex-small';
+			// 	}
+			// }
 		}
-	}
 
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
@@ -1283,7 +1285,7 @@ function println(msg){
 					},
 					afterOpen: function(){
 						loadTippy();
-						vexSmall();
+						vexSmall(this.rootEl);
 						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
 						let defaultColor = '00aa00';
 
@@ -1608,7 +1610,7 @@ function println(msg){
 		});
 
 		function adjustLines(){
-			let pcode = document.getElementsByClassName('ace_line');
+			let pcode = p5editor.getElementsByClassName('ace_line');
 			for(let i=0; i < pcode.length; i++){
 				let pitem = pcode[i];
 				let pcontents = pitem.innerHTML;
@@ -1840,6 +1842,7 @@ function println(msg){
 				editor.setReadOnly(true);
 				p5editor.style.display = 'none';
 				menuPanel.style.display = 'none';
+				settings.welcome = false;
 				updateSettings();
 			}else{
 				loaderSub.innerHTML = 'shortcuts...';
@@ -1965,7 +1968,10 @@ function println(msg){
 
 		function settingsCocodingWarning(){
 			vex.dialog.alert({
-				unsafeMessage:'Exit COCODING to change settings.'
+				unsafeMessage:'Exit COCODING to change settings.',
+				afterOpen: function(){
+					vexSmall(this.rootEl);
+				}
 			});
 		}
 
@@ -2290,7 +2296,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall();
+						vexSmall(this.rootEl);
 					}
 				})
 
@@ -3154,7 +3160,7 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall();
+					vexSmall(this.rootEl);
 				}
 			})
 		}
@@ -4251,7 +4257,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall();
+						vexSmall(this.rootEl);
 					}
 				})
 			}
@@ -4814,7 +4820,7 @@ function println(msg){
 			vex.dialog.alert({
 				unsafeMessage:txt,
 				afterOpen: function(){
-					vexSmall();
+					vexSmall(this.rootEl);
 				}
 			})
 		}
@@ -4871,7 +4877,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall();
+						vexSmall(this.rootEl);
 					}
 				})
 			}else{
@@ -4933,35 +4939,40 @@ function println(msg){
 			request.send();
 			request.addEventListener('load', function(){
 				let jsonObj = JSON.parse(request.responseText);
-				cocodingLocalPresets.presetList = [];
 				for(let p of jsonObj.sketches){
 					let presetName = p.sketchName.replace('syncdata-', '');
-					// let presetItem = {
-					// 	name : presetName,
-					// 	code : p.sketchCode
-					// }
-					cocodingLocalPresets[presetName] = {code:p.sketchCode};
-					cocodingLocalPresets.presetList.push(presetName);
+					let presetSketch = {code:p.sketchCode, name:presetName, protected:true};
+					cocodingLocalPresets.push(presetSketch);
 				}
-				// console.log(cocodingLocalPresets);
+
+				// load localSyncdataPresets
+				for(let clp of settings.syncdataSketches){
+					cocodingLocalPresets.push(clp);
+				}
 			});
 		}
 
 		function cocodingLocalCode(){
+			let reloadVex = false;
+			let reloadAlert = 0;
 			let cocodingLocalPresetsOptions = '';
-			for(let clp of cocodingLocalPresets.presetList){
-				cocodingLocalPresetsOptions += '<option name="'+clp+'" value="'+clp+'">'+clp+'</option>'
+			for(let clp of cocodingLocalPresets){
+				cocodingLocalPresetsOptions += '<option name="'+clp.name+'" value="'+clp.name+'">'+clp.name+'</option>';
 			}
-
-			// let localCodeDialogOptions = ;
 
 			let localCodeVex = vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Objects sent to `syncData(obj)` are accessible by all users. <br>`parseData(obj)` within shared COCODING editor.</div>Presets: <select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select</option>'+cocodingLocalPresetsOptions+'</select><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
+				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved locally, <code>Select Preset</code> replaces it.</div><select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select Preset</option>'+cocodingLocalPresetsOptions+'</select> <button onclick="vex.closeAll();cocodingLocalSavePreset();" class="tippy" data-title="Create new preset">Save Preset</button> <button onclick="cocodingLocalClipboard();" class="tippy" data-title="<span class=\'shortcut\'>/* 2 - COCODE */</span> snippet added to COCODING session">Add COCODE</button><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
 
-				// *** cocodingLocalClipboard(); // copy cocode part to clipboard..
 				callback: function (value) {},
 				buttons: [
+				{
+					type: 'close',
+					text: '× CLOSE',
+					click: function(){
+						vex.close(localCodeVex);
+					}
+				},
 				{
 					type: 'submit',
 					text: settings.cocoding.uselocalcode ? '► RE-RUN' : '► RUN', // iconPlay
@@ -4970,14 +4981,9 @@ function println(msg){
 						settings.cocoding.uselocalcode = true;
 						updateSettings();
 						toggleCocodingLocalButton();
-
 						recompile(true);
 						cocode.recompile();
-						// vex.close(localCodeVex);
-						// vex.buttonsToDOM();
-						//console.log(localCodeVex.form.appendChild())
-						//setTimeout(function(){cocodingLocalCode();}, 50);
-						// *** here should be function to redraw buttons
+						prepReload();
 					}
 				}
 				, settings.cocoding.uselocalcode ? {
@@ -4990,46 +4996,140 @@ function println(msg){
 						updateSettings();
 						toggleCocodingLocalButton();
 						recompile(true);
-
+						prepReload();
 					}
 				} : {
 					className: 'hide-button' // hide if unused
 				}
-				,{
-					type: 'close',
-					text: 'CLOSE',
-					click: function(){
-						vex.close(localCodeVex);
-					}
-				}],
+				],
 				onSubmit: function(e) {
 			        e.preventDefault();
-			    }
+			    },
+			    afterOpen: function(){
+					cocodingLocalEditor = ace.edit("cocoding-localcode");
+					cocodingLocalEditor.setTheme(settings.theme);
+					cocodingLocalEditor.session.setMode('ace/mode/javascript');
+					cocodingLocalEditor.setOptions({
+						showPrintMargin: false,
+						animatedScroll: false,
+						displayIndentGuides: false,
+						useWorker: true,
+						showLineNumbers: true,
+						showGutter: true,
+						tabSize: 4, useSoftTabs: false,
+					});
+					cocodingLocalEditor.getSession().on('change', function() {
+						settings.cocoding.localcode = cocodingLocalEditor.getValue();
+						updateSettings();
+					});
+					tidyCode(cocodingLocalEditor);
+					loadTippy();
+				},
+				afterClose: function(){
+					if(reloadVex){
+						vex.close(reloadAlert);
+						cocodingLocalCode();
+					}
+				}
 			})
-			cocodingLocalEditor = ace.edit("cocoding-localcode");
-			cocodingLocalEditor.setTheme(settings.theme);
-			cocodingLocalEditor.session.setMode('ace/mode/javascript');
-			cocodingLocalEditor.setOptions({
-				showPrintMargin: false,
-				animatedScroll: false,
-				displayIndentGuides: false,
-				useWorker: true,
-				showLineNumbers: true,
-				showGutter: true,
-				tabSize: 4, useSoftTabs: false,
-			});
-			cocodingLocalEditor.getSession().on('change', function() {
-				settings.cocoding.localcode = cocodingLocalEditor.getValue();
-				updateSettings();
-			});
-			tidyCode(cocodingLocalEditor);
+
+
+
+			function prepReload(){
+				reloadVex = true;
+
+				vex.dialog.alert({
+					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Refreshing Sync Data...</div>',
+					buttons:[],
+					afterOpen: function(){
+						reloadAlert = this;
+						vex.close(localCodeVex);
+					}
+				})
+			}
 		}
+
+		function cocodingLocalCheckPreset(){
+			let presetName = document.getElementById('presetname-input').value;
+			let presetNameWarning = document.getElementById('presetname-warning');
+			presetNameWarning.innerHTML = '';
+			for(let clp of settings.syncdataSketches){
+				if(clp.name == presetName){
+					presetNameWarning.innerHTML = '<code>SAVE</code> will replace current preset.';
+				}
+			}
+		}
+
+		function cocodingLocalSavePreset(){
+				let presetChange = false;
+				let presetNamesFiltered = '';
+				for(let clp of settings.syncdataSketches){
+					presetNamesFiltered += '<option name="'+clp.name+'" value="'+clp.name+'">'+clp.name+'</option>';
+				}
+				let setPresetVex = vex.dialog.confirm({
+					// focusFirstInput : false,
+					callback:function(){},
+					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">**** THIS IS STILL BETA BETA!<br><br>Set <code>syncData</code> preset name, or select previous name to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;cocodingLocalCheckPreset();document.getElementById(\'presetname-input\').select();"><option name="select" value="select">Select User Preset</option>'+presetNamesFiltered+'</select><br><br><input style="font-size:20pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="cocodingLocalCheckPreset();"><br><div id="presetname-warning"></div>',
+					buttons: [
+					{
+						type: 'submit',
+						text: 'Save',
+						className: '',
+						click: function () {
+							let presetName = document.getElementById('presetname-input').value;
+							let presetNameWarning = document.getElementById('presetname-warning');
+
+							// check duplicate name
+							let replacePreset = false;
+							for(let clp of settings.syncdataSketches){
+								if(clp.name == presetName){
+									replacePreset = true;
+								}
+							}
+
+							let newPreset = {code:settings.cocoding.localcode, name:presetName, protected:false};
+							if(replacePreset){
+								// replace preset
+								for(let i=0; i < settings.syncdataSketches.length; i++){
+									if(settings.syncdataSketches[i].name == presetName){
+										settings.syncdataSketches[i].code = newPreset.code;
+									}
+								}
+								for(let i=0; i < cocodingLocalPresets.length; i++){
+									if(cocodingLocalPresets[i].name == presetName){
+										cocodingLocalPresets[i].code = newPreset.code;
+									}
+								}
+							}else{
+								cocodingLocalPresets.push(newPreset);
+								settings.syncdataSketches.push(newPreset);
+							}
+							updateSettings();
+							presetChange = true;
+							vex.close(this);
+						}
+					}
+					,{
+						type: 'close',
+						text: 'Cancel',
+						click: function(){
+							vex.close(this);
+						}
+					}],
+					afterClose: function(){
+						cocodingLocalCode();
+					}
+				})
+			}
 
 		function cocodingLocalPreset(presetVal, localEditor){
 			if(presetVal != 'select'){
-				cocodingLocalEditor.setValue(cocodingLocalPresets[presetVal].code, 1);
+				for(let clp of cocodingLocalPresets){
+					if(clp.name == presetVal){
+						cocodingLocalEditor.setValue(clp.code, 1);
+					}
+				}
 			}
-
 		}
 
 		function toggleCocodingLocalButton(){
@@ -5068,7 +5168,12 @@ function println(msg){
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
 
-			let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+localID+'", '+JSON.stringify(settings.cocoding.localcode)+');})';
+			let wholeLocal = settings.cocoding.localcode;
+			if(wholeLocal.indexOf('/* 2 - COCODE */') > -1){
+				wholeLocal = wholeLocal.substr(0, wholeLocal.indexOf('/* 2 - COCODE */'));
+			}
+
+			let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+localID+'", '+JSON.stringify(wholeLocal)+');})';
 
 			s.innerHTML = sLoader;
 
@@ -5076,7 +5181,7 @@ function println(msg){
 				if(scriptsCol.length > 0){
 					p5f.document.head.appendChild(s);
 				}else{
-					pongReady(localID, settings.cocoding.localcode);
+					pongReady(localID, wholeLocal);
 				}
 			}
 
@@ -5085,19 +5190,26 @@ function println(msg){
 
 		function cocodingLocalClipboard(){
 			let cocodeBreak = '/* 2 - COCODE */';
+			if(settings.cocoding.localcode.indexOf(cocodeBreak) == -1){
+				let thisVex = vex.dialog.alert({
+					unsafeMessage:'No COCODING snippet found. <br>Check it\'s preceded by:<br><pre>'+cocodeBreak+'</pre>',
+				afterOpen: function(){
+					vexSmall(this.rootEl);
+				}
+				})
+				return false;
+			}
+
 			var cocodeClipboard = settings.cocoding.localcode.substr(settings.cocoding.localcode.indexOf(cocodeBreak) + cocodeBreak.length);
 			var cocodeClipboard = cocodeClipboard.split('\n');
 			for(let i = 0; i < cocodeClipboard.length; i++){
-				cocodeClipboard[i] = cocodeClipboard[i].substring(3, cocodeClipboard[i].length);
+				var urlRegex =/^\/\//gm;
+				cocodeClipboard[i] = cocodeClipboard[i].replace(urlRegex, '');
 			}
-			// console.log(cocodeClipboard)
-			// cocodeClipboard = cocodeClipboard.join('\n');
-			let dummy = document.createElement('textarea');
-			document.body.appendChild(dummy);
-			dummy.innerHTML = cocodeClipboard.join('\n');
-			dummy.select();
-			document.execCommand('copy');
-			document.body.removeChild(dummy);
+			cocodeClipboard = cocodeClipboard.join('\n');
+			let curCode = editor.getValue();
+			editor.setValue(curCode +"\n"+ cocodeClipboard, 1);
+			tidyCode(editor);
 		}
 
 		function syncData(obj){

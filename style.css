@@ -1217,6 +1217,9 @@ li{
 	padding:0 1px 0 1px;
 	box-sizing: border-box;
 }
+.vex-dialog-button:hover{
+	background:#ddd;
+}
 #about-alert{
 	font-size:10pt;
 	line-height:13pt;
