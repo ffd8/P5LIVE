@@ -1220,6 +1220,14 @@ li{
 .vex-dialog-button:hover{
 	background:#ddd;
 }
+#presetname-input{
+	margin-bottom:10px;
+	outline:none;
+}
+#presetname-warning{
+	margin-top:5px;
+	background:#ff000088;
+}
 #about-alert{
 	font-size:10pt;
 	line-height:13pt;

@@ -4933,6 +4933,7 @@ function println(msg){
 
 		// load demos
 		function loadSyncDataPresets(){
+			cocodingLocalPresets = [];
 			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', syncdataPresetsPath, true);
@@ -4962,7 +4963,7 @@ function println(msg){
 
 			let localCodeVex = vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved locally, <code>Select Preset</code> replaces it.</div><select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select Preset</option>'+cocodingLocalPresetsOptions+'</select> <button onclick="vex.closeAll();cocodingLocalSavePreset();" class="tippy" data-title="Create new preset">Save Preset</button> <button onclick="cocodingLocalClipboard();" class="tippy" data-title="<span class=\'shortcut\'>/* 2 - COCODE */</span> snippet added to COCODING session">Add COCODE</button><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
+				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved locally, <code>Select Preset</code> replaces it.</div><select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Select Preset</option>'+cocodingLocalPresetsOptions+'</select> <button onclick="vex.closeAll();cocodingLocalSavePreset();" class="tippy" data-title="Create new preset">Save</button> <button id="preset-button-remove" onclick="vex.closeAll();cocodingLocalRemovePreset(this.name);" name="" class="tippy" data-title="Remove preset">Remove</button><br><br><div id="cocoding-localcode" class="vex-long popup-editor">'+settings.cocoding.localcode+'</div>',
 
 				callback: function (value) {},
 				buttons: [
@@ -4985,8 +4986,8 @@ function println(msg){
 						cocode.recompile();
 						prepReload();
 					}
-				}
-				, settings.cocoding.uselocalcode ? {
+				},
+				settings.cocoding.uselocalcode ? {
 					type: 'stop',
 					text: '◼ STOP',
 					click: function updateCode () {
@@ -5000,7 +5001,17 @@ function println(msg){
 					}
 				} : {
 					className: 'hide-button' // hide if unused
+				},
+				settings.cocoding.uselocalcode && settings.cocoding.level == 'admin' ? {
+					type: 'cocode',
+					text: '↓ COCODE',
+					click: function updateCode () {
+						cocodingLocalClipboard();
+					}
+				} : {
+					className: 'hide-button' // hide if unused
 				}
+
 				],
 				onSubmit: function(e) {
 			        e.preventDefault();
@@ -5055,9 +5066,52 @@ function println(msg){
 			presetNameWarning.innerHTML = '';
 			for(let clp of settings.syncdataSketches){
 				if(clp.name == presetName){
-					presetNameWarning.innerHTML = '<code>SAVE</code> will replace current preset.';
+					presetNameWarning.innerHTML = 'SAVE will replace current preset.';
 				}
 			}
+		}
+
+		function cocodingLocalRemovePreset(presetVal){
+			for(let i=0; i < cocodingLocalPresets.length; i++){
+				if(cocodingLocalPresets[i].name == presetVal && cocodingLocalPresets[i].protected || presetVal == ''){
+					let thisVex = vex.dialog.alert({
+						unsafeMessage:'Can\'t remove P5LIVE preset...',
+					afterOpen: function(){
+						vexSmall(this.rootEl);
+					},
+					afterClose: function(){
+						cocodingLocalCode();
+					}
+					})
+					return false;
+				}
+			}
+
+			vex.dialog.confirm({
+				unsafeMessage: 'Remove Preset: '+presetVal,
+				callback: function (value) {
+					if (value) {
+						settings.cocoding.localcode = '// '+presetVal+' Removed!';
+						for(let i=0; i < settings.syncdataSketches.length; i++){
+							if(settings.syncdataSketches[i].name == presetVal){
+								settings.syncdataSketches.splice(i, 1);//console.log(i);
+							}
+						}
+						for(let i=0; i < cocodingLocalPresets.length; i++){
+							if(cocodingLocalPresets[i].name == presetVal){
+								cocodingLocalPresets.splice(i, 1);//console.log(i);
+							}
+						}
+						updateSettings();
+					}
+				},
+				afterOpen: function(){
+					vexSmall(this.rootEl);
+				},
+				afterClose: function(){
+					cocodingLocalCode();
+				}
+			})
 		}
 
 		function cocodingLocalSavePreset(){
@@ -5069,7 +5123,7 @@ function println(msg){
 				let setPresetVex = vex.dialog.confirm({
 					// focusFirstInput : false,
 					callback:function(){},
-					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">**** THIS IS STILL BETA BETA!<br><br>Set <code>syncData</code> preset name, or select previous name to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;cocodingLocalCheckPreset();document.getElementById(\'presetname-input\').select();"><option name="select" value="select">Select User Preset</option>'+presetNamesFiltered+'</select><br><br><input style="font-size:20pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="cocodingLocalCheckPreset();"><br><div id="presetname-warning"></div>',
+					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">SyncData Preset:<br>Set preset name or use existing name to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;cocodingLocalCheckPreset();document.getElementById(\'presetname-input\').select();"><option name="" value="">Select User Preset</option>'+presetNamesFiltered+'</select><br><br><input style="font-size:20pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="cocodingLocalCheckPreset();"><br><span id="presetname-warning"></span>',
 					buttons: [
 					{
 						type: 'submit',
@@ -5127,6 +5181,8 @@ function println(msg){
 				for(let clp of cocodingLocalPresets){
 					if(clp.name == presetVal){
 						cocodingLocalEditor.setValue(clp.code, 1);
+						document.getElementById('preset-button-remove').setAttribute('name', presetVal);
+
 					}
 				}
 			}
