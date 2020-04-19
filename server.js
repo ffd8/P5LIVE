@@ -234,7 +234,7 @@ class Namespace {
 			socket.on('disconnect', function() {
 				delete settings.people[socket.id];
 				syncUsers(); // ALL in namespace
-
+				clearPendingChat();
 				// set timer to trash namespace...
 				if(Object.keys(settings.people).length == 0){
 					//console.log('purging: ' + namespace);
@@ -460,6 +460,10 @@ class Namespace {
 
 		let syncCursors = function(){
 			io.of(settings.name).emit("syncCursors", JSON.stringify(settings.people)); // update users for all
+		}
+
+		let clearPendingChat = function(){
+			io.of(settings.name).emit("clearPendingChat"); // update users for all
 		}
 
 		let addChat = function(obj){

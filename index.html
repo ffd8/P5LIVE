@@ -118,7 +118,7 @@
 					<div id="menu-cocode-chat-dialog" class="menu-cocode-chat menu-sketches-holder" onclick="document.getElementById('chat-input').focus();">
 
 					</div>
-					<input id="chat-input" type="text" name="chat-input" placeholder="Chat...">
+					<input id="chat-input" type="text" name="chat-input" placeholder="Chat..." onfocus="this.selectionStart = this.selectionEnd = this.value.length;">
 				</div>
 			</div>
 
@@ -1084,6 +1084,13 @@ function println(msg){
 					this.parseChat(obj);
 				});
 
+				this.socket.on('clearPendingChat', ()=>{
+					let pendingChats = document.getElementsByClassName('pending-chat');
+					for(let pc of pendingChats){
+						pc.remove();
+					}
+				});
+
 				this.socket.on('syncUsers', (usersRaw) => {
 					syncDown();
 					this.users = JSON.parse(usersRaw);
@@ -1786,23 +1793,25 @@ function println(msg){
 		// react to settings once gathered
 		function loadSettings(){
 			// make sure all settings are there
+			Object.keys(initSettings).forEach(function(k){
+				if(!settings.hasOwnProperty(k)){
+					settings[k] = initSettings[k];
+				}else if(typeof initSettings[k] === 'object'){
+					Object.keys(initSettings[k]).forEach(function(kk){
+						if(!settings[k].hasOwnProperty(kk)){
+							settings[k][kk] = initSettings[k][kk];
+						}
+					});
+				}
+				settings.refresh = true;
+			});
+			updateSettings();
 			if(settings.revision == undefined || settings.revision < currentRevision){
 				settings.revision = currentRevision;
 				settings.version = initSettings.version;
 				settings.fileName = 'new';
 				settings.welcome = true;
-				Object.keys(initSettings).forEach(function(k){
-					if(!settings.hasOwnProperty(k)){
-						settings[k] = initSettings[k];
-					}else if(typeof initSettings[k] === 'object'){
-						Object.keys(initSettings[k]).forEach(function(kk){
-							if(!settings[k].hasOwnProperty(kk)){
-								settings[k][kk] = initSettings[k][kk];
-							}
-						});
-					}
-					settings.refresh = true;
-				});
+				settings.refresh = true;
 				updateSettings();
 			}
 			loaderSub.innerHTML = 'settings...';

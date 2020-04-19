@@ -700,6 +700,15 @@ h2{
 	padding:2px;
 	margin:0;
 }
+#chat-input:focus{
+	background-color: #333;
+	animation: chat-input 1.5s linear infinite;
+}
+@keyframes chat-input {
+	0%	 { opacity: .75 }
+	50%	 { opacity: 1 }
+	100% { opacity: .75 }
+}
 #menu-cocode-chat-dialog{
 	max-height:200px;
 	font-size:8pt;
