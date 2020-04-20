@@ -1930,6 +1930,7 @@ function println(msg){
 			hideLoader();
 
 			// test multiple open
+			// inspiration: https://stackoverflow.com/a/43291970/10885535
 			localStorage.openpages = Date.now();
 	        var onLocalStorageEvent = function(e){
 	            if(e.key == "openpages"){
