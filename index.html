@@ -565,7 +565,7 @@ function println(msg){
 		loader = document.getElementById('loader'),
 		loaderSub = document.getElementById('loader-sub'),
 		notify = document.getElementById('notify'),
-		shortcutRecording = false,
+		shortcutRecording = false, p5Remote = false,
 		settings = getSettings(),
 		validCode = true,
 		sketchLoaded = false, forceRecompile = false,
@@ -872,7 +872,7 @@ function println(msg){
 				this.initialized = false;
 				this.socket = '';
 				this.namespace = namespace;
-				if(!window.location.hostname.includes('teddavis.org')){
+				if(!p5Remote){
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					if(developBranch){
@@ -1793,6 +1793,14 @@ function println(msg){
 
 		// react to settings once gathered
 		function loadSettings(){
+			// check online or offline
+			if(window.location.hostname.includes('teddavis.org')){
+				p5Remote = true;
+			}else{
+				p5Remote = false;
+				document.title = 'P5LIVE – OFFLINE';
+			}
+
 			// make sure all settings are there
 			Object.keys(initSettings).forEach(function(k){
 				if(!settings.hasOwnProperty(k)){
@@ -1920,6 +1928,24 @@ function println(msg){
 			}
 			resizeSketchesHolder();
 			hideLoader();
+
+			// test multiple open
+			localStorage.openpages = Date.now();
+	        var onLocalStorageEvent = function(e){
+	            if(e.key == "openpages"){
+	                // Listen if anybody else opening the same page!
+	                localStorage.page_available = Date.now();
+	            }
+	            if(e.key == "page_available"){
+	                vex.dialog.alert({
+						unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one, to avoid data loss.',
+						afterOpen: function(){
+							vexSmall(this.rootEl);
+						}
+					});
+	            }
+	        };
+	        window.addEventListener('storage', onLocalStorageEvent, false);
 		}
 
 		function getParam(paramSearch){
@@ -3633,13 +3659,12 @@ function println(msg){
 			for(let i=0; i < includeScripts.length; i++){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
-				if(window.location.hostname.includes('teddavis.org')){
+				if(p5Remote){
 					s.src = includeScripts[i].remote;
 					scriptsCol.push(includeScripts[i].remote);
 				}else{
 					s.src = includeScripts[i].local;
 					scriptsCol.push(includeScripts[i].local);
-					document.title = 'P5LIVE – OFFLINE';
 				}
 				//iFrameBody.appendChild(s); // *** temp disabled
 			}

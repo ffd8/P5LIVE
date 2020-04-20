@@ -1252,6 +1252,9 @@ li{
 .vex-dialog-button:hover{
 	background:#ddd;
 }
+.pulse{
+	animation:sync 1s infinite
+}
 #presetname-input{
 	margin:10px 0 10px 0;
 	outline:none;
