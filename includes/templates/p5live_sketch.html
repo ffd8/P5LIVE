@@ -78,6 +78,7 @@
 					// only send to window console if unique!
 					if(m != pmsg){
 						window.parent.console.log(m); // also send to parent console!
+						window.parent.syncdataConsole(m); // also send to syncdata console!
 						pmsg = m;
 					}
 					clearTimeout(p5consoleTimer);
@@ -93,6 +94,9 @@
 		}
 
 		function consoleMessage(msg, timeDelay){
+			if(typeof msg === 'object'){
+				msg = JSON.stringify(msg);
+			}
 			p5console.value = msg;
 			if(consoleVisible == false){
 				p5console.style.display = 'block';

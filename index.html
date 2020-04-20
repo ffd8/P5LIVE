@@ -64,7 +64,7 @@
 
 			<div class="menu-section" id="menu-section-p5live">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header">P5LIVE</div>
+				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span></div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
 					<button class="menu-button tippy" onclick="loadAbout();" data-title="About">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
@@ -502,7 +502,8 @@ function println(msg){
 				'code': '',
 				'active': false,
 				'libs' : [],
-				'cursor': {row:0, column:0}
+				'cursor': {row:0, column:0},
+				'console': []
 			},
 			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'msgID':-1, 'hasAdmin':false},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
@@ -1814,6 +1815,7 @@ function println(msg){
 				settings.refresh = true;
 				updateSettings();
 			}
+			document.getElementById('menu-p5live-version').innerHTML = settings.version;
 			loaderSub.innerHTML = 'settings...';
 			fontSizeUpdate();
 			autoCompileUpdate();
@@ -2569,6 +2571,7 @@ function println(msg){
 			autoProcessQueue: false,
 			url: '/data', // unused but needed for URL expectation
 			acceptedFiles:'.json',
+			clickable:false,
 			init: function() {
 				this.on('addedfile', function(file, responseText) {
 					importSketches(myDropzone.files);
@@ -3072,7 +3075,7 @@ function println(msg){
 
 			vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'Inspect Code:<br><br><div id="inspectcode" class="vex-long popup-editor">'+inspectCode+'</div>',
+				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="cocoding-localcode-header code-header">code</div><div id="inspectcode" class="vex-long popup-editor">'+inspectCode+'</div>',
 				callback: function (value) {},
 				buttons: [
 				{
@@ -3348,6 +3351,35 @@ function println(msg){
 			}
 		});
 
+		function syncdataConsole(msg){
+			if(typeof msg === 'object'){
+				msg = JSON.stringify(msg);
+			}
+			settings.syncdata.console.push(msg);
+			if(settings.syncdata.console.length > 100){
+				settings.syncdata.console = settings.syncdata.console.splice(0, 1);
+			}
+			updateSettings();
+
+			let cocodingLocalConsole = document.getElementById('cocoding-localcode-console');
+			if(cocodingLocalConsole != undefined){
+				cocodingLocalConsole.innerHTML += '\n'+msg
+
+				let autoScroll = false;
+				if(cocodingLocalConsole.scrollHeight - cocodingLocalConsole.scrollTop < 200){
+					autoScroll = true;
+				}
+
+				if(autoScroll){
+					cocodingLocalConsole.scrollTop = cocodingLocalConsole.scrollHeight;
+				}else{
+					cocodingLocalConsole.scrollTop += 1;
+				}
+			}
+
+		}
+
+		// *** to be removed??
 		function consoleMessage(msg, timeDelay){
 			p5console.value = msg;
 			if(consoleVisible == false){
@@ -4906,6 +4938,9 @@ function println(msg){
 				let sessID = makeid(5);
 				settings.cocoding.active = true;
 				settings.cocoding.token = hashCode(sessID);
+				cocodingLocalCearConsole();
+				settings.syncdata.active = false;
+				settings.syncdata.libs = [];
 				updateSettings();
 				document.location.search = 'cc=' + sessID;
 			}
@@ -4990,7 +5025,7 @@ function println(msg){
 
 			let localCodeVex = vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved locally, <code>Load Preset</code> replaces it.</div><select name="Presets" onchange="cocodingLocalPreset(this.value)"><option name="select" value="select">Load Preset</option>'+cocodingLocalPresetsOptions+'Load Preset</option></select> <span id="preset-button-group" style="display:none;"><button onclick="vex.closeAll();cocodingLocalSavePreset();" class="tippy" data-title="Create new preset">Save</button> <button id="preset-button-remove" onclick="vex.closeAll();cocodingLocalRemovePreset(this.name);" name="" class="tippy" data-title="Remove preset">Remove</button></span><br><br><div id="cocoding-localcode" class="vex-long popup-editor"></div>',
+				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved in local settings, <code>Load Preset</code> replaces it.</div><select name="Presets" onchange="cocodingLocalChangePreset(this.value)"><option name="select" value="select">Load Preset</option>'+cocodingLocalPresetsOptions+'Load Preset</option></select> <span id="preset-button-group"><button onclick="vex.closeAll();cocodingLocalSavePreset();" class="tippy" data-title="Create new preset">Save</button> <button id="preset-button-remove" onclick="vex.closeAll();cocodingLocalRemovePreset(this.name);" name="" class="tippy" data-title="Remove preset" style="display:none;">Remove</button></span><br><br><div class="cocoding-localcode-header code-header">code</div><div id="cocoding-localcode" class="vex-long popup-editor"></div><div class="cocoding-localcode-header tippy-left" style="cursor:pointer;" data-title="Click to Clear Console" onclick="cocodingLocalCearConsole();">console</div><textarea id="cocoding-localcode-console" readonly="readonly">'+settings.syncdata.console.join('\n')+'</textarea>',
 
 				callback: function (value) {},
 				buttons: [
@@ -5061,6 +5096,8 @@ function println(msg){
 
 					setTimeout(function(){
 						cocodingLocalEditor.gotoLine(settings.syncdata.cursor.row, settings.syncdata.cursor.column);
+						let cocodingLocalConsole = document.getElementById('cocoding-localcode-console');
+						cocodingLocalConsole.scrollTop = cocodingLocalConsole.scrollHeight;
 					}, 100);
 
 					cocodingLocalEditor.getSession().on('change', function() {
@@ -5073,7 +5110,6 @@ function println(msg){
 							updateSettings();
 
 						}
-						console.log('row: ' + settings.syncdata.cursor.row)
 					});
 
 					tidyCode(cocodingLocalEditor);
@@ -5167,7 +5203,7 @@ function println(msg){
 				let setPresetVex = vex.dialog.confirm({
 					// focusFirstInput : false,
 					callback:function(){},
-					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">SyncData Preset:<br>Set preset name or use existing name to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;cocodingLocalCheckPreset();document.getElementById(\'presetname-input\').select();"><option name="" value="">Select User Preset</option>'+presetNamesFiltered+'</select><br><br><input style="font-size:20pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="cocodingLocalCheckPreset();"><br><span id="presetname-warning"></span>',
+					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Set preset name or use existing one to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;cocodingLocalCheckPreset();document.getElementById(\'presetname-input\').select();"><option name="" value="">Select User Preset</option>'+presetNamesFiltered+'</select><br><input style="font-size:14pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="cocodingLocalCheckPreset();"><br><span id="presetname-warning"></span>',
 					buttons: [
 					{
 						type: 'submit',
@@ -5214,13 +5250,17 @@ function println(msg){
 							vex.close(this);
 						}
 					}],
+					afterOpen: function(){
+						vexSmall(this.rootEl);
+						setTimeout(function(){document.getElementById('presetname-input').focus();}, 100);
+					},
 					afterClose: function(){
 						cocodingLocalCode();
 					}
 				})
 			}
 
-		function cocodingLocalPreset(presetVal, localEditor){
+		function cocodingLocalChangePreset(presetVal, localEditor){
 			if(presetVal != 'select'){
 				for(let clp of cocodingLocalPresets){
 					if(clp.name == presetVal){
@@ -5230,6 +5270,7 @@ function println(msg){
 						}else{
 							document.getElementById('preset-button-remove').style.display = 'none';
 						}
+						cocodingLocalCearConsole()
 						settings.syncdata.cursor = {row:0, column:0};
 						updateSettings();
 						cocodingLocalEditor.setValue(clp.code, -1);
@@ -5240,6 +5281,14 @@ function println(msg){
 
 					}
 				}
+			}
+		}
+
+		function cocodingLocalCearConsole(){
+			settings.syncdata.console = [];
+			updateSettings();
+			if(document.getElementById('cocoding-localcode-console')){
+				document.getElementById('cocoding-localcode-console').innerHTML = '';
 			}
 		}
 
