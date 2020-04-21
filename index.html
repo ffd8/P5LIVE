@@ -3670,26 +3670,17 @@ function println(msg){
 
 			// load scripts remote vs local (*** add custom options here)
 			for(let i=0; i < includeScripts.length; i++){
-				let s = document.createElement('script');
-				s.type = 'text/javascript';
 				if(p5Remote){
-					s.src = includeScripts[i].remote;
 					scriptsCol.push(includeScripts[i].remote);
 				}else{
-					s.src = includeScripts[i].local;
 					scriptsCol.push(includeScripts[i].local);
 				}
-				//iFrameBody.appendChild(s); // *** temp disabled
 			}
 
 			// check loadScripts / libs / scripts;
 			let scriptsList = processLibs(codeNoComments);
 			for(let i=0; i < scriptsList.length; i++){
-				// let s = document.createElement('script');
-				// s.type = 'text/javascript';
-				// s.src = scriptsList[i];
 				scriptsCol.push(scriptsList[i]);
-				// iFrameBody.appendChild(s); // *** temp disabled
 			}
 
 			// load sketch
@@ -3708,8 +3699,6 @@ function println(msg){
 				toggleCocodingLocalButton();
 			}
 
-			// old way w/ appendedChildren above...
-			// s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
 			if(!settings.safeMode){
 				iFrameBody.appendChild(s);
 			}
@@ -3735,7 +3724,6 @@ function println(msg){
 				if(scriptCallback){
 					scriptCallback();
 				}
-				// console.log("loaded "+scriptName);
 		}
 
 		// softCompile function or class changes
@@ -3770,7 +3758,6 @@ function println(msg){
 						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
 					}
 				}
-				// document.body.style.background = newBG;
 				p5frame.style.background = newBG;
 			}
 		}
