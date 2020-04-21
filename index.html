@@ -201,6 +201,19 @@
 				</div>
 				<div class="menu-settings menu-contents">
 					<div>
+						<div class="tippy-left" data-title="Set Audio Inputs " style="display:none;">
+							<div class="select">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg><select id="audioSource" class="av-select"></select>
+							</div>
+
+							<div class="select" style="display:none;">
+								<label for="audioOutput">Audio out: </label><select id="audioOutput" class="av-select"></select>
+							</div>
+
+							<div class="select" style="display:none;">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-video"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><select id="videoSource" class="av-select"></select>
+							</div>
+						</div>
 						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-Compile code on keyUp" onclick="autoCompileToggle();">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile">
 						Live Coding</div> 
@@ -1174,7 +1187,7 @@ function println(msg){
 							ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
 
 
-							let singleUserHTML = '<li id="user-'+users[i].nick+'" style="background:'+users[i].color+';" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch"><div class="cocoding-name  '+marq+'" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';"  onclick="cocode.scrollCursor('+users[i].cursor.row+','+users[i].cursor.column+');">' +users[i].nick+'</div>'+userNavIcons+'</div></li>';
+							let singleUserHTML = '<li id="user-'+users[i].nick+'" style="background:'+users[i].color+';" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch"><div class="cocoding-name '+marq+'" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';" onclick="cocode.scrollCursor('+users[i].cursor.row+','+users[i].cursor.column+');">' +users[i].nick+'</div>'+userNavIcons+'</div></li>';
 
 							if(users[i].level == 'admin'){
 								usersHTML = singleUserHTML + usersHTML;
@@ -1242,7 +1255,7 @@ function println(msg){
 						let ccNameStyle = {};
 						ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
 
-						menuCocodeSketches.innerHTML = '<li id="cocodingself" style="background:'+settings.cocoding.color+';" class="item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch cocoding-user"><div class="cocoding-name  '+marq+' tippy" data-title="Set Color + Nickname" style="width:'+ccNameStyle.width+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div>'+userNavIcons+'</div></li>' + usersHTML;
+						menuCocodeSketches.innerHTML = '<li id="cocodingself" style="background:'+settings.cocoding.color+';" class="item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch cocoding-user"><div class="cocoding-name '+marq+' tippy" data-title="Set Color + Nickname" style="width:'+ccNameStyle.width+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div>'+userNavIcons+'</div></li>' + usersHTML;
 						loadTippy();
 						this.syncCursors(usersRaw);
 					});
@@ -1932,21 +1945,21 @@ function println(msg){
 			// test multiple open
 			// inspiration: https://stackoverflow.com/a/43291970/10885535
 			localStorage.openpages = Date.now();
-	        var onLocalStorageEvent = function(e){
-	            if(e.key == "openpages"){
-	                // Listen if anybody else opening the same page!
-	                localStorage.page_available = Date.now();
-	            }
-	            if(e.key == "page_available"){
-	                vex.dialog.alert({
+			var onLocalStorageEvent = function(e){
+				if(e.key == "openpages"){
+					// Listen if anybody else opening the same page!
+					localStorage.page_available = Date.now();
+				}
+				if(e.key == "page_available"){
+					vex.dialog.alert({
 						unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one, to avoid data loss.',
 						afterOpen: function(){
 							vexSmall(this.rootEl);
 						}
 					});
-	            }
-	        };
-	        window.addEventListener('storage', onLocalStorageEvent, false);
+				}
+			};
+			window.addEventListener('storage', onLocalStorageEvent, false);
 		}
 
 		function getParam(paramSearch){
@@ -3305,7 +3318,7 @@ function println(msg){
 		});
 
 		menuCocodeChatInput.addEventListener('blur', () => {
-		  chatPendingClear();
+			chatPendingClear();
 		});
 
 		function chatPending(){
@@ -3406,7 +3419,6 @@ function println(msg){
 
 		}
 
-		// *** to be removed??
 		function consoleMessage(msg, timeDelay){
 			p5console.value = msg;
 			if(consoleVisible == false){
@@ -4999,8 +5011,6 @@ function println(msg){
 					cocode.rename();
 				}, 500);
 			}
-
-			// consoleMessage("When COCODING, code in editor is a sandbox. Clone it regularly to access later.", 0);
 		}
 
 		// reset all cocoding except nick + color
@@ -5102,9 +5112,9 @@ function println(msg){
 
 				],
 				onSubmit: function(e) {
-			        e.preventDefault();
-			    },
-			    afterOpen: function(){
+					e.preventDefault();
+				},
+				afterOpen: function(){
 					cocodingLocalEditor = ace.edit("cocoding-localcode");
 					cocodingLocalEditor.setTheme(settings.theme);
 					cocodingLocalEditor.session.setMode('ace/mode/javascript');

@@ -852,6 +852,14 @@ button[disabled]{
 	color:#fff;
 	cursor:help;
 }
+.av-select{
+	width:80%;
+}
+.select svg{
+	float:left;
+	height:20px;
+	padding-top:4px;
+}
 .shortcut-keys{
 	margin-right:0px;
 	float:right;
