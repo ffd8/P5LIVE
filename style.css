@@ -1023,10 +1023,7 @@ li{
 .cocoding-active:hover{
 	background:#880000;
 }
-.cocoding-local{
-	background:#008800 !important;
-}
-.cocoding-localcode-header{
+.syncdata-header{
 	border:1px solid #aaa;
 	outline:none;
 	/*border-top:none;
@@ -1037,10 +1034,10 @@ li{
 	line-height:1.5em;
 	padding-left:2px;
 }
-#cocoding-localcode{
+#syncdata{
 	height:30vh;
 }
-#cocoding-localcode-console{
+#syncdata-console{
 	height:80px;
 	width:100%;
 	outline:none;

@@ -218,7 +218,7 @@ class Namespace {
 	listenOnNamespace(settings) {
 		settings.namespace.on('connection', (socket) => {
 			settings.userId++;
-			settings.people[socket.id] = {"nick":socket.handshake.query.nick, "status":"focus", "request":false, "writemode":false, "cursor":{"row":0, "column":0}, "color":"#00aa00"};
+			settings.people[socket.id] = {"nick":socket.handshake.query.nick, "status":"focus", "request":false, "writemode":false, "cursor":{"row":0, "column":0}, "color":"#00aa00", "usesyncdata":false};
 			syncUsers();
 
 			// save namespace if quick return
@@ -395,9 +395,9 @@ class Namespace {
 			});
 
 			socket.on('syncData', function(obj){
-				let localUse = settings.people[socket.id].uselocalcode;
-				if((localUse && localUse != obj.uselocalcode) || localUse == undefined){
-					settings.people[socket.id].uselocalcode = obj.uselocalcode;
+				let syncdataActive = settings.people[socket.id].usesyncdata;
+				if((syncdataActive && syncdataActive != obj.usesyncdata) || syncdataActive == undefined){
+					settings.people[socket.id].usesyncdata = obj.usesyncdata;
 					syncSettings();
 				}
 				io.of(settings.name).emit('syncData', obj);

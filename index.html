@@ -95,7 +95,7 @@
 					<button class="menu-button tippy" onclick="cloneSketchCOCODING();this.blur();" data-title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
-					<button class="menu-button tippy" id="cocode-local-button" onclick="cocodingLocalCode(this);this.blur();" data-title="Sync Data">
+					<button class="menu-button tippy" id="syncdata-button" onclick="syncdataWindow(this);this.blur();" data-title="Sync Data">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
 					</button>
 					<button class="menu-button tippy admin-lock" id="cocode-lockdown" onclick="toggleLockdown()" data-title="Toggle Lockdown">
@@ -543,7 +543,7 @@ function println(msg){
 		menuCocodeSync = document.getElementById('menu-cocode-sync'),
 		menuCocodeUp = document.getElementById('menu-cocode-sync-up'),
 		menuCocodeDown = document.getElementById('menu-cocode-sync-down'),
-		// settingsLocalButton = document.getElementById('cocode-local-button'),
+		// syncdataBtn = document.getElementById('syncdata-button'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
 		menuCocodeChatHolder = document.getElementById('menu-cocode-chat-holder'),
@@ -592,7 +592,7 @@ function println(msg){
 		curPos, curPositions = [], updateCursor, showCursors = false,
 		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
-		cocodingLocalEditor, cocodingLocalPresets = [],
+		syncdataEditor, syncdataPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false,
 		cocodingRecompile = false;
 		;
@@ -1065,12 +1065,12 @@ function println(msg){
 					if(writeMode){
 						settings.cocoding.writemode = true;
 						settings.cocoding.request = false;
-						document.getElementById('cocode-local-button').removeAttribute('disabled');
+						document.getElementById('syncdata-button').removeAttribute('disabled');
 						updateSettings();
 						editor.setReadOnly(false);
 					}else{
 						settings.cocoding.writemode = false;
-						document.getElementById('cocode-local-button').setAttribute('disabled', 'disabled');
+						document.getElementById('syncdata-button').setAttribute('disabled', 'disabled');
 						updateSettings();
 						editor.setReadOnly(true);
 					}
@@ -1160,7 +1160,7 @@ function println(msg){
 
 							let userNavIconsCount = 1;
 							let userNavIcons = '<div class="cocoding-nav">';
-							if(users[i].uselocalcode && (!settings.cocoding.lockdown || users[i].writemode)){
+							if(users[i].syncdata.active && (!settings.cocoding.lockdown || users[i].writemode)){
 								userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
 									userNavIcons += '<div class="cocoding-sketch-button-user">'+userIcon+'</div>';
 									userNavIcons += '<div class="cocoding-sketch-button-radio">'+iconRadio+'</div>';
@@ -1776,7 +1776,7 @@ function println(msg){
 				//p5varsReset();
 
 				sketchLoaded = true;
-				prepCocodingLocal(); // promise fr localCode if active
+				syncdataParse(); // promise for syncdata if active
 				if(sketchLoaded && cocodingRecompile && settings.cocoding.level == 'admin'){
 					cocode.recompile(true);
 					cocodingRecompile = false;
@@ -1860,7 +1860,7 @@ function println(msg){
 			loaderSub.innerHTML = 'snippets...';
 			loadSnippets();
 			loaderSub.innerHTML = 'sync data presets...';
-			loadSyncDataPresets();
+			syncDataPresetLoad();
 			loaderSub.innerHTML = 'autocomplete...';
 			loadAutoComplete();
 			loadColorPicker();
@@ -3115,7 +3115,7 @@ function println(msg){
 
 			vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="cocoding-localcode-header code-header">code</div><div id="inspectcode" class="vex-long popup-editor">'+inspectCode+'</div>',
+				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="vex-long popup-editor">'+inspectCode+'</div>',
 				callback: function (value) {},
 				buttons: [
 				{
@@ -3391,7 +3391,7 @@ function println(msg){
 			}
 		});
 
-		function syncdataConsole(msg){
+		function syncdataConsoleMsg(msg){
 			if(typeof msg === 'object'){
 				msg = JSON.stringify(msg);
 			}
@@ -3401,19 +3401,19 @@ function println(msg){
 			}
 			updateSettings();
 
-			let cocodingLocalConsole = document.getElementById('cocoding-localcode-console');
-			if(cocodingLocalConsole != undefined){
-				cocodingLocalConsole.innerHTML += '\n'+msg
+			let syncdataConsole = document.getElementById('syncdata-console');
+			if(syncdataConsole != undefined){
+				syncdataConsole.innerHTML += '\n'+msg
 
 				let autoScroll = false;
-				if(cocodingLocalConsole.scrollHeight - cocodingLocalConsole.scrollTop < 200){
+				if(syncdataConsole.scrollHeight - syncdataConsole.scrollTop < 200){
 					autoScroll = true;
 				}
 
 				if(autoScroll){
-					cocodingLocalConsole.scrollTop = cocodingLocalConsole.scrollHeight;
+					syncdataConsole.scrollTop = syncdataConsole.scrollHeight;
 				}else{
-					cocodingLocalConsole.scrollTop += 1;
+					syncdataConsole.scrollTop += 1;
 				}
 			}
 
@@ -3696,7 +3696,7 @@ function println(msg){
 			let sLoader = 'let mainJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("p5Main", '+JSON.stringify(fullCode)+');})';
 			s.innerHTML = sLoader;
 			if(settings.syncdata.active){
-				toggleCocodingLocalButton();
+				syncdataButtonToggle();
 			}
 
 			if(!settings.safeMode){
@@ -4963,7 +4963,7 @@ function println(msg){
 				let sessID = makeid(5);
 				settings.cocoding.active = true;
 				settings.cocoding.token = hashCode(sessID);
-				cocodingLocalCearConsole();
+				syncdataConsoleClear();
 				settings.syncdata.active = false;
 				settings.syncdata.libs = [];
 				updateSettings();
@@ -5003,16 +5003,19 @@ function println(msg){
 		// reset all cocoding except nick + color
 		function cocodingReset(){
 			Object.keys(initSettings.cocoding).forEach(function(cc){
-				if(cc != 'nick' && cc != 'color' && cc != 'localcode'){
+				if(cc != 'nick' && cc != 'color'){
 					settings.cocoding[cc] = initSettings.cocoding[cc];
 				}
 			});
 			updateSettings();
 		}
 
-		// load demos
-		function loadSyncDataPresets(){
-			cocodingLocalPresets = [];
+
+		/*	Sync Data */
+
+		// load presets
+		function syncDataPresetLoad(){
+			syncdataPresets = [];
 			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', syncdataPresetsPath, true);
@@ -5022,33 +5025,33 @@ function println(msg){
 				for(let p of jsonObj.sketches){
 					let presetName = p.sketchName.replace('syncdata-', '');
 					let presetSketch = {code:p.sketchCode, name:presetName, protected:true};
-					cocodingLocalPresets.push(presetSketch);
+					syncdataPresets.push(presetSketch);
 				}
 
 				// load localSyncdataPresets
-				for(let clp of settings.syncdata.sketches){
-					cocodingLocalPresets.push(clp);
+				for(let sdp of settings.syncdata.sketches){
+					syncdataPresets.push(sdp);
 				}
 			});
 		}
 
-		function cocodingLocalCode(){
+		function syncdataWindow(){
 			let editorInit = true;
 			let reloadVex = false;
 			let reloadAlert = 0;
-			let cocodingLocalPresetsOptions = '';
+			let syncdataPresetsOptions = '';
 			let doneDemos = false;
-			for(let clp of cocodingLocalPresets){
-				if(clp.protected == false && !doneDemos){
-					cocodingLocalPresetsOptions += '<option name="select-divider" value="select-divider" label="------------" disabled>';
+			for(let sdp of syncdataPresets){
+				if(sdp.protected == false && !doneDemos){
+					syncdataPresetsOptions += '<option name="select-divider" value="select-divider" label="------------" disabled>';
 					doneDemos = true;
 				}
-				cocodingLocalPresetsOptions += '<option name="'+clp.name+'" value="'+clp.name+'">'+clp.name+'</option>';
+				syncdataPresetsOptions += '<option name="'+sdp.name+'" value="'+sdp.name+'">'+sdp.name+'</option>';
 			}
 
-			let localCodeVex = vex.dialog.confirm({
+			let syncdataVex = vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved in local settings, <code>Load Preset</code> replaces it.</div><select name="Presets" onchange="cocodingLocalChangePreset(this.value)"><option name="select" value="select">Load Preset</option>'+cocodingLocalPresetsOptions+'Load Preset</option></select> <span id="preset-button-group"><button onclick="vex.closeAll();cocodingLocalSavePreset();" class="tippy" data-title="Create new preset">Save</button> <button id="preset-button-remove" onclick="vex.closeAll();cocodingLocalRemovePreset(this.name);" name="" class="tippy" data-title="Remove preset" style="display:none;">Remove</button></span><br><br><div class="cocoding-localcode-header code-header">code</div><div id="cocoding-localcode" class="vex-long popup-editor"></div><div class="cocoding-localcode-header tippy-left" style="cursor:pointer;" data-title="Click to Clear Console" onclick="cocodingLocalCearConsole();">console</div><textarea id="cocoding-localcode-console" readonly="readonly">'+settings.syncdata.console.join('\n')+'</textarea>',
+				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved in local settings, <code>Load Preset</code> replaces it.</div><select name="Presets" onchange="syncdataPresetChange(this.value)"><option name="select" value="select">Load Preset</option>'+syncdataPresetsOptions+'Load Preset</option></select> <span id="preset-button-group"><button onclick="vex.closeAll();syncdataPresetSave();" class="tippy" data-title="Create new preset">Save</button> <button id="preset-button-remove" onclick="vex.closeAll();syncdataPresetRemove(this.name);" name="" class="tippy" data-title="Remove preset" style="display:none;">Remove</button></span><br><br><div class="syncdata-header code-header">code</div><div id="syncdata" class="vex-long popup-editor"></div><div class="syncdata-header tippy-left" style="cursor:pointer;" data-title="Click to Clear Console" onclick="syncdataConsoleClear();">console</div><textarea id="syncdata-console" readonly="readonly">'+settings.syncdata.console.join('\n')+'</textarea>',
 
 				callback: function (value) {},
 				buttons: [
@@ -5056,17 +5059,16 @@ function println(msg){
 					type: 'close',
 					text: '× CLOSE',
 					click: function(){
-						vex.close(localCodeVex);
+						vex.close(syncdataVex);
 					}
 				},
 				{
 					type: 'submit',
 					text: settings.syncdata.active ? '► RE-RUN' : '► RUN', // iconPlay
-					className: 'cocoding-local-run',
 					click: function updateCode () {
 						settings.syncdata.active = true;
 						updateSettings();
-						toggleCocodingLocalButton();
+						syncdataButtonToggle();
 						recompile(true);
 						cocode.recompile();
 						prepReload();
@@ -5078,9 +5080,9 @@ function println(msg){
 					click: function updateCode () {
 						settings.syncdata.active = false;
 						settings.syncdata.libs = [];
-						syncData({meta:'stop'});
+						syncdataSend({meta:'stop'});
 						updateSettings();
-						toggleCocodingLocalButton();
+						syncdataButtonToggle();
 						recompile(true);
 						prepReload();
 					}
@@ -5091,7 +5093,7 @@ function println(msg){
 					type: 'cocode',
 					text: '↓ COCODE',
 					click: function updateCode () {
-						cocodingLocalClipboard();
+						syncdataCocode();
 					}
 				} : {
 					className: 'hide-button' // hide if unused
@@ -5102,10 +5104,10 @@ function println(msg){
 					e.preventDefault();
 				},
 				afterOpen: function(){
-					cocodingLocalEditor = ace.edit("cocoding-localcode");
-					cocodingLocalEditor.setTheme(settings.theme);
-					cocodingLocalEditor.session.setMode('ace/mode/javascript');
-					cocodingLocalEditor.setOptions({
+					syncdataEditor = ace.edit("syncdata");
+					syncdataEditor.setTheme(settings.theme);
+					syncdataEditor.session.setMode('ace/mode/javascript');
+					syncdataEditor.setOptions({
 						showPrintMargin: false,
 						animatedScroll: false,
 						displayIndentGuides: false,
@@ -5115,34 +5117,34 @@ function println(msg){
 						tabSize: 4, useSoftTabs: false,
 					});
 
-					cocodingLocalEditor.setValue(settings.syncdata.code, settings.syncdata.cursor.row);
+					syncdataEditor.setValue(settings.syncdata.code, settings.syncdata.cursor.row);
 
 					setTimeout(function(){
-						cocodingLocalEditor.gotoLine(settings.syncdata.cursor.row, settings.syncdata.cursor.column);
-						let cocodingLocalConsole = document.getElementById('cocoding-localcode-console');
-						cocodingLocalConsole.scrollTop = cocodingLocalConsole.scrollHeight;
+						syncdataEditor.gotoLine(settings.syncdata.cursor.row, settings.syncdata.cursor.column);
+						let syncdataConsole = document.getElementById('syncdata-console');
+						syncdataConsole.scrollTop = syncdataConsole.scrollHeight;
 					}, 100);
 
-					cocodingLocalEditor.getSession().on('change', function() {
-						settings.syncdata.code = cocodingLocalEditor.getValue();
+					syncdataEditor.getSession().on('change', function() {
+						settings.syncdata.code = syncdataEditor.getValue();
 					});
 
-					cocodingLocalEditor.getSession().selection.on('changeCursor', function(){
+					syncdataEditor.getSession().selection.on('changeCursor', function(){
 						if(!editorInit){
-							settings.syncdata.cursor = cocodingLocalEditor.getCursorPosition();
+							settings.syncdata.cursor = syncdataEditor.getCursorPosition();
 							updateSettings();
 
 						}
 					});
 
-					tidyCode(cocodingLocalEditor);
+					tidyCode(syncdataEditor);
 					loadTippy();
 					editorInit = false;
 				},
 				afterClose: function(){
 					if(reloadVex){
 						vex.close(reloadAlert);
-						cocodingLocalCode();
+						syncdataWindow();
 					}
 				}
 			})
@@ -5157,33 +5159,33 @@ function println(msg){
 					buttons:[],
 					afterOpen: function(){
 						reloadAlert = this;
-						vex.close(localCodeVex);
+						vex.close(syncdataVex);
 					}
 				})
 			}
 		}
 
-		function cocodingLocalCheckPreset(){
+		function syncdataPresetCheck(){
 			let presetName = document.getElementById('presetname-input').value;
 			let presetNameWarning = document.getElementById('presetname-warning');
 			presetNameWarning.innerHTML = '';
-			for(let clp of settings.syncdata.sketches){
-				if(clp.name == presetName){
+			for(let sdp of settings.syncdata.sketches){
+				if(sdp.name == presetName){
 					presetNameWarning.innerHTML = 'SAVE will replace current preset.';
 				}
 			}
 		}
 
-		function cocodingLocalRemovePreset(presetVal){
-			for(let i=0; i < cocodingLocalPresets.length; i++){
-				if(cocodingLocalPresets[i].name == presetVal && cocodingLocalPresets[i].protected || presetVal == ''){
+		function syncdataPresetRemove(presetVal){
+			for(let i=0; i < syncdataPresets.length; i++){
+				if(syncdataPresets[i].name == presetVal && syncdataPresets[i].protected || presetVal == ''){
 					let thisVex = vex.dialog.alert({
 						unsafeMessage:'Can\'t remove P5LIVE preset...',
 					afterOpen: function(){
 						vexSmall(this.rootEl);
 					},
 					afterClose: function(){
-						cocodingLocalCode();
+						syncdataWindow();
 					}
 					})
 					return false;
@@ -5200,9 +5202,9 @@ function println(msg){
 								settings.syncdata.sketches.splice(i, 1);//console.log(i);
 							}
 						}
-						for(let i=0; i < cocodingLocalPresets.length; i++){
-							if(cocodingLocalPresets[i].name == presetVal){
-								cocodingLocalPresets.splice(i, 1);//console.log(i);
+						for(let i=0; i < syncdataPresets.length; i++){
+							if(syncdataPresets[i].name == presetVal){
+								syncdataPresets.splice(i, 1);//console.log(i);
 							}
 						}
 						updateSettings();
@@ -5212,21 +5214,21 @@ function println(msg){
 					vexSmall(this.rootEl);
 				},
 				afterClose: function(){
-					cocodingLocalCode();
+					syncdataWindow();
 				}
 			})
 		}
 
-		function cocodingLocalSavePreset(){
+		function syncdataPresetSave(){
 				let presetChange = false;
 				let presetNamesFiltered = '';
-				for(let clp of settings.syncdata.sketches){
-					presetNamesFiltered += '<option name="'+clp.name+'" value="'+clp.name+'">'+clp.name+'</option>';
+				for(let sdp of settings.syncdata.sketches){
+					presetNamesFiltered += '<option name="'+sdp.name+'" value="'+sdp.name+'">'+sdp.name+'</option>';
 				}
 				let setPresetVex = vex.dialog.confirm({
 					// focusFirstInput : false,
 					callback:function(){},
-					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Set preset name or use existing one to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;cocodingLocalCheckPreset();document.getElementById(\'presetname-input\').select();"><option name="" value="">Select User Preset</option>'+presetNamesFiltered+'</select><br><input style="font-size:14pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="cocodingLocalCheckPreset();"><br><span id="presetname-warning"></span>',
+					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Set preset name or use existing one to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;syncdataPresetCheck();document.getElementById(\'presetname-input\').select();"><option name="" value="">Select User Preset</option>'+presetNamesFiltered+'</select><br><input style="font-size:14pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="syncdataPresetCheck();"><br><span id="presetname-warning"></span>',
 					buttons: [
 					{
 						type: 'submit',
@@ -5238,8 +5240,8 @@ function println(msg){
 
 							// check duplicate name
 							let replacePreset = false;
-							for(let clp of settings.syncdata.sketches){
-								if(clp.name == presetName){
+							for(let sdp of settings.syncdata.sketches){
+								if(sdp.name == presetName){
 									replacePreset = true;
 								}
 							}
@@ -5252,13 +5254,13 @@ function println(msg){
 										settings.syncdata.sketches[i].code = newPreset.code;
 									}
 								}
-								for(let i=0; i < cocodingLocalPresets.length; i++){
-									if(cocodingLocalPresets[i].name == presetName){
-										cocodingLocalPresets[i].code = newPreset.code;
+								for(let i=0; i < syncdataPresets.length; i++){
+									if(syncdataPresets[i].name == presetName){
+										syncdataPresets[i].code = newPreset.code;
 									}
 								}
 							}else{
-								cocodingLocalPresets.push(newPreset);
+								syncdataPresets.push(newPreset);
 								settings.syncdata.sketches.push(newPreset);
 							}
 							updateSettings();
@@ -5278,28 +5280,28 @@ function println(msg){
 						setTimeout(function(){document.getElementById('presetname-input').focus();}, 100);
 					},
 					afterClose: function(){
-						cocodingLocalCode();
+						syncdataWindow();
 					}
 				})
 			}
 
-		function cocodingLocalChangePreset(presetVal, localEditor){
+		function syncdataPresetChange(presetVal, localEditor){
 			if(presetVal != 'select'){
-				for(let clp of cocodingLocalPresets){
-					if(clp.name == presetVal){
-						if(!clp.protected){
+				for(let sdp of syncdataPresets){
+					if(sdp.name == presetVal){
+						if(!sdp.protected){
 							document.getElementById('preset-button-remove').style.display = 'inline';
 							document.getElementById('preset-button-group').style.display = 'inline';
 						}else{
 							document.getElementById('preset-button-remove').style.display = 'none';
 						}
-						cocodingLocalCearConsole()
+						syncdataConsoleClear()
 						settings.syncdata.cursor = {row:0, column:0};
 						updateSettings();
-						cocodingLocalEditor.setValue(clp.code, -1);
+						syncdataEditor.setValue(sdp.code, -1);
 						document.getElementById('preset-button-remove').setAttribute('name', presetVal);
 						setTimeout(function(){
-							cocodingLocalEditor.gotoLine(settings.syncdata.cursor.row, settings.syncdata.cursor.column);
+							syncdataEditor.gotoLine(settings.syncdata.cursor.row, settings.syncdata.cursor.column);
 						}, 100);
 
 					}
@@ -5307,71 +5309,67 @@ function println(msg){
 			}
 		}
 
-		function cocodingLocalCearConsole(){
+		function syncdataConsoleClear(){
 			settings.syncdata.console = [];
 			updateSettings();
-			if(document.getElementById('cocoding-localcode-console')){
-				document.getElementById('cocoding-localcode-console').innerHTML = '';
+			if(document.getElementById('syncdata-console')){
+				document.getElementById('syncdata-console').innerHTML = '';
 			}
 		}
 
-		function toggleCocodingLocalButton(){
-			let localCodeBtn = document.getElementById('cocode-local-button');
+		function syncdataButtonToggle(){
+			let syncdataBtn = document.getElementById('syncdata-button');
 			if(settings.syncdata.active){
-				localCodeBtn.style.backgroundColor = '#aaaa00';
+				syncdataBtn.style.backgroundColor = '#aaaa00';
 			}else{
-				localCodeBtn.style.backgroundColor = '#666';
+				syncdataBtn.style.backgroundColor = '#666';
 			}
 		}
 
-		function prepCocodingLocal(){
+		function syncdataParse(){
 			if(settings.cocoding.active && settings.syncdata.active){
-				parseCocodingLocal();
-			}
-		}
-
-		function parseCocodingLocal(){
-			toggleCocodingLocalButton();
-			if(!settings.syncdata.active){
-				return false;
-			}
-
-			// parse scripts to p5Frame
-			settings.syncdata.libs = processLibs(removeComments(settings.syncdata.code));
-			updateSettings();
-
-			let scriptsCol = [];
-			for(let ccll of settings.syncdata.libs){
-				scriptsCol.push(ccll);
-			}
-
-			let localID = 'cocoding-local-code';
-			let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
-			scriptsColJoin += ",'includes/js/p5live.cocoding.js'";
-			let s = document.createElement('script');
-			s.type = 'text/javascript';
-
-			let wholeLocal = settings.syncdata.code;
-			if(wholeLocal.indexOf('/* 2 - COCODE */') > -1){
-				wholeLocal = wholeLocal.substr(0, wholeLocal.indexOf('/* 2 - COCODE */'));
-			}
-
-			let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+localID+'", '+JSON.stringify(wholeLocal)+');})';
-
-			s.innerHTML = sLoader;
-
-			if(sketchLoaded){
-				if(scriptsCol.length > 0){
-					p5f.document.head.appendChild(s);
-				}else{
-					pongReady(localID, wholeLocal);
+				syncdataButtonToggle();
+				if(!settings.syncdata.active){
+					return false;
 				}
-			}
 
-			document.getElementById('cocode-local-button').style.backgroundColor = '#008800';
+				// parse scripts to p5Frame
+				settings.syncdata.libs = processLibs(removeComments(settings.syncdata.code));
+				updateSettings();
+
+				let scriptsCol = [];
+				for(let ccll of settings.syncdata.libs){
+					scriptsCol.push(ccll);
+				}
+
+				let syncdataID = 'syncdata-code';
+				let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
+				scriptsColJoin += ",'includes/js/p5live.cocoding.js'";
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+
+				let syncdataCode = settings.syncdata.code;
+				if(syncdataCode.indexOf('/* 2 - COCODE */') > -1){
+					syncdataCode = syncdataCode.substr(0, syncdataCode.indexOf('/* 2 - COCODE */'));
+				}
+
+				let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+syncdataID+'", '+JSON.stringify(syncdataCode)+');})';
+
+				s.innerHTML = sLoader;
+
+				if(sketchLoaded){
+					if(scriptsCol.length > 0){
+						p5f.document.head.appendChild(s);
+					}else{
+						pongReady(syncdataID, syncdataCode);
+					}
+				}
+
+				document.getElementById('syncdata-button').style.backgroundColor = '#008800';
+			}
 		}
 
-		function cocodingLocalClipboard(){
+		function syncdataCocode(){
 			let cocodeBreak = '/* 2 - COCODE */';
 			if(settings.syncdata.code.indexOf(cocodeBreak) == -1){
 				let thisVex = vex.dialog.alert({
@@ -5395,36 +5393,37 @@ function println(msg){
 			tidyCode(editor);
 		}
 
-		function syncData(obj){
+		function syncdataSend(obj){
 			if(settings.cocoding.lockdown){
 				if(settings.cocoding.level != 'admin' && !settings.cocoding.writemode){
 					return false;
 				}
 			}
 			syncUp();
-			obj.uselocalcode = settings.syncdata.active;
+			obj.usesyncdata = settings.syncdata.active;
 			cocode.socket.emit('syncData', obj);
 		}
 
-		function copyLink(elm){
-			let dummy = document.createElement('input'),
-			text = window.location.href;
+		// GUI replaced by Sync Data...
+		// function copyLink(elm){
+		// 	let dummy = document.createElement('input'),
+		// 	text = window.location.href;
 
-			document.body.appendChild(dummy);
-			dummy.value = text;
-			dummy.select();
-			document.execCommand('copy');
-			document.body.removeChild(dummy);
+		// 	document.body.appendChild(dummy);
+		// 	dummy.value = text;
+		// 	dummy.select();
+		// 	document.execCommand('copy');
+		// 	document.body.removeChild(dummy);
 
-			// share info
-			let oldContent = elm._tippy.props.content;
-			elm._tippy.setContent('Copied!');
-			elm._tippy.show(200);
-			setTimeout(function(){
-				elm._tippy.hide();
-				elm._tippy.setContent(oldContent);
-			}, 800);
-		}
+		// 	// share info
+		// 	let oldContent = elm._tippy.props.content;
+		// 	elm._tippy.setContent('Copied!');
+		// 	elm._tippy.show(200);
+		// 	setTimeout(function(){
+		// 		elm._tippy.hide();
+		// 		elm._tippy.setContent(oldContent);
+		// 	}, 800);
+		// }
 
 		function toggleLockdown(){
 			settings.cocoding.lockdown = !settings.cocoding.lockdown;
@@ -5434,17 +5433,17 @@ function println(msg){
 
 		function updateToggleLockdown(){
 			let settingsLockdown = document.getElementById('cocode-lockdown');
-			let settingsLocalButton = document.getElementById('cocode-local-button');
+			let syncdataBtn = document.getElementById('syncdata-button');
 			if(settings.cocoding.lockdown){
 				settingsLockdown.innerHTML = iconLock;
 				if(settings.cocoding.level != 'admin'){
-					settingsLocalButton.setAttribute('disabled', 'disabled');
+					syncdataBtn.setAttribute('disabled', 'disabled');
 				}else if(settings.cocoding.writemode){
-					settingsLocalButton.removeAttribute('disabled');
+					syncdataBtn.removeAttribute('disabled');
 				}
 			}else{
 				settingsLockdown.innerHTML = iconUnlock;
-				settingsLocalButton.removeAttribute('disabled');
+				syncdataBtn.removeAttribute('disabled');
 			}
 			toggleButtonActive(settingsLockdown, settings.cocoding.lockdown);
 
