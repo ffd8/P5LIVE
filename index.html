@@ -3758,7 +3758,9 @@ function println(msg){
 						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
 					}
 				}
-				p5frame.style.background = newBG;
+				p5f.document.body.style.background = newBG; // ***
+				p5frame.style.background = newBG; // ***
+
 			}
 		}
 

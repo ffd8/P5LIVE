@@ -16,6 +16,10 @@
           "type": "sketch"
         },
         {
+          "name": "syncdata-facetracker",
+          "type": "sketch"
+        },
+        {
           "name": "syncdata-midi",
           "type": "sketch"
         }
@@ -30,6 +34,10 @@
     {
       "sketchName": "syncdata-mouseXY",
       "sketchCode": "/* syncData Preset : mouseXY\nSends your mouseX/mouseY + random color to all users.\nDraws each received signal as ellipse on demand.\n\n0 - PREFS (unique local settings)\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (add to COCODING session)\n*/\n\n/* 0 - PREFS */\nlet userID = 0; // use unique ID for parsing getData later\nlet delay = 0.05; // time in sec\n\n\n/* 1 - SYNC DATA */\nlet obj = {\n\ttype: 'mouseXY',\n\tuser: userID,\n\tx: 0,\n\ty: 0,\n\ts:40,\n\tcolor: '#' + Math.floor(Math.random() * 16777215).toString(16)\n};\n\nsetInterval(function() {\n\t// only update if mouse moved\n\tif(mouseX != obj.x && mouseY != obj.y) {\n\t\tobj.x = mouseX;\n\t\tobj.y = mouseY;\n\t\tsendData(obj); // send data to group!\n\t}\n}, delay * 1000);\n\n\n\n/* 2 - COCODE */\nfunction parseData(obj) {\n\t// parse only 'mouseXY' data\n\tif(obj.type && obj.type === 'mouseXY') {\n\t\tfill(obj.color);\n\t\tellipse(obj.x, obj.y, obj.s);\n\t\tfill(255);\n\t\ttextSize(obj.s/2);\n\t\ttextAlign(CENTER, CENTER);\n\t\ttext(obj.user, obj.x, obj.y);\n\t}\n}"
+    },
+    {
+      "sketchName": "syncdata-facetracker",
+      "sketchCode": "/* syncData Preset : facetracker\n// inspired by https://kylemcdonald.github.io/cv-examples/\n\n0 - PREFS unique local settings\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (keep exact header below, ignored locally, add to COCODE)\n*/\n\n/* 0 - PREFS */\nlet userID = 0; // use unique ID per user to separate multiple syncs\n\n\n/* 1 - SYNC DATA */\nlet libs = ['https://www.auduno.com/clmtrackr/build/clmtrackr.min.js']\nlet capture, tracker;\nlet obj = {\n\ttype: 'facetracker',\n\tid: userID,\n\tw: 320,\n\th: 240,\n\tscl: 1,\n\tcol: '#' + Math.floor(Math.random() * 16777215).toString(16),\n\tpositions: [],\n};\n\nsetupTracker();\n\nfunction setupTracker() {\n\tcapture = createCapture({\n\t\taudio: false,\n\t\tvideo: {\n\t\t\twidth: obj.w,\n\t\t\theight: obj.h\n\t\t}\n\t}, function() {\n\t\tconsole.log('capture ready.')\n\t});\n\tcapture.size(obj.w, obj.h);\n\tcapture.hide();\n\ttracker = new clm.tracker();\n\ttracker.init();\n\ttracker.start(capture.elt);\n\tobj.scl = width / obj.w;\n}\n\n// send regular pulse of positions\nsetInterval(function() {\n\tif(tracker) {\n\t\tobj.positions = tracker.getCurrentPosition();\n\t\tsendData(obj); // user data\n\t}\n}, 50);\n\n/* 2 - COCODE */\nlet data = [];\n\nfunction parseData(obj) {\n\t// parse only 'facetracker' data\n\tif(obj.type && obj.type == 'facetracker') {\n\t\tdata[obj.id] = obj; // add to data for use in draw()\n\t}\n}\n\n/* place following code in draw() \nbackground(0, 15);\nfor(let d of data) {\n\tbackground(0)\n\tnoStroke();\n\tfill(d.col);\n\tfor(let i = 0; i < d.positions.length; i++) {\n\t\tellipse(width - d.positions[i][0] * d.scl, d.positions[i][1] * d.scl, 10);\n\t}\n}\n*/"
     },
     {
       "sketchName": "syncdata-midi",
