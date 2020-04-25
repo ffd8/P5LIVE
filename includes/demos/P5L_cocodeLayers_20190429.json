@@ -1,8 +1,0 @@
-{
-  "sketches": [
-    {
-      "sketchName": "cocodeLayers",
-      "sketchCode": "/* cocodeLayers // cc teddavis.org 2019\t\t*/\n/* Add layer#() functions below as needed\t*/\n\n\nfunction layer0(c){\n\tc.clear(); // to clear rendering trace\n\tc.fill(frameCount%255);\n\tc.circle(mouseX, mouseY, 100);\n}\n\nfunction layer1(c){\n\tc.stroke(0, 255, 255, 50);\n\tc.line(width/2, height/2, mouseX, mouseY);\n}\n\n// function layer2(c){\n// \tc.fill(255);\n// \tc.text(\"hi, i'm layer 2\", mouseX, mouseY);\n// }\n\n\n\n\n\n/* COLLECTIVE CODE, DON'T EDIT BELOW\t\t*/\n/* START\t\t\t\t\t\t\t\t\t*/\n\n/* SETTINGS\t\t\t\t\t\t\t\t\t*/\nvar layerCount = 5; // number of layers (add as needed)\nvar layerDensity = 1; // pixelDensity per layer \n\n\nvar cocodeLayers = [];\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tprepImgs();\n}\n\nfunction draw() {\n\tbackground(0);\n\tbuildImgs();\n\trenderImgs();\n}\n\nfunction prepImgs(){\n\tfor(var i=0; i< layerCount; i++){\n\t\tcocodeLayers.push(createGraphics(width, height));\n\t\tcocodeLayers[i].pixelDensity(layerDensity);\n\t}\n}\n\nfunction buildImgs(){\n\tfor(var i=0; i< layerCount; i++){\n\t\t// add logic for turning layers on/off\n\t\ttry{push();window[\"layer\"+i](cocodeLayers[i]);pop();}catch(e){}\n\t}\t\n}\n\nfunction renderImgs(){\n\tfor(var i=0; i< layerCount; i++){\n\t\timage(cocodeLayers[i], 0, 0, width, height);\n\t}\n}\n\n/* END\t\t\t\t\t\t\t\t\t\t*/\n/* COLLECTIVE CODE, DON'T EDIT ABOVE\t\t*/\n"
-    }
-  ]
-}
