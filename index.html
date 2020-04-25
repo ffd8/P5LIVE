@@ -516,7 +516,9 @@ function println(msg){
 				'active': false,
 				'libs' : [],
 				'cursor': {row:0, column:0},
-				'console': []
+				'console': [],
+				'namespace': '',
+				'cocodeadded':false
 			},
 			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'msgID':-1, 'hasAdmin':false},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
@@ -1160,7 +1162,7 @@ function println(msg){
 
 							let userNavIconsCount = 1;
 							let userNavIcons = '<div class="cocoding-nav">';
-							if(users[i].syncdata.active && (!settings.cocoding.lockdown || users[i].writemode)){
+							if(users[i].usesyncdata && (!settings.cocoding.lockdown || users[i].writemode)){
 								userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
 									userNavIcons += '<div class="cocoding-sketch-button-user">'+userIcon+'</div>';
 									userNavIcons += '<div class="cocoding-sketch-button-radio">'+iconRadio+'</div>';
@@ -1828,6 +1830,7 @@ function println(msg){
 				settings.refresh = true;
 			});
 			updateSettings();
+
 			if(settings.revision == undefined || settings.revision < currentRevision){
 				settings.revision = currentRevision;
 				settings.version = initSettings.version;
@@ -1836,6 +1839,7 @@ function println(msg){
 				settings.refresh = true;
 				updateSettings();
 			}
+
 			document.getElementById('menu-p5live-version').innerHTML = settings.version;
 			loaderSub.innerHTML = 'settings...';
 			fontSizeUpdate();
@@ -3683,18 +3687,28 @@ function println(msg){
 				scriptsCol.push(scriptsList[i]);
 			}
 
+			// old way ***
+			// for(let sc of scriptsCol){
+			// 	let s = document.createElement('script');
+			// 	s.type = 'text/javascript';
+			// 	s.src = sc;
+			// 	s.async = false;
+			// 	iFrameBody.appendChild(s);
+			// }
+
 			// load sketch
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
 			let sketchCode = editor.getValue();
-			let updateVars = '\npmouseX='+p5vars.mouseX+';\npmouseY='+p5vars.mouseY+';\nmouseX='+p5vars.mouseX+';\nmouseY='+p5vars.mouseY+';\nframeCount='+p5vars.frameCount+';\n';
+			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
 
 			let fullCode = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
 
-			let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
-			let sLoader = 'let mainJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("p5Main", '+JSON.stringify(fullCode)+');})';
+			let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },async: false});';
+
 			s.innerHTML = sLoader;
+			// s.innerHTML = fullCode; // *** old way
 			if(settings.syncdata.active){
 				syncdataButtonToggle();
 			}
@@ -3758,8 +3772,8 @@ function println(msg){
 						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
 					}
 				}
-				p5f.document.body.style.background = newBG; // ***
-				p5frame.style.background = newBG; // ***
+				p5f.document.body.style.background = newBG;
+				p5frame.style.background = newBG;
 
 			}
 		}
@@ -4965,9 +4979,6 @@ function println(msg){
 				let sessID = makeid(5);
 				settings.cocoding.active = true;
 				settings.cocoding.token = hashCode(sessID);
-				syncdataConsoleClear();
-				settings.syncdata.active = false;
-				settings.syncdata.libs = [];
 				updateSettings();
 				document.location.search = 'cc=' + sessID;
 			}
@@ -4994,6 +5005,10 @@ function println(msg){
 			menuCocodeHolder.style.display = 'block';
 			menuCocodeChatHolder.style.display = 'block';
 			editor.setValue('// Loading COCODING Session: '+settings.cocoding.namespace, 1);
+			syncdataConsoleClear();
+			settings.syncdata.active = false;
+			settings.syncdata.libs = [];
+			updateSettings();
 			cocode = new CocodeApp(settings.cocoding.namespace);
 			if(cocodingFirstTime){
 				setTimeout(function(){
@@ -5053,7 +5068,7 @@ function println(msg){
 
 			let syncdataVex = vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved in local settings, <code>Load Preset</code> replaces it.</div><select name="Presets" onchange="syncdataPresetChange(this.value)"><option name="select" value="select">Load Preset</option>'+syncdataPresetsOptions+'Load Preset</option></select> <span id="preset-button-group"><button onclick="vex.closeAll();syncdataPresetSave();" class="tippy" data-title="Create new preset">Save</button> <button id="preset-button-remove" onclick="vex.closeAll();syncdataPresetRemove(this.name);" name="" class="tippy" data-title="Remove preset" style="display:none;">Remove</button></span><br><br><div class="syncdata-header code-header">code</div><div id="syncdata" class="vex-long popup-editor"></div><div class="syncdata-header tippy-left" style="cursor:pointer;" data-title="Click to Clear Console" onclick="syncdataConsoleClear();">console</div><textarea id="syncdata-console" readonly="readonly">'+settings.syncdata.console.join('\n')+'</textarea>',
+				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved in local settings, <code>Load Preset</code> replaces it.</div><select name="Presets" onchange="syncdataPresetChange(this.value)"><option name="select" value="select">Load Preset</option>'+syncdataPresetsOptions+'Load Preset</option></select> <span id="preset-button-group"><button onclick="vex.closeAll();syncdataPresetSave();" class="tippy" data-title="Create new preset">Save Preset</button> <button id="preset-button-remove" onclick="vex.closeAll();syncdataPresetRemove(this.name);" name="" class="tippy" data-title="Remove selected preset" style="display:none;">Remove Preset</button></span><br><br><div class="syncdata-header code-header">code</div><div id="syncdata" class="vex-long popup-editor"></div><div class="syncdata-header tippy-left" style="cursor:pointer;" data-title="Click to Clear Console" onclick="syncdataConsoleClear();">console</div><textarea id="syncdata-console" readonly="readonly">'+settings.syncdata.console.join('\n')+'</textarea>',
 
 				callback: function (value) {},
 				buttons: [
@@ -5082,20 +5097,23 @@ function println(msg){
 					click: function updateCode () {
 						settings.syncdata.active = false;
 						settings.syncdata.libs = [];
-						syncdataSend({meta:'stop'});
 						updateSettings();
+						syncdataSend({meta:'stop'});
 						syncdataButtonToggle();
 						recompile(true);
-						prepReload();
+						vex.close(syncdataVex);
 					}
 				} : {
 					className: 'hide-button' // hide if unused
 				},
-				settings.syncdata.active && settings.cocoding.level == 'admin' ? {
+				settings.syncdata.active && settings.cocoding.level == 'admin' && !settings.syncdata.cocodeadded ? {
 					type: 'cocode',
 					text: '↓ COCODE',
 					click: function updateCode () {
+						settings.syncdata.cocodeadded = true;
+						updateSettings();
 						syncdataCocode();
+						vex.close(syncdataVex);
 					}
 				} : {
 					className: 'hide-button' // hide if unused
@@ -5299,6 +5317,7 @@ function println(msg){
 						}
 						syncdataConsoleClear()
 						settings.syncdata.cursor = {row:0, column:0};
+						settings.syncdata.cocodeadded = false;
 						updateSettings();
 						syncdataEditor.setValue(sdp.code, -1);
 						document.getElementById('preset-button-remove').setAttribute('name', presetVal);
@@ -5344,9 +5363,11 @@ function println(msg){
 					scriptsCol.push(ccll);
 				}
 
+				scriptsCol.push('includes/js/p5live.cocoding.js');
+
 				let syncdataID = 'syncdata-code';
-				let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
-				scriptsColJoin += ",'includes/js/p5live.cocoding.js'";
+				// let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
+				// scriptsColJoin += ",'includes/js/p5live.cocoding.js'";
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
 
@@ -5355,12 +5376,12 @@ function println(msg){
 					syncdataCode = syncdataCode.substr(0, syncdataCode.indexOf('/* 2 - COCODE */'));
 				}
 
-				let sLoader = 'let localJS = loadJS(['+scriptsColJoin+']).then(function() {pingReady("'+syncdataID+'", '+JSON.stringify(syncdataCode)+');})';
+				let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("'+syncdataID+'", ' + JSON.stringify(syncdataCode) + '); },async: false});';
 
 				s.innerHTML = sLoader;
 
 				if(sketchLoaded){
-					if(scriptsCol.length > 0){
+					if(scriptsCol.length > 1){
 						p5f.document.head.appendChild(s);
 					}else{
 						pongReady(syncdataID, syncdataCode);
