@@ -376,6 +376,12 @@ h2{
 #menu-sketches-filter-clear:hover{
 	opacity:1;
 }
+.filter-match{
+	color:#00ff00 !important;
+}
+.filter-match li, .filter-match ul{
+	color:#fff;
+}
 .menu-button{
 	color:#fff;
 	background:#666;

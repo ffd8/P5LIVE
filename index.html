@@ -556,6 +556,7 @@ function println(msg){
 		menuCocodeChatHolder = document.getElementById('menu-cocode-chat-holder'),
 		menuCocodeChatInput = document.getElementById('chat-input'),
 		menuCocodeChatDialog = document.getElementById('menu-cocode-chat-dialog'),
+		sketchesHolder = document.getElementById('menu-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSketchesFilter = document.getElementById('menu-sketches-filter'),
 		menuSketchesCounter = document.getElementById('menu-sketches-counter'),
@@ -588,7 +589,7 @@ function println(msg){
 		notify = document.getElementById('notify'),
 		shortcutRecording = false, p5Remote = false,
 		settings = getSettings(),
-		validCode = true,
+		validCode = true, sketchesFirstTime = true,
 		sketchLoaded = false, forceRecompile = false,
 		pLen = 0, paused = false,
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
@@ -2018,7 +2019,6 @@ function println(msg){
 		}
 
 		function resizeSketchesHolder(){
-			let sketchesHolder = document.getElementById('menu-sketches-holder');
 			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
 			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
 			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2)-5 + 'px';
@@ -2230,52 +2230,71 @@ function println(msg){
 			let filter = menuSketchesFilter.value.toUpperCase();
 			let filterItems = menuSketches.getElementsByClassName('drag-item');
 
-			// clear previous filtered items within folders
-			let clearFilters = menuSketches.getElementsByClassName('filter');
-			for(let i=0; i < clearFilters.length;i++){
-				clearFilters[i].classList.remove('filter');
+			// remove filter from all
+			for(let fi of filterItems){
+				fi.classList.remove('filter');
+				fi.classList.remove('filter-match');
 			}
 
+			// if chars typed
 			if(filter != ''){
-				for (let i = 0; i < filterItems.length; i++) {
-					let filterItemName = filterItems[i].getAttribute('data-id');
-					if (filterItemName.toUpperCase().indexOf(filter) > -1 || filterItems[i].classList.value.indexOf('filter') > -1) {
-						filterItems[i].style.display = '';
+				// scroll back to top
+				sketchesHolder.scrollTop = 0;
 
-						// dig into folders and show those items too (incase folder name was filtered)
-						if(filterItems[i].getAttribute('data-type') == 'folder'){
-							filterItems[i].getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
-							let filterChildren = filterItems[i].children;
-							for(let i=0; i < filterChildren.length;i++){
-								let fc = filterChildren[i];
-								if(fc.tagName != undefined && (fc.tagName.toUpperCase() == 'LI' || fc.tagName.toUpperCase() == 'UL')){
-									filterChildren[i].classList.add('filter')
-									if(fc.tagName.toUpperCase() == 'UL'){
-										fc.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
-									}
+				for (let fi of filterItems) {
+
+					// if item's name filtered
+					let filterItemName = fi.getAttribute('data-id');
+					if (filterItemName.toUpperCase().indexOf(filter) > -1) {
+
+						// add to filter items
+						fi.classList.add('filter');
+
+						// if item folder, filter-reveal all children
+						if(fi.getAttribute('data-type') == 'folder'){
+							fi.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+							let fiKids = fi.getElementsByClassName('drag-item');
+							for(let fik of fiKids){
+								fik.classList.add('filter');
+								if(fik.getAttribute('data-type') == 'folder'){
+									fik.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
 								}
 							}
 						}
+
+						// if item within folder, filter-reveal all parents
+						let folderParents = getParentFolders(fi);
+						for(let fp of folderParents){
+							fp.classList.add('filter');
+							fp.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+						}
 					} else {
-						filterItems[i].style.display = 'none';
+						// else hide item
+						fi.style.display = 'none';
 					}
 				}
 
-				// cycle through child elements of filtered folder and show
+				// show all filtered ietms, mark matches
 				let getFilters = menuSketches.getElementsByClassName('filter');
-				for(let i=0; i < getFilters.length;i++){
-					getFilters[i].style.display = 'block';
+				for(let gf of getFilters){
+					gf.style.display = 'block';
+					let filterItemName = gf.getAttribute('data-id');
+					if (filterItemName != undefined && filterItemName.toUpperCase().indexOf(filter) !== -1){
+						gf.classList.add('filter-match');
+					}
+				}
+
+				// hide demos (unless modifying)
+				if(demosFolder != undefined && demosLocked){
+					demosFolder.style.display = 'none';
 				}
 
 				// change filter icon based on state
-				if(demosFolder != undefined){
-					demosFolder.style.display = 'none';
-				}
 				filterClear.innerHTML = iconX;
 			}else{
 				// show all if filter empty
-				for (let i = 0; i < filterItems.length; i++) {
-					filterItems[i].style.display = '';
+				for (let fi of filterItems) {
+					fi.style.display = '';
 				}
 				if(demosFolder != undefined){
 					demosFolder.style.display = '';
@@ -2283,6 +2302,15 @@ function println(msg){
 				filterClear.innerHTML = iconFilter;
 				initSortable();
 			}
+		}
+
+		function getParentFolders(elem) {
+			var parents = [];
+			while(elem.parentNode && elem.parentNode.nodeName.toLowerCase() == 'ul') {
+				elem = elem.parentNode;
+				parents.push(elem);
+			}
+			return parents;
 		}
 
 		// clear filter
@@ -2293,6 +2321,8 @@ function println(msg){
 				menuSketchesFilter.value = '';
 				filterSketches();
 			}
+			sketchesFirstTime = true;
+			sketchScrollIntoView();
 		}
 
 		// padding version numbers of sketch
@@ -3043,6 +3073,18 @@ function println(msg){
 				if(menuSketchesFilter.value != ''){
 					filterSketches();
 				}
+
+				// scroll to selected sketch
+				sketchScrollIntoView();
+
+			}
+		}
+
+		function sketchScrollIntoView(){
+			let selSketch = document.getElementsByClassName('sketch-selected');
+			if(selSketch.length > 0 && sketchesFirstTime){
+				selSketch[0].scrollIntoView();
+				sketchesFirstTime = false;
 			}
 		}
 

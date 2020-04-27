@@ -202,7 +202,7 @@ requestStats(server, function (stats) {
 
 // must be after app.get()!
 if(!online){
-	app.use(express.static('./', { maxAge: 3600000 })); // enable 1-hour cache for fast local loading
+	app.use(express.static('./')); //, { maxAge: 3600000 } enable 1-hour cache for fast local loading
 }
 
 // *** remove RGA / data
