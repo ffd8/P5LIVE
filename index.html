@@ -265,6 +265,10 @@
 						<input type="checkbox" id="settings-notifytoggle" name="settings-notifytoggle" value="settings-notifytoggle"> Notifications
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Toggle Warning – P5LIVE in Multiple Tabs<br>(could lead to data-loss)" onclick="multitabToggle();">
+						<input type="checkbox" id="settings-mutitabtoggle" name="settings-mutitabtoggle" value="settings-mutitabtoggle"> Multi-Tab Warning
+					</div>
+
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
@@ -402,6 +406,7 @@ function println(msg){
 			'menutab':true,
 			'exportCode':true,
 			'notifyToggle':true,
+			'multitabToggle':true,
 			'debugMode': false,
 			'editMode':true,
 			'safeMode': false,
@@ -566,6 +571,7 @@ function println(msg){
 		settingsLockDrag = document.getElementById('settings-lockdrag'),
 		settingsPassEditorKeys = document.getElementById('settings-passeditorkeys'),
 		settingsNotify = document.getElementById('settings-notifytoggle'),
+		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsShortcuts = document.getElementById('menu-shortcuts-holder'),
@@ -1817,17 +1823,22 @@ function println(msg){
 			}
 
 			// make sure all settings are there
+			let settingsChanged = false;
 			Object.keys(initSettings).forEach(function(k){
 				if(!settings.hasOwnProperty(k)){
 					settings[k] = initSettings[k];
+					settingsChanged = true;
 				}else if(typeof initSettings[k] === 'object'){
 					Object.keys(initSettings[k]).forEach(function(kk){
 						if(!settings[k].hasOwnProperty(kk)){
 							settings[k][kk] = initSettings[k][kk];
+							settingsChanged = true;
 						}
 					});
 				}
-				settings.refresh = true;
+				if(settingsChanged){
+					settings.refresh = true;
+				}
 			});
 			updateSettings();
 
@@ -1855,6 +1866,7 @@ function println(msg){
 			lockDragUpdate();
 			exportcodeUpdate();
 			notifyToggleUpdate();
+			multitabToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
@@ -1948,22 +1960,24 @@ function println(msg){
 
 			// test multiple open
 			// inspiration: https://stackoverflow.com/a/43291970/10885535
-			localStorage.openpages = Date.now();
-			var onLocalStorageEvent = function(e){
-				if(e.key == "openpages"){
-					// Listen if anybody else opening the same page!
-					localStorage.page_available = Date.now();
-				}
-				if(e.key == "page_available"){
-					vex.dialog.alert({
-						unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one, to avoid data loss.',
-						afterOpen: function(){
-							vexSmall(this.rootEl);
-						}
-					});
-				}
-			};
-			window.addEventListener('storage', onLocalStorageEvent, false);
+			if(settings.multitabToggle){
+				localStorage.openpages = Date.now();
+				var onLocalStorageEvent = function(e){
+					if(e.key == "openpages"){
+						// Listen if anybody else opening the same page!
+						localStorage.page_available = Date.now();
+					}
+					if(e.key == "page_available"){
+						vex.dialog.alert({
+							unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one to avoid data loss.',
+							afterOpen: function(){
+								vexSmall(this.rootEl);
+							}
+						});
+					}
+				};
+				window.addEventListener('storage', onLocalStorageEvent, false);
+			}
 		}
 
 		function getParam(paramSearch){
@@ -2315,16 +2329,17 @@ function println(msg){
 				return false;
 			}
 			let forkName = versionCheck(settings.fileName);
+			let tc = timeDate();
 
 			let checkDir = searchJSON(settings.sketches, 'name', settings.fileName)[0];
 			settings.fileName = forkName;
 			updateSettings();
 			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos'){
 				let useDir = searchJSON(settings.sketches, 'name', checkDir.parent)[0];
-				useDir.contents.unshift({'type':'sketch', 'name':forkName});
+				useDir.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 				useDir.toggle = 'expand';
 			}else{
-				settings.sketches.unshift({'type':'sketch', 'name':settings.fileName});
+				settings.sketches.unshift({'type':'sketch', 'name':settings.fileName, 'mod':tc});
 			}
 
 			updateSketches();
@@ -2334,6 +2349,7 @@ function println(msg){
 		}
 
 		function cloneSketchCOCODING(){
+			let tc = timeDate();
 			let forkSession = 'cc_'+settings.cocoding.namespace+'_'+settings.cocoding.timestamp;
 			if(searchJSON(settings.sketches, 'name', forkSession).length == 0){
 				addFolder(forkSession);
@@ -2344,7 +2360,7 @@ function println(msg){
 			settings.fileName = forkName;
 			updateSettings();
 			let forkObj = searchJSON(settings.sketches, 'name', forkSession)[0];
-			forkObj.contents.unshift({'type':'sketch', 'name':forkName});
+			forkObj.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 			forkObj.toggle = 'expand';
 			updateSketches();
 			localStorage[forkName] = editor.getValue();
@@ -2543,8 +2559,12 @@ function println(msg){
 		function exportSketch(sketch){
 			let jsonExport = {};
 			jsonExport.sketches = [];
-			jsonExport.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
-			exportJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp()+'.json');
+
+			// grab sketch details (timestamps)
+			let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
+
+			jsonExport.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch), 'mod': sketchDetails.mod});
+			exportJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp(sketchDetails.mod)+'.json');
 			if(settings.debugMode){console.log(jsonExport);}
 		}
 
@@ -2558,7 +2578,10 @@ function println(msg){
 			tempSketches.sketches = [];
 			listSketches(folderObj).forEach(function (sketch){
 				if(localStorage.hasOwnProperty(sketch)){
-					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
+					// grab sketch details (timestamps)
+					let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
+
+					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch), 'mod': sketchDetails.mod});
 				}
 			});
 			exportJSON(tempSketches, 'P5L_FOLDER_' + folder + '_' + timeStamp() + '.json');
@@ -2862,12 +2885,13 @@ function println(msg){
 
 		function legacySettings(){
 			if(typeof settings.sketches[0] != 'object'){
+				let tc = timeDate();
 				let order = settings.sketches;
 				let newOrder = [];
 				let oldDemos = ["aboutsketch", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_sphereBox", "textToPoints", "basel.codes", "this is a really long name"];
 				order.forEach(function(o){
 					if(!oldDemos.includes(o)){
-						newOrder.push({'name':o, 'type':'sketch'});
+						newOrder.push({'name':o, 'type':'sketch', 'mod':tc});
 					}
 				});
 				settings.sketches = newOrder;
@@ -2877,8 +2901,6 @@ function println(msg){
 			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){
 				loadDemos();
 			}
-
-
 		}
 
 		function getOrder() {
@@ -2894,6 +2916,13 @@ function println(msg){
 						}
 
 						const nodeStats = { name: nodeName };
+
+						// add timestamps if they don't exist!
+						if(node.dataset.mod === undefined){
+							let tc = timeDate();
+							node.dataset.mod = tc;
+						}
+						nodeStats.mod = node.dataset.mod;
 
 						if (node.dataset.type == 'folder') {
 							nodeStats.type = 'folder';
@@ -2932,6 +2961,13 @@ function println(msg){
 					let html = '<li class="sortable-placeholder" data-type="buffer"></li>';
 					for (let key in data) {
 						let d = data[key];
+
+						// add timestamps if they don't exist!
+						if(d.mod === undefined){
+							let tc = timeDate();
+							d.mod = tc;
+						}
+
 						let marq = '';
 						let demoClass = ' drag-item ';
 						let demoFolder = '';
@@ -2950,7 +2986,8 @@ function println(msg){
 								selClass = 'sketch-selected';
 								selSelected = true;
 							}
-							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
+
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
 							let icon = iconFolderExpand;
@@ -2971,7 +3008,7 @@ function println(msg){
 								icon = iconFolderEmpty;
 								d.toggle = 'collapse';
 							}
-							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
+							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-mod="'+d.mod+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
 							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span>' +d.name + '</div></div> ';
 							html += recurse(d.contents, curFolder);
 							html += '</ul>';
@@ -3107,7 +3144,8 @@ function println(msg){
 		}
 
 		function addFolderProcess(newID){
-			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
+			let tc = timeDate();
+			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'" data-mod="'+tc+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
 			let tempHTML = menuSketches.innerHTML;
 			menuSketches.innerHTML = newFolder + tempHTML;
 			getOrder();
@@ -3292,7 +3330,7 @@ function println(msg){
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
-			pLen = editor.getValue().length; // len of editor
+			// pLen = editor.getValue().length; // len of editor
 		}
 
 		p5code.onkeyup = function(event) {
@@ -3561,6 +3599,18 @@ function println(msg){
 		function buildSketch(force){
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
 
+			if(!settings.cocoding.active && pLen != editor.getValue().length){
+				let sketchElm = document.querySelectorAll('[data-id="'+settings.fileName+'"]')[0];
+				let sketchDetails = searchJSON(settings.sketches, 'name', settings.fileName)[0];
+
+				if(sketchElm != undefined && sketchDetails != undefined){
+					sketchElm.setAttribute('data-mod', timeDate());
+					sketchDetails.mod = timeDate();
+					updateSettings();
+					pLen = editor.getValue().length;
+				}
+			}
+
 			let codeNoComments = removeComments(editor.getValue());
 
 			// softCompile
@@ -3672,7 +3722,7 @@ function println(msg){
 
 			let scriptsCol = [];
 
-			// load scripts remote vs local (*** add custom options here)
+			// load scripts remote vs local
 			for(let i=0; i < includeScripts.length; i++){
 				if(p5Remote){
 					scriptsCol.push(includeScripts[i].remote);
@@ -4110,6 +4160,16 @@ function println(msg){
 			checkToggle('notifytoggle', settings.notifyToggle, settingsNotify);
 		}
 
+		// notify toggle
+		function multitabToggle(){
+			settings.multitabToggle = !settings.multitabToggle;
+			multitabToggleUpdate();
+		}
+
+		function multitabToggleUpdate(){
+			checkToggle('multitabtoggle', settings.multitabToggle, settingsMultitab);
+		}
+
 		//exportcode toggle
 		function exportcodeToggle(){
 			settings.exportCode = !settings.exportCode;
@@ -4482,9 +4542,19 @@ function println(msg){
 			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
 		}
 
+		function timeDate(){
+			let d = new Date() ;
+			d.setTime( d.getTime() - new Date().getTimezoneOffset()*60*1000 );
+			return d.getTime();
+		}
 
-		function timeStamp(){
-			return (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+		function timeStamp(timeInput){
+			let d = new Date();
+			d.setTime( d.getTime() - new Date().getTimezoneOffset()*60*1000 );
+			if(timeInput != undefined){
+				d = new Date(timeInput * 1);
+			}
+			return d.toISOString().replace(/[^0-9]/g, '').slice(0, -3);
 		}
 
 
