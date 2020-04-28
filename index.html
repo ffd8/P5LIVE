@@ -2365,10 +2365,14 @@ function println(msg){
 			let forkName = versionCheck(settings.fileName);
 			let tc = timeDate();
 
+			let checkDemo = document.querySelectorAll('[data-id="'+settings.fileName+'"]')[0].classList.contains('demo');
 			let checkDir = searchJSON(settings.sketches, 'name', settings.fileName)[0];
 			settings.fileName = forkName;
 			updateSettings();
-			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos'){
+
+
+
+			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos' && !checkDemo || !demosLocked){
 				let useDir = searchJSON(settings.sketches, 'name', checkDir.parent)[0];
 				useDir.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 				useDir.toggle = 'expand';
@@ -3338,7 +3342,9 @@ function println(msg){
 					removeDetails += recursiveImportCheck(elmContents.contents, '', '');
 					removeDetails += '</div>';
 				}else{
-					icon = iconFolderEmpty;
+					// remove empty folders without warning
+					removeItemProcess(dataID);
+					return false;
 				}
 			}
 			vex.dialog.confirm({
@@ -5159,6 +5165,7 @@ function println(msg){
 			syncdataConsoleClear();
 			settings.syncdata.active = false;
 			settings.syncdata.libs = [];
+			settings.syncdata.cocodeadded = false;
 			updateSettings();
 			cocode = new CocodeApp(settings.cocoding.namespace);
 			if(cocodingFirstTime){
@@ -5565,6 +5572,7 @@ function println(msg){
 			let curCode = editor.getValue();
 			editor.setValue(curCode +"\n"+ cocodeClipboard, 1);
 			tidyCode(editor);
+			editor.gotoLine(0, 1, false);
 		}
 
 		function syncdataSend(obj){
