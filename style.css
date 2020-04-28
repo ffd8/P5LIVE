@@ -482,7 +482,7 @@ h2{
 	position: relative;
 	height:100%;
 	float:none;
-	padding:0px 5px 5px 0;
+	padding:0px 5px 0px 0;
 	overflow: hidden;
 	white-space: nowrap;
 	cursor:pointer;
@@ -505,16 +505,12 @@ h2{
 }
 .cocoding-name-icons{
 	float:left;
-	/*position:absolute;*/
 	padding-top:2px;
-	/*left:25px;*/
 }
 .cocoding-name-icons svg{
-	/*border:1px solid #aaa;*/
 	padding:0;
 	height:20px;
 	width:20px;
-	/*background:#00aa00;*/
 	stroke:#fff;
 }
 .cocoding-name{
@@ -522,11 +518,8 @@ h2{
 	position:absolute;
 	margin-top:-2px;
 	padding-left:3px;
-	/*width:calc(100% - 75px);*/
-	/*left:75px;*/
 }
 .cocoding-name.marq{
-	/*border-right:1px dashed #888;*/
 }
 .marq:hover{
 	animation: marquee 5s linear infinite;
@@ -564,8 +557,6 @@ h2{
 	margin-bottom:25px;
 }
 .cocoding-rename-input label{
-	/*display:block;*/
-	/*margin-bottom:15px;*/
 	font-size:12pt;
 }
 .cocode-pickr{
@@ -583,20 +574,29 @@ h2{
 }
 .menu-sketch-nav{
 	float:right;
-	width:38%;
-	min-width:80px;
 	height:100%;
-	display:none;
 	z-index:101;
 	text-align:right;
 	cursor:pointer;
 }
-.menu-sketch-button, .cocoding-sketch-button{
+.menu-sketch-button, .cocoding-sketch-button, .item-sketch .menu-sketch-button{
 	color:#fff;
 	flex:1;
 	padding:2px 0 0px 0;
-	border-left:1px solid #888;
+	border:1px solid #888;
+	border-right:none;
 	opacity:.75;
+	outline:none;
+	background:#555;
+}
+
+.foldertitle .menu-sketch-button{
+	background:#333;
+	border:1px solid #555;
+	border-right:none;
+}
+.foldertitle .menu-sketch-button:hover{
+	background:#222;
 }
 
 .cocoding-nav{
@@ -643,12 +643,9 @@ h2{
 }
 
 .cocoding-sketch-button svg{
-	/*position:absolute;*/
-	/*left:0;*/
 }
 
 .cocoding-user .menu-sketch-button{
-	/*border-left:1px solid #888 !important;*/
 }
 .menu-sketch-button:hover{
 	background:#444;
@@ -690,8 +687,6 @@ h2{
 	border-bottom:1px solid #fff;
 }
 .menu-cocode-chat{
-	/*border:1px solid #aaa;*/
-
 }
 #chat-input{
 	width:100%;
@@ -736,7 +731,6 @@ h2{
 	height:14px;
 	overflow:hidden;
 	float:left;
-	/*margin-right:3px;*/
 }
 .longname{
 	width:50px !important;
@@ -745,7 +739,6 @@ h2{
 .chattext{
 	padding:0 2px 0 2px;
 	box-sizing: border-box;
-	/*width:75% !important;*/
 }
 .chattext a{
 	color:#fff;
@@ -753,10 +746,8 @@ h2{
 }
 .chat-item{
 	margin-bottom:1px;
-	/*border-bottom:1px solid #333;*/
 }
 .chat-item-self{
-	/*text-align:right;*/
 }
 .chat-item:nth-child(even) {background: #333}
 .chat-item:nth-child(odd) {background: #333}
@@ -771,14 +762,11 @@ h2{
 }
 .sync{
 	opacity:.25;
-	/*animation: sync 1s linear infinite;*/
 	transition: .1s linear;
 }
 #menu-cocode-sync-up{
-	/*opacity:.25;*/
 }
 #menu-cocode-sync-down{
-	/*color:#fff;*/
 }
 @keyframes sync {
 	0%	 { opacity: .25 }
@@ -793,7 +781,6 @@ button[disabled]{
 
 .write-req, .write-req:hover{
 	opacity:1;
-	/*background:#888800;*/
 	animation: request 2s linear infinite;
 }
 @keyframes request {
@@ -802,7 +789,6 @@ button[disabled]{
 	100% { opacity: 1 }
 }
 .write-access{
-	/*background:#008800 !important;*/
 }
 .menu-settings{
 	position:relative;
@@ -924,15 +910,29 @@ button[disabled]{
 	overflow:hidden;
 	display:block;
 	background:#333;
-	margin:0px 0 0px 0;
-	padding:0px 0 2px 0;
+	margin:0px;
+	padding:0px;
 	min-height:35px;
 	border-top:1px solid #555;
 	border-bottom:1px solid #111;
 }
-.item-folder > .item-folder{
+
+
+.foldertitle{
+	border-top:1px solid #333;
+	border-bottom:1px solid #333;
+}
+.foldertitle:hover{
+	background:#444;
 	border-top:1px solid #555;
 	border-bottom:1px solid #555;
+}
+.item-folder .collapse{
+	min-height:25px;
+}
+.item-folder > .item-folder{
+	border-top:1px solid #333;
+	border-bottom:1px solid #333;
 	border:none;
 	border-left:1px solid #555;
 }
@@ -1032,8 +1032,6 @@ li{
 .syncdata-header{
 	border:1px solid #aaa;
 	outline:none;
-	/*border-top:none;
-	border-bottom:none;*/
 	background:#aaa;
 	color:#222;
 	font-size:8pt;

@@ -331,7 +331,7 @@ function println(msg){
 </textarea>
 
 	<!-- Script Styles -->
-	<link rel="stylesheet" href="includes/css/nano.min.css"/>
+	<link rel="stylesheet" href="includes/js/pickr/nano.min.css"/>
 	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
 	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
 
@@ -340,11 +340,10 @@ function println(msg){
 	<script src="includes/js/src-noconflict/ext-language_tools.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
-	<script src="includes/js/pickr.min.js"></script>
+	<script src="includes/js/pickr/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
 	<script src="includes/js/marked.min.js"></script>
-
 	<script src='includes/js/download.js'></script>
 	<script src="includes/js/vex/js/vex.combined.min.js"></script>
 	<script src="includes/js/dropzone.js"></script>
@@ -597,7 +596,7 @@ function println(msg){
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
 		refList = [], downloadedRef = false,
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		showNotify = false,
+		showNotify = false, navMouseOver = false,
 		curPos, curPositions = [], updateCursor, showCursors = false,
 		sketchCount = 0, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
@@ -683,6 +682,8 @@ function println(msg){
 		p5editor.style.visibility = 'visible';
 
 		// ICONS!
+		let iconBookmark = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>';
+
 		let iconCheckSquare = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-square"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
 
 		let iconEye = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
@@ -696,6 +697,10 @@ function println(msg){
 		let iconFileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
 
 		let iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
+
+		let iconMoreVertical = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>';
+
+		let iconMoreHorizontal = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>';
 
 		let iconRadio = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
 
@@ -2285,9 +2290,9 @@ function println(msg){
 				}
 
 				// hide demos (unless modifying)
-				if(demosFolder != undefined && demosLocked){
-					demosFolder.style.display = 'none';
-				}
+				// if(demosFolder != undefined && demosLocked){
+				// 	demosFolder.style.display = 'none';
+				// }
 
 				// change filter icon based on state
 				filterClear.innerHTML = iconX;
@@ -2321,8 +2326,7 @@ function println(msg){
 				menuSketchesFilter.value = '';
 				filterSketches();
 			}
-			sketchesFirstTime = true;
-			sketchScrollIntoView();
+			sketchScrollIntoView(true);
 		}
 
 		// padding version numbers of sketch
@@ -2376,6 +2380,7 @@ function println(msg){
 			localStorage[settings.fileName] = editor.getValue();
 			editor.focus();
 			editor.session.off('change', cloneSketch);
+			sketchScrollIntoView(true);
 		}
 
 		function cloneSketchCOCODING(){
@@ -2987,7 +2992,7 @@ function println(msg){
 				initFolders(menuSketches);
 
 
-				function recurse(data, curFolder) {
+				function recurse(data, curFolder, parFolder) {
 					let html = '<li class="sortable-placeholder" data-type="buffer"></li>';
 					for (let key in data) {
 						let d = data[key];
@@ -3001,14 +3006,14 @@ function println(msg){
 						let marq = '';
 						let demoClass = ' drag-item ';
 						let demoFolder = '';
-						if(d.name.length > 15){marq = 'marq';}
+						if(d.name.length > 20 || (curFolder != '' && d.name.length > 18)){marq = 'marq';}
 						if(d.type == 'sketch'){
 							sketchCount+=1;
 							let selClass = '';
 							let navSketch = 'onmouseenter="showNav(this, \'' + d.name + '\', \'sketch\');" onmouseleave="hideNav(this);"';
-							if(curFolder == 'demos'){
+							if(curFolder == 'demos' || parFolder == 'demos'){
 								if(demosLocked){
-									navSketch = '';
+									navSketch = 'onmouseenter="showNav(this, \'' + d.name + '\', \'demo-sketch\');" onmouseleave="hideNav(this);"';
 									demoClass = ' demo';
 								}
 							}
@@ -3022,12 +3027,17 @@ function println(msg){
 							curFolder = d.name;
 							let icon = iconFolderExpand;
 							let navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"';
+							if(parFolder == 'demos'){
+								navFolder = '';
+							}
 							if(curFolder == 'demos' && demosLocked){
 								navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'demos\');" onmouseleave="hideNav(this);"';
 								demoClass = ' demo';
 								demoFolder = 'id="demofolder"';
+								parFolder = curFolder;
 							}
-							if(settings.cocoding.active && curFolder == settings.cocoding.namespace){
+
+							if((settings.cocoding.active && curFolder == settings.cocoding.namespace)){
 								navFolder = '';
 							}
 							if(d.toggle == 'expand'){
@@ -3040,7 +3050,7 @@ function println(msg){
 							}
 							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-mod="'+d.mod+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
 							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span>' +d.name + '</div></div> ';
-							html += recurse(d.contents, curFolder);
+							html += recurse(d.contents, curFolder, parFolder);
 							html += '</ul>';
 							curFolder = '';
 						}
@@ -3080,9 +3090,9 @@ function println(msg){
 			}
 		}
 
-		function sketchScrollIntoView(){
+		function sketchScrollIntoView(forceScroll){
 			let selSketch = document.getElementsByClassName('sketch-selected');
-			if(selSketch.length > 0 && sketchesFirstTime){
+			if(selSketch.length > 0 && (sketchesFirstTime || forceScroll)){
 				selSketch[0].scrollIntoView();
 				sketchesFirstTime = false;
 			}
@@ -3134,14 +3144,34 @@ function println(msg){
 			}
 		}
 
-		function showNav(elm, elmID, elmType){
-			elm.style.width='calc(100%-78px)';
+		function showNav(elm, elmID, elmType, elmLevel){
+			//elm.style.width='calc(100%-78px)';
 			if(elmType == 'folder'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+				if(elmLevel === 1){
+					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
+				}else{
+					if(!navMouseOver){
+						navMouseOver = true;
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+iconMoreHorizontal+'</a>';
+					}
+				}
+
 			}else if(elmType == 'sketch'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+iconAlignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+				if(elmLevel === 1){
+					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+iconAlignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
+				}else{
+					if(!navMouseOver){
+						navMouseOver = true;
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+iconMoreHorizontal+'</a>';
+					}
+				}
+
 			}else if(elmType == 'demos'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="refreshDemos(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconRefresh+'</a>';
+			}else if(elmType == 'demo-sketch'){
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\', true)" data-title="Inspect">'+iconAlignLeft+'</a>';
 			}else if(elmType == 'user'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="toggleEdit(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconToggleLeft+'</a>';
 			}else if(elmType == 'self'){
@@ -3158,6 +3188,7 @@ function println(msg){
 		function hideNav(elm){
 			elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '';
 			elm.style.width='calc(100%-5px)';
+			navMouseOver = false;
 		}
 
 		function addFolder(folderName){
@@ -3193,7 +3224,7 @@ function println(msg){
 			getOrder();
 		}
 
-		function inspectItem(itemName){
+		function inspectItem(itemName, itemLocked){
 			let inspectCode = localStorage.getItem(itemName);
 			let inspectEditor;
 
@@ -3202,7 +3233,7 @@ function println(msg){
 				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="vex-long popup-editor">'+inspectCode+'</div>',
 				callback: function (value) {},
 				buttons: [
-				{
+				!itemLocked ? {
 					type: 'submit',
 					text: 'SAVE',
 					className: 'my-button-class-name',
@@ -3218,6 +3249,8 @@ function println(msg){
 							setTimeout(function(){editor.setValue(localStorage.getItem(itemName), 1);}, 100);
 						}
 					}
+				} : {
+					className: 'hide-button' // hide if unused
 				}
 				,{
 					type: 'close',
