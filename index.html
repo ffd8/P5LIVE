@@ -2463,7 +2463,9 @@ function println(msg){
 					pLen = editor.getValue().length;
 					updateSketches();
 
-					setTimeout(function(){p5varsReset();}, 200);
+					// *** temp remove of timeout
+					// setTimeout(function(){p5varsReset();}, 200);
+					p5varsReset();
 
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
@@ -2751,6 +2753,9 @@ function println(msg){
 							callback: function(value){
 								if(value){
 									jsonStructureSorted.forEach(function(jsonItem){
+										if(jsonItem.mod === undefined){
+											jsonItem.mod = timeDate();
+										}
 										if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
 											// foreach folder/sketch check duplicates and give unique names
 
@@ -2763,10 +2768,10 @@ function println(msg){
 											recursiveNamecheck(jsonItem.contents, jsonObj.sketches);
 
 											// add structure to top of sketches list
-											settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+											settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
 
 										}else if(jsonItem.type == 'sketch'){
-											settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name});
+											settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
 										}
 									})
 									updateSettings();
@@ -2904,7 +2909,10 @@ function println(msg){
 
 				// add to settings if doesn't exist
 				if(!searchSketches(sketchName, settings.sketches)) {
-					settings.sketches.unshift({'type':'sketch', 'name':sketchName});
+					if(jsonSketches[i].mod === undefined){
+						jsonSketches[i].mod = timeDate();
+					}
+					settings.sketches.unshift({'type':'sketch', 'name':sketchName, 'mod':jsonSketches[i].mod});
 				}
 
 				if(sketchName == settings.fileName){
@@ -3674,6 +3682,13 @@ function println(msg){
 		function buildSketch(force){
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
 
+			// grab latest p5vars only before reload! no more interval...
+			if(sketchLoaded && p5f.frameCount != undefined){
+				p5vars.frameCount = p5f.frameCount+1;
+				p5vars.mouseX = p5f.mouseX;
+				p5vars.mouseY = p5f.mouseY;
+			}
+
 			if(!settings.cocoding.active && pLen != editor.getValue().length){
 				let sketchElm = document.querySelectorAll('[data-id="'+settings.fileName+'"]')[0];
 				let sketchDetails = searchJSON(settings.sketches, 'name', settings.fileName)[0];
@@ -3897,9 +3912,10 @@ function println(msg){
 						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
 					}
 				}
-				p5f.document.body.style.background = newBG;
+				if(sketchLoaded){
+					p5f.document.body.style.background = newBG;
+				}
 				p5frame.style.background = newBG;
-
 			}
 		}
 
@@ -4288,16 +4304,6 @@ function println(msg){
 			}
 			if(settings.debugMode){console.log(checkName+': '+settings[checkName]);}
 		}
-
-
-		// constant frameCount (great for recompiling)
-		let fcTimer = setInterval(function(){
-			if(sketchLoaded && p5f.frameCount != undefined){
-				p5vars.frameCount = p5f.frameCount;
-				p5vars.mouseX = p5f.mouseX;
-				p5vars.mouseY = p5f.mouseY;
-			}
-		}, 100);
 
 		function p5varsReset(){
 			p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0};

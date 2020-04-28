@@ -66,6 +66,15 @@ function hashCode(s) {
 	return h;
 }
 
+// mute .map files!
+app.use(function (req, res, next) {
+	if(req.path.match(/\.map$/i)) {
+		res.send('');
+	}else{
+		next()
+	}
+})
+
 app.get('/', function (req, res) {
 	if(online){
 		res.redirect('https://teddavis.org/p5live');
@@ -202,7 +211,7 @@ requestStats(server, function (stats) {
 
 // must be after app.get()!
 if(!online){
-	app.use(express.static('./'));
+	app.use(express.static('./')); //, { maxAge: 3600000 } enable 1-hour cache for fast local loading
 }
 
 // *** remove RGA / data

@@ -1,0 +1,6 @@
+RewriteEngine On
+Options +FollowSymlinks
+
+# Prevent 404 Not Found for javascript/css source maps
+RewriteCond %{REQUEST_URI}  (\.map)$
+RewriteRule (.*)  includes/js/404.map [QSA]

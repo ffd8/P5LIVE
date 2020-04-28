@@ -66,6 +66,15 @@ function hashCode(s) {
 	return h;
 }
 
+// mute .map files!
+app.use(function (req, res, next) {
+	if(req.path.match(/\.map$/i)) {
+		res.send('');
+	}else{
+		next()
+	}
+})
+
 app.get('/', function (req, res) {
 	if(online){
 		res.redirect('https://teddavis.org/p5live');
