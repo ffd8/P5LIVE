@@ -594,7 +594,7 @@ function println(msg){
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
-		refList = [], downloadedRef = false,
+		refList = [], downloadedRef = false, refScroll = 0,
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		showNotify = false, navMouseOver = false,
 		curPos, curPositions = [], updateCursor, showCursors = false,
@@ -4693,6 +4693,8 @@ function println(msg){
 				let paramsDesc = [];
 				if(ex.overloads != undefined || ex.params != undefined){
 					ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
+					let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">p5.js reference →</a>';
+					ref.innerHTML += refLink;
 					if(ex.overloads != undefined){
 						ex.overloads.forEach(function(ol){
 							let params = [];
@@ -4705,7 +4707,7 @@ function println(msg){
 
 								if(paramsCollect.indexOf(param.name) === -1){
 									paramsCollect.push(param.name);
-									let paramHTML = '<div class="param"><div class="param-name">'+ param.name +"</div> "+ param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
+									let paramHTML = '<div class="param"><div class="//">'+ param.name +"</div> "+ param.description.trim() +'</div>';
 									paramsDesc.push(paramHTML);
 								}
 
@@ -4725,7 +4727,10 @@ function println(msg){
 								}else{
 									params.push(param.name);
 								}
-								let paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> ' + param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
+								if(param.description == ''){
+									param.description = '<br>';
+								}
+								let paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> <div class="param-desc">' + param.description +'</div></div>';
 								paramsDesc.push(paramHTML);
 								paramsCollect.push(param.name);
 							}
@@ -4738,7 +4743,6 @@ function println(msg){
 							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 						}
 					}
-
 				}else{
 					ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
 				}
@@ -4748,10 +4752,19 @@ function println(msg){
 					desc = ex.descriptionHTML;
 				}
 
-				let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">» p5.js reference</a>'
 
-				ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc + refLink;
+				ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc;
+				if(ex.examples.length > 0){
+					for(let example of ex.examples){
+						//console.log(example)
+						ref.innerHTML += '<br><div class="ref-example">'+example.replace(/\n<.*code.*?[^>]*>/g, '').replace(/(\/\/.*)/g, '<span class="ref-example-comment">$1</span><br>').replace(/\n/g, '<br>')+'</div><br>';
+					}
 
+				}
+				// *** fix top line blank
+				// remove outline of ref a tags...
+				// *** scroll top of individual.. but not allRef
+				//refHolder.scrollTop = 0;
 			}else{
 				allRef();
 			}
@@ -4765,20 +4778,44 @@ function println(msg){
 				let modHTML = '<div class="module" name="' + k + '" id="' + k + '"><div class="module-name">' + k + '</div>';
 				let modAll = [];
 				grouped[k].forEach(function(ci){
+
+					let noDesc = false;
+					let noParams = false;
+					if(ci.description.length == 0){
+						// console.log(ci.name);
+						noDesc = true;
+					}else if(ci.params.length == 0){
+						// console.log(ci.name);
+						noParams = true;
+					}
+
+					// debug single ref
+					// if(ci.name == 'touchEnded'){
+					// 	console.log(ci);
+					// }
+
 					if(ci.name != ''){
 						let title = '';
 						let desc = '';
-						title += ci.code.join('\n') + '\n\n';
+						title += ci.code.join('<br>') + '<br>';
 						let params = [];
 						ci.params.forEach(function(cip){
 							params.push(cip.name + ' - ' + cip.description);
 						});
-						title += params.join('\n') + '\n\n';
+						title += params.join('<br>') + '<br>';
 						if(ci.description != ''){
 							desc = ci.description;
 						}
-						title += desc;
-						modAll.push('<a href="#/p5/' + htmlEntities(ci.name) + '" title="' + htmlEntities(title) + '">' + htmlEntities(ci.name) + '</a><br>');
+						// title += desc;
+						if(!noDesc){
+							if(noParams){
+								modAll.push('<a class="ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;" data-title="<div style=\'text-align:left;\'>' + htmlEntities(ci.description).trim() + '</div>">' + htmlEntities(ci.name) + '</a><br>');
+							}else{
+								modAll.push('<a class="ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;" data-title="<div style=\'text-align:left;\'>' + htmlEntities(title).trim() + '</div>">' + htmlEntities(ci.name) + '</a><br>');
+							}
+						}else{
+							modAll.push('<span class="ref-nolink tippy-left" data-title="'+htmlEntities(ci.name)+'">' + htmlEntities(ci.name) + '</span><br>');
+						}
 					}
 				});
 				modHTML += modAll.join('');
@@ -4787,20 +4824,12 @@ function println(msg){
 			});
 
 			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
-
+			setTimeout(function(){loadTippy();}, 100);
 			// jump to category of viewed ref
 			if(window.location.hash != undefined && window.location.hash.length > 1){
 				let refPieces = window.location.hash.split('/');
 				if(refPieces.length == 1){
-					let refTopic = window.location.hash.substring(1);
-
-					const overflow = document.getElementById('refholder');
-					let anchor = document.getElementById(refTopic);
-
-					const rectOverflow = ref.getBoundingClientRect();
-					const rectAnchor = anchor.getBoundingClientRect();
-
-					overflow.scrollTop = rectAnchor.top - rectOverflow.top;
+					refHolder.scrollTop = refScroll;
 				}
 			}
 
@@ -4835,7 +4864,26 @@ function println(msg){
 						}
 						let classCode = [];
 						let classParams = [];
+						let classExamples = [];
 						let paramsCollect = [];
+
+						if(ci.example != undefined){
+							let exs = ci.example[0].match(/<code.*>(.|\n)*?<\/code>/g);
+							if(exs == undefined){
+								console.log(ci.name +" : "+ ci.example)
+							}
+							for(let ex of exs){
+								classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
+							}
+						}
+
+						// if(ci.name == 'createNumberDict'){
+						// 	// console.log(ci.example[0].match(/<code>(.|\n)*?<\/code>/g));
+						// 	let exs = ci.example[0].match(/<code>(.|\n)*?<\/code>/g);
+						// 	for(let ex of exs){
+						// 		console.log(ex.replace(/<.*code?[^>]*>/g, ''));
+						// 	}
+						// }
 
 						if(ci.overloads != undefined || ci.params != undefined){
 							if(ci.overloads != undefined){
@@ -4876,7 +4924,7 @@ function println(msg){
 											acParams.push(param.name);
 										}
 										paramsCollect.push(param.name);
-										let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');
+										let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?[^>]*>/g, '').replace(/\n/gi, ' ');
 										classParams.push({'name':param.name, 'description':paramDesc});
 									}
 								})
@@ -4899,6 +4947,7 @@ function println(msg){
 						}
 						classItem.code = classCode;
 						classItem.params = classParams;
+						classItem.examples = classExamples;
 						refList.push(classItem);
 
 					});

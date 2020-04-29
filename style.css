@@ -894,15 +894,17 @@ button[disabled]{
 
 .tippy-tooltip{
 	font-size:8pt;
-	border:1px solid #fff;
+	border:1px solid #ddd;
 }
 .tippy-content, .tippy-tooltip{
 	background:#fafafa;
 	color:#000;
+	background:#222;
+	color:#ddd;
 	font-weight:400;
 }
 .tippy-roundarrow{
-	fill:#fafafa;
+	fill:#ddd;
 }
 .item-folder{
 	position:relative;
@@ -1132,21 +1134,25 @@ li{
 }
 #ref-close{
 	position:fixed;
-	top:0px;
-	right:0px;
+	top:10px;
+	right:10px;
+	background:#000;
 	font-size:16pt;
 	cursor:pointer;
-	color:#aaa;
-	padding:5px;
+	color:#eee;
+	line-height:1em;
+	padding:1px 3px 2px 3px;
+	border:1px solid #eee;
+	border-radius:3px;
 }
 #ref-close:hover{
-	color:#fff;
-	text-decoration: underline;
+	color:#000;
+	background:#eee;
 }
 .ref-title{
 	font-size:16pt;
 }
-#ref a{
+#ref a, #ref .ref-nolink{
 	text-decoration:none;
 	color:#aaa;
 }
@@ -1154,26 +1160,40 @@ li{
 	text-decoration:underline;
 	color:#fff;
 }
+#ref a.ref-link:visited{
+	color:#eee;
+}
+#ref .ref-nolink{
+	font-style:italic;
+	cursor:crosshair;
+}
+#ref p a{
+	text-decoration:underline;
+}
 #showall{
 	display: flex;
 	font-size:10pt;
 	flex-wrap: wrap;
 }
 .param {
-	margin-top:15px;
+	margin:10px 0 10px 0;
+	clear:both;
 }
 .param-title{
 	font-size:16pt;
 	margin-left:-15px;
-
 }
 .param-name{
 	border:1px solid #999;
-	min-width:30px;
+	border-radius: 5px;
+	min-width:20px;
 	text-align:center;
-	padding:2px 5px 2px 5px;
+	padding:2px 4px 2px 5px;
 	float:left;
 	margin-right:10px;
+}
+.param-desc{
+	overflow: auto;
 }
 .param-code{
 	font-style:italic;
@@ -1186,9 +1206,19 @@ li{
 }
 .module-name{
 	font-size:12pt;
-	text-decoration:underline;
+	/*text-decoration:underline;*/
 	color:#fff;
 	margin-bottom:5px;
+	font-weight:bold;
+
+}
+.ref-example{
+	border:1px solid #aaa;
+	background:#333;
+	padding:4px;
+}
+.ref-example-comment{
+	color:#888;
 }
 
 /* DRAG + DROP */
