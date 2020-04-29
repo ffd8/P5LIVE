@@ -3034,7 +3034,7 @@ function println(msg){
 								selSelected = true;
 							}
 
-							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
 							let icon = iconFolderExpand;
@@ -3061,7 +3061,7 @@ function println(msg){
 								d.toggle = 'collapse';
 							}
 							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-mod="'+d.mod+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
-							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span>' +d.name + '</div></div> ';
+							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="navMouseOver = false;toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span>' +d.name + '</div></div> ';
 							html += recurse(d.contents, curFolder, parFolder);
 							html += '</ul>';
 							curFolder = '';
