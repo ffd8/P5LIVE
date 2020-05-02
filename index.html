@@ -51,6 +51,7 @@
 	<div id="p5-frame-cover"></div>
 
 	<div id="refholder">
+		<div id="ref-bg"></div>
 		<div id="ref"></div>
 		<div id="ref-close" onclick="closeRef();">X</div>
 	</div>
@@ -214,7 +215,7 @@
 								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-video"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><select id="videoSource" class="av-select"></select>
 							</div>
 						</div>
-						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-Compile code on keyUp" onclick="autoCompileToggle();">
+						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-compile code on keyup" onclick="autoCompileToggle();">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile">
 						Live Coding</div> 
 							<select id="settings-compiletimer" style="" class="tippy" data-title="Delay from keyUp to compile" onchange="compileTimerChange();">
@@ -224,15 +225,15 @@
 									<option value="2000">2000ms</option>
 							</select>
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus" onclick="ecoRenderToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus<br>(save computer resources)" onclick="ecoRenderToggle();">
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender">
 						Eco Render
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Show Cursor <br>(when editor is hidden)" onclick="cursorToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Display cursor <br>(when editor is hidden)" onclick="cursorToggle();">
 						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor">
 						Cursor
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Show Console messages" onclick="consoleToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Display console messages" onclick="consoleToggle();">
 						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console">
 						Console
 					</div>
@@ -245,43 +246,43 @@
 						<input type="checkbox" id="settings-exportcode" name="settings-exportcode" value="settings-exportcode"> Snapshot Code
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Display code line numbers" onclick="linenumbersToggle();">
 						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle constant autocomplete<br>If disabled, use autocomplete by <div class='shortcut'>CTRL + SPACE</div>" onclick="autocompleteToggle();">
-						<input type="checkbox" id="settings-autocomplete" name="settings-autocomplete" value="settings-autocomplete"> Autocomplete
+					<div class="tippy-left" style="cursor:help;" data-title="Automatic Autocomplete<br>If disabled (suggested), trigger with <div class='shortcut'>CTRL + SPACE</div>" onclick="autocompleteToggle();">
+						<input type="checkbox" id="settings-autocomplete" name="settings-autocomplete" value="settings-autocomplete"> Auto Autocomplete
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle code locked on mouse drag" onclick="lockDragToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Editor locked onmousedragged, <br>prevents errors in displaced code" onclick="lockDragToggle();">
 						<input type="checkbox" id="settings-lockdrag" name="settings-lockdrag" value="settings-lockdrag"> Lock Code on Drag
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Pass keyPress from editor to p5 canvas" onclick="passEditorKeysToggle();">
-						<input type="checkbox" id="settings-passeditorkeys" name="settings-passeditorkeys" value="settings-passeditorkeys"> Pass Editor Keys
+					<div class="tippy-left" style="cursor:help;" data-title="Pass any keypress from editor to p5 canvas" onclick="passEditorKeysToggle();">
+						<input type="checkbox" id="settings-passeditorkeys" name="settings-passeditorkeys" value="settings-passeditorkeys"> Pass-Thru KeyPress
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Shortcut Notifications" onclick="notifyToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Display Notifications" onclick="notifyToggle();">
 						<input type="checkbox" id="settings-notifytoggle" name="settings-notifytoggle" value="settings-notifytoggle"> Notifications
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Warning – P5LIVE in Multiple Tabs<br>(could lead to data-loss)" onclick="multitabToggle();">
-						<input type="checkbox" id="settings-mutitabtoggle" name="settings-mutitabtoggle" value="settings-mutitabtoggle"> Multi-Tab Warning
+					<div class="tippy-left" style="cursor:help;" data-title="Warning if P5LIVE opened multiple times<br>(leads to sketches out of sync)" onclick="multitabToggle();">
+						<input type="checkbox" id="settings-mutitabtoggle" name="settings-mutitabtoggle" value="settings-mutitabtoggle"> Multi-P5LIVE Warning
 					</div>
 
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size">
+					<div class="tippy-left" style="cursor:help;" data-title="Editor font-size">
 						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
+					<div class="tippy-left" style="cursor:help;" data-title="Color behind lines of code">
 						Code Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();">
 						<div id="pickr" class="pickr"></div>
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
+					<div class="tippy-left" style="cursor:help;" data-title="Set editor theme">
 						Theme:
 						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
 							<option value="ace/theme/gob">Green on Black</option>
@@ -334,6 +335,7 @@ function println(msg){
 	<link rel="stylesheet" href="includes/js/pickr/nano.min.css"/>
 	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
 	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
+	<link rel="stylesheet" href="includes/js/highlight/a11y-dark.css" />
 
 	<!-- Scripts -->
 	<script src="includes/js/src-noconflict/ace.js?7" type="text/javascript" charset="utf-8"></script>
@@ -350,6 +352,7 @@ function println(msg){
 	<script src="includes/js/mousetrap/mousetrap.min.js"></script>
 	<script src="includes/js/mousetrap/mousetrap-record.js"></script>
 	<script src="includes/js/mousetrap/mousetrap-pause.min.js"></script>
+	<script src="includes/js/highlight/highlight.pack.js"></script>
 	<script src="includes/js/name_generator.js"></script>
 
 	<script src="includes/js/socket.io.js"></script>
@@ -587,6 +590,7 @@ function println(msg){
 		loaderSub = document.getElementById('loader-sub'),
 		notify = document.getElementById('notify'),
 		shortcutRecording = false, p5Remote = false,
+		menuVisible = false, refVisible = false, settingsVisible = false,
 		settings = getSettings(),
 		validCode = true, sketchesFirstTime = true,
 		sketchLoaded = false, forceRecompile = false,
@@ -594,7 +598,7 @@ function println(msg){
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
-		refList = [], downloadedRef = false, refScroll = 0,
+		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		showNotify = false, navMouseOver = false,
 		curPos, curPositions = [], updateCursor, showCursors = false,
@@ -1943,7 +1947,7 @@ function println(msg){
 				}else if(window.location.hash.substring(1).toLowerCase() === 'bug'){
 					loadBug();
 				}else{
-					loaderSub.innerHTML = 'p5 references...';
+					loaderSub.innerHTML = 'loading references...';
 					loadRef();
 					loadSketch(settings.fileName);
 				}
@@ -2007,20 +2011,28 @@ function println(msg){
 
 		function showSettings(show){
 			if(show){
-				if(panelSettings.style.display == 'block'){
+				if(refVisible){
+					closeRef();
+				}
+
+				if(settingsVisible){
 					hideSettings();
 					menuToggle(false);
 				}else{
+					settingsVisible = true;
 					menuToggle(true);
 				}
+
 			}
 			panelSettings.style.display = 'block';
 			panelMenu.style.display = 'none';
+			settingsVisible = true;
 		}
 
 		function hideSettings(){
 			panelSettings.style.display = 'none';
 			panelMenu.style.display = 'block';
+			settingsVisible = false;
 		}
 
 		function resizeSketchesHolder(){
@@ -2301,9 +2313,9 @@ function println(msg){
 				for (let fi of filterItems) {
 					fi.style.display = '';
 				}
-				if(demosFolder != undefined){
-					demosFolder.style.display = '';
-				}
+				// if(demosFolder != undefined){
+				// 	demosFolder.style.display = '';
+				// }
 				filterClear.innerHTML = iconFilter;
 				initSortable();
 			}
@@ -2467,8 +2479,6 @@ function println(msg){
 					pLen = editor.getValue().length;
 					updateSketches();
 
-					// *** temp remove of timeout
-					// setTimeout(function(){p5varsReset();}, 200);
 					p5varsReset();
 
 					// restart undo to prevent overwrite selected sketch
@@ -2482,7 +2492,7 @@ function println(msg){
 					let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
 					if(searchSketches(settings.fileName, checkDemo) && demosLocked){
 						if(settings.fileName == 'new'){
-							window.location.hash = '#';
+							// window.location.hash = '#'; // *** removed for conflict w/ #bug + refs...
 						}
 						editor.getSession().on('change', cloneSketch);
 					}
@@ -3026,7 +3036,7 @@ function println(msg){
 							if(curFolder == 'demos' || parFolder == 'demos'){
 								if(demosLocked){
 									navSketch = 'onmouseenter="showNav(this, \'' + d.name + '\', \'demo-sketch\');" onmouseleave="hideNav(this);"';
-									demoClass = ' demo';
+									demoClass += ' demo';
 								}
 							}
 							if(d.name == settings.fileName){
@@ -3242,7 +3252,7 @@ function println(msg){
 
 			vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="vex-long popup-editor">'+inspectCode+'</div>',
+				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="popup-editor vex-long">'+inspectCode+'</div>',
 				callback: function (value) {},
 				buttons: [
 				!itemLocked ? {
@@ -4368,6 +4378,10 @@ function println(msg){
 
 		// hide/show menu
 		function menuToggle(show){
+			if(refVisible){
+					closeRef();
+			}
+
 			if(panelSettings.style.display == 'block'){
 				hideSettings();
 			}else{
@@ -4378,15 +4392,23 @@ function println(msg){
 			menuToggleUpdate();
 		}
 
+		function hideMenu(){
+			settings.menuMode = false;
+			updateSettings();
+			menuToggleUpdate();
+		}
+
 		function menuToggleUpdate(){
 			if(!settings.menuMode){
 				menuPanel.style.marginRight = '-250px';
 				menuSwitch.innerHTML = '«';
 				window.setTimeout(hideSettings, 200);
+				menuVisible = false;
 				// menuPanel.style.overflow = "visible"; // test again w/ chromium
 			}else{
 				menuPanel.style.marginRight = '0px';
 				menuSwitch.innerHTML = '»';
+				menuVisible = true;
 				// menuPanel.style.overflow = "hidden";
 			}
 		}
@@ -4650,8 +4672,8 @@ function println(msg){
 
 		window.onhashchange = getRef;
 
-		function toggleRef(){
-			if(refHolder.style.display == 'block'){
+		function toggleRef(force){
+			if(refVisible || force){
 				closeRef();
 			}else{
 				showRef();
@@ -4660,6 +4682,7 @@ function println(msg){
 
 		function showRef(){
 			if(!downloadedRef){
+				loaderSub.innerHTML = 'load references...';
 				showLoader();
 				loadRef();
 				downloadedRef = true;
@@ -4670,6 +4693,10 @@ function println(msg){
 		}
 
 		function getRef(){
+			refVisible = true;
+			if(menuVisible || settingsVisible){
+				hideMenu();
+			}
 			if(window.location.hash != undefined && window.location.hash.length > 1){
 				let refPieces = window.location.hash.split('/');
 				let grabRef = '';
@@ -4687,91 +4714,145 @@ function println(msg){
 					// window.location = window.location.hash;
 				}
 
-				let snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(decodeURI(grabRef));
-				let ex = refList[snippetIndex];
-				let paramsCollect = [];
-				let paramsDesc = [];
-				if(ex.overloads != undefined || ex.params != undefined){
-					ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
-					let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">p5.js reference →</a>';
-					ref.innerHTML += refLink;
-					if(ex.overloads != undefined){
-						ex.overloads.forEach(function(ol){
-							let params = [];
-							ol.params.forEach(function(param){
-								if(param.optional){
-									params.push('[' + param.name + ']');
-								}else{
-									params.push(param.name);
-								}
+				if(grabRef != ''){
+					tippy.hideAll({ duration: 0 });
+					let snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(decodeURI(grabRef));
+					let ex = refList[snippetIndex];
+					let paramsCollect = [];
+					let paramsDesc = [];
+					if(ex.overloads != undefined || ex.params != undefined){
+						ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
 
-								if(paramsCollect.indexOf(param.name) === -1){
-									paramsCollect.push(param.name);
-									let paramHTML = '<div class="param"><div class="//">'+ param.name +"</div> "+ param.description.trim() +'</div>';
-									paramsDesc.push(paramHTML);
-								}
+						if(ex.overloads != undefined){
+							ex.overloads.forEach(function(ol){
+								let params = [];
+								ol.params.forEach(function(param){
+									if(param.optional){
+										params.push('[' + param.name + ']');
+									}else{
+										params.push(param.name);
+									}
 
+									if(paramsCollect.indexOf(param.name) === -1){
+										paramsCollect.push(param.name);
+										let paramHTML = '<div class="param"><div class="//">'+ param.name +"</div> "+ param.description.trim() +'</div>';
+										paramsDesc.push(paramHTML);
+									}
+
+								})
+								let paramsJoin = '';
+								if(params.length > 0){
+									paramsJoin = '(' + params.join(', ') + ')';
+								}
+								ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 							})
-							let paramsJoin = '';
-							if(params.length > 0){
-								paramsJoin = '(' + params.join(', ') + ')';
-							}
-							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
-						})
-					}else{
-						let params = [];
-						ex.params.forEach(function(param){
-							if(paramsCollect.indexOf(param.name) === -1){
-								if(param.optional){
-									params.push('[' + param.name + ']');
-								}else{
-									params.push(param.name);
+						}else{
+							let params = [];
+							ex.params.forEach(function(param){
+								if(paramsCollect.indexOf(param.name) === -1){
+									if(param.optional){
+										params.push('[' + param.name + ']');
+									}else{
+										params.push(param.name);
+									}
+									if(param.description == ''){
+										param.description = '<br>';
+									}
+									let paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> <div class="param-desc">' + param.description +'</div></div>';
+									paramsDesc.push(paramHTML);
+									paramsCollect.push(param.name);
 								}
-								if(param.description == ''){
-									param.description = '<br>';
+							})
+							if(ex.module != 'Constants'){
+								let paramsJoin = '';
+								if(params.length > 0){
+									paramsJoin = '(' + params.join(', ') + ')';
 								}
-								let paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> <div class="param-desc">' + param.description +'</div></div>';
-								paramsDesc.push(paramHTML);
-								paramsCollect.push(param.name);
+								ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 							}
-						})
-						if(ex.module != 'Constants'){
-							let paramsJoin = '';
-							if(params.length > 0){
-								paramsJoin = '(' + params.join(', ') + ')';
-							}
-							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 						}
-					}
-				}else{
-					ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
-				}
-
-				let desc = '';
-				if(ex.descriptionHTML != undefined){
-					desc = ex.descriptionHTML;
-				}
-
-
-				ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc;
-				if(ex.examples.length > 0){
-					for(let example of ex.examples){
-						//console.log(example)
-						ref.innerHTML += '<br><div class="ref-example">'+example.replace(/\n<.*code.*?[^>]*>/g, '').replace(/(\/\/.*)/g, '<span class="ref-example-comment">$1</span><br>').replace(/\n/g, '<br>')+'</div><br>';
+					}else{
+						ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
 					}
 
+					let desc = '';
+					if(ex.descriptionHTML != undefined){
+						desc = ex.descriptionHTML;
+					}
+
+
+					ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc;
+					if(ex.examples.length > 0){
+						for(let example of ex.examples){
+							let exampleParse = 	example.replace(/\n/g, '<br> ');
+							ref.innerHTML += '<br><div class="ref-example js" type="js">'+exampleParse+'</div><br>';
+						}
+
+					}
+
+					let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">p5.js website reference →</a>';
+						ref.innerHTML += refLink;
+
+					hljs.configure({useBR: true});
+					document.querySelectorAll('.ref-example').forEach((block) => {
+					    hljs.highlightBlock(block);
+					});
 				}
-				// *** fix top line blank
-				// remove outline of ref a tags...
-				// *** scroll top of individual.. but not allRef
-				//refHolder.scrollTop = 0;
 			}else{
 				allRef();
 			}
 		}
 
+		function filterRefClear(){
+			let filterInput = document.getElementById('ref-search');
+			if(filterInput.value == ''){
+				filterInput.focus();
+			}else{
+				filterInput.value = '';
+				filterRef();
+			}
+		}
+
+		function filterRef(){
+			let filterInput = document.getElementById('ref-search');
+			let filterInputIcon = document.getElementById('ref-search-icon');
+			let refFilteredItems = refHolder.getElementsByClassName('all-ref');
+			let refModules = refHolder.getElementsByClassName('module');
+
+			if(filterInput.value != ''){
+				filterInputIcon.innerHTML = iconX;
+				refSearch = filterInput.value;
+				refHolder.scrollTop = 0;
+				for(let fi of refFilteredItems){
+					fi.classList.add('ref-hide');
+				}
+				for(let rm of refModules){
+					rm.classList.add('ref-collapse');
+				}
+
+				let filter = filterInput.value.toLowerCase();
+				for(let rfi of refFilteredItems){
+					if(rfi.getAttribute('data-name').toLowerCase().indexOf(filter) > -1){
+						rfi.classList.remove('ref-hide');
+					}
+				}
+			}else{
+				refSearch = '';
+				filterInputIcon.innerHTML = iconFilter;
+				for(let fi of refFilteredItems){
+					fi.classList.remove('ref-hide');
+				}
+				for(let rm of refModules){
+					rm.classList.remove('ref-collapse');
+				}
+			}
+
+			filterInput.focus();
+		}
+
 		function allRef(){
-			ref.innerHTML = '<div class="ref-title">p5.js reference</div><br>';
+			let refValue = '';
+			ref.innerHTML = '<div class="ref-sticky"><div class="ref-title">p5.js References<br></div><div class="ref-search-holder"><span id="ref-search-icon" class="tippy-left" data-title="Filter References" onclick="filterRefClear()">'+iconFilter+'</span><input type="text" id="ref-search" placeholder="Search..." onkeyup="filterRef()" value="'+refSearch+'" onfocus="this.selectionStart = this.selectionEnd = this.value.length;"></div></div>';
 			let all = [];
 			let grouped = groupBy(refList, (c) => c.module);
 			Object.keys(grouped).forEach(function(k){
@@ -4782,10 +4863,8 @@ function println(msg){
 					let noDesc = false;
 					let noParams = false;
 					if(ci.description.length == 0){
-						// console.log(ci.name);
 						noDesc = true;
 					}else if(ci.params.length == 0){
-						// console.log(ci.name);
 						noParams = true;
 					}
 
@@ -4806,15 +4885,16 @@ function println(msg){
 						if(ci.description != ''){
 							desc = ci.description;
 						}
-						// title += desc;
+
+						let dataName = 'data-name="' + ci.name + '"';
 						if(!noDesc){
 							if(noParams){
-								modAll.push('<a class="ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;" data-title="<div style=\'text-align:left;\'>' + htmlEntities(ci.description).trim() + '</div>">' + htmlEntities(ci.name) + '</a><br>');
+								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(ci.description).trim() + '</div>">' + htmlEntities(ci.name) + '<br></a>');
 							}else{
-								modAll.push('<a class="ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;" data-title="<div style=\'text-align:left;\'>' + htmlEntities(title).trim() + '</div>">' + htmlEntities(ci.name) + '</a><br>');
+								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(title).trim() + '</div>">' + htmlEntities(ci.name) + '<br></a>');
 							}
 						}else{
-							modAll.push('<span class="ref-nolink tippy-left" data-title="'+htmlEntities(ci.name)+'">' + htmlEntities(ci.name) + '</span><br>');
+							modAll.push('<span class="all-ref ref-nolink tippy-left" '+dataName+' data-title="'+htmlEntities(ci.name)+'">' + htmlEntities(ci.name) + '<br></span>');
 						}
 					}
 				});
@@ -4825,11 +4905,13 @@ function println(msg){
 
 			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
 			setTimeout(function(){loadTippy();}, 100);
+
 			// jump to category of viewed ref
 			if(window.location.hash != undefined && window.location.hash.length > 1){
 				let refPieces = window.location.hash.split('/');
 				if(refPieces.length == 1){
 					refHolder.scrollTop = refScroll;
+					filterRef();
 				}
 			}
 
@@ -4837,6 +4919,7 @@ function println(msg){
 		}
 
 		function loadRef(){
+			refList = [];
 			let refPath = 'includes/p5/data.json';
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
@@ -4972,6 +5055,8 @@ function println(msg){
 		function closeRef(){
 			window.location.hash = '#';
 			refHolder.style.display ='none';
+			refSearch = '';
+			refVisible = false;
 		}
 
 		// group references
@@ -5085,7 +5170,7 @@ function println(msg){
 
 		function hideLoader(){
 			loader.style.display = 'none';
-			loaderSub.innerHTML = '';
+			// loaderSub.innerHTML = '';
 		}
 
 		/* View in fullscreen */
@@ -5131,6 +5216,7 @@ function println(msg){
 				return false;
 			}
 			notify.innerHTML = txt;
+			notify.style.display = 'block';
 			notify.style.opacity = 1.0;
 			if(menuPanel.style.marginRight == '0px'){
 				notify.style.right = '255px';
@@ -5141,6 +5227,8 @@ function println(msg){
 			let notifyDelay = txt.length*20;
 			notifyTimer = setTimeout(function(){
 				notify.style.opacity = 0;
+				setTimeout(function(){notify.style.display = 'block';}, 500);
+
 			}, notifyDelay);
 			showNotify = false;
 		}

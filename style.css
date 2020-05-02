@@ -57,6 +57,7 @@ hr{
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	color:#fff;
 }
 #loader-msg{
 	position:absolute;
@@ -234,7 +235,7 @@ hr{
 	width:250px;
 	color:#fff;
 	z-index:101;
-	transition: margin-right .25s ease;
+	/*transition: margin-right .25s ease;*/
 }
 #menu-switch{
 	position:absolute;
@@ -361,11 +362,11 @@ h2{
 	padding-left:25px;
 	border-bottom:1px solid #333;
 }
-#menu-sketches-filter-clear svg{
+#menu-sketches-filter-clear svg, #ref-search-icon svg{
 	padding:4px 0px 0px 0px;
 	height:20px;
 }
-#menu-sketches-filter-clear{
+#menu-sketches-filter-clear, #ref-search-icon{
 	position:absolute;
 	left:0px;
 	z-index:999;
@@ -373,7 +374,7 @@ h2{
 	opacity:.5;
 	outline:none;
 }
-#menu-sketches-filter-clear:hover{
+#menu-sketches-filter-clear:hover, #ref-search-icon:hover{
 	opacity:1;
 }
 .filter-match{
@@ -1116,7 +1117,7 @@ li{
 	position:fixed;
 	z-index:9999;
 	right:0;
-	background:#000;
+	/*background:#000;*/
 	color:#fff;
 	overflow:auto;
 	width:250px;
@@ -1124,7 +1125,55 @@ li{
 	font-size:8pt;
 	float:right;
 	display:none;
+	padding-top:0px;
 }
+#ref-bg{
+	position:fixed;
+	width:100%;
+	height:100%;
+	background:#000 !important;
+	opacity:.8;
+	z-index:-1;
+}
+#ref-search{
+	font-family: 'roboto_mono', 'Monaco', monospace;
+	border:none;
+	border-bottom:1px solid #eee;
+	outline:none;
+	color:#eee;
+	background:none;
+	padding:3px;
+	padding-left:24px;
+	font-size:10pt;
+	width:100%;
+	margin:0px 0 1px 0px;
+
+}
+#ref-search-icon{
+	position:absolute;
+	float:left;
+}
+.ref-sticky{
+	position: fixed;
+	width:230px;
+  	top:0px;
+  	padding-top:5px;
+  	z-index:1;
+  	background:#000 !important;
+}
+.ref-search-holder{
+}
+.ref-title{
+	width:100%;
+	margin-top:0px !important;
+	background:#000;
+}
+.all-ref{
+	clear:both;
+	padding-left:24px;
+	outline:none;
+}
+
 #ref{
 	padding:5px;
 	padding-left:15px;
@@ -1134,23 +1183,22 @@ li{
 }
 #ref-close{
 	position:fixed;
-	top:10px;
-	right:10px;
-	background:#000;
+	z-index:99999;
+	top:8px;
+	right:8px;
 	font-size:16pt;
 	cursor:pointer;
-	color:#eee;
+	font-size:12pt;
 	line-height:1em;
 	padding:1px 3px 2px 3px;
 	border:1px solid #eee;
 	border-radius:3px;
+	color:#eee;
+	/*background:#eee;*/
 }
 #ref-close:hover{
-	color:#000;
 	background:#eee;
-}
-.ref-title{
-	font-size:16pt;
+	color:#000;
 }
 #ref a, #ref .ref-nolink{
 	text-decoration:none;
@@ -1171,6 +1219,8 @@ li{
 	text-decoration:underline;
 }
 #showall{
+	width:100%;
+	margin-top:80px;
 	display: flex;
 	font-size:10pt;
 	flex-wrap: wrap;
@@ -1178,10 +1228,6 @@ li{
 .param {
 	margin:10px 0 10px 0;
 	clear:both;
-}
-.param-title{
-	font-size:16pt;
-	margin-left:-15px;
 }
 .param-name{
 	border:1px solid #999;
@@ -1199,26 +1245,41 @@ li{
 	font-style:italic;
 }
 .module{
-	width:140px;
-	margin:0 15px 25px 0;
+	/*width:140px;*/
+	margin:0 0px 25px 0;
 	position:relative;
 	line-height:1.2em;
+	width:100%;
+	clear:both;
 }
-.module-name{
+.module-name, .ref-title, .param-title{
 	font-size:12pt;
 	/*text-decoration:underline;*/
 	color:#fff;
 	margin-bottom:5px;
 	font-weight:bold;
-
+	padding:1px 0px 2px 2px;
+	width:100%;
+	border-top:1px solid #eee;
+	border-bottom:1px solid #eee;
 }
 .ref-example{
 	border:1px solid #aaa;
+	border-radius: 5px;
 	background:#333;
 	padding:4px;
 }
 .ref-example-comment{
 	color:#888;
+}
+.ref-hide{
+	display:none;
+}
+.ref-collapse{
+	margin:0px !important;
+}
+.ref-collapse .module-name{
+	display:none;
 }
 
 /* DRAG + DROP */
@@ -1264,6 +1325,10 @@ li{
 	outline:none;
 }
 .vex-content{
+
+}
+.vex.vex-theme-plain{
+	padding-top:8vh !important;
 }
 .vex{
 	overflow: hidden !important;
@@ -1303,6 +1368,7 @@ li{
 	background:#ff000088;
 }
 #about-alert{
+	height:70vh;
 	font-size:10pt;
 	line-height:13pt;
 }
@@ -1340,6 +1406,7 @@ li{
 }
 #notify{
 	position:fixed;
+	display:none;
 	right:5px;
 	top:5px;
 	border:1px solid #888;
