@@ -266,6 +266,10 @@
 						<input type="checkbox" id="settings-notifytoggle" name="settings-notifytoggle" value="settings-notifytoggle"> Notifications
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Display Tips" onclick="tippyToggle();">
+						<input type="checkbox" id="settings-tippytoggle" name="settings-tippytoggle" value="settings-tippytoggle"> Tips
+					</div>
+
 					<div class="tippy-left" style="cursor:help;" data-title="Warn if P5LIVE opened multiple times<br>(leads to sketches out of sync)" onclick="multitabToggle();">
 						<input type="checkbox" id="settings-mutitabtoggle" name="settings-mutitabtoggle" value="settings-mutitabtoggle"> Multi-P5LIVE Warning
 					</div>
@@ -408,6 +412,7 @@ function println(msg){
 			'menutab':true,
 			'exportCode':true,
 			'notifyToggle':true,
+			'tippyToggle':true,
 			'multitabToggle':true,
 			'debugMode': false,
 			'editMode':true,
@@ -574,6 +579,7 @@ function println(msg){
 		settingsLockDrag = document.getElementById('settings-lockdrag'),
 		settingsPassEditorKeys = document.getElementById('settings-passeditorkeys'),
 		settingsNotify = document.getElementById('settings-notifytoggle'),
+		settingsTippy = document.getElementById('settings-tippytoggle'),
 		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
@@ -1883,6 +1889,7 @@ function println(msg){
 			lockDragUpdate();
 			exportcodeUpdate();
 			notifyToggleUpdate();
+			tippyToggleUpdate();
 			multitabToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
@@ -4275,7 +4282,18 @@ function println(msg){
 			checkToggle('notifytoggle', settings.notifyToggle, settingsNotify);
 		}
 
-		// notify toggle
+		// tippy toggle
+		function tippyToggle(){
+			settings.tippyToggle = !settings.tippyToggle;
+			tippyToggleUpdate();
+		}
+
+		function tippyToggleUpdate(){
+			checkToggle('tippytoggle', settings.tippyToggle, settingsTippy);
+			loadTippy();
+		}
+
+		// multi-p5live toggle
 		function multitabToggle(){
 			settings.multitabToggle = !settings.multitabToggle;
 			multitabToggleUpdate();
@@ -4563,6 +4581,14 @@ function println(msg){
 
 		// Tooltips via tippy
 		function loadTippy(){
+			if(!settings.tippyToggle){
+				document.querySelectorAll('*').forEach(node => {
+				  if (node._tippy) {
+				    node._tippy.destroy();
+				  }
+				});
+				return false;
+			}
 
 			tippy('.tippy', {
 				content(reference) {
