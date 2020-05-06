@@ -77,7 +77,7 @@ Details below to run via python webserver or nodejs/npm.
 - [x] Lock Code on Drag, locks code editor on mouse drag to prevent displacing code. 
 - [ ] Pass Editor Keys, keypresses from editor to p5 canvas (hide editor otherwise).
 - [x] Notifications, display notifications (shortcut settings + chat). 
-- [x] Tips, display tips (extra info on hover). 
+- [x] Tooltips, displays extra info on hover. 
 - [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
 - Code Size, `15pt` adjust font size of editor.  
 - Code Background, [x] toggle + set color behind lines of code.  
