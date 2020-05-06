@@ -580,7 +580,7 @@ h2{
 	text-align:right;
 	cursor:pointer;
 }
-.menu-sketch-button, .cocoding-sketch-button, .item-sketch .menu-sketch-button{
+.menu-sketch-button,  .item-sketch .menu-sketch-button{
 	color:#fff;
 	flex:1;
 	padding:2px 0 0px 0;
@@ -610,8 +610,19 @@ h2{
 	text-align:right;
 	cursor:pointer;
 }
+.cocoding-nav a{
+	outline:none;
+}
 .cocoding-sketch-button{
+	padding:1px;
 	float:left;
+	background:none !important;
+	/*border:none !important;*/
+	border-left:1px solid #aaa;
+	opacity:.75;
+}
+.cocoding-sketch-button:hover{
+	opacity:1.0;
 }
 .user-radio-toggle{
 }
@@ -684,7 +695,6 @@ h2{
 .menu-cocode-chat-title{
 	color:#fff;
 	font-size:14pt;
-
 	border-bottom:1px solid #fff;
 }
 .menu-cocode-chat{
@@ -698,7 +708,7 @@ h2{
 	background:#444;
 	color:#fff;
 	border:none;
-	border:1px solid #666;
+	border-top:1px solid #666;
 	padding:2px;
 	margin:0;
 }
@@ -726,10 +736,10 @@ h2{
 .chatname{
 	padding:0 2px 0 2px;
 	box-sizing: border-box;
-	font-weight:bold;
+	/*font-weight:bold;*/
 	margin-right:0px;
 	max-width:60px !important;
-	height:14px;
+	/*height:16px;*/
 	overflow:hidden;
 	float:left;
 }
@@ -746,7 +756,8 @@ h2{
 	font-style:italic;
 }
 .chat-item{
-	margin-bottom:1px;
+	/*height:16px;*/
+	/*margin-bottom:1px;*/
 }
 .chat-item-self{
 }
@@ -790,6 +801,7 @@ button[disabled]{
 	100% { opacity: 1 }
 }
 .write-access{
+	opacity:1.0;
 }
 .menu-settings{
 	position:relative;
@@ -950,8 +962,8 @@ li{
 	padding:0;
 }
 .item-folder svg, .item-sketch svg{
-	padding:0px 0px 0px 0px;
-	height:16px;
+	padding:2px 0px 0px 0px;
+	height:18px;
 }
 
 .item-folder > .item-sketch{
@@ -960,8 +972,9 @@ li{
 }
 .item-folder > .item-sketch .menu-sketch{
 }
-.menu-sketch{
-
+.menu-sketch-nav svg{
+	padding:0px 0px 0px 0px;
+	height:16px;
 }
 .item-folder > .item-folder{
 	margin-left:15px;
@@ -983,7 +996,7 @@ li{
 	float:left;
 }
 .menu-sketch-nav svg, .cocoding-nav svg{
-	padding:4px 1px 0 1px;
+	padding:3px 1px 0 1px;
 	width:18px;
 }
 .selsetting{
