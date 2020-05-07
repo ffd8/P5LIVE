@@ -4,7 +4,7 @@
   "structure": [
     {
       "name": "demos",
-      "mod": "1588360195110",
+      "mod": "1588740083495",
       "type": "folder",
       "toggle": "expand",
       "contents": [
@@ -86,7 +86,7 @@
             },
             {
               "name": "_webgl_objVertices",
-              "mod": "1588375948353",
+              "mod": "1588875964275",
               "type": "sketch",
               "parent": "_webgl"
             },
@@ -106,13 +106,13 @@
           "contents": [
             {
               "name": "_typo_textToPoints-circle",
-              "mod": "1588358569029",
+              "mod": "1588875950939",
               "type": "sketch",
               "parent": "_typo"
             },
             {
               "name": "_typo_textToPoints-lines",
-              "mod": "1588358591721",
+              "mod": "1588875956279",
               "type": "sketch",
               "parent": "_typo"
             }
@@ -129,6 +129,20 @@
               "mod": "1588358631677",
               "type": "sketch",
               "parent": "_gui"
+            }
+          ]
+        },
+        {
+          "name": "_libs",
+          "mod": "1588875982653",
+          "type": "folder",
+          "toggle": "collapse",
+          "contents": [
+            {
+              "name": "_libs_voronoi",
+              "mod": 1588876398472,
+              "type": "sketch",
+              "parent": "_libs"
             }
           ]
         },
@@ -243,8 +257,8 @@
     },
     {
       "sketchName": "_webgl_objVertices",
-      "sketchCode": "/*\t_webgl_objVertices // cc teddavis.org 2020\t*/\n\n\nlet obj, geom;\n\nfunction preload() {\n\tobj = loadModel('includes/demos-data/teapot.obj');\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL);\n\tgeom = obj.computeFaces(); // grab model geometry\n\t// console.log(geom)\n}\n\nfunction draw() {\n\tbackground(0);\n\torbitControl(5);\n\trotateY(radians(-frameCount / 2));\n\tstroke(0, 255, 0);\n\n\tscale(-4);\n\tfor(let i = 0; i < geom.vertices.length; i++) {\n\t\tlet v = geom.vertices[i];\n\t\tlet off = sin(i * 0.1 + frameCount * 0.05) * 2;\n\n\t\tstrokeWeight(off * 10);\n\t\tpoint(v.x, v.y + off, v.z);\n\t}\n}",
-      "mod": "1588375948353"
+      "sketchCode": "/*\t_webgl_objVertices // cc teddavis.org 2020\t*/\n\n\nlet obj, geom;\n\nfunction preload() {\n\tobj = loadModel('includes/demos-data/3d/teapot.obj');\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL);\n\tgeom = obj.computeFaces(); // grab model geometry\n\t// console.log(geom)\n}\n\nfunction draw() {\n\tbackground(0);\n\torbitControl(5);\n\trotateY(radians(-frameCount / 2));\n\tstroke(0, 255, 0);\n\n\tscale(-4);\n\tfor(let i = 0; i < geom.vertices.length; i++) {\n\t\tlet v = geom.vertices[i];\n\t\tlet off = sin(i * 0.1 + frameCount * 0.05) * 2;\n\n\t\tstrokeWeight(off * 10);\n\t\tpoint(v.x, v.y + off, v.z);\n\t}\n}",
+      "mod": "1588875964275"
     },
     {
       "sketchName": "_webgl_sphereBox",
@@ -253,18 +267,23 @@
     },
     {
       "sketchName": "_typo_textToPoints-circle",
-      "sketchCode": "/*\t_typo_textToPoints-circle // cc teddavis.org 2020\t*/\n\nlet font, points, bounds;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', 400);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2 - bounds.w / 2, height / 2 + bounds.h / 2, 0)\n\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tcircle(p.x, p.y, mouseY/10)\n\t}\n}\n\nfunction keyPressed() {\n\tgenType(key, 600);\n}\n\nfunction genType(txtString, txtSize) {\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, 0, 0, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n\n\t// grab bounding box of text\n\tbounds = font.textBounds(txtString, 0, 0, txtSize);\n}",
-      "mod": "1588358569029"
+      "sketchCode": "/*\t_typo_textToPoints-circle // cc teddavis.org 2020\t*/\n\nlet font, points, bounds;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', 400);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2 - bounds.w / 2, height / 2 + bounds.h / 2, 0)\n\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tcircle(p.x, p.y, mouseY/10)\n\t}\n}\n\nfunction keyPressed() {\n\tgenType(key, 600);\n}\n\nfunction genType(txtString, txtSize) {\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, 0, 0, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n\n\t// grab bounding box of text\n\tbounds = font.textBounds(txtString, 0, 0, txtSize);\n}",
+      "mod": "1588875950939"
     },
     {
       "sketchName": "_typo_textToPoints-lines",
-      "sketchCode": "/*\t_typo_textToPoints-lines // cc teddavis.org 2020\t*/\n\nlet font, points, bounds;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', 400);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2 - bounds.w / 2, height / 2 + bounds.h / 2, 0)\n\n\tbeginShape(LINES);\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet xScl = sin(i * .031 + frameCount * .021) * sin(frameCount * .01) * map(mouseX, 0, width, .01, .5);\n\t\tlet yScl = sin(i * .039 + frameCount * .04) * sin(frameCount * .002) * map(mouseY, 0, height, .01, .5)\n\t\tlet x = map(p.x, width * xScl, width * (1 + xScl), 0, width);\n\t\tlet y = map(p.y, height * yScl, height * (yScl + 1), 0, height);\n\t\tvertex(x, y);\n\t\tvertex(p.x, p.y);\n\t\t// ellipse(p.x, p.y, mouseX)\n\t}\n\tendShape(CLOSE);\n}\n\nfunction keyPressed() {\n\tgenType(key, 600);\n}\n\nfunction genType(txtString, txtSize) {\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, 0, 0, txtSize, {\n\t\tsampleFactor: .1,\n\t\tsimplifyThreshold: 0\n\t});\n\n\t// grab bounding box of text\n\tbounds = font.textBounds(txtString, 0, 0, txtSize);\n}",
-      "mod": "1588358591721"
+      "sketchCode": "/*\t_typo_textToPoints-lines // cc teddavis.org 2020\t*/\n\nlet font, points, bounds;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', 400);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2 - bounds.w / 2, height / 2 + bounds.h / 2, 0)\n\n\tbeginShape(LINES);\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet xScl = sin(i * .031 + frameCount * .021) * sin(frameCount * .01) * map(mouseX, 0, width, .01, .5);\n\t\tlet yScl = sin(i * .039 + frameCount * .04) * sin(frameCount * .002) * map(mouseY, 0, height, .01, .5)\n\t\tlet x = map(p.x, width * xScl, width * (1 + xScl), 0, width);\n\t\tlet y = map(p.y, height * yScl, height * (yScl + 1), 0, height);\n\t\tvertex(x, y);\n\t\tvertex(p.x, p.y);\n\t\t// ellipse(p.x, p.y, mouseX)\n\t}\n\tendShape(CLOSE);\n}\n\nfunction keyPressed() {\n\tgenType(key, 600);\n}\n\nfunction genType(txtString, txtSize) {\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, 0, 0, txtSize, {\n\t\tsampleFactor: .1,\n\t\tsimplifyThreshold: 0\n\t});\n\n\t// grab bounding box of text\n\tbounds = font.textBounds(txtString, 0, 0, txtSize);\n}",
+      "mod": "1588875956279"
     },
     {
       "sketchName": "_gui_slidersGrid",
       "sketchCode": "/*\t_gui_slidersGrid // cc teddavis.org 2019\t*/\n/*\thide editor to adjust sliders\t\t*/\n\nlet x, y, xoff, border, grid = 40;\nlet sGrid, sModular, sSize, sSpeed, sSizeSpeed, cbSize;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoStroke();\n\n\tx = width * .05;\n\ty = height * .05;\n\txoff = width * .4;\n\tbuildGUI();\n}\n\nfunction draw() {\n\tbackground(0);\n\n\tlet c = 0;\n\tfor(let i = 0; i < width; i += grid) {\n\t\tfor(let j = 0; j < height; j += grid) {\n\t\t\tfill(abs(sin(frameCount * sSpeed.value() / 1000 + c * sModular.value())) * 255);\n\t\t\tlet s = grid;\n\t\t\tif(cbSize.checked()) {\n\t\t\t\ts = sin(c * sSpeed.value() / sSizeSpeed.value()) * grid;\n\t\t\t}\n\t\t\tellipse(border + i, border + j, s)\n\t\t\tc++;\n\t\t}\n\t}\n\n\tdrawLabel();\n}\n\nfunction buildGUI() {\n\tborder = grid / 2;\n\tsGrid = createSlider(20, 100, grid);\n\tsGrid.position(x + xoff, y);\n\tsGrid.input(updateGrid);\n\tsSpeed = createSlider(2, 100, 10);\n\tsSpeed.position(x + xoff, y * 2);\n\tsModular = createSlider(0, 100, 11);\n\tsModular.position(x + xoff, y * 3);\n\tsSizeSpeed = createSlider(1, 4000, 100);\n\tsSizeSpeed.position(x + xoff, y * 4);\n\tcbSize = createCheckbox('', false);\n\tcbSize.position(xoff + x * .7, y * 4)\n}\n\nfunction updateGrid() {\n\tgrid = sGrid.value();\n\tborder = grid / 2;\n}\n\nfunction drawLabel() {\n\tfill(0, 200);\n\trect(xoff + width * .02, height * .02, 200, 180, 20);\n\n\tfill(255, 200);\n\ttext(\"GRID\", xoff + x, y);\n\ttext(\"SPEED\", xoff + x, y * 2);\n\ttext(\"MODULATE\", xoff + x, y * 3);\n\ttext(\"SIZE OFFSET\", xoff + x, y * 4);\n}",
       "mod": "1588358631677"
+    },
+    {
+      "sketchName": "_libs_voronoi",
+      "sketchCode": "/*\t_libs_voronoi // cc teddavis.org 2020 */\n\nlet libs = [\n\t'https://cdn.jsdelivr.net/npm/voronoi@1.0.0/rhill-voronoi-core.js' // remote\n\t, 'includes/demos-data/js/rhill-voronoi-core.js' // load locally (if offline)\n\t, 'includes/demos-data/js/voronoi-p5live.js'\n];\n\nlet bbox, voronoi;\nlet sites = [],\n\tedges = [];\nlet initTypo = true;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbbox = {\n\t\txl: 0,\n\t\txr: width,\n\t\tyt: 0,\n\t\tyb: height\n\t};\n\tvoronoi = new Voronoi();\n\n\t// pre-loading custom points from 'voronoi-p5live.js'\n\ttypoPoints();\n\n\tstroke(255);\n\tstrokeWeight(2);\n\n}\n\nfunction draw() {\n\tbackground(0);\n\n\tif(mouseIsPressed) {\n\t\tif(initTypo) {\n\t\t\tsites = [];\n\t\t\tinitTypo = false;\n\t\t}\n\t\taddPoints(mouseX, mouseY);\n\t}\n\n\tbeginShape(LINES)\n\tfor(var i = 0; i < edges.length; i++) {\n\t\tlet edge = edges[i];\n\t\tvertex(edge.va.x, edge.va.y);\n\t\tvertex(edge.vb.x, edge.vb.y);\n\t}\n\tendShape();\n}\n\nfunction addPoints(x, y) {\n\tsites.push({\n\t\tx: x,\n\t\ty: y\n\t});\n\tresult = voronoi.compute(sites, bbox);\n\tedges = result.edges;\n}\n\n// custom preloaded points interpreter\nfunction typoPoints() {\n\tfor(let t of p5typo) {\n\t\tsites.push({\n\t\t\tx: t.x * width,\n\t\t\ty: t.y * height + height / 5\n\t\t});\n\t}\n\tresult = voronoi.compute(sites, bbox);\n\tedges = result.edges;\n}",
+      "mod": 1588876398472
     },
     {
       "sketchName": "_audio_analysis",

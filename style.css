@@ -15,6 +15,9 @@
 * {
 	box-sizing: border-box;
 }
+svg{
+	stroke-width:2px !important;
+}
 #p5-code::selection {
 	background:#fff;
 }
@@ -591,15 +594,15 @@ h2{
 	background:#555;
 }
 
-.foldertitle .menu-sketch-button{
+.folder-title .menu-sketch-button{
 	background:#333;
-	border:1px solid #555;
-	border-right:none;
+	border:none;
+	border-left:1px solid #555;
+	/*padding:2px 1px 0px 1px;*/
 }
-.foldertitle .menu-sketch-button:hover{
+.folder-title .menu-sketch-button:hover{
 	background:#222;
 }
-
 .cocoding-nav{
 	position:absolute;
 	right:0;
@@ -931,16 +934,20 @@ button[disabled]{
 	border-top:1px solid #555;
 	border-bottom:1px solid #111;
 }
-
-
-.foldertitle{
+.item-label{
+	position:absolute;
+	top:1px;
+	left:28px;
+}
+.folder-title{
 	border-top:1px solid #333;
 	border-bottom:1px solid #333;
+	height:22px;
 }
-.foldertitle:hover{
+.folder-title:hover{
 	background:#444;
-	border-top:1px solid #555;
-	border-bottom:1px solid #555;
+	border-top:1px solid #666;
+	border-bottom:1px solid #666;
 }
 .item-folder .collapse{
 	min-height:25px;
@@ -986,7 +993,7 @@ li{
 .item-folder .collapse{
 	display:none;
 }
-.foldertitle:hover .nav-settings, .item-sketch:hover .nav-settings{
+.folder-title:hover .nav-settings, .item-sketch:hover .nav-settings{
 	display:block;
 }
 .toggle{
@@ -999,10 +1006,13 @@ li{
 	padding:3px 1px 0 1px;
 	width:18px;
 }
+.menu-sketch-nav svg {
+	height:16px;
+}
 .selsetting{
 	background:#444;
 }
-.foldertitle:hover > .menu-sketch-nav {
+.folder-title:hover > .menu-sketch-nav {
 	display: inline-block;
 }
 .item-sketch:hover > .menu-sketch-nav {
@@ -1180,6 +1190,20 @@ li{
 	width:100%;
 	margin-top:0px !important;
 	background:#000;
+}
+.ref-random{
+	outline:none;
+	opacity:.75;
+}
+.ref-random:hover{
+	opacity: 1;
+}
+.ref-random svg{
+	padding-top:4px;
+	height:20px;
+}
+.ref-pulse{
+	animation: sync .2s linear infinite;
 }
 .all-ref{
 	clear:both;

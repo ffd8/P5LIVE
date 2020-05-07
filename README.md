@@ -122,7 +122,7 @@ Customize keyboard shortcuts by clicking on name + press a new key combination.
 #### Chat
 <img src="includes/images/menu-cocoding-chat-2.png" width="220px">   
 
-Within chat, links are parsed, ie. sharing an example from p5.js editor.  
+Within chat, links are parsed, ie. share sketch from p5.js editor.  
 Incoming chats displayed as notification (if active) when menu is hidden.
 
 #### SyncData
@@ -172,11 +172,12 @@ Have fun COCODING with keyboards, EEG-headsets, eye-trackers, ....?!
 <img src="includes/images/menu-sketch-filter-blank.png" width="220px">  
 <img src="includes/images/menu-sketch-filter.png" width="220px">  
 
-Lost the overview of your sketches? Type in keywords to match names of sketches and folders, filtering only those results. To organize, create a new folder containing that word, then drag + drop items into it. 
+Lost the overview of your sketches?  
+Type in keywords to match names of sketches and folders, filtering only those results. Use separate words for an *and* search, ie. `3d webgl text`. To organize, add a new folder containing that word, and drag + drop items into it. 
 
 #### Sketch  
-<img src="includes/images/menu-sketch-nav-9.png" width="220px">  
-<img src="includes/images/menu-sketch-nav-expanded-9.png" width="220px">  
+<img src="includes/images/menu-sketch-nav-9.png" width="209px">  
+<img src="includes/images/menu-sketch-nav-expanded-9.png" width="209px">  
 
 - Load Sketch, click on name.
 - <img class="svg" src="includes/icons/more-horizontal.svg" height="12px"> Hover to view contextual options  
@@ -188,12 +189,13 @@ Lost the overview of your sketches? Type in keywords to match names of sketches 
 - Place in folder, slowly drag + drop into/over folder.
 
 #### Folder  
-<img src="includes/images/menu-folder-nav-8.png" width="220px">  
-<img src="includes/images/menu-folder-nav-expanded-8.png" width="220px">  
+<img src="includes/images/menu-folder-nav-9.png" width="209px">  
+<img src="includes/images/menu-folder-nav-expanded-9.png" width="209px">  
 
 - Expand/collapse Folder, click on name.  
 - <img class="svg" src="includes/icons/more-horizontal.svg" height="12px"> Hover to view contextual options  
 	- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give folder new name.  
+	- <img class="svg" src="includes/icons/folder-plus.svg" height="12px"> Sub-folder, create a new folder within existing one.
 	- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export folder + contents as JSON file.  
 	- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete folder + contents after confirmation.  
 - Sort, click + hold + drag to desired order.  
@@ -216,7 +218,7 @@ If in doubt or not seeing changes, run a hardCompile, `CTRL + SHIFT + ENTER`.
 ### AUTOCOMPLETE
 Custom autocomplete with p5.js functions and constants has been implemented!  
 
-<img src="includes/images/autocomplete-1.png" width="400px">  
+<img src="includes/images/autocomplete-2.png" width="400px">  
 
 To activate, enter the first few characters of a function and press `CTRL + SPACE`, then select function alone or with parameters. If selecting with parameters, use `TAB` to cycle through each one. Optionally activate `Auto Autocomplete` in the `Settings` to have suggestions on every keystroke.  
 
@@ -225,20 +227,21 @@ The auto-compiler of `live-coding` pauses whenever the auto-complete panel is ac
 If you forget the name of a function, simply view the p5.js references `CTRL + R`.
 
 ### REFERENCES
-After an overhaul, the built-in <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> `References`, which started as a simple list for VJ'ing, now offer full embedded learning as found in the official docs. 
+After an overhaul, the built-in <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> `References`, `CTRL + R`, now include nearly all information found on the official [p5.js reference website](https://p5js.org/reference/), embedded for easy lookup while potentially VJ'ing... meta-visuals! Use the  <img class="svg" src="includes/icons/gift.svg" height="12px"> to surprise yourself and view a random reference.
 
-<img src="includes/images/refs-search-1.png" width="230px">  
+<img src="includes/images/refs-search-2.png" width="230px">  
 
 Use `Search...` with keyup instant filtering to find functions you're after.  
-References keep full opacity once clicked on, helping track which ones you've read. 
+Separate words for an *and* search, ie. `material light`.  
+References keep full opacity once viewed, helping note which ones you've read. 
 
-<img src="includes/images/refs-params-2.png" width="480px">  
+<img src="includes/images/refs-params-3.png" width="500px">  
 
-Hover over functions to preview what `parameters` they require, click to read the full detailed reference. 
+Hover over functions for `parameters` tooltip, click to read the full detailed reference. 
 
 <img src="includes/images/refs-example-1.png" width="230px">  
 
-Beyond listing params and descriptions, the example's code is now embedded with js highlighting, for grabbing while sketching.
+Beyond params and descriptions, the example's code is now embedded with js highlighting.
 
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
