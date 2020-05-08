@@ -31,6 +31,9 @@ Clearing browser history/data will likely erase all sketches + settings.
 localStorage is unique and isolated per http[s]:domain:port,  
 so export/import to migrate between online / offline / browsers.
 
+The file structure changed in 1.3.0, so make sure all copies of P5LIVE are up to date.  
+You can import any old sketches, but newly saved ones won't open in  versions < 1.3.0.
+
 
 ## INSTALL
 Online: [p5live.org](https://p5live.org)

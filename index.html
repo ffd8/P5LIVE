@@ -29,7 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?12">
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?34">
 </head>
 <body>
 	<div id="p5-drop"> </div>
@@ -140,7 +140,7 @@
 					<button class="menu-button tippy" onclick="importSketchesDialog();" data-title="Import Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="exportAllSketches();" data-title="Export All Sketches">
+					<button class="menu-button tippy" onclick="exportSketches();" data-title="Export All Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 					</button>
 				</div>
@@ -366,7 +366,7 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentRevision = 33;
+		let currentRevision = 34;
 		let developBranch = true;
 
 		// resetP5(); // manual reset
@@ -638,7 +638,7 @@ function println(msg){
 
 		function loadAutoComplete(){
 			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
-			let tempPath = 'includes/p5/P5L_AUTOCOMPLETE_20200229201725.json';
+			let tempPath = 'includes/p5/P5L_autocomplete.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -1919,6 +1919,11 @@ function println(msg){
 			updateSketches();
 			filterSketches();
 
+			if(settings.refresh){
+				refreshDemos();
+				settings.refresh = false;
+				updateSettings();
+			}
 
 			settings.editMode = true;
 			if(getParam('edit') != undefined && getParam('edit') == 0){
@@ -2373,7 +2378,7 @@ function println(msg){
 		}
 
 		// use sketch versions instead of timestamp
-		function versionCheck(sketchName){
+		function versionCheck(sketchName, importObj){
 			let tempName = sketchName;
 			let forkScores = tempName.split('_');
 			if(forkScores.length > 0){
@@ -2387,9 +2392,16 @@ function println(msg){
 			tempName = forkScores.join('_');
 
 			// check entire sketches for dup version name
-			while(searchSketches(tempName, settings.sketches)){
-				tempName = versionCheck(tempName);
+			if(importObj !== undefined){
+				while(searchSketches(tempName, settings.sketches) || searchSketches(tempName, importObj)){
+					tempName = versionCheck(tempName, importObj);
+				}
+			}else{
+				while(searchSketches(tempName, settings.sketches)){
+					tempName = versionCheck(tempName);
+				}
 			}
+
 				return tempName;
 		}
 
@@ -2546,7 +2558,7 @@ function println(msg){
 		}
 
 		function loadSketchTemplate(){
-			let tempPath = 'includes/templates/p5live_sketch.html';
+			let tempPath = 'includes/templates/p5live_sketch.html?' + makeid(5);;
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -2633,50 +2645,78 @@ function println(msg){
 
 		// export single sketch to JSON
 		function exportSketch(sketch){
-			let jsonExport = {};
-			jsonExport.sketches = [];
+			let tempSketches = {};
+			tempSketches.version = settings.version;
+			tempSketches.revision = settings.revision;
+			tempSketches.count = {sketches:1, folders:0};
+			tempSketches.structure = [];
 
-			// grab sketch details (timestamps)
 			let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
-
-			jsonExport.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch), 'mod': sketchDetails.mod});
-			exportJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp(sketchDetails.mod)+'.json');
-			if(settings.debugMode){console.log(jsonExport);}
+			if(localStorage.hasOwnProperty(sketch)){
+				sketchDetails.code = localStorage.getItem(sketch);
+				tempSketches.structure.push(sketchDetails);
+				exportJSON(tempSketches, 'P5L_' + sketch + '_' + timeStamp(sketchDetails.mod) + '.json');
+			}else{
+				alertMsg('Sketch code missing...');
+			}
 		}
 
-		// export folder[s] w/ sketches to JSON
-		function exportFolder(folder){
-			let folderObj = searchJSON(settings.sketches, 'name', folder);
-			let tempSketches = {};
+		// export all/folder[s] w/ sketches to JSON
+		function exportSketches(folder){
+			let tempSketches = {}, objCopy, tempType;
 			tempSketches.version = settings.version;
 			tempSketches.revision = settings.revision;
-			tempSketches.structure = folderObj;
-			tempSketches.sketches = [];
-			listSketches(folderObj).forEach(function (sketch){
-				if(localStorage.hasOwnProperty(sketch)){
-					// grab sketch details (timestamps)
-					let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
 
-					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch), 'mod': sketchDetails.mod});
-				}
-			});
-			exportJSON(tempSketches, 'P5L_FOLDER_' + folder + '_' + timeStamp() + '.json');
+			if(folder !== undefined){
+				let folderObj = searchJSON(settings.sketches, 'name', folder);
+				objCopy = JSON.parse(JSON.stringify(folderObj));
+				tempType = 'FOLDER_'+ folder+'_';
+			}else{
+				objCopy = JSON.parse(JSON.stringify(settings.sketches));
+				tempType = 'SKETCHES_';
+			}
+			if(!demosLocked && folder === 'demos'){
+				tempSketches.structure = exportAddCode(objCopy, true);
+			}else{
+				tempSketches.structure = exportAddCode(objCopy);
+			}
+
+			// remove demos
+			if(demosLocked){
+				tempSketches.structure = tempSketches.structure.filter(function( obj ) {
+				  return obj.name !== 'demos';
+				});
+			}
+
+			let folderCount = findValues(tempSketches.structure, 'type', 'folder', 'name').length;
+			tempSketches.count = {sketches:listSketches(tempSketches.structure).length, folders:folderCount};
+			exportJSON(tempSketches, 'P5L_' + tempType + timeStamp() + '.json');
 		}
 
-		// export all sketches to JSON
-		function exportAllSketches(){
-			let tempSketches = {};
-			tempSketches.version = settings.version;
-			tempSketches.structure = settings.sketches;
-			tempSketches.revision = settings.revision;
-			tempSketches.sketches = [];
-			listSketches(settings.sketches).forEach(function (sketch){
-				if(localStorage.hasOwnProperty(sketch)){
-					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
-				}
-			});
-			exportJSON(tempSketches, 'P5L_SKETCHES_' + timeStamp() + '.json');
+		function exportPurgeDemos(obj){
+			let objPurge = [];
+
+			return obj;
 		}
+
+		function exportAddCode(objStructure, allowDemos) { // obj
+			for (let k in objStructure) {
+				let ric = objStructure[k];
+
+				if(ric.type == 'sketch'){
+					if(localStorage.hasOwnProperty(ric.name)){
+						ric.code = localStorage.getItem(ric.name);
+					}
+				}
+
+				// if folder, recurse deeper
+				if(ric.type == 'folder' && (ric.name != 'demos') || allowDemos){
+					ric.contents = exportAddCode(ric.contents, allowDemos);
+				}
+			};
+			return objStructure;
+		}
+
 
 		function listSketches(obj){
 			return findValues(obj, 'type', 'sketch', 'name');
@@ -2767,15 +2807,35 @@ function println(msg){
 					if(jsonObj.hasOwnProperty('structure')){
 						let jsonStructureSorted = jsonObj.structure.reverse();
 
-						let jsonStructureNormal = jsonObjList.structure;
-						let count = (JSON.stringify(jsonObjList.structure).match(/name/g) || []).length;
-						if(searchJSON(jsonObjList.structure, 'name', 'demos').length > 0){
-							count -= searchJSON(settings.sketches, 'name', 'demos')[0].contents.length;
+						if(demosLocked){
+							jsonStructureSorted = jsonStructureSorted.filter(function( obj ) {
+							  return obj.name !== 'demos';
+							});
+							if(jsonStructureSorted.length === 0){
+								return false;
+							}
 						}
-						let importData = 'Import the following ('+count+') items?<br>';
+
+						let jsonStructureNormal = jsonObjList.structure;
+						let count, importData;
+						if(!legacyImport(jsonObj)){
+							if(jsonObj.count.sketches === 1){
+								importSketchesParser(jsonStructureSorted);
+								return;
+							}
+							count = jsonObj.count.sketches + jsonObj.count.folders;
+							importData = 'Import the following ('+count+') items?<br>';
+						}else{
+							count = (JSON.stringify(jsonObjList.structure).match(/name/g) || []).length;
+							if(searchJSON(jsonObjList.structure, 'name', 'demos').length > 0){
+								count -= searchJSON(settings.sketches, 'name', 'demos')[0].contents.length;
+							}
+							importData = 'Import the following ('+count+') items?<br>';
+						}
+
 						let importDupFound = false;
 						for (let key in jsonStructureNormal) {
-							if(searchSketches(jsonStructureNormal[key].name, settings.sketches && jsonStructureNormal[key].name.toLowerCase() != 'demos')){
+							if(searchSketches(jsonStructureNormal[key].name, settings.sketches) && jsonStructureNormal[key].name.toLowerCase() != 'demos'){
 								importDupFound = true;
 							}
 						}
@@ -2785,60 +2845,159 @@ function println(msg){
 						importData += '<div id="importdump">';
 						importData += recursiveImportCheck(jsonStructureNormal, '', '');
 						importData += '</div>';
+						// *** add checkbox to ignore duplicates on import...
 
 						// first confirm importing of whole structure/sketches
 						vex.dialog.confirm({
 							unsafeMessage:importData,
 							callback: function(value){
 								if(value){
-									jsonStructureSorted.forEach(function(jsonItem){
-										if(jsonItem.mod === undefined){
-											jsonItem.mod = timeDate();
-										}
-										if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
-											// foreach folder/sketch check duplicates and give unique names
-
-											// each base folder
-											if(searchSketches(jsonItem.name, settings.sketches)){
-												jsonItem.name += '_'+ timeStamp(); //versionCheck(jsonItem.name);
+									loaderSub.innerHTML = 'Importing sketches...';
+									showLoader();
+									if(legacyImport(jsonObj)){
+										let legacyDemos = ["new", "P5LIVE_meta", "P5LIVE_COCODING_meta", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_primatives", "webgl_sphereBox", "slidersGrid", "textToPoints", "basel.codes", "this is a really long name", "osc_setup", "midi_setup"];
+										jsonStructureSorted.forEach(function(jsonItem){
+											if(jsonItem.mod === undefined){
+												jsonItem.mod = timeDate();
 											}
+											if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
+												// foreach folder/sketch check duplicates and give unique names
 
-											// each recursive sketch/folder within
-											recursiveNamecheck(jsonItem.contents, jsonObj.sketches);
+												// each base folder
+												if(searchSketches(jsonItem.name, settings.sketches)){
+													jsonItem.name += '_'+ timeStamp(); //versionCheck(jsonItem.name);
+												}
 
-											// add structure to top of sketches list
-											settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+												// each recursive sketch/folder within
+													recursiveNamecheck(jsonItem.contents, jsonObj.sketches);
 
-										}else if(jsonItem.type == 'sketch'){
-											settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
-										}
-									})
-									updateSettings();
-									initSortable();
-									//updateSketches();
+												// add structure to top of sketches list
+												settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
 
-									// import structure as folder..
-									parseSketches(jsonObj);
+											}else if(jsonItem.type == 'sketch'){
+
+												if(legacyDemos.indexOf(jsonItem.name) == -1){
+													settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
+												}
+											}
+										})
+										updateSettings();
+										initSortable();
+										//updateSketches();
+
+										// import structure as folder..
+										parseSketches(jsonObj, legacyDemos);
+									}else{
+										// new importer from r34
+										importSketchesParser(jsonStructureSorted);
+									}
+									hideLoader();
 								}
+
 							}
 						})
 					}else{
 						// import single sketch w/o confirm dialog
-						checkDupSketches(jsonObj, 'sketchName');
-						parseSketches(jsonObj);
+						if(legacyImport(jsonObj)){
+							checkDupSketches(jsonObj, 'sketchName');
+							parseSketches(jsonObj);
+						}
 					}
 				}
 				reader.readAsText(data[i]);
 			}
 		}
 
-		function recursiveImportCheck(objStructure, level, outputData) { // obj
+		function legacyImport(obj){
+			if(obj.revision === undefined || obj.revision < 34){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		function importSketchesParser(importObj){
+			if(demosLocked){
+				importObj = importObj.filter(function( obj ) {
+				  return obj.name !== 'demos';
+				});
+			}
+
+			recursiveImportDup(importObj, importObj);
+			importObj.forEach(function(jsonItem){
+				if(jsonItem.type == 'folder'){
+					settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+				}else if(jsonItem.type == 'sketch'){
+					settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
+				}
+			});
+			updateSettings();
+			initSortable();
+			recursiveImportCode(importObj);
+		}
+
+		function recursiveNames(obj, outputData){
+			if(outputData === undefined){
+				outputData = [];
+			}
+			for (let k in obj) {
+				let ric = obj[k];
+
+				// grab all names
+				if(ric.type == 'sketch'){
+					outputData.push(ric.name);
+				}
+
+				// if folder, go deeper
+				if(ric.type == 'folder'){
+					outputData.push(ric.name);
+					recursiveNames(ric.contents, outputData);
+				}
+			};
+			return outputData;
+		}
+
+		function recursiveImportDup(obj, objHold){
+			for (let k in obj) {
+				let allNames = recursiveNames(objHold);
+				let ric = obj[k];
+
+				if(searchSketches(ric.name, settings.sketches)){
+					ric.name = versionCheck(ric.name, allNames);
+				}
+
+				// if folder, go deeper
+				if(ric.type == 'folder'){
+					recursiveImportDup(ric.contents, obj);
+				}
+			};
+		}
+
+		function recursiveImportCode(obj){
+			for (let k in obj) {
+				let ric = obj[k];
+
+				// if sketch, add to localStorage
+				if(ric.type == 'sketch'){
+					localStorage.setItem(ric.name, ric.code);
+				}
+
+				// if folder, go deeper
+				if(ric.type == 'folder'){
+					recursiveImportCode(ric.contents);
+				}
+			};
+		}
+
+
+		function recursiveImportCheck(objStructure, level, outputData) {
 			for (let k in objStructure) {
 				let ric = objStructure[k];
 				let ricDup = '';
 
 				if(searchSketches(ric.name, settings.sketches)){
 					ricDup = 'class="importdump-dup"';
+					// ric.name += '_'+ timeStamp(); // versionCheck(rnc.name);
 				}
 
 				// if sketch, update sketches name too
@@ -2855,7 +3014,7 @@ function println(msg){
 			return outputData;
 		}
 
-		// recursively check for duplicate names when importing
+		// recursively check for duplicate names when importing ( < r34) or removing
 		function recursiveNamecheck(objStructure, objSketches) { // obj
 			for (let k in objStructure) {
 				let rnc = objStructure[k];
@@ -2920,26 +3079,30 @@ function println(msg){
 			request.send();
 			request.addEventListener('load', function(){
 				let jsonObj = JSON.parse(request.responseText);
-				recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
+				let jsonItem = jsonObj.structure[0];
 
-				//add structure to top of sketches list
-				settings.sketches.push({'type':'folder', 'name':jsonObj.structure[0].name, 'toggle':jsonObj.structure[0].toggle, 'contents':jsonObj.structure[0].contents});
+				settings.sketches.push({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
 
 				updateSettings();
 				initSortable();
+				recursiveImportCode(jsonObj.structure);
 
-				parseSketches(jsonObj);
+				if(settings.fileName == 'new'){
+					loadDefault();
+				}
 			});
 		}
 
 		function refreshDemos(){
 			window.setTimeout(function(){
-				removeItemProcess('demos');
-				window.setTimeout(function(){loadDemos();}, 200);
+				if(searchSketches('demos', settings.sketches)){
+					removeItemProcess('demos');
+				}
+				window.setTimeout(function(){loadDemos();}, 100);
 			}, 200);
 		}
 
-		function parseSketches(jsonObj){
+		function parseSketches(jsonObj, legacyDemos){
 			let jsonSketches = jsonObj.sketches.reverse();
 			for(let i=0; i < jsonSketches.length; i++){
 				let sketchName = jsonSketches[i].sketchName;
@@ -2951,7 +3114,9 @@ function println(msg){
 					if(jsonSketches[i].mod === undefined){
 						jsonSketches[i].mod = timeDate();
 					}
-					settings.sketches.unshift({'type':'sketch', 'name':sketchName, 'mod':jsonSketches[i].mod});
+					if(legacyDemos === undefined || legacyDemos.indexOf(sketchName) == -1) {
+						settings.sketches.unshift({'type':'sketch', 'name':sketchName, 'mod':jsonSketches[i].mod});
+					}
 				}
 
 				if(sketchName == settings.fileName){
@@ -2981,6 +3146,7 @@ function println(msg){
 			}
 
 			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){
+				//settings.refresh = false; // *** check this.. if needed?
 				loadDemos();
 			}
 		}
@@ -3195,7 +3361,7 @@ function println(msg){
 			if(elmType == 'folder'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+iconFolderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+iconFolderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
@@ -4667,7 +4833,7 @@ function println(msg){
 		}
 
 		function loadHTMLTemplate(){
-			let tempPath = 'includes/templates/p5live_savehtml.html';
+			let tempPath = 'includes/templates/p5live_savehtml.html?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -4996,7 +5162,7 @@ function println(msg){
 
 		function loadRef(){
 			refList = [];
-			let refPath = 'includes/p5/data.json';
+			let refPath = 'includes/p5/data.json?' + settings.revision;
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
 			request.send();
@@ -5430,9 +5596,9 @@ function println(msg){
 			request.send();
 			request.addEventListener('load', function(){
 				let jsonObj = JSON.parse(request.responseText);
-				for(let p of jsonObj.sketches){
-					let presetName = p.sketchName.replace('syncdata-', '');
-					let presetSketch = {code:p.sketchCode, name:presetName, protected:true};
+				for(let p of jsonObj.structure[0].contents){
+					let presetName = p.name.replace('syncdata-', '');
+					let presetSketch = {code:p.code, name:presetName, protected:true};
 					syncdataPresets.push(presetSketch);
 				}
 

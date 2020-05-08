@@ -1330,6 +1330,9 @@ li{
 	display:none;
 	pointer-events: none;
 }
+.dz-preview, .dz-file-preview{
+	display:none !important;
+}
 .remove-header{
 	margin-top:15px;
 	margin-bottom:0;
