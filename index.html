@@ -145,7 +145,7 @@
 					</button>
 				</div>
 
-				<div id="menu-sketches-filter-clear" class="tippy-left" data-title="Filter Sketches<br>(separate words for an <i>and</i> search)" onclick="filterSketchesClear()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+				<div id="menu-sketches-filter-clear" class="tippy-left" data-title="Filter Sketches<br>(separate words for an <i>and</i> search)" onclick="filterSketchesClear(true)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
 				<input type="text" class="tippy-left" data-title="Filter Sketches<br>(separate words for an <i>and</i> search)" name="" placeholder="Filter..." id="menu-sketches-filter" onkeyup="filterSketches()">
 
 				<div id="menu-sketches-holder" class="menu-sketches-holder">
@@ -1967,7 +1967,7 @@ function println(msg){
 					loadDefault();
 				}else if(window.location.hash.substring(1).toLowerCase() === 'bug'){
 					loadBug();
-				}else{
+				}else{ // else if(window.location.hash.indexOf('ref') != -1)
 					loaderSub.innerHTML = 'loading references...';
 					loadRef();
 					loadSketch(settings.fileName);
@@ -2361,9 +2361,11 @@ function println(msg){
 		}
 
 		// clear filter
-		function filterSketchesClear(){
+		function filterSketchesClear(forceFocus){
 			if(menuSketchesFilter.value == ''){
-				menuSketchesFilter.focus();
+				if(forceFocus){
+					menuSketchesFilter.focus();
+				}
 			}else{
 				menuSketchesFilter.value = '';
 				filterSketches();
@@ -4256,7 +4258,7 @@ function println(msg){
 		}
 
 		function autoCompileUpdate(){
-			checkToggle('autoCompile', settings.autoCompile, settingsAutoMode);
+			checkToggle('autoCompile', settings.autoCompile, settingsAutoMode, 'Live Coding');
 			if(settings.autoCompile){
 				settingsCompileTimer.style.display = 'block';
 			}else{
@@ -4287,7 +4289,7 @@ function println(msg){
 		}
 
 		function ecoRenderUpdate(){
-			checkToggle('ecoRender', settings.ecoRender, settingsEcoMode);
+			checkToggle('ecoRender', settings.ecoRender, settingsEcoMode, 'Eco Render');
 		}
 
 
@@ -4330,7 +4332,7 @@ function println(msg){
 		}
 
 		function fullscreenUpdate(){
-			checkToggle('fullscreenMode', settings.fullscreenMode, settingsFullscreen);
+			checkToggle('fullscreenMode', settings.fullscreenMode, settingsFullscreen, 'Full Screen');
 			if(settings.fullscreenMode){
 				if(sketchLoaded){
 					openFullscreen();
@@ -4351,7 +4353,7 @@ function println(msg){
 		}
 
 		function cursorToggleUpdate(){
-			checkToggle('canvasCursor', settings.canvasCursor, settingsCanvasCursor);
+			checkToggle('canvasCursor', settings.canvasCursor, settingsCanvasCursor, 'Canvas Cursor');
 			if(sketchLoaded){
 				if(!settings.canvasCursor){
 					p5f.noCursor();
@@ -4372,7 +4374,7 @@ function println(msg){
 		}
 
 		function consoleToggleUpdate(){
-			checkToggle('console', settings.console, settingsConsole);
+			checkToggle('console', settings.console, settingsConsole, 'Console');
 			if(!settings.console){
 				p5console.style.display = 'none';
 			}else{
@@ -4387,7 +4389,7 @@ function println(msg){
 		}
 
 		function menutabToggleUpdate(){
-			checkToggle('menutab', settings.menutab, settingsMenutab);
+			checkToggle('menutab', settings.menutab, settingsMenutab, 'Menu Tab');
 			if(!settings.menutab){
 				menuSwitch.style.display = 'none';
 			}else{
@@ -4402,7 +4404,7 @@ function println(msg){
 		}
 
 		function linenumbersUpdate(){
-			checkToggle('linenumbers', settings.linenumbers, settingsLinenumbers);
+			checkToggle('linenumbers', settings.linenumbers, settingsLinenumbers, 'Line Numbers');
 			if(!settings.linenumbers){
 				editor.setOptions({
 					showLineNumbers: false, // false
@@ -4423,7 +4425,7 @@ function println(msg){
 		}
 
 		function autocompleteUpdate(){
-			checkToggle('autocomplete', settings.autocomplete, settingsAutocomplete);
+			checkToggle('autocomplete', settings.autocomplete, settingsAutocomplete, 'Auto Autocomplete');
 			if(!settings.autocomplete){
 				editor.setOptions({
 					enableLiveAutocompletion: false
@@ -4442,7 +4444,7 @@ function println(msg){
 		}
 
 		function lockDragUpdate(){
-			checkToggle('lockcode', settings.lockcode, settingsLockDrag);
+			checkToggle('lockcode', settings.lockcode, settingsLockDrag, 'Lock Code on Drag');
 		}
 
 		// passEditorKeys toggle
@@ -4452,7 +4454,7 @@ function println(msg){
 		}
 
 		function passEditorKeysUpdate(){
-			checkToggle('passeditorkeys', settings.passEditorKeys, settingsPassEditorKeys);
+			checkToggle('passeditorkeys', settings.passEditorKeys, settingsPassEditorKeys, 'Pass-Thru Keypress');
 		}
 
 		// notify toggle
@@ -4462,7 +4464,7 @@ function println(msg){
 		}
 
 		function notifyToggleUpdate(){
-			checkToggle('notifytoggle', settings.notifyToggle, settingsNotify);
+			checkToggle('notifytoggle', settings.notifyToggle, settingsNotify, 'Notifications');
 		}
 
 		// tippy toggle
@@ -4472,7 +4474,7 @@ function println(msg){
 		}
 
 		function tippyToggleUpdate(){
-			checkToggle('tippytoggle', settings.tippyToggle, settingsTippy);
+			checkToggle('tippytoggle', settings.tippyToggle, settingsTippy, 'Tooltips');
 			loadTippy();
 		}
 
@@ -4483,7 +4485,7 @@ function println(msg){
 		}
 
 		function multitabToggleUpdate(){
-			checkToggle('multitabtoggle', settings.multitabToggle, settingsMultitab);
+			checkToggle('multitabtoggle', settings.multitabToggle, settingsMultitab, 'Multi-P5LIVE Warning');
 		}
 
 		//exportcode toggle
@@ -4493,7 +4495,7 @@ function println(msg){
 		}
 
 		function exportcodeUpdate(){
-			checkToggle('exportCode', settings.exportCode, settingsExportcode);
+			checkToggle('exportCode', settings.exportCode, settingsExportcode, 'Snapshot Code');
 		}
 
 		//BGactive toggle
@@ -4503,13 +4505,13 @@ function println(msg){
 		}
 
 		function themeBGactiveToggleUpdate(){
-			checkToggle('themeBGactive', settings.themeBGactive, settingsBGactive);
+			checkToggle('themeBGactive', settings.themeBGactive, settingsBGactive, 'Code Background');
 			editor.renderer.updateFull();
 		}
 
 
 		// checkbox function
-		function checkToggle(checkName, checkVar, checkElm){
+		function checkToggle(checkName, checkVar, checkElm, checkNotify){
 			if(checkVar){
 				checkElm.checked = true;
 			}else{
@@ -4524,7 +4526,11 @@ function println(msg){
 				if(checkVar){
 					notifyChecked = 'checked';
 				}
-				let notifyTxt = '<input type="checkbox" ' + notifyChecked + '> ' + checkName;
+				let notifyName = checkName;
+				if(checkNotify !== undefined){
+					notifyName = checkNotify;
+				}
+				let notifyTxt = '<input type="checkbox" ' + notifyChecked + '> ' + notifyName;
 				notifyMsg(notifyTxt);
 			}
 			if(settings.debugMode){console.log(checkName+': '+settings[checkName]);}
@@ -4588,6 +4594,7 @@ function println(msg){
 		// hide/show menu
 		function menuToggle(show){
 			if(refVisible){
+				console.log('closing ref')
 					closeRef();
 			}
 
@@ -4617,6 +4624,8 @@ function println(msg){
 			}else{
 				menuPanel.style.marginRight = '0px';
 				menuSwitch.innerHTML = '»';
+				filterSketchesClear();
+				// menuSketchesFilter.value = ''; // *** double check
 				menuVisible = true;
 				// menuPanel.style.overflow = "hidden";
 			}
@@ -4887,7 +4896,7 @@ function println(msg){
 
 		/* p5.js REFERENCE */
 
-		window.onhashchange = getRef;
+		window.onhashchange = getRef; // *** make preparser to prevent ref opening...
 
 		function toggleRef(force){
 			if(refVisible || force){
@@ -4909,11 +4918,21 @@ function println(msg){
 			}
 		}
 
+		// close references
+		function closeRef(){
+			window.location.hash = '#';
+			refHolder.style.display ='none';
+			refSearch = '';
+			refVisible = false;
+		}
+
 		function getRef(){
-			refVisible = true;
-			if(menuVisible || settingsVisible){
+			if(settings.menuMode || settingsVisible){
 				hideMenu();
 			}
+
+			refVisible = true;
+
 			if(window.location.hash != undefined && window.location.hash.length > 1){
 				let refPieces = window.location.hash.split('/');
 				let grabRef = '';
@@ -5020,10 +5039,12 @@ function println(msg){
 			}
 		}
 
-		function filterRefClear(){
+		function filterRefClear(forceFocus){
 			let filterInput = document.getElementById('ref-search');
 			if(filterInput.value == ''){
-				filterInput.focus();
+				if(forceFocus){
+					filterInput.focus();
+				}
 			}else{
 				filterInput.value = '';
 				filterRef();
@@ -5058,6 +5079,7 @@ function println(msg){
 						rfi.classList.remove('ref-hide');
 					}
 				}
+				filterInput.focus();
 			}else{
 				refSearch = '';
 				filterInputIcon.innerHTML = iconFilter;
@@ -5069,7 +5091,7 @@ function println(msg){
 				}
 			}
 
-			filterInput.focus();
+
 		}
 
 		function randomRef(c){
@@ -5094,7 +5116,7 @@ function println(msg){
 
 		function allRef(){
 			let refValue = '';
-			ref.innerHTML = '<div class="ref-sticky"><div class="ref-title">p5.js References <a onclick="randomRef(0);" class="ref-random tippy" data-title="Surprise!">'+iconGift+'</a><br></div><div class="ref-search-holder"><span id="ref-search-icon" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)" onclick="filterRefClear()">'+iconFilter+'</span><input type="text" id="ref-search" placeholder="Search..." onkeyup="filterRef()" value="'+refSearch+'" onfocus="this.selectionStart = this.selectionEnd = this.value.length;" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)"></div></div>';
+			ref.innerHTML = '<div class="ref-sticky"><div class="ref-title">p5.js References <a onclick="randomRef(0);" class="ref-random tippy" data-title="Surprise!">'+iconGift+'</a><br></div><div class="ref-search-holder"><span id="ref-search-icon" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)" onclick="filterRefClear(true)">'+iconFilter+'</span><input type="text" id="ref-search" placeholder="Search..." onkeyup="filterRef()" value="'+refSearch+'" onfocus="this.selectionStart = this.selectionEnd = this.value.length;" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)"></div></div>';
 			let all = [];
 			let grouped = groupBy(refList, (c) => c.module);
 			Object.keys(grouped).forEach(function(k){
@@ -5293,14 +5315,6 @@ function println(msg){
 
 		}
 
-		// close references
-		function closeRef(){
-			window.location.hash = '#';
-			refHolder.style.display ='none';
-			refSearch = '';
-			refVisible = false;
-		}
-
 		// group references
 		function groupBy(xs, f) {
 			return xs.reduce((r, v, i, a, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
@@ -5469,7 +5483,7 @@ function println(msg){
 			let notifyDelay = txt.length*20;
 			notifyTimer = setTimeout(function(){
 				notify.style.opacity = 0;
-				setTimeout(function(){notify.style.display = 'block';}, 500);
+				setTimeout(function(){notify.style.display = 'none';}, 500);
 
 			}, notifyDelay);
 			showNotify = false;
