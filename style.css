@@ -238,7 +238,6 @@ hr{
 	width:250px;
 	color:#fff;
 	z-index:101;
-	/*transition: margin-right .25s ease;*/
 }
 #menu-switch{
 	position:absolute;
@@ -593,12 +592,10 @@ h2{
 	outline:none;
 	background:#555;
 }
-
 .folder-title .menu-sketch-button{
 	background:#333;
 	border:none;
 	border-left:1px solid #555;
-	/*padding:2px 1px 0px 1px;*/
 }
 .folder-title .menu-sketch-button:hover{
 	background:#222;
@@ -620,7 +617,6 @@ h2{
 	padding:1px;
 	float:left;
 	background:none !important;
-	/*border:none !important;*/
 	border-left:1px solid #aaa;
 	opacity:.75;
 }
@@ -739,10 +735,8 @@ h2{
 .chatname{
 	padding:0 2px 0 2px;
 	box-sizing: border-box;
-	/*font-weight:bold;*/
 	margin-right:0px;
 	max-width:60px !important;
-	/*height:16px;*/
 	overflow:hidden;
 	float:left;
 }
@@ -759,8 +753,6 @@ h2{
 	font-style:italic;
 }
 .chat-item{
-	/*height:16px;*/
-	/*margin-bottom:1px;*/
 }
 .chat-item-self{
 }
@@ -1140,7 +1132,6 @@ li{
 	position:fixed;
 	z-index:9999;
 	right:0;
-	/*background:#000;*/
 	color:#fff;
 	overflow:auto;
 	width:250px;
@@ -1231,7 +1222,6 @@ li{
 	border:1px solid #eee;
 	border-radius:3px;
 	color:#eee;
-	/*background:#eee;*/
 }
 #ref-close:hover{
 	background:#eee;
@@ -1282,7 +1272,6 @@ li{
 	font-style:italic;
 }
 .module{
-	/*width:140px;*/
 	margin:0 0px 25px 0;
 	position:relative;
 	line-height:1.2em;
@@ -1291,7 +1280,6 @@ li{
 }
 .module-name, .ref-title, .param-title{
 	font-size:12pt;
-	/*text-decoration:underline;*/
 	color:#fff;
 	margin-bottom:5px;
 	font-weight:bold;

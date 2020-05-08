@@ -2684,7 +2684,7 @@ function println(msg){
 			// remove demos
 			if(demosLocked){
 				tempSketches.structure = tempSketches.structure.filter(function( obj ) {
-				  return obj.name !== 'demos';
+					return obj.name !== 'demos';
 				});
 			}
 
@@ -2809,7 +2809,7 @@ function println(msg){
 
 						if(demosLocked){
 							jsonStructureSorted = jsonStructureSorted.filter(function( obj ) {
-							  return obj.name !== 'demos';
+								return obj.name !== 'demos';
 							});
 							if(jsonStructureSorted.length === 0){
 								return false;
@@ -2919,7 +2919,7 @@ function println(msg){
 		function importSketchesParser(importObj){
 			if(demosLocked){
 				importObj = importObj.filter(function( obj ) {
-				  return obj.name !== 'demos';
+					return obj.name !== 'demos';
 				});
 			}
 
