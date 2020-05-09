@@ -34,36 +34,20 @@
 		},
 
 		{
-			"id":"webgl",
-			"key": "D",
-			"code":{
-				"global":{
-					"top":"",
-					"bottom":""
-				},
-				"setup":"gl = this._renderer.GL;\ngl.disable(gl.DEPTH_TEST);",
-				"draw":{
-					"top":"",
-					"bottom":""
-				}
-			}
-		},
-
-		{
 			"id":"osc",
 			"key": "O",
 			"code":{
 				"global":{
-					"top":"let loadScripts = [\"includes/js/socket.io.js\"];\nlet socket;",
-					"bottom":"\n\n\n\n\n// OSC LOGIC \nfunction receiveOsc(address, value) {\n\tprint(\"received OSC: \" + address + \", \" + value);\n}\nfunction sendOsc(address, value) {\nsocket.emit(\"message\", [address].concat(value));\n}\n\nfunction setupOsc(oscPortIn, oscPortOut) {\nsocket = io.connect(\"http://127.0.0.1:8082\", {\nport: 8082,\nrememberTransport: false\n});\nsocket.on(\"connect\", function() {\nsocket.emit(\"config\", {\nserver: {\nport: oscPortIn,\nhost: \"127.0.0.1\"\n},\nclient: {\nport: oscPortOut,\nhost: \"127.0.0.1\"\n}\n});\n});\nsocket.on(\"message\", function(msg) {\nif(msg[0] == \"#bundle\") {\nfor(var i = 2; i < msg.length; i++) {\nreceiveOsc(msg[i][0], msg[i].splice(1));\n}\n} else {\nreceiveOsc(msg[0], msg.splice(1));\n}\n});\n}"
+					"top":"let libs = [\"includes/js/socket.io.js\"];\nlet socket;",
+					"bottom":"\n// OSC LOGIC \nfunction receiveOsc(address, value) {\n\t// print('in: ' + address + ', ' +value)\n}\n\nfunction sendOsc(address, value) {\n\tif(socket != undefined) {\n\t\tsocket.emit('message', [address].concat(value));\n\t}\n}\n\nfunction setupOsc(oscHost, oscPortIn, oscPortOut) {\n\tsocket = io.connect('http://127.0.0.1:8082');\n\tsocket.on('connect', function() {\n\t\tsocket.emit('config', {\n\t\t\tserver: {\n\t\t\t\thost: oscHost,\n\t\t\t\tport: oscPortIn\n\t\t\t},\n\t\t\tclient: {\n\t\t\t\thost: oscHost,\n\t\t\t\tport: oscPortOut\n\t\t\t}\n\t\t});\n\t\tprint('OSC Ready!\\n' + oscHost + ', listen: ' + oscPortIn + ', send: ' + oscPortOut);\n\t});\n\tsocket.on('message', function(msg) {\n\t\treceiveOsc(msg[0], msg.splice(1));\n\t});\n}"
 				},
-				"setup":"setupOsc(12000, 12001); // in, out",
+				"setup":"setupOsc('127.0.0.1', 12000, 12001); // oscHost, oscPortIn, oscPortOut",
 				"draw":{
 					"top":"",
 					"bottom":""
 				}
 			}
 		}
-		
+
 		]
 }

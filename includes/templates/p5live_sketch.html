@@ -21,12 +21,18 @@
 			cursor:crosshair;
 		}
 	</style>
+	<script src="includes/js/loadjs.min.js"></script>
+
 	<script type="text/javascript">
 		var p5p = parent.document;
 		var p5console = p5p.getElementById('p5-console');
 		var p5code = p5p.getElementById('p5-code');
 		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
 		var pmsg = '';
+
+		function pingReady(scriptName, scriptCode, scriptCallback){
+			window.parent.pongReady(scriptName, scriptCode, scriptCallback);
+		}
 
 		// clear console if all good
 		if(p5console != null){
@@ -38,7 +44,7 @@
 		window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
 			p5console.value = errorMsg; // lineNumber +" / "+
 			p5console.style.background = "#000";
-			markLine(lineNumber);            
+			markLine(lineNumber);
 			return false;
 		}
 
@@ -47,16 +53,16 @@
 			if(n != null){
 				myCustomData = { 'lineNumber': n }
 			}
-			var event = new CustomEvent('myEvent', { detail: myCustomData });
+			var event = new CustomEvent('p5Status', { detail: myCustomData });
 			window.parent.document.dispatchEvent(event);
 		}
 
-		var statusTimer; 
+		var statusTimer;
 		function sketchStatus(){
 			if(p5.instance._setupDone){
 				clearTimeout(statusTimer);
 				var myCustomData = {'status': true};
-				var event = new CustomEvent('myEvent', { detail: myCustomData });
+				var event = new CustomEvent('p5Status', { detail: myCustomData });
 				window.parent.document.dispatchEvent(event);
 			}else{
 				statusTimer = setTimeout(function(){sketchStatus();}, 50);
@@ -68,16 +74,17 @@
 			log: function(m){
 				if(m != "p5.RendererGL: enabled webgl context"){
 					consoleMessage(m, .1);
-					
+
 					// only send to window console if unique!
 					if(m != pmsg){
 						window.parent.console.log(m); // also send to parent console!
+						window.parent.syncdataConsoleMsg(m); // also send to syncdata console!
 						pmsg = m;
 					}
 					clearTimeout(p5consoleTimer);
 					p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
 				}
-			}       
+			}
 		};
 
 		function clearConsole(){
@@ -87,6 +94,9 @@
 		}
 
 		function consoleMessage(msg, timeDelay){
+			if(typeof msg === 'object'){
+				msg = JSON.stringify(msg);
+			}
 			p5console.value = msg;
 			if(consoleVisible == false){
 				p5console.style.display = 'block';
@@ -101,7 +111,7 @@
 			}
 		}
 
-		
+
 
 		function consoleHide(){
 			if(consoleTimer != undefined){
@@ -143,6 +153,19 @@
 
 		function forwardKey(event){
 			window.parent.sendKey(event);
+		}
+
+		// sync data
+		function sendData(obj){
+			window.parent.syncdataSend(obj);
+		}
+
+		function getData(obj){
+			// placeholder function;
+		}
+
+		function parseData(obj){
+			// placeholder function;
 		}
 
 	</script>

@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.2.6  
+v 1.3.0  
 cc [teddavis.org](http://teddavis.org) – 2019-2020  
 p5.js collaborative live-coding vj environment!
 
@@ -20,19 +20,25 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + +` » increase fontsize
 - `CTRL + S` » save png [ + code ]
 - `CTRL + I` » 720*720px popup for screen-recording
-- `CTRL + 1, 2, 3...0` » load first 10 sketches
+- `CTRL + 1, 2, 3...0` » jump between first 10 sketches
 
 
 ## SAVING
-Sketches are ONLY saved in your browser's localStorage so export all sketches regularly! Clearing browser history/data will likely erase all sketches.  
+Sketches are **_ONLY_** saved in your browser's localStorage.  
+Export all (<img class="svg" src="includes/icons/download.svg" height="12px">) sketches + settings regularly.  
+Clearing browser history/data will likely erase all sketches + settings.
 
-This means sketches are isolated to the localStorage per domain:port, so export/import all sketches to migrate between online/offline/browsers.
+localStorage is unique and isolated per http[s]:domain:port,  
+so export/import to migrate between online / offline / browsers.
+
+The file structure changed in 1.3.0, so make sure all copies of P5LIVE are up to date.  
+You can import any old sketches, but newly saved ones won't open in  versions < 1.3.0.
 
 
 ## INSTALL
 Online: [p5live.org](https://p5live.org)
 
-Offline: [Github Repo](https://github.com/ffd8/p5live)   
+Offline: [github.com/ffd8/p5live](https://github.com/ffd8/p5live)   
 Details below to run via python webserver or nodejs/npm.
 
 
@@ -40,113 +46,163 @@ Details below to run via python webserver or nodejs/npm.
 ### LIVE-CODE IN 5... 4... 3...  
 <img src="includes/images/menu-sketches-new-7.png" width="220px">  
 
-- Create New Sketch via GUI icon or `CTRL + N` and start coding!  
+- <img class="svg" src="includes/icons/file-plus.svg" height="12px"> Create New Sketch or `CTRL + N` and start coding!  
 - Live-coding active by default, `CTRL + ENTER` to force recompile.  
-- Sketch is auto-saved on every keystroke.  
+- Sketches are auto-saved to localStorage on every keystroke.  
   
 ## MENU
-### P5LIVE MENU  
+### P5LIVE PANEL 
 <img src="includes/images/menu-p5live-8.png" width="220px">  
 
-- About, what you're reading now.  
-- Settings, adjust editor settings + shortcuts (see details below).  
-- Reference, `CTRL + R`, toggle p5.js reference list.  
-- Save PNG + CODE, `CTRL + S`, exports output image [and snapshot of code].  
-- Save HTML, export single-page website (re-link path to custom assets).
+- <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About, 👋 you're reading me now.  
+- <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts.  
+- <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle embeded p5.js reference.  
+- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png [+ .json], `CTRL + S`, exports image [+ snapshot of code].  
+- <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export 1-page website (must re-link paths to custom assets).
 
-### COCODING MENU  
+### SETTINGS PANEL  
+<img src="includes/images/menu-settings-nav.png" width="220px">
+
+- <img class="svg" src="includes/icons/slash.svg" height="12px"> Completely reset P5LIVE (*deletes all sketches + settings!*)
+- <img class="svg" src="includes/icons/refresh-cw.svg" height="12px"> Reset Settings to defaults
+- <img class="svg" src="includes/icons/upload.svg" height="12px"> Import Settings
+- <img class="svg" src="includes/icons/download.svg" height="12px"> Export Settings
+  
+#### Options
+- [x] Live Coding, auto-compile code on keyup, recompiles if error-free.  
+- [x] Eco Render, noLoop() if window loses focus (save computer resources).  
+- [x] Cursor, display cursor (when editor is hidden).  
+- [x] Console, display console messages (print / errors / warnings).  
+- [x] Menu Tab, toggle menu tab. (hide if visible while VJ'ing). 
+- [x] Snapshot Code, export current code with each image snapshot. 
+- [ ] Line Numbers, display code line numbers (and gutter features). 
+- [ ] Auto Autocomplete, useful for learning, just use `CTRL + SPACE` as needed. 
+- [x] Lock Code on Drag, locks code editor on mouse drag to prevent displacing code. 
+- [ ] Pass Editor Keys, keypresses from editor to p5 canvas (hide editor otherwise).
+- [x] Notifications, display notifications (shortcut settings + chat). 
+- [x] Tooltips, displays extra info on hover. 
+- [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
+- Code Size, `15pt` adjust font size of editor.  
+- Code Background, [x] toggle + set color behind lines of code.  
+- Theme, select custom styling of code.
+
+#### Shortcuts
+Customize keyboard shortcuts by clicking on name + press a new key combination.  
+
+### COCODING PANEL  
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
 
-- Start, click the single 'network' button.  
+- <img class="svg" src="includes/icons/share-2.svg" height="12px"> Press to start a COCODING session and share new URL with friends.  
 
-<img src="includes/images/menu-cocoding-active-7.png" width="220px">  
+<img src="includes/images/menu-cocoding-active-9.png" width="220px">  
 
-- Exit, click the green 'power' button.  
-- Share, click to copy URL and share with friends.  
-- Clone sketch, saves current co-code to local sketches within session folder.  
-- Lockdown (admin), limit editing, toggling privledges per user.  
-- Broadcast (admin + lockdown), sync mouseX/Y/frameCount/recompile with users.
+- COCODING <sup>#</sub> of users - ⇡⇣ syncing up/down-stream.
+- <img class="svg" src="includes/icons/power.svg" height="12px"> Exit, click the green 'power' button.  
+- <img class="svg" src="includes/icons/copy.svg" height="12px"> Clone sketch, saves current co-code to local sketches within session folder.  
+- <img class="svg" src="includes/icons/radio.svg" height="12px"> SyncData, custom code to sync local data (mouse, midi,...) with peers.  
+- <img class="svg" src="includes/icons/unlock-mod.svg" height="12px"> Lockdown (admin), limit editing, toggle write privledges per user.  
+- <img class="svg" src="includes/icons/cast.svg" height="12px"> Broadcast (admin + lockdown), sync mouseX/Y/frameCount/recompile with users.
 
-<img src="includes/images/menu-cocoding-req-pre-7.png" width="220px">  
+<img src="includes/images/menu-cocoding-req-pre-8.png" width="220px">  
 
-- Rename, click on your name (very top) to select a new nickname and cursor color.
+- Click on your name (very top) to select a new nickname and color.
+- If <img class="svg" src="includes/icons/shield.svg" height="12px"> admin left, you'll have option within this panel to claim it.
 
 #### Lockdown (user)
-<img src="includes/images/menu-cocoding-req-7.png" width="220px">  
+<img src="includes/images/menu-cocoding-req-9.png" width="220px">  
 
-- Request Write-access, click edit button and wait for admin to allow.
+- Request write-access, click edit button and wait for admin to allow.
 
 #### Lockdown (admin)
-<img src="includes/images/menu-cocoding-admin-vote-7.png" width="220px">  
+<img src="includes/images/menu-cocoding-admin-vote-8.png" width="220px">  
 
-- Request Deny/Accept, reject or grant write-access from users.
+- Grant write-access, toggle requested write-access from glowing users.
 
-<img src="includes/images/menu-cocoding-admin-allow-7.png" width="220px">  
+<img src="includes/images/menu-cocoding-admin-allow-8.png" width="220px">  
 
-- Toggle Write-access, admin can always toggle write access of user.  
+- Toggle write-access, admin can always toggle write access per user. 
+
+#### Chat
+<img src="includes/images/menu-cocoding-chat-2.png" width="220px">   
+
+Within chat, links are parsed, ie. share sketch from p5.js editor.  
+Incoming chats displayed as notification (if active) when menu is hidden.
+
+#### SyncData
+<img src="includes/images/menu-cocoding-syncdata-2.png" width="220px">  
+
+<img class="svg" src="includes/icons/radio.svg" height="12px"> launches SyncData window.  
+
+<img src="includes/images/menu-cocoding-syncdata-window-2.png" width="400px">   
+
+Use the SyncData window to send local data (as objects), by entering custom code that's executed locally in parallel to the shared COCODING session. Latest changes to the SyncData editor are stored in your local settings. Selecting a new preset replaces its contents, so use `Save Preset` to store anything long-term.  
+
+**Presets**  
+
+- `template` guide for making your own.  
+- `mouseXY`, `facetracker` + `midi`, shares those signals with others.  
+Be sure to enter unique `userID`'s.
+- `Save Preset` for storing current SyncData editor (pre-existing name replaces it).
+- `Remove Preset` is available after selecting a custom preset.
+
+**Buttons**  
+
+- `► RUN` activates SyncData, injecting code at end of COCODE on each recompile.
+- `► RE-RUN` updates any changes made within SyncData editor.
+- `↓ COCODE` (admin) adds code following `/* 2 - COCODE */` into COCODING session.
+- `◼ STOP` deactivates SyncData (stops adding local code to recompile).
+
+<img src="includes/images/menu-cocoding-syncdata-radio-1.png" width="220px"> 
+
+When active, your own <img class="svg" src="includes/icons/radio.svg" height="12px"> turns green, along with any user who is sending data.  
+<img class="svg" src="includes/icons/lock.svg" height="12px"> Lockdown mode, suspends SyncData for all users, unless given write-access.  
+
+All data sent, uses `parseData()` in COCODING session to access it. Events can be fired immediately, or pass values to global vars for use within `draw()`. Furthermore you can use `getData()` within COCODING session, for unique local processing within your own SyncData window and code. See `midi` preset for use-case, where `midiThru` receives incoming signals and passes them onward to your own gear.
+
+Be kind to your peers, keep data size and intervals within reasonable values.  
+Have fun COCODING with keyboards, EEG-headsets, eye-trackers, ....?! 
   
-### SKETCHES MENU 
+### SKETCHES PANEL 
 <img src="includes/images/menu-sketches-7.png" width="220px">  
 
-- New sketch.  
-- Clone sketch, duplicates active sketch.  
-- New folder, nest sketches/folders within others.  
-- Import, select JSON files from export (single/folder/all).  
-- Export, exports entire sketches list for import/backup.  
+- <img class="svg" src="includes/icons/file-plus.svg" height="12px"> New sketch.  
+- <img class="svg" src="includes/icons/copy.svg" height="12px"> Clone sketch, duplicates active sketch.  
+- <img class="svg" src="includes/icons/folder-plus.svg" height="12px"> New folder, nest sketches/folders within others.  
+- <img class="svg" src="includes/icons/upload.svg" height="12px"> Import, select JSON files from export (single/folder/all).  
+- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, exports entire sketches list for import/backup.  
   
 #### Filter
 <img src="includes/images/menu-sketch-filter-blank.png" width="220px">  
 <img src="includes/images/menu-sketch-filter.png" width="220px">  
 
-Lost the overview of your sketches? Just type in keywords to match names of folders or sketches to filter and only show those results. To organize them, create a new folder with that word in the title and you can drag + drop them into it. 
+Lost the overview of your sketches?  
+Type in keywords to match names of sketches and folders, filtering only those results. Use separate words for an *and* search, ie. `3d webgl text`. To organize, add a new folder containing that word, and drag + drop items into it. 
 
 #### Sketch  
-<img src="includes/images/menu-sketch-nav-8.png" width="220px">  
+<img src="includes/images/menu-sketch-nav-9.png" width="209px">  
+<img src="includes/images/menu-sketch-nav-expanded-9.png" width="209px">  
 
-- Load, click on sketch name.  
-- Inspect, click lines icon to view/edit code as popup.  
-- Rename, click pencil icon and type new name.  
-- Export, click download icon to export sketch as JSON file.  
-- Remove, click trash icon and confirm deletion.  
+- Load Sketch, click on name.
+- <img class="svg" src="includes/icons/more-horizontal.svg" height="12px"> Hover to view contextual options  
+	- <img class="svg" src="includes/icons/align-left.svg" height="12px"> Inspect,  view/edit code as popup.  
+	- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give sketch new name.  
+	- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export single sketch as JSON file.  
+	- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete sketch after confirmation.  
 - Sort, click + hold + drag to desired order.  
-- Add to folder, careully drag + drop into/over folder.
+- Place in folder, slowly drag + drop into/over folder.
 
 #### Folder  
-<img src="includes/images/menu-folder-nav-7.png" width="220px">  
+<img src="includes/images/menu-folder-nav-9.png" width="209px">  
+<img src="includes/images/menu-folder-nav-expanded-9.png" width="209px">  
 
-- Expand/collapse, click on folder name.  
-- Rename, click pencil icon and type new name.  
-- Export, click download icon to export entire contents as JSON file.  
-- Remove, click trash icon and confirm deletion.  
+- Expand/collapse Folder, click on name.  
+- <img class="svg" src="includes/icons/more-horizontal.svg" height="12px"> Hover to view contextual options  
+	- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give folder new name.  
+	- <img class="svg" src="includes/icons/folder-plus.svg" height="12px"> Sub-folder, create a new folder within existing one.
+	- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export folder + contents as JSON file.  
+	- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete folder + contents after confirmation.  
 - Sort, click + hold + drag to desired order.  
   
-### SETTINGS PANEL  
-<img src="includes/images/menu-settings-nav.png" width="220px">
-
-- Completely reset P5LIVE (deletes all sketches!)
-- Reset Settings to defaults
-- Import Settings
-- Export Settings
-  
-### Settings
-- Live Coding, (auto-compiling mode), recompiles on error-free keyup.  
-- Eco Render, toggle loop()/noLoop() if browser window is inactive.  
-- Cursor, toggle visibility of cursor when hiding editor.  
-- Console, toggle visibility of console incase of errors/warnings.  
-- Menu Tab, toggles menu tab. (hide if visible while VJ'ing). 
-- Snapshot Code, export current code with every image snapshot. 
-- Line Numbers, toggle code editor gutter features + line numbers. 
-- Autocomplete, toggle constant autocomplete suggestions. 
-- Lock Code on Drag, toggle locked code editor on mouse drag. 
-- Pass Editor Keys, toggle passing keyPress from editor to p5 canvas.
-- Notifications, toggle notifications of setting changing shortcuts. 
-- Code Size, adjust font size of editor text.  
-- Code Background, toggle + set color behind each line of code.  
-- Theme, select custom styling of code.
-
-### Shortcuts
-Customize by clicking on name, then press a new key combination.  
-
 ## DETAILS
 ### COMPILING
 There are two modes of compiling in P5LIVE:  
@@ -154,28 +210,53 @@ There are two modes of compiling in P5LIVE:
 - softCompile, `CTRL + ENTER`, (default) replaces changed functions (smooth refresh).  
 - hardCompile, `CTRL + SHIFT + ENTER`, forces entire sketch to recompile.  
 
-Changes to global variables and `setup()`/`preload()` automatically perform a hardCompile since the entire sketch needs it. If your change only occurs within the `draw()` and custom functions (that aren't used in `setup()`), you should see a smooth transition. This is especially useful if using preloaded assets or drawing without a background during a performance, as it allows things to keep flowing. `Classes` are also softCompiled, but remember that each instance will still hold the old variables/methods, so replace each instance as needed (you'll see the updates on each new copy).  
+Changes to global variables and `setup()`/`preload()` automatically perform a hardCompile since the entire sketch needs it. If your change only occurs within the `draw()` and custom functions (that aren't used in `setup()`), you should see a smooth transition. This is especially useful if using preloaded assets or drawing without a background during a performance, as it allows things to keep flowing. `Classes` are also softCompiled, but remember that each instance will still hold the old variables/methods, so replace each instance to see changes. 
+
+A recompile when nothing has changed (and `live-coding` active), triggers a hardCompile, which is useful for clearing the background or class instances.
 
 If in doubt or not seeing changes, run a hardCompile, `CTRL + SHIFT + ENTER`. 
+
+`frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refreshes.
 	
 ### AUTOCOMPLETE
-Custom autocomplete with p5.js functions and constants has been implemented.  
+Custom autocomplete with p5.js functions and constants has been implemented!  
 
-To activate, enter the first few characters of a function and press `CTRL + SPACE`, then select function alone or with parameters. If selecting with parameters, use `TAB` to cycle through each one.  
+<img src="includes/images/autocomplete-2.png" width="400px">  
+
+To activate, enter the first few characters of a function and press `CTRL + SPACE`, then select function alone or with parameters. If selecting with parameters, use `TAB` to cycle through each one. Optionally activate `Auto Autocomplete` in the `Settings` to have suggestions on every keystroke.  
+
+The auto-compiler of `live-coding` pauses whenever the auto-complete panel is active.
 
 If you forget the name of a function, simply view the p5.js references `CTRL + R`.
-	
+
+### REFERENCES
+After an overhaul, the built-in <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> `References`, `CTRL + R`, now include nearly all information found on the official [p5.js reference website](https://p5js.org/reference/), embedded for easy lookup while potentially VJ'ing... meta-visuals! Use the  <img class="svg" src="includes/icons/gift.svg" height="12px"> to surprise yourself and view a random reference.
+
+<img src="includes/images/refs-search-2.png" width="230px">  
+
+Use `Search...` with keyup instant filtering to find functions you're after.  
+Separate words for an *and* search, ie. `material light`.  
+References keep full opacity once viewed, helping note which ones you've read. 
+
+<img src="includes/images/refs-params-3.png" width="500px">  
+
+Hover over functions for `parameters` tooltip, click to read the full detailed reference. 
+
+<img src="includes/images/refs-example-1.png" width="230px">  
+
+Beyond params and descriptions, the example's code is now embedded with js highlighting.
+
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
-Load snippet via shortcut, `CTRL + SHIFT + key`  
+Load snippet via custom shortcut, `CTRL + SHIFT + key`  
 
 - `CTRL + SHIFT + A`, adds audio-reactive code.  
 - `CTRL + SHIFT + O`, adds OSC communication code.
 
 ### LIBRARIES
-P5LIVE loads p5.js/p5.dom/p5.sound libraries by default. For additional libraries, load them remotely via [CDN hosted](https://www.jsdelivr.com/) or locally if running offline (ie `/data/libs/`).  
+P5LIVE loads p5.js/p5.sound libraries by default. For additional libraries, load them remotely via [CDN host](https://www.jsdelivr.com/) or locally if running offline (ie. `/data/libs/`). Can also be used within `SyncData`!  
 
-Add this snippet to the top of your sketch, placing one URL/path per array item:  
+Add this snippet to the top of your sketch, placing one path per array item:  
 
 ```
 let libs = [
@@ -189,33 +270,42 @@ Load custom assets (image/font/obj/audio/...):
  
 - Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server (ie. [imgur](https://imgur.com) for images)  
 `loadImage('https://i.imgur.com/ijQzwsx.jpeg');`
-- Locally, clone/download from GitHub and follow guide below for offline use.  
-Drop files into a folder and link relatively, ie: `loadImage('data/images/fish.png');`
+- Locally, if running offline (ie. `/data/images/`)  
+`loadImage('data/images/fish.png');`
+
+### VIEW ONLY MODE
+By special request (P5LIVE for remote meditation sessions?!), there's a `view only mode`, meaning everything is hidden (code + menu) and you'll only see the sketch running. Intended for COCODING sessions, where the admin can live-code while attendees enjoy and optionally interact with the visuals using their own mic or mouse. Anytime code is recompiled, the same happens here too. Add `edit=0` to your URL:  
+- COCODING, `/?cc=*****&edit=0`  
+- Solo, `/?edit=0`
 
 ### EXPORT / IMPORT
-Beyond exporting all sketches regularly (backup!) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or drag and drop the `P5L_***.json` file into the browser window.
+Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.json` into the browser.
 
 ### PERFORMANCE
 Lagging or retina display creates too large of a canvas?  
 Use `pixelDensity(1);` in `setup()`.
 
-### OSC/MIDI
-OSC is implemented when running locally using node.js/npm.  
-Load *osc_setup* demo and run Processing sketch, [p5live\_osc\_setup](https://gist.github.com/ffd8/f9f33cc7461f8467f62d5a792dde53ca)  
-or use the OSC snippet (`CTRL + SHIFT + O`) and adjust in/out ports within the setup.  
-MIDI is implemented with webmidi.js – see *midi_setup* demo.
+### MIDI/OSC
+- MIDI works online/offline and is implemented with webmidi.js  
+For example, *demos/_input/_input_midi*
+- OSC works offline when using node.js/npm.  
+For example,  *demos/_input/_input_osc* and run Processing sketch, [p5live\_osc\_setup](https://gist.github.com/ffd8/f9f33cc7461f8467f62d5a792dde53ca)  
+or use the OSC snippet (`CTRL + SHIFT + O`) and set host/in/out ports.  
 
 ### BUG/CRASH?! 
 Infinite loop? Broken code?  
 
-- Add `#bug` to URL and refresh URL to stop compiler to fix a bug/infinite-loop...  
-- Add `#new` to URL and refresh URL to force a fresh blank sketch. Then you can inspect and fix broken sketch.
+- Add `#bug` to URL and press `ENTER`.  
+Stops compiler, loads a new sketch and opens inspector to fix issue.
+- Add `#new` to URL and press `ENTER`.  
+Loads a new sketch.
+- If the browser has completely hung, (rare issue between MBP/Chrome/libraries)  
+`sudo killall coreaudiod` (first take off headphones + turndown stereo!)
 
 
 ### FUNCTIONS
 Additional custom functions are available in every sketch:  
 
-- `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refresh.  
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
 
@@ -243,7 +333,8 @@ Additional custom functions are available in every sketch:
 
 
 ## TOOLS USED
-P5LIVE is possible thanks to these amazing open-source projects:  
+P5LIVE is possible thanks to these amazing open-source projects.  
+Listed in order of adoption:  
 
 - [p5.js](https://p5js.org), magic – v1.0.0
 - [ace editor](https://ace.c9.io), code editor on top
@@ -264,6 +355,8 @@ P5LIVE is possible thanks to these amazing open-source projects:
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 - [dropzone.js](https://www.dropzonejs.com/), drag + drop importing
 - [mousetrap.js](https://craig.is/killing/mice), custom shortcut key bindings
+- [loadjs](https://github.com/muicss/loadjs/), in series loading of libs + sketch
+- [highlight.js](https://highlightjs.org/), higlighting of p5.js examples
 
 
 ## INSPIRATION
@@ -272,4 +365,4 @@ P5LIVE is possible thanks to these amazing open-source projects:
 
 
 ## SOURCE
-- [GitHub](https://github.com/ffd8/p5live)
+- [https://github.com/ffd8/p5live](https://github.com/ffd8/p5live)
