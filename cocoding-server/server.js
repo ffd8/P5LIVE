@@ -2,14 +2,17 @@
 let online = true; // set online
 let debugStats = true; // report glitch.com limits
 
+// custom port
 let tPort = process.env.PORT || 5000;
-if(process.argv.slice(2).length > 0){
-	tPort = process.argv.slice(2)[0];
+for(let arg of process.argv){
+	if(!isNaN(arg)){
+		tPort = arg;
+	}
 }
 
 const express = require('express')
 , app = express()
-, server = require('http').Server(app)
+, server = require('http').createServer(app)
 , io = require('socket.io')(server)
 , RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
 , port = tPort

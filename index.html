@@ -367,7 +367,7 @@ function println(msg){
 
 		/* INIT */
 		let currentRevision = 34;
-		let developBranch = true;
+		let developBranch = false;
 
 		// resetP5(); // manual reset
 
@@ -1877,7 +1877,7 @@ function println(msg){
 			}
 
 			document.getElementById('menu-p5live-version').innerHTML = settings.version;
-			loaderSub.innerHTML = 'Settings...';
+			loaderSub.innerHTML = 'settings...';
 			fontSizeUpdate();
 			autoCompileUpdate();
 			compileTimerUpdate();
@@ -1896,14 +1896,14 @@ function println(msg){
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
-			loaderSub.innerHTML = 'Templates...';
+			loaderSub.innerHTML = 'templates...';
 			loadSketchTemplate();
 			loadHTMLTemplate();
-			loaderSub.innerHTML = 'Snippets...';
+			loaderSub.innerHTML = 'snippets...';
 			loadSnippets();
 			loaderSub.innerHTML = 'SyncData presets...';
 			syncDataPresetLoad();
-			loaderSub.innerHTML = 'Autocomplete...';
+			loaderSub.innerHTML = 'autocomplete...';
 			loadAutoComplete();
 			loadColorPicker();
 			vex.defaultOptions.className = 'vex-theme-plain'
@@ -2854,7 +2854,7 @@ function println(msg){
 							unsafeMessage:importData,
 							callback: function(value){
 								if(value){
-									loaderSub.innerHTML = 'Importing sketches...';
+									loaderSub.innerHTML = 'importing sketches...';
 									showLoader();
 									if(legacyImport(jsonObj)){
 										let legacyDemos = ["new", "P5LIVE_meta", "P5LIVE_COCODING_meta", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_primatives", "webgl_sphereBox", "slidersGrid", "textToPoints", "basel.codes", "this is a really long name", "osc_setup", "midi_setup"];
@@ -5417,7 +5417,7 @@ function println(msg){
 
 		/*	MISC */
 		function pop720(){
-			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=748');
+			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=720');
 		}
 
 		function showLoader(){
