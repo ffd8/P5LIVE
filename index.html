@@ -3080,6 +3080,9 @@ function println(msg){
 			request.open('GET', demosPath, true);
 			request.send();
 			request.addEventListener('load', function(){
+				if(searchSketches('demos', settings.sketches)){
+					removeItemProcess('demos');
+				}
 				let jsonObj = JSON.parse(request.responseText);
 				let jsonItem = jsonObj.structure[0];
 
@@ -3570,8 +3573,8 @@ function println(msg){
 		}
 
 		function removeItemProcess(dataID){
-			let selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
-			selElm.querySelectorAll('[data-id]').forEach(function(k){
+			let selElm = document.querySelectorAll('[data-id="'+dataID+'"]');
+			selElm[0].querySelectorAll('[data-id]').forEach(function(k){
 				localStorage.removeItem(k.dataset.id);
 				k.remove();
 			});
@@ -3587,7 +3590,10 @@ function println(msg){
 			// }
 
 			localStorage.removeItem(dataID);
-			selElm.remove();
+			for(let se of selElm){
+				se.remove();
+			}
+
 
 			getOrder();
 
