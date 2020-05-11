@@ -3590,9 +3590,14 @@ function println(msg){
 			// }
 
 			localStorage.removeItem(dataID);
-			for(let se of selElm){
-				se.remove();
+			if(selElm.length > 1){
+				for(let se of selElm){
+					se.remove();
+				}
+			}else{
+				selElm[0].remove();
 			}
+
 
 
 			getOrder();
@@ -3738,11 +3743,14 @@ function println(msg){
 		});
 
 		function syncdataConsoleMsg(msg){
+			if(!settings.cocoding.active){
+				return false;
+			}
 			if(typeof msg === 'object'){
 				msg = JSON.stringify(msg);
 			}
 			settings.syncdata.console.push(msg);
-			if(settings.syncdata.console.length > 100){
+			if(settings.syncdata.console.length > 10){
 				settings.syncdata.console = settings.syncdata.console.splice(0, 1);
 			}
 			updateSettings();
