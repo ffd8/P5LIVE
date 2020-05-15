@@ -1,0 +1,43 @@
+{
+  "version": "1.3.0",
+  "revision": 34,
+  "structure": [
+    {
+      "name": "syncdata-presets",
+      "mod": "1587989594126",
+      "type": "folder",
+      "toggle": "collapse",
+      "contents": [
+        {
+          "name": "syncdata-template",
+          "mod": "1587989594126",
+          "type": "sketch",
+          "code": "/* syncData Preset : template\nUse 'sendData(obj)' here to sync local data.\nUse 'parseData(obj)' in COCODING to parse synced data.\nCall 'getData(obj)' in COCODING 'parseData(obj)' to handle locally.\nUse 'getData(obj)' here to parse synced data locally.\nCheck 'obj.type', when syncing multiple types of data.\nMade changes? Just press 'Re-Run' to update.\n\n0 - PREFS (unique local settings)\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (keep exact header below, ignored locally, add to COCODE)\n*/\n\n/* 0 - PREFS */\nlet userID = 0; // use unique ID per user to separate multiple syncs\n\n\n/* 1 - SYNC DATA */\n// let libs = ['']; // can load array of external JS libraries\n\nlet obj = {\n\ttype: 'template', // use type for parsing this vs other data\n\tvalue: 'hello world',\n\tuser: userID\n};\nsendData(obj); // transmit to others, use setInterval(function(){ }, 500) for pulse\n\nfunction getData(obj) {\n\tif(obj.type && obj.type == 'template') {\n\t\tif(obj.user != userID) { // (ignore own data)\n\t\t\t// locally parse data received from others\n\t\t\t// uniquely process compared to COCODING shared code\n\t\t}\n\t}\n}\n\n\n/* 2 - COCODE */\nfunction parseData(obj) {\n\t// parse only 'template' data\n\tif(obj.type && obj.type == 'template') {\n\t\tprint(obj);\n\t\tgetData(obj);\n\t}\n}"
+        },
+        {
+          "name": "syncdata-mouseXY",
+          "mod": "1587989594126",
+          "type": "sketch",
+          "code": "/* syncData Preset : mouseXY\nSends your mouseX/mouseY + random color to all users.\nDraws each received signal as ellipse on demand.\n\n0 - PREFS (unique local settings)\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (add to COCODING session)\n*/\n\n/* 0 - PREFS */\nlet userID = 0; // use unique ID for parsing getData later\nlet delay = 0.05; // time in sec\n\n\n/* 1 - SYNC DATA */\nlet obj = {\n\ttype: 'mouseXY',\n\tuser: userID,\n\tx: 0,\n\ty: 0,\n\ts:40,\n\tcolor: '#' + Math.floor(Math.random() * 16777215).toString(16)\n};\n\nsetInterval(function() {\n\t// only update if mouse moved\n\tif(mouseX != obj.x && mouseY != obj.y) {\n\t\tobj.x = mouseX;\n\t\tobj.y = mouseY;\n\t\tsendData(obj); // send data to group!\n\t}\n}, delay * 1000);\n\n\n\n/* 2 - COCODE */\nfunction parseData(obj) {\n\t// parse only 'mouseXY' data\n\tif(obj.type && obj.type === 'mouseXY') {\n\t\tfill(obj.color);\n\t\tellipse(obj.x, obj.y, obj.s);\n\t\tfill(255);\n\t\ttextSize(obj.s/2);\n\t\ttextAlign(CENTER, CENTER);\n\t\ttext(obj.user, obj.x, obj.y);\n\t}\n}"
+        },
+        {
+          "name": "syncdata-facetracker",
+          "mod": "1587989594126",
+          "type": "sketch",
+          "code": "/* syncData Preset : facetracker\n\n0 - PREFS (unique local settings)\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (add to COCODING session)\n*/\n\n/* 0 - PREFS */\nlet userID = 0; // use unique ID per user to separate multiple syncs\n\n\n/* 1 - SYNC DATA */\nlet libs = ['https://www.auduno.com/clmtrackr/build/clmtrackr.min.js']\nlet capture, tracker;\nlet obj = {\n\ttype: 'facetracker',\n\tid: userID,\n\tw: 320,\n\th: 240,\n\tscl: 1,\n\tcol: '#' + Math.floor(Math.random() * 16777215).toString(16),\n\tpositions: [],\n};\n\nsetupTracker();\n\nfunction setupTracker() {\n\tcapture = createCapture({\n\t\taudio: false,\n\t\tvideo: {\n\t\t\twidth: obj.w,\n\t\t\theight: obj.h\n\t\t}\n\t}, function() {\n\t\tconsole.log('capture ready.')\n\t});\n\tcapture.size(obj.w, obj.h);\n\tcapture.hide();\n\ttracker = new clm.tracker();\n\ttracker.init();\n\ttracker.start(capture.elt);\n\tobj.scl = width / obj.w;\n}\n\n// send regular pulse of positions\nsetInterval(function() {\n\tif(tracker) {\n\t\tobj.positions = tracker.getCurrentPosition();\n\t\tsendData(obj); // user data\n\t}\n}, 50);\n\n/* 2 - COCODE */\nlet data = {};\n\nfunction parseData(obj) {\n\t// parse only 'facetracker' data\n\tif(obj.type && obj.type == 'facetracker') {\n\t\tdata[obj.id] = obj;\n\t}\n}\n\n/* place following code in draw() \n\tbackground(0);\n\tnoStroke();\n\n\tfor (let [key, face] of Object.entries(data)) { \n\t\tfill(face.col);\n\t\tfor(let i = 0; i < face.positions.length; i++) {\n\t\t\tellipse(width - face.positions[i][0] * face.scl, face.positions[i][1] * face.scl, 10);\n\t\t}\n\t}\n*/"
+        },
+        {
+          "name": "syncdata-midi",
+          "mod": "1587989594126",
+          "type": "sketch",
+          "code": "/* syncData Preset : midi\nTransmit midi notes/pitchbend/controlchanges to all users.\nCheck console below after pressing '► RUN' to learn device IDs + Names \n\n0 - PREFS (unique local settings)\n1 - SYNC DATA (active in Sync Data)\n2 - COCODE (add to COCODING session)\n*/\n\n/* 0 - PREFS */\nlet midiUser = 0; // <-- give yourself unique ID for forwarding midi\nlet midiDeviceIn = 0; // [ID] or \"device name\"\nlet midiDeviceOut = 0; // [ID] or \"device name\"\nlet midiThru = false; // pass all midi data in -> out (except self)\n\n// debug latency\nlet localLatency = false; // true » check latency of own midi signal\nlet getLatency = false; // true » check latency of roundtrip (if peers sendLatency)\nlet sendLatency = false; // only peers should activate for sending back\n\n/* 1 - SYNC DATA */\nlet libs = [\"includes/js/webmidi.min.js\"];\nlet midiInput, midiOutput;\n\n// part of p5live.ccoding.js\nsetupMidi(midiDeviceIn, midiDeviceOut); // deviceIn, deviceOut\n\nfunction parseMidi(mm) {\n\tmm.type = 'midi'; // set syncData type\n\tmm.user = midiUser; // set unique person ID\n\tsendData(mm); // send to peers\n}\n\nfunction getData(obj) {\n\t// parse forwarded midiMessages from others to your local gear!\n\tif(obj.type && obj.type == 'midi') {\n\t\tif((obj.user != midiUser || midiDeviceIn != midiDeviceOut) && midiThru) {\n\t\t\tlet mm = obj;\n\n\t\t\t// debug local latency in ms\n\t\t\tif(localLatency) {\n\t\t\t\tlet lag = new Date().getTime() - mm.start;\n\t\t\t\tprint(lag);\n\t\t\t}\n\n\t\t\t// peers sending signal back to origin for roundtrip debug\n\t\t\tif(sendLatency) {\n\t\t\t\tlet pingpong = {\n\t\t\t\t\ttype: 'latency',\n\t\t\t\t\tstart: mm.start\n\t\t\t\t};\n\t\t\t\tsendData(pingpong);\n\t\t\t}\n\n\t\t\t// midiThru\n\t\t\tif(mm.data[2]) {\n\t\t\t\tmidiOutput.send(mm.data[0], [mm.data[1], mm.data[2]]);\n\t\t\t} else {\n\t\t\t\tmidiOutput.send(mm.data[0]);\n\t\t\t}\n\t\t}\n\t} else if(obj.type && obj.type == 'latency') {\n\n\t\t// debug roundtrip signal in ms\n\t\tif(getLatency) {\n\t\t\tprintln(new Date().getTime() - obj.start);\n\t\t}\n\t}\n}\n\n\n/* 2 - COCODE */\nlet midiMsg = {}; // check if props defined, useful in draw()\n\nfunction parseData(obj) {\n\t// print(obj) // debug incoming message\n\n\t// parse only 'midi' data\n\tif(obj.type && obj.type == 'midi') {\n\t\tlet mm = obj; // midimessage\n\t\tif(mm.note !== undefined) {\n\t\t\tswitch (mm.note.type) {\n\t\t\t\tcase 'noteon':\n\t\t\t\t\tnoteOn(mm.note);\n\t\t\t\t\tbreak;\n\t\t\t\tcase 'noteoff':\n\t\t\t\t\tnoteOff(mm.note);\n\t\t\t\t\tbreak;\n\t\t\t}\n\t\t} else if(mm.pitch !== undefined) {\n\t\t\tpitchBend(mm.pitch);\n\t\t} else if(mm.control !== undefined) {\n\t\t\tcontrolChange(mm.contol);\n\t\t}\n\n\t\t// global var for use in draw()\n\t\tmidiMsg = mm; // get latest message\n\n\t\t// optionally listen to midiMessages from others on your local gear!\n\t\tgetData(obj); // ignored by those without syncData active\n\t} else if(obj.type && obj.type == 'latency') {\n\t\tgetData(obj);\n\t}\n}\n\nfunction noteOn(note) {\n\t// use note.type, .channel, .name, .number, .octave, .velocity\n\tlet x = map(note.number, 0, 128, 0, width);\n\tlet h = map(note.velocity, 0, 128, 0, height);\n\tbackground(0, 25);\n\tpush();\n\tnoStroke();\n\tfill(note.velocity * 2);\n\trectMode(CENTER);\n\trect(x, height / 2, width / 128, h);\n\tpop();\n}\n\nfunction noteOff(note) {\n\t// use note.type, .channel, .name, .number, .octave, .velocity\n}\n\nfunction pitchBend(pitch) {\n\t// use pitch.type, .channel, .value\n}\n\nfunction controlChange(control) {\n\t// use control.type, .channel, .controllerNumber, .controllerName, .value\n}\n\nfunction midiToFreq(noteNumber) {\n\treturn 440 * Math.pow(2, (noteNumber - 69) / 12);\n}"
+        }
+      ],
+      "parent": "syncdata-presets-pre"
+    }
+  ],
+  "count": {
+    "sketches": 4,
+    "folders": 1
+  }
+}

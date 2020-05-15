@@ -29,7 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?11">
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?34">
 </head>
 <body>
 	<div id="p5-drop"> </div>
@@ -51,6 +51,7 @@
 	<div id="p5-frame-cover"></div>
 
 	<div id="refholder">
+		<div id="ref-bg"></div>
 		<div id="ref"></div>
 		<div id="ref-close" onclick="closeRef();">X</div>
 	</div>
@@ -64,7 +65,7 @@
 
 			<div class="menu-section" id="menu-section-p5live">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header">P5LIVE</div>
+				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span></div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
 					<button class="menu-button tippy" onclick="loadAbout();" data-title="About">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
@@ -81,25 +82,22 @@
 					<button class="menu-button tippy" onclick="saveHTML();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
-					
+
 				</div>
 			</div>
 
 			<div class="menu-section" id="menu-section-cocode">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter" class="counters"></span></div>
+				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter" class="counters"></span><span id="menu-cocode-sync" class="counters" style="display:none;"> – <span id="menu-cocode-sync-up" class="sync">⇡</span><span id="menu-cocode-sync-down" class="sync">⇣</span></span></div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
 					<button class="menu-button tippy cocoding-active" onclick="cocodingInit();" data-title="Stop COCODING">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="copyLink(this);" data-title="URL to Clipboard">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-					</button>
-					<button class="menu-button tippy" onclick="cloneSketchCOCODING();" data-title="Clone Sketch">
+					<button class="menu-button tippy" onclick="cloneSketchCOCODING();this.blur();" data-title="Clone Sketch">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
 					</button>
-					<button class="menu-button tippy admin-lock" id="cocode-layers" onclick="cocodeLayers();" data-title="Load CoCodeLayers" style="display:none;">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-layers"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+					<button class="menu-button tippy" id="syncdata-button" onclick="syncdataWindow(this);this.blur();" data-title="SyncData">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>
 					</button>
 					<button class="menu-button tippy admin-lock" id="cocode-lockdown" onclick="toggleLockdown()" data-title="Toggle Lockdown">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>
@@ -115,6 +113,13 @@
 				</div>
 				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;" onmouseenter="showUsers();" onmouseleave="hideUsers();">
 					<div id="menu-cocode-sketches" class="menu-sketches"></div>
+				</div>
+				<div id="menu-cocode-chat-holder" class="" style="display:none;" onmouseleave="chatBlur();">
+					<div class="menu-cocode-chat-title"></div>
+					<div id="menu-cocode-chat-dialog" class="menu-cocode-chat menu-sketches-holder" onclick="document.getElementById('chat-input').focus();">
+
+					</div>
+					<input id="chat-input" type="text" name="chat-input" placeholder="Chat..." onfocus="this.selectionStart = this.selectionEnd = this.value.length;">
 				</div>
 			</div>
 
@@ -135,20 +140,20 @@
 					<button class="menu-button tippy" onclick="importSketchesDialog();" data-title="Import Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="exportAllSketches();" data-title="Export All Sketches">
+					<button class="menu-button tippy" onclick="exportSketches();" data-title="Export All Sketches">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
 					</button>
 				</div>
 
-				<div id="menu-sketches-filter-clear" class="tippy-left" data-title="Filter Sketches" onclick="filterSketchesClear()"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
-				<input type="text" class="tippy-left" data-title="Filter Sketches" name="" placeholder="Filter..." id="menu-sketches-filter" onkeyup="filterSketches()">
+				<div id="menu-sketches-filter-clear" class="tippy-left" data-title="Filter Sketches<br>(separate words for an <i>and</i> search)" onclick="filterSketchesClear(true)"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></div>
+				<input type="text" class="tippy-left" data-title="Filter Sketches<br>(separate words for an <i>and</i> search)" name="" placeholder="Filter..." id="menu-sketches-filter" onkeyup="filterSketches()">
 
 				<div id="menu-sketches-holder" class="menu-sketches-holder">
 					<div id="menu-sketches" class="menu-sketches"></div>
 				</div>
 			</div>
-			
-			
+
+
 
 		</div>
 
@@ -173,7 +178,7 @@
 					<button class="menu-button tippy invisible" disabled onclick="saveHTML();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
-					
+
 				</div>
 			</div>
 
@@ -197,8 +202,21 @@
 				</div>
 				<div class="menu-settings menu-contents">
 					<div>
-						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-Compile code on keyUp" onclick="autoCompileToggle();">
-						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile"> 
+						<div class="tippy-left" data-title="Set Audio Inputs " style="display:none;">
+							<div class="select">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg><select id="audioSource" class="av-select"></select>
+							</div>
+
+							<div class="select" style="display:none;">
+								<label for="audioOutput">Audio out: </label><select id="audioOutput" class="av-select"></select>
+							</div>
+
+							<div class="select" style="display:none;">
+								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-video"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg><select id="videoSource" class="av-select"></select>
+							</div>
+						</div>
+						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-compile code on keyup" onclick="autoCompileToggle();">
+						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile">
 						Live Coding</div> 
 							<select id="settings-compiletimer" style="" class="tippy" data-title="Delay from keyUp to compile" onchange="compileTimerChange();">
 									<option value="250">250ms</option>
@@ -207,61 +225,69 @@
 									<option value="2000">2000ms</option>
 							</select>
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus" onclick="ecoRenderToggle();">
-						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender"> 
+					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus<br>(save computer resources)" onclick="ecoRenderToggle();">
+						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender">
 						Eco Render
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Show Cursor <br>(when editor is hidden)" onclick="cursorToggle();">
-						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor"> 
+					<div class="tippy-left" style="cursor:help;" data-title="Display cursor <br>(when editor is hidden)" onclick="cursorToggle();">
+						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor">
 						Cursor
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Show Console messages" onclick="consoleToggle();">
-						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console"> 
+					<div class="tippy-left" style="cursor:help;" data-title="Display console messages" onclick="consoleToggle();">
+						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console">
 						Console
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Display Menu-Tab <br>If unchecked, must use shortcut" onclick="menutabToggle();">
 						<input type="checkbox" id="settings-menutab" name="settings-menutab" value="settings-menutab">
 						Menu Tab
 					</div>
-					
+
 					<div class="tippy-left" style="cursor:help;" data-title="Include sketch code with Snapshot" onclick="exportcodeToggle();">
 						<input type="checkbox" id="settings-exportcode" name="settings-exportcode" value="settings-exportcode"> Snapshot Code
 					</div>
-					
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle code line numbers" onclick="linenumbersToggle();">
+
+					<div class="tippy-left" style="cursor:help;" data-title="Display code line numbers" onclick="linenumbersToggle();">
 						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle constant autocomplete<br>If disabled, use autocomplete by <div class='shortcut'>CTRL + SPACE</div>" onclick="autocompleteToggle();">
-						<input type="checkbox" id="settings-autocomplete" name="settings-autocomplete" value="settings-autocomplete"> Autocomplete
+					<div class="tippy-left" style="cursor:help;" data-title="Automatic Autocomplete<br>If disabled (suggested), trigger with <div class='shortcut'>CTRL + SPACE</div>" onclick="autocompleteToggle();">
+						<input type="checkbox" id="settings-autocomplete" name="settings-autocomplete" value="settings-autocomplete"> Auto Autocomplete
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle code locked on mouse drag" onclick="lockDragToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Editor locked onmousedragged, <br>prevents errors in displaced code" onclick="lockDragToggle();">
 						<input type="checkbox" id="settings-lockdrag" name="settings-lockdrag" value="settings-lockdrag"> Lock Code on Drag
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Pass keyPress from editor to p5 canvas" onclick="passEditorKeysToggle();">
-						<input type="checkbox" id="settings-passeditorkeys" name="settings-passeditorkeys" value="settings-passeditorkeys"> Pass Editor Keys
+					<div class="tippy-left" style="cursor:help;" data-title="Pass any keypress from editor to p5 canvas" onclick="passEditorKeysToggle();">
+						<input type="checkbox" id="settings-passeditorkeys" name="settings-passeditorkeys" value="settings-passeditorkeys"> Pass-Thru KeyPress
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Toggle Shortcut Notifications" onclick="notifyToggle();">
+					<div class="tippy-left" style="cursor:help;" data-title="Display Notifications" onclick="notifyToggle();">
 						<input type="checkbox" id="settings-notifytoggle" name="settings-notifytoggle" value="settings-notifytoggle"> Notifications
 					</div>
-					
+
+					<div class="tippy-left" style="cursor:help;" data-title="Display Tooltips" onclick="tippyToggle();">
+						<input type="checkbox" id="settings-tippytoggle" name="settings-tippytoggle" value="settings-tippytoggle"> Tooltips
+					</div>
+
+					<div class="tippy-left" style="cursor:help;" data-title="Warn if P5LIVE opened multiple times<br>(leads to sketches out of sync)" onclick="multitabToggle();">
+						<input type="checkbox" id="settings-mutitabtoggle" name="settings-mutitabtoggle" value="settings-mutitabtoggle"> Multi-P5LIVE Warning
+					</div>
+
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
-						<span>Libs:</span> 
+						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Adjust font-size">
+					<div class="tippy-left" style="cursor:help;" data-title="Editor font-size">
 						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Code lines">
+					<div class="tippy-left" style="cursor:help;" data-title="Color behind lines of code">
 						Code Background: <input type="checkbox" id="settings-usebg" name="settings-usebg" value="settings-usebg" onchange="themeBGactiveToggle();">
 						<div id="pickr" class="pickr"></div>
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Set theme (ignored in Auto Compile mode)">
-						Theme: 
+					<div class="tippy-left" style="cursor:help;" data-title="Set editor theme">
+						Theme:
 						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
 							<option value="ace/theme/gob">Green on Black</option>
 							<option value="ace/theme/ambiance">Ambiance</option>
@@ -271,9 +297,9 @@
 						</select>
 					</div>
 
-				<h2>SHORTCUTS</h2>					
+				<h2>SHORTCUTS</h2>
 					<div id="menu-shortcuts-holder">
-						
+
 					</div>
 				</div>
 			</div>
@@ -285,11 +311,11 @@
 <textarea style="display:none;" id="p5-template">
 function setup() {
 	createCanvas(windowWidth, windowHeight);
-	
+
 }
 
 function draw() {
-	
+
 }</textarea>
 <textarea style="display:none;" id="p5-custom">
 /* CUSTOM FUNCTIONS FOR P5LIVE */
@@ -310,43 +336,47 @@ function println(msg){
 </textarea>
 
 	<!-- Script Styles -->
-	<link rel="stylesheet" href="includes/css/nano.min.css"/>
+	<link rel="stylesheet" href="includes/js/pickr/nano.min.css"/>
 	<link rel="stylesheet" href="includes/js/vex/css/vex.css" />
 	<link rel="stylesheet" href="includes/js/vex/css/vex-theme-plain.css" />
+	<link rel="stylesheet" href="includes/js/highlight/a11y-dark.css" />
 
 	<!-- Scripts -->
 	<script src="includes/js/src-noconflict/ace.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/src-noconflict/ext-language_tools.js?7" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.js"></script>
-	<script src="includes/js/pickr.min.js"></script>
+	<script src="includes/js/pickr/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
 	<script src="includes/js/marked.min.js"></script>
-
 	<script src='includes/js/download.js'></script>
 	<script src="includes/js/vex/js/vex.combined.min.js"></script>
 	<script src="includes/js/dropzone.js"></script>
 	<script src="includes/js/mousetrap/mousetrap.min.js"></script>
 	<script src="includes/js/mousetrap/mousetrap-record.js"></script>
 	<script src="includes/js/mousetrap/mousetrap-pause.min.js"></script>
+	<script src="includes/js/highlight/highlight.pack.js"></script>
+	<script src="includes/js/name_generator.js"></script>
 
-	<!-- <script src="/socket.io/socket.io.js"></script> -->
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
 
 	<script type="text/javascript">
 		'use strict'
 
-
-
 		/* INIT */
-		let currentRevision = 30;
+		let currentRevision = 34;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
 
 		function resetP5(){
+			if(settings.cocoding.active){
+				settingsCocodingWarning();
+				return false;
+			}
+
 			vex.dialog.confirm({
 				unsafeMessage: 'Completely reset P5LIVE?<br><i>All sketches will be removed.</i>',
 				callback: function (value) {
@@ -356,19 +386,19 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall();
+					vexSmall(this.rootEl);
 				}
 			})
 		}
 
 		// settings
 		let initSettings = {
-			'version':'1.2.6',
+			'version':'1.3.0',
 			'revision':currentRevision,
 			'welcome':true,
-			'fontSize':15, 
+			'fontSize':15,
 			'autoCompile':true,
-			'compileTimer':500, 
+			'compileTimer':500,
 			'ecoRender': true,
 			'canvasCursor': true,
 			'console': true,
@@ -382,7 +412,10 @@ function println(msg){
 			'menutab':true,
 			'exportCode':true,
 			'notifyToggle':true,
+			'tippyToggle':true,
+			'multitabToggle':true,
 			'debugMode': false,
+			'editMode':true,
 			'safeMode': false,
 			'shortcuts':{
 				'softcompile':{
@@ -486,10 +519,21 @@ function println(msg){
 					,'key':'ctrl+shift+left'
 					,'callback':'gotoLineStart()'
 				}
-				 
+
 			},
 			'sketches': [],
-			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}},
+			'statscount': 0,
+			'syncdata': {
+				'sketches': [],
+				'code': '',
+				'active': false,
+				'libs' : [],
+				'cursor': {row:0, column:0},
+				'console': [],
+				'namespace': '',
+				'cocodeadded':false
+			},
+			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'msgID':-1, 'hasAdmin':false},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '#052544',
@@ -511,8 +555,16 @@ function println(msg){
 		menuSectionP5live = document.getElementById('menu-section-p5live'),
 		menuSectionSketches = document.getElementById('menu-section-sketches'),
 		menuCocodeCounter = document.getElementById('menu-cocode-counter'),
+		menuCocodeSync = document.getElementById('menu-cocode-sync'),
+		menuCocodeUp = document.getElementById('menu-cocode-sync-up'),
+		menuCocodeDown = document.getElementById('menu-cocode-sync-down'),
+		// syncdataBtn = document.getElementById('syncdata-button'),
 		menuCocodeSketches = document.getElementById('menu-cocode-sketches'),
 		menuCocodeHolder = document.getElementById('menu-cocode-sketches-holder'),
+		menuCocodeChatHolder = document.getElementById('menu-cocode-chat-holder'),
+		menuCocodeChatInput = document.getElementById('chat-input'),
+		menuCocodeChatDialog = document.getElementById('menu-cocode-chat-dialog'),
+		sketchesHolder = document.getElementById('menu-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSketchesFilter = document.getElementById('menu-sketches-filter'),
 		menuSketchesCounter = document.getElementById('menu-sketches-counter'),
@@ -528,6 +580,8 @@ function println(msg){
 		settingsLockDrag = document.getElementById('settings-lockdrag'),
 		settingsPassEditorKeys = document.getElementById('settings-passeditorkeys'),
 		settingsNotify = document.getElementById('settings-notifytoggle'),
+		settingsTippy = document.getElementById('settings-tippytoggle'),
+		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsShortcuts = document.getElementById('menu-shortcuts-holder'),
@@ -542,26 +596,29 @@ function println(msg){
 		loader = document.getElementById('loader'),
 		loaderSub = document.getElementById('loader-sub'),
 		notify = document.getElementById('notify'),
-		shortcutRecording = false,
+		shortcutRecording = false, p5Remote = false,
+		menuVisible = false, refVisible = false, settingsVisible = false,
 		settings = getSettings(),
-		validCode = true, 
+		validCode = true, sketchesFirstTime = true,
 		sketchLoaded = false, forceRecompile = false,
 		pLen = 0, paused = false,
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
-		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0}, 
-		refList = [], downloadedRef = false,
+		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
+		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
-		showNotify = false,
-		curPos, curPositions = [], updateCursor, showCursors = false, 
-		sketchCount = 0, notifyTimer,
-		demosLocked = true, autoCompleteExport = false
+		showNotify = false, navMouseOver = false,
+		curPos, curPositions = [], updateCursor, showCursors = false, notifyTimer,
+		demosLocked = true, autoCompleteExport = false,
+		syncdataEditor, syncdataPresets = [],
+		cocodingFirstTime = false, cocodingShowMic = false,
+		cocodingRecompile = false;
 		;
 
 		// force off
 		settings.debugMode = false;
-		
-		// init editor 
+
+		// init editor
 		let Range = ace.require('ace/range').Range;
 		let langTools = ace.require('ace/ext/language_tools');
 		let editor = ace.edit('p5-code');
@@ -578,10 +635,10 @@ function println(msg){
 			enableBasicAutocompletion: true,
 			enableSnippets: true
 		});
-		
+
 		function loadAutoComplete(){
 			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
-			let tempPath = 'includes/p5/P5L_AUTOCOMPLETE_20200229201725.json';
+			let tempPath = 'includes/p5/P5L_autocomplete.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -600,41 +657,47 @@ function println(msg){
 							acList.push({'cap':ac.n + '()', 'snip':ac.n + '()'});
 							curFunction = ac.n;
 						}
-						
+
 						// add w/ params using tab feature
 						let acParamsTab = []
 						for(let i=0; i < ac.p.length; i++){
 							acParamsTab.push('${'+(i+1)+':'+ac.p[i]+'}');
 						}
-						let acParamsListTab = ac.n + '(' +acParamsTab.join(', ')+ ')';					
-						let acParamsList = ac.n + '(' +ac.p.join(', ')+ ')';					
+						let acParamsListTab = ac.n + '(' +acParamsTab.join(', ')+ ')';
+						let acParamsList = ac.n + '(' +ac.p.join(', ')+ ')';
 						acList.push({'cap':acParamsList, 'snip':acParamsListTab});
 					}else{
 						// add constants/misc
-						acList.push({'cap':ac.n, 'snip':ac.n});						
+						acList.push({'cap':ac.n, 'snip':ac.n});
 					}
 				});
 
 				// create custom completer
-				var completer = { 
-					getCompletions: function(editor, session, pos, prefix, callback) { 
-						var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return } 
-						var completions = []; 
+				var completer = {
+					getCompletions: function(editor, session, pos, prefix, callback) {
+						var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return }
+						var completions = [];
 						for(let wl of acList){
 							completions.push({caption: wl.cap, snippet: wl.snip, meta: 'p5', score:1});
 						}
 						callback(null, completions);
-					} 
-				} 
+					}
+				}
 
 				// add list to auto completer
 				langTools.addCompleter(completer);
 			});
 		}
-		
+
 		p5editor.style.visibility = 'visible';
 
 		// ICONS!
+		let iconBookmark = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>';
+
+		let iconCheckSquare = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-square"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
+
+		let iconEye = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+
 		let iconFolderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
 
 		let iconFolderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
@@ -643,7 +706,15 @@ function println(msg){
 
 		let iconFileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
 
+		let iconGift = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-gift"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>';
+
 		let iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
+
+		let iconMoreVertical = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>';
+
+		let iconMoreHorizontal = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>';
+
+		let iconRadio = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
 
 		let iconRename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
 
@@ -659,6 +730,10 @@ function println(msg){
 
 		let iconLock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
 
+		let iconMicOff = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic-off"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
+
+		let iconMic = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
+
 		let iconEdit = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
 
 		let iconToggleLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>';
@@ -666,6 +741,8 @@ function println(msg){
 		let iconToggleRight = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>';
 
 		let iconScreencast = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
+
+		let iconPlay = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
 
 		let iconPower = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>';
 
@@ -747,14 +824,15 @@ function println(msg){
 			}
 		}
 
-		function vexSmall(){
-			let elements = document.getElementsByClassName('vex');
-			for (let i in elements) {
-				if (elements.hasOwnProperty(i)) {
-				elements[i].classList.add('vex-small')// += ' vex-small';
-			}
+		function vexSmall(elm){
+			elm.classList.add('vex-small');
+			// let elements = document.getElementsByClassName('vex');
+			// for (let i in elements) {
+			// 	if (elements.hasOwnProperty(i)) {
+			// 		elements[i].classList.add('vex-small')// += ' vex-small';
+			// 	}
+			// }
 		}
-	}
 
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
@@ -826,20 +904,20 @@ function println(msg){
 		}
 		marker.session = editor.session;
 		marker.session.addDynamicMarker(marker, true);
-	
+
 
 		class CocodeApp{
 			constructor(namespace) {
 				this.initialized = false;
 				this.socket = '';
 				this.namespace = namespace;
-				if(!window.location.hostname.includes('teddavis.org')){
+				if(!p5Remote){
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					if(developBranch){
 						this.socket = io('https://p5live-server-develop.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}else{
-						this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });	
+						this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}
 				}
 				this.rgaConnect();
@@ -855,13 +933,16 @@ function println(msg){
 				this.token();
 
 				this.socket.on('init', () => {
+					syncDown();
 					setTimeout(function(){editor.setValue(p5template, 1);}, 100);
 				});
 
 				this.socket.on('syncSettings', (data)=>{
+					syncDown();
 					let settingsUpdate = JSON.parse(data);
 					settings.cocoding.lockdown = settingsUpdate.lockdown;
 					settings.cocoding.sync = settingsUpdate.sync;
+					settings.cocoding.hasAdmin = settingsUpdate.hasAdmin;
 					updateSettings();
 
 					//lockdown
@@ -887,6 +968,7 @@ function println(msg){
 				});
 
 				this.socket.on('cocodeReady', () =>{
+					syncDown();
 					if(!this.initialized){
 						document.getElementById('cocoding-buttons-inactive').innerHTML = document.getElementById('cocoding-buttons-active').innerHTML;
 						document.getElementById('cocoding-buttons-active').innerHTML = '';
@@ -896,24 +978,39 @@ function println(msg){
 				});
 
 				this.socket.on('full', () =>{
+					syncDown();
 					vex.dialog.alert({
 						message:'Sorry COCODING is full at the moment.',
 						callback: function(){cocodingExit(loadLatest());}
 					})
 				});
 
+				this.socket.on('checkAdmin', (checkStatus)=>{
+					if(checkStatus){
+						settings.cocoding.token = checkStatus;
+						updateSettings();
+						this.token();
+					}
+				});
+
 				this.socket.on('setLevel', (statusMode)=>{
+					syncDown();
 					settings.cocoding.level = statusMode;
 					updateSettings();
+					let adminDivs = document.getElementsByClassName('admin-lock');
 					if(statusMode != 'admin'){
-						let adminDivs = document.getElementsByClassName('admin-lock');
 						for(let i=0; i<adminDivs.length; i++){
 							adminDivs[i].setAttribute('disabled', 'disabled');
+						}
+					}else{
+						for(let i=0; i<adminDivs.length; i++){
+							adminDivs[i].removeAttribute('disabled')
 						}
 					}
 				});
 
 				this.socket.on('dispatchSyncEvent', (evData)=>{
+					syncDown();
 					let ev = JSON.parse(evData);
 					let copy;
 					if(ev.mode == 'keyboard'){
@@ -921,21 +1018,24 @@ function println(msg){
 					}else if(ev.mode == 'mouse'){
 						copy = new MouseEvent(ev.type, ev.options);
 					}
-					p5f.dispatchEvent(copy);	
-					p5f.frameCount = ev.fc;			
+					p5f.dispatchEvent(copy);
+					p5f.frameCount = ev.fc;
 				});
 
 				this.socket.on('recompile', (force)=>{
-					buildSketch(force); // 
+					syncDown();
+					buildSketch(force); //
 					updateBackground();
 				});
 
 				this.socket.on('rename', (nick)=>{
+					syncDown();
 					settings.cocoding.nick = nick;
 					updateSettings();
 				});
 
 				this.socket.on('codeReplaceRequest', (data)=>{
+					syncDown();
 					vex.dialog.confirm({
 						unsafeMessage:'Replace code request<br><hr><div class="code-replace-header">User </div>' + data.userID + '<br><div class="code-replace-header">SketchName</div>' + data.sketchName + '<br><div class="code-replace-header">SketchCode</div> <textarea id="code-replace-textarea" class="code-replace-textarea">' + data.sketchCode + '</textarea>',
 						callback: function (value) {
@@ -953,6 +1053,7 @@ function println(msg){
 				});
 
 				this.socket.on('codeReplaceReject', (data)=>{
+					syncDown();
 					vex.dialog.alert({
 						message:'Request denied.',
 						callback: function(){}
@@ -960,6 +1061,7 @@ function println(msg){
 				});
 
 				this.socket.on('codeReplaceBusy', ()=>{
+					syncDown();
 					vex.dialog.alert({
 						message:'Busy with another request, try later.',
 						callback: function(){}
@@ -967,11 +1069,13 @@ function println(msg){
 				});
 
 				this.socket.on('requestReject', ()=>{
+					syncDown();
 					settings.cocoding.request = false;
 					updateSettings();
 				});
 
 				this.socket.on('codeReplace', (data)=>{
+					syncDown();
 					RGA.AceEditorRGA.prototype.destroy;
 					RGA.AceEditorRGA._lastText = data.code;
 					if(settings.cocoding.level == 'admin'){
@@ -980,26 +1084,55 @@ function println(msg){
 					}
 					window.setTimeout(function(){cocode.recompile()}, 400);
 					window.setTimeout(function(){recompile(true)}, 500);
-				})
+				});
 
 				this.socket.on('toggleEdit', (writeMode)=>{
+					syncDown();
 					if(writeMode){
 						settings.cocoding.writemode = true;
 						settings.cocoding.request = false;
+						document.getElementById('syncdata-button').removeAttribute('disabled');
 						updateSettings();
 						editor.setReadOnly(false);
 					}else{
 						settings.cocoding.writemode = false;
+						document.getElementById('syncdata-button').setAttribute('disabled', 'disabled');
 						updateSettings();
 						editor.setReadOnly(true);
 					}
 				});
 
 				this.socket.on('syncCursors', (usersRaw) => {
+					syncDown();
 					this.syncCursors(usersRaw);
 				});
 
+				this.socket.on('syncData', (obj)=>{
+					syncDown();
+					if(sketchLoaded){
+						p5f.parseData(obj);
+					}
+				});
+
+				this.socket.on('addChat', (obj)=>{
+					syncDown();
+					this.addChat(obj, true);
+				});
+
+				this.socket.on('syncChat', (obj)=>{
+					syncDown();
+					this.parseChat(obj);
+				});
+
+				this.socket.on('clearPendingChat', ()=>{
+					let pendingChats = document.getElementsByClassName('pending-chat');
+					for(let pc of pendingChats){
+						pc.remove();
+					}
+				});
+
 				this.socket.on('syncUsers', (usersRaw) => {
+					syncDown();
 					this.users = JSON.parse(usersRaw);
 					let users = [];
 					for (let key in this.users) {
@@ -1024,15 +1157,11 @@ function println(msg){
 							if(settings.cocoding.lockdown){
 								if(settings.cocoding.level == 'admin'){
 									if(users[i].writemode){
-										userNav = '<a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleRight+'</a>';
+										userNav = '<a class=" tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleRight+'</a>';
 									}else{
-										if(users[i].request){
-											userNav = '<a class="menu-sketch-button tippy" onclick="cocode.requestReject(\''+users[i].nick+'\')" data-title="Reject Request">'+iconXCircle+'</a><a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconCheckCircle+'</a>';
-										}else{
-											userNav = '<a class="menu-sketch-button tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleLeft+'</a>';
-										}
+										userNav = '<a class=" tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleLeft+'</a>';
 									}
-								}			
+								}
 							}
 
 							let active = '';
@@ -1044,16 +1173,54 @@ function println(msg){
 									writeClass = ' write-req ';
 								}else if(users[i].writemode || users[i].level == 'admin'){
 									writeClass = ' write-access ';
-									if(users[i].level == 'admin'){
-										userIcon = iconShield;
-									}
 								}
 							}
+							if(users[i].level == 'admin'){
+								userIcon = iconShield;
+							}
+
 							if(users[i].nick.length > 10){marq = 'marq';}
 							if(users[i].status == 'blur'){
 								active = 'style="opacity:.5;"';
 							}
-							usersHTML += '<li id="user-'+users[i].nick+'" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch-nav">' +userNav+'</div><div class="menu-sketch '+marq+'" '+active+ '><span style="padding-top:4px;background:'+users[i].color+';">'+userIcon+ '</span> ' +users[i].nick+'</div></li>';
+
+							let userNavIconsCount = 1;
+							let userNavIcons = '<div class="cocoding-nav">';
+							if(users[i].usesyncdata && (!settings.cocoding.lockdown || users[i].writemode)){
+								userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
+									userNavIcons += '<div class="cocoding-sketch-button-user">'+userIcon+'</div>';
+									userNavIcons += '<div class="cocoding-sketch-button-radio">'+iconRadio+'</div>';
+								userNavIcons += '</div>';
+							}else{
+								userNavIcons += '<div class="cocoding-sketch-button">'+userIcon+'</div>';
+							}
+
+							if(cocodingShowMic){
+								userNavIconsCount++;
+								if(1==1){
+									userNavIcons += '<div class="cocoding-sketch-button">'+iconMicOff+'</div>';
+								}else{
+									userNavIcons += '<div class="cocoding-sketch-button">'+iconMic+'</div>';
+								}
+							}
+
+							if(settings.cocoding.lockdown){
+									userNavIcons += '<div class="cocoding-sketch-button">'+userNav+'</div>';
+							}
+							userNavIcons += '</div>';
+
+							let ccNameStyle = {};
+							ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
+
+
+							let singleUserHTML = '<li id="user-'+users[i].nick+'" style="background:'+users[i].color+';" class="item-sketch menu-sketch-holder '+writeClass+'"><div class="menu-sketch"><div class="cocoding-name '+marq+'" style="width:'+ccNameStyle.width+'; left:'+ccNameStyle.left+';" onclick="cocode.scrollCursor('+users[i].cursor.row+','+users[i].cursor.column+');">' +users[i].nick+'</div>'+userNavIcons+'</div></li>';
+
+							if(users[i].level == 'admin'){
+								usersHTML = singleUserHTML + usersHTML;
+							}else{
+								usersHTML += singleUserHTML;
+							}
+
 						}else{
 							usersSelf = users[i];
 							if(usersSelf.status == 'blur'){
@@ -1063,9 +1230,7 @@ function println(msg){
 					}
 						let selfNav = '';
 						let userIcon = iconUser;
-						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown && !settings.cocoding.writemode){
-							selfNav = '<div class="menu-sketch-nav"><a id="request-'+settings.cocoding.nick+'" class="menu-sketch-button tippy " onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')" data-title="Request Edit">'+iconEdit+'</a></div>';
-						}
+
 
 						let writeClass = '';
 						if(settings.cocoding.lockdown && settings.cocoding.level != 'admin'){
@@ -1073,7 +1238,6 @@ function println(msg){
 								writeClass = ' write-req ';
 							}else if(settings.cocoding.writemode){
 								writeClass = ' write-access ';
-								userIcon = iconUserCheck;
 							}
 						}
 
@@ -1084,13 +1248,54 @@ function println(msg){
 						let marq = '';
 						if(settings.cocoding.nick.length > 10){marq = 'marq';}
 
-						menuCocodeSketches.innerHTML = '<li class="self item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch tippy '+marq+'" data-title="Click to Rename" onclick="cocode.rename();"><span id="cocodingself" style="padding-top:4px;background:'+settings.cocoding.color+';">'+userIcon+ '</span> ' +settings.cocoding.nick+'</div></li>' + usersHTML;
+						let userNavIconsCount = 1;
+						let userNavIcons = '<div class="cocoding-nav">';
+						if(settings.syncdata.active && (!settings.cocoding.lockdown || settings.cocoding.writemode)){
+							userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
+								userNavIcons += '<div class="cocoding-sketch-button-user">'+iconRadio+'</div>';
+								userNavIcons += '<div class="cocoding-sketch-button-radio">'+userIcon+'</div>';
+							userNavIcons += '</div>';
+						}else{
+							userNavIcons += '<div class="cocoding-sketch-button">'+userIcon+'</div>';
+						}
+
+						if(cocodingShowMic){
+							userNavIconsCount++;
+							if(1==1){
+								userNavIcons += '<div class="cocoding-sketch-button">'+iconMicOff+'</div>';
+							}else{
+								userNavIcons += '<div class="cocoding-sketch-button">'+iconMic+'</div>';
+							}
+						}
+
+						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown){
+							let userEditIcon = iconEdit;
+							let userEditRequest = 'onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')"';
+							let userEditTippy = 'Request Edit';
+							if(settings.cocoding.writemode){
+								userEditIcon = iconCheckSquare
+								userEditRequest = '';
+								userEditTippy = 'You can Edit!';
+							}
+							if(writeClass == ' write-req '){
+								userEditTippy = 'Request Pending...';
+							}
+							userNavIcons += '<div class="cocoding-sketch-button tippy" id="request-'+settings.cocoding.nick+'" '+userEditRequest+' data-title="'+userEditTippy+'">'+userEditIcon+'</div>';
+						}
+
+						userNavIcons += '</div>';
+
+						let ccNameStyle = {};
+						ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
+
+						menuCocodeSketches.innerHTML = '<li id="cocodingself" style="background:'+settings.cocoding.color+';" class="item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch cocoding-user"><div class="cocoding-name '+marq+' tippy" data-title="Set Color + Nickname" style="width:'+ccNameStyle.width+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div>'+userNavIcons+'</div></li>' + usersHTML;
 						loadTippy();
 						this.syncCursors(usersRaw);
 					});
 				}
 
 			rgaConnect(){
+				syncUp();
 				RGA.AceEditorRGA.setup(editor, this.socket);
 			}
 
@@ -1098,15 +1303,23 @@ function println(msg){
 				document.getElementById('cocodingself').style.background = newVal;
 			}
 
-			rename(){
+			rename(mode){
+				// incase no admin is present, offer it
+				let renameAdmin = '';
+				if(!settings.cocoding.hasAdmin){
+					renameAdmin = '<span id="cocoding-rename-admin" class="tippy" data-title="Claim Admin" onclick="cocode.checkAdmin();" style="cursor:pointer;width:25px;">'+iconShield+'</span>'; //
+				}
+
 				vex.dialog.open({
 					input:[
-					'<label for="nick">Nickname</label><br>',
-					'<input id="cocodingnick" name="nick" type="text" value="' + settings.cocoding.nick + '">',
+					'<div id="cocoding-rename-color" class="cocoding-rename-input"><label for="color">Color</label><br>',
+					'<input id="cocodingcolor" name="pickr" type="text" autocomplete="off" readonly class="cocode-pickr" style="cursor:pointer;width:50px"></div>',
+					'<div id="cocoding-rename-nick" class="cocoding-rename-input"><label for="nick">Nickname</label>'+renameAdmin+'<br>',
+					'<input id="cocodingnick" name="nick" type="text" value="' + settings.cocoding.nick + '"></div>',
 					'<br><br>',
-					
-					'<label for="color" style="display:block;">Cursor Color</label><br>',
-					'<input id="cocodingcolor" name="pickr" type="text" autocomplete="off" readonly class="cocode-pickr" style="cursor:pointer;">'
+
+
+
 					].join(''),
 					callback: function (data) {
 						if(data){
@@ -1127,11 +1340,12 @@ function println(msg){
 							}else{
 								//settings.cocoding.color = data.pickr;
 							}
-							
+
 						}
 					},
 					afterOpen: function(){
-						document.getElementById('cocodingnick').select();
+						loadTippy();
+						vexSmall(this.rootEl);
 						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
 						let defaultColor = '00aa00';
 
@@ -1153,24 +1367,32 @@ function println(msg){
 								// Input / output Options
 								interaction: {
 									input: true,
-									cancel:true,
-									save: true
+									save: false,
+									cancel:true
 								},
 							},
 
 							// rename buttons
 							strings: {
+								cancel: 'Close', // Default for cancel button
 								save: 'Set', // Default for save button
-								cancel: 'Close' // Default for cancel button
+
 							}
 						});
 
+						if(mode == 1){
+							pickr2.show();
+						}else{
+							setTimeout(function(){document.getElementById('cocodingnick').select();}, 100);
+						}
+
 						pickr2.on('change', (color, instance) => {
-						}).on('save', (color, instance) => {
 							document.getElementById('cocodingcolor').value = '#' + color.toHEXA().join('');
 							document.getElementById('cocodingcolor').style.background = '#' + color.toHEXA().join('');
 							document.getElementById('cocodingcolor').style.color = '#' + color.toHEXA().join('');
-							instance.hide();
+						}).on('save', (color, instance) => {
+
+							// instance.hide();
 						}).on('cancel', instance => {
 							instance.hide();
 						})
@@ -1178,66 +1400,153 @@ function println(msg){
 				})
 			}
 
-			login(){				
+			login(){
+				syncUp();
 				this.socket.emit('login', settings.cocoding.nick);
 			}
 
 			updateColor(){
-				this.socket.emit('updateColor', settings.cocoding.color);	
+				syncUp();
+				// first time cocoder = random color
+				if(settings.cocoding.color != null && settings.cocoding.color == '#00aa00'){
+					settings.cocoding.color = '#'+Math.floor(Math.random()*16777215).toString(16);
+				}
+				updateSettings();
+				this.socket.emit('updateColor', settings.cocoding.color);
 			}
 
 			token(){
+				syncUp();
 				this.socket.emit('token', settings.cocoding.token);
 			}
 
+			checkAdmin(){
+				syncUp();
+				this.socket.emit('checkAdmin');
+			}
+
 			lockdown(lockdownMode){
+				syncUp();
 				this.socket.emit('lockdown', lockdownMode)
 			}
 
-			codeReplaceRequest(userID, sketchName, sketchCode){			
+			codeReplaceRequest(userID, sketchName, sketchCode){
 				let reqData = {'userID':userID, 'sketchName':sketchName, 'sketchCode':sketchCode}
+				syncUp();
 				this.socket.emit('codeReplaceRequest', reqData);
 			}
 
 			codeReplaceReject(data){
+				syncUp();
 				this.socket.emit('codeReplaceReject', data);
 			}
 
 			codeReplace(data){
-				this.socket.emit('codeReplace', data);				
+				syncUp();
+				this.socket.emit('codeReplace', data);
 			}
 
 			editRequest(userID){
 				settings.cocoding.request = !settings.cocoding.request;
 				updateSettings();
-			
+
 				let reqData = {'userID':userID, 'mode':settings.cocoding.request}
+				syncUp();
 				this.socket.emit('editRequest', reqData);
 			}
 
 			toggleEdit(userID){
+				syncUp();
 				this.socket.emit('toggleEdit', {'userID':userID});
 			}
 
 			requestReject(userID){
+				syncUp();
 				this.socket.emit('rejectRequest', {'userID':userID});
 			}
 
 			dispatchSyncEvent(evMode, evType, evOpts){
 				let ev = {'mode':evMode, 'type':evType, 'options':evOpts, 'fc':p5f.frameCount};
+				syncUp();
 				this.socket.emit('dispatchSyncEvent', ev);
 			}
 
 			recompile(force){
+				syncUp();
 				this.socket.emit('recompile', force);
 			}
 
 			sync(syncMode){
+				syncUp();
 				this.socket.emit('sync', {'mode':syncMode, 'fc':p5f.frameCount});
 			}
 
 			cursorPos(pos){
+				syncUp();
 				this.socket.emit('cursor', pos);
+			}
+
+			parseChat(chatObj){
+				menuCocodeChatDialog.innerHTML = '';
+				for(let chatItem of chatObj){
+					cocode.addChat(chatItem);
+				}
+			}
+
+			addChat(msg){
+				let msgID = '', pendingChat = '';
+				let pendingMsg = document.getElementById(msg.msgID);
+				let notifyChat = false;
+				if(msg.type && msg.type == 'pending'){
+					msgID = 'id="'+msg.msgID+'"';
+					pendingChat = 'pending-chat';
+				}else if(msg.type && msg.type == 'clear'){
+					if(pendingMsg != undefined){
+						pendingMsg.remove();
+						return false;
+					}
+				}else{
+					if(pendingMsg != undefined){
+						pendingMsg.remove();
+						notifyChat = true;
+					}
+				}
+
+				// check if at bottom of chat
+				let autoScroll = false;
+				if(menuCocodeChatDialog.scrollHeight - menuCocodeChatDialog.scrollTop < 200){
+					autoScroll = true;
+				}
+
+				let msgHTML = '<div class="chat-item" '+msgID+'>';
+					msgHTML += '<div class="chatmsg '+pendingChat+'">';
+					let marq = '';
+					if(msg.nick.length > 9){marq = 'longname marq';}
+					msgHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
+					msgHTML += '<span class="chattext ">'+linkify(msg.text)+'</span>';
+					msgHTML += '</div>';
+					msgHTML += '</div>';
+					menuCocodeChatDialog.innerHTML += msgHTML;
+
+					// only auto scroll if at bottom, otherwise small offset for feedback
+					if(autoScroll){
+						menuCocodeChatDialog.scrollTop = menuCocodeChatDialog.scrollHeight;
+					}else{
+						menuCocodeChatDialog.scrollTop += 10;
+					}
+
+					// check if settings.. + if menu hidden...
+					if(settings.notifyToggle && (menuPanel.style.marginRight == '-250px' || panelSettings.style.display == 'block') && notifyChat){
+						let notifyHTML = '';
+						notifyHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
+						notifyHTML += '<br><span class="chattext ">'+linkify(msg.text)+'</span>';
+
+						notifyMsg(notifyHTML);
+					}
+			}
+
+			scrollCursor(userRow, userColumn){
+				editor.renderer.scrollCursorIntoView({row: userRow, column: userColumn}, 0.5);
 			}
 
 			syncCursors(usersRaw){
@@ -1249,7 +1558,7 @@ function println(msg){
 						elements[0].parentNode.removeChild(elements[0]);
 					}
 
-					for (let key in this.users) {			
+					for (let key in this.users) {
 						marker.cursors.push({row:this.users[key].cursor.row, column:this.users[key].cursor.column, color:this.users[key].color, id:this.users[key].nick});
 					};
 					marker.redraw();
@@ -1257,6 +1566,13 @@ function println(msg){
 		};
 
 		// cocode extras
+
+		function linkify(text) {
+			var urlRegex =/(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+			return text.replace(urlRegex, function(url) {
+				return '<a href="' + url + '" target="_blank">' + url + '</a>';
+			});
+		}
 
 		function showUsers(){
 			let cursorSel = document.getElementsByClassName('cursor');
@@ -1272,6 +1588,26 @@ function println(msg){
 				cursorSel[i].style.display = 'none';
 			}
 			showCursors = false;
+		}
+
+		let syncUpTimer;
+		function syncUp(){
+			clearTimeout(syncUpTimer);
+			menuCocodeUp.style.opacity = 1;
+			syncUpTimer = window.setTimeout(function(){
+				menuCocodeUp.style.opacity = .25;
+			}, 200);
+
+		}
+
+		let syncDownTimer;
+		function syncDown(){
+			clearTimeout(syncDownTimer);
+			menuCocodeDown.style.opacity = 1;
+			syncDownTimer = window.setTimeout(function(){
+				menuCocodeDown.style.opacity = .25;
+			}, 200);
+
 		}
 
 
@@ -1299,7 +1635,7 @@ function println(msg){
 		// check for errors
 		editor.getSession().on('changeAnnotation', function(){
 			let annot = editor.getSession().getAnnotations();
-			
+
 			// extra debug info (too raw.. but nice to have better p5.js specific debugging in console)
 			// for (var key in annot) {
 			// 	if (annot.hasOwnProperty(key))
@@ -1338,7 +1674,7 @@ function println(msg){
 		});
 
 		function adjustLines(){
-			let pcode = document.getElementsByClassName('ace_line');
+			let pcode = p5editor.getElementsByClassName('ace_line');
 			for(let i=0; i < pcode.length; i++){
 				let pitem = pcode[i];
 				let pcontents = pitem.innerHTML;
@@ -1455,7 +1791,7 @@ function println(msg){
 		/* p5 iframe communication */
 
 		// mark error line
-		window.document.addEventListener('myEvent', handleEvent, false)
+		window.document.addEventListener('p5Status', handleEvent, false)
 		function handleEvent(e) {
 			if(e.detail.lineNumber != undefined){
 				let errorLine = parseInt(e.detail.lineNumber)-1;
@@ -1471,19 +1807,26 @@ function println(msg){
 
 				// p5f.setup(); // better than clear/background, reinit w/ updated vars
 				//p5varsReset();
+
 				sketchLoaded = true;
+				syncdataParse(); // promise for syncdata if active
+				if(sketchLoaded && cocodingRecompile && settings.cocoding.level == 'admin'){
+					cocode.recompile(true);
+					cocodingRecompile = false;
+				}
 			}else{
 				sketchLoaded = false;
-				// set timer for refreshing if error			
+				// set timer for refreshing if error
 			}
 		}
 
-		
+
 
 		/* SETTINGS */
 
 		// init settings
 		loadSettings();
+
 
 		// get settings from localstorage
 		function getSettings(){
@@ -1496,26 +1839,44 @@ function println(msg){
 
 		// react to settings once gathered
 		function loadSettings(){
+			// check online or offline
+			if(window.location.hostname.includes('teddavis.org')){
+				p5Remote = true;
+			}else{
+				p5Remote = false;
+				document.title = 'P5LIVE – OFFLINE';
+			}
+
 			// make sure all settings are there
+			let settingsChanged = false;
+			Object.keys(initSettings).forEach(function(k){
+				if(!settings.hasOwnProperty(k)){
+					settings[k] = initSettings[k];
+					settingsChanged = true;
+				}else if(typeof initSettings[k] === 'object'){
+					Object.keys(initSettings[k]).forEach(function(kk){
+						if(!settings[k].hasOwnProperty(kk)){
+							settings[k][kk] = initSettings[k][kk];
+							settingsChanged = true;
+						}
+					});
+				}
+				if(settingsChanged){
+					settings.refresh = true;
+				}
+			});
+			updateSettings();
+
 			if(settings.revision == undefined || settings.revision < currentRevision){
 				settings.revision = currentRevision;
 				settings.version = initSettings.version;
 				settings.fileName = 'new';
 				settings.welcome = true;
-				Object.keys(initSettings).forEach(function(k){
-					if(!settings.hasOwnProperty(k)){
-						settings[k] = initSettings[k];
-					}else if(typeof initSettings[k] === 'object'){
-						Object.keys(initSettings[k]).forEach(function(kk){
-							if(!settings[k].hasOwnProperty(kk)){
-								settings[k][kk] = initSettings[k][kk];
-							}
-						});
-					}
-					settings.refresh = true;
-				});
+				settings.refresh = true;
 				updateSettings();
 			}
+
+			document.getElementById('menu-p5live-version').innerHTML = settings.version;
 			loaderSub.innerHTML = 'settings...';
 			fontSizeUpdate();
 			autoCompileUpdate();
@@ -1530,14 +1891,18 @@ function println(msg){
 			lockDragUpdate();
 			exportcodeUpdate();
 			notifyToggleUpdate();
+			tippyToggleUpdate();
+			multitabToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
 			loaderSub.innerHTML = 'templates...';
 			loadSketchTemplate();
-			loadHTMLTemplate(); 
+			loadHTMLTemplate();
 			loaderSub.innerHTML = 'snippets...';
 			loadSnippets();
+			loaderSub.innerHTML = 'SyncData presets...';
+			syncDataPresetLoad();
 			loaderSub.innerHTML = 'autocomplete...';
 			loadAutoComplete();
 			loadColorPicker();
@@ -1553,9 +1918,26 @@ function println(msg){
 			settings.safeMode = false;
 			updateSketches();
 			filterSketches();
-			loaderSub.innerHTML = 'shortcuts...';
-			updateShortcuts();
-			
+
+			if(settings.refresh){
+				refreshDemos();
+				settings.refresh = false;
+				updateSettings();
+			}
+
+			settings.editMode = true;
+			if(getParam('edit') != undefined && getParam('edit') == 0){
+				settings.editMode = false;
+				editor.setReadOnly(true);
+				p5editor.style.display = 'none';
+				menuPanel.style.display = 'none';
+				settings.welcome = false;
+				updateSettings();
+			}else{
+				loaderSub.innerHTML = 'shortcuts...';
+				updateShortcuts();
+			}
+
 			if(getParam('cc') != undefined){
 				loaderSub.innerHTML = 'cocoding...';
 				if(getParam('cc').length != 5){
@@ -1567,6 +1949,7 @@ function println(msg){
 					cocodingReset();
 				}
 				settings.cocoding.active = true;
+				menuCocodeSync.style.display = 'inline';
 				if(settings.cocoding.timestamp == null){
 					settings.cocoding.timestamp = timeStamp();
 				}
@@ -1574,23 +1957,18 @@ function println(msg){
 				settings.fileName = ccSpace;
 				settings.cocoding.namespace = settings.fileName;
 				if(settings.cocoding.nick == undefined || settings.cocoding.nick == ''){
-					settings.cocoding.nick = makeid(6);
+					settings.cocoding.nick = generateName();//makeid(6);
+					cocodingFirstTime = true;
 				}
 				updateSketches();
 				cocoding();
-			}else if(settings.welcome){
-				loadAbout();
-				loadDefault();
-				menuToggle(true);
-				settings.welcome = false;
-				updateSettings();
 			}else if(window.location.hash){
 				if(window.location.hash.substring(1) === 'new'){
 					loadDefault();
 				}else if(window.location.hash.substring(1).toLowerCase() === 'bug'){
 					loadBug();
-				}else{
-					loaderSub.innerHTML = 'p5 references...';
+				}else{ // else if(window.location.hash.indexOf('ref') != -1)
+					loaderSub.innerHTML = 'loading references...';
 					loadRef();
 					loadSketch(settings.fileName);
 				}
@@ -1598,8 +1976,39 @@ function println(msg){
 				cocodingReset();
 				loadSketch(settings.fileName);
 			}
+
+			if(settings.welcome){
+				loadAbout();
+				if(!settings.cocoding.active){
+					loadDefault();
+				}
+				menuToggle(true);
+				settings.welcome = false;
+				updateSettings();
+			}
 			resizeSketchesHolder();
 			hideLoader();
+
+			// test multiple open
+			// inspiration: https://stackoverflow.com/a/43291970/10885535
+			if(settings.multitabToggle){
+				localStorage.openpages = Date.now();
+				var onLocalStorageEvent = function(e){
+					if(e.key == "openpages"){
+						// Listen if anybody else opening the same page!
+						localStorage.page_available = Date.now();
+					}
+					if(e.key == "page_available"){
+						vex.dialog.alert({
+							unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one to avoid data loss.',
+							afterOpen: function(){
+								vexSmall(this.rootEl);
+							}
+						});
+					}
+				};
+				window.addEventListener('storage', onLocalStorageEvent, false);
+			}
 		}
 
 		function getParam(paramSearch){
@@ -1623,34 +2032,45 @@ function println(msg){
 
 		function showSettings(show){
 			if(show){
-				if(panelSettings.style.display == 'block'){
+				if(refVisible){
+					closeRef();
+				}
+
+				if(settingsVisible){
 					hideSettings();
 					menuToggle(false);
 				}else{
+					settingsVisible = true;
 					menuToggle(true);
 				}
+
 			}
 			panelSettings.style.display = 'block';
 			panelMenu.style.display = 'none';
+			settingsVisible = true;
 		}
 
 		function hideSettings(){
 			panelSettings.style.display = 'none';
 			panelMenu.style.display = 'block';
+			settingsVisible = false;
 		}
-				
+
 		function resizeSketchesHolder(){
-			let sketchesHolder = document.getElementById('menu-sketches-holder');
 			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
 			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
-			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2) + 'px';
+			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2)-5 + 'px';
 		}
-		
+
 		window.onresize = resizeSketchesHolder;
 
 		function resetSettings(){
+			if(settings.cocoding.active){
+				settingsCocodingWarning();
+				return false;
+			}
 			vex.dialog.confirm({
-				unsafeMessage: 'Reset to default settings?<br>Sketches left untouched.',
+				unsafeMessage: 'Reset to default settings?<br>Sketches will be left untouched.',
 				callback: function (value) {
 					if (value) {
 						Object.keys(initSettings).forEach(function(k){
@@ -1665,6 +2085,15 @@ function println(msg){
 			})
 		}
 
+		function settingsCocodingWarning(){
+			vex.dialog.alert({
+				unsafeMessage:'Exit COCODING to change settings.',
+				afterOpen: function(){
+					vexSmall(this.rootEl);
+				}
+			});
+		}
+
 		function exportSettings(){
 			let jsonExport = {};
 			jsonExport.doctype = 'P5L_SETTINGS';
@@ -1676,10 +2105,15 @@ function println(msg){
 				}
 			});
 
-			exportJSON(jsonExport, 'P5L_SETTINGS_'+timeStamp()+'.json');			
+			exportJSON(jsonExport, 'P5L_SETTINGS_'+timeStamp()+'.json');
 		}
 
 		function importSettings(data){
+			if(settings.cocoding.active){
+				settingsCocodingWarning();
+				return false;
+			}
+
 			for(let i=0; i < data.length; i++){
 				let reader = new FileReader();
 				reader.onload = function(data) {
@@ -1705,7 +2139,7 @@ function println(msg){
 									loadSettings();
 								}
 							}
-						})						
+						})
 					}else{
 						vex.dialog.alert({
 							message:'Oops, select a P5L_SETTINGS file.'
@@ -1786,7 +2220,7 @@ function println(msg){
 						}
 					});
 					if(!repeatShortcut && shortcutRecording){
-						shortcut.key = sequence.join(' ');	
+						shortcut.key = sequence.join(' ');
 					}
 					updateShortcuts();
 				});
@@ -1831,72 +2265,112 @@ function println(msg){
 		function filterSketches(){
 			let demosFolder = document.getElementById('demofolder');
 			let filterClear = document.getElementById('menu-sketches-filter-clear');
-			let filter = menuSketchesFilter.value.toUpperCase();
+			let filter = menuSketchesFilter.value.toLowerCase().split(' ');
 			let filterItems = menuSketches.getElementsByClassName('drag-item');
-			
-			// clear previous filtered items within folders
-			let clearFilters = menuSketches.getElementsByClassName('filter');
-			for(let i=0; i < clearFilters.length;i++){
-				clearFilters[i].classList.remove('filter');
+
+			// remove empty while adding another word
+			filter = filter.filter(Boolean);
+
+			// remove filter from all
+			for(let fi of filterItems){
+				fi.classList.remove('filter');
+				fi.classList.remove('filter-match');
 			}
 
+			// if chars typed
 			if(filter != ''){
-				for (let i = 0; i < filterItems.length; i++) {
-					let filterItemName = filterItems[i].getAttribute('data-id');
-					if (filterItemName.toUpperCase().indexOf(filter) > -1 || filterItems[i].classList.value.indexOf('filter') > -1) {
-						filterItems[i].style.display = '';
+				// scroll back to top
+				sketchesHolder.scrollTop = 0;
 
-						// dig into folders and show those items too (incase folder name was filtered)
-						if(filterItems[i].getAttribute('data-type') == 'folder'){
-							filterItems[i].getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
-							let filterChildren = filterItems[i].children;
-							for(let i=0; i < filterChildren.length;i++){
-								let fc = filterChildren[i];
-								if(fc.tagName != undefined && (fc.tagName.toUpperCase() == 'LI' || fc.tagName.toUpperCase() == 'UL')){
-									filterChildren[i].classList.add('filter')
-									if(fc.tagName.toUpperCase() == 'UL'){
-										fc.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
-									}
+				for (let fi of filterItems) {
+
+					// if item's name filtered
+					let filterItemName = fi.getAttribute('data-id');
+
+					// match separated words ***
+					if ( filter.some((val) => filterItemName.toLowerCase().indexOf(val) !== -1)){
+					// if (filterItemName.toLowerCase().indexOf(filter) > -1) {
+
+						// add to filter items
+						fi.classList.add('filter');
+
+						// if item folder, filter-reveal all children
+						if(fi.getAttribute('data-type') == 'folder'){
+							fi.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+							let fiKids = fi.getElementsByClassName('drag-item');
+							for(let fik of fiKids){
+								fik.classList.add('filter');
+								if(fik.getAttribute('data-type') == 'folder'){
+									fik.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
 								}
 							}
 						}
+
+						// if item within folder, filter-reveal all parents
+						let folderParents = getParentFolders(fi);
+						for(let fp of folderParents){
+							fp.classList.add('filter');
+							fp.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+						}
 					} else {
-						filterItems[i].style.display = 'none';
+						// else hide item
+						fi.style.display = 'none';
 					}
 				}
 
-				// cycle through child elements of filtered folder and show
+				// show all filtered ietms, mark matches
 				let getFilters = menuSketches.getElementsByClassName('filter');
-				for(let i=0; i < getFilters.length;i++){
-					getFilters[i].style.display = 'block';
-				}				
-			
-				// change filter icon based on state
-				if(demosFolder != undefined){
-					demosFolder.style.display = 'none';
+				for(let gf of getFilters){
+					gf.style.display = 'block';
+					let filterItemName = gf.getAttribute('data-id');
+
+					// match separated words ***
+					if (filterItemName != undefined && filter.some((val) => filterItemName.toLowerCase().indexOf(val) !== -1)){
+					// if (filterItemName != undefined && filterItemName.toLowerCase().indexOf(filter) !== -1){
+						gf.classList.add('filter-match');
+					}
 				}
+
+				// hide demos (unless modifying)
+				// if(demosFolder != undefined && demosLocked){
+				// 	demosFolder.style.display = 'none';
+				// }
+
+				// change filter icon based on state
 				filterClear.innerHTML = iconX;
 			}else{
 				// show all if filter empty
-				for (let i = 0; i < filterItems.length; i++) {
-					filterItems[i].style.display = '';
+				for (let fi of filterItems) {
+					fi.style.display = '';
 				}
-				if(demosFolder != undefined){
-					demosFolder.style.display = '';
-				}
+				// if(demosFolder != undefined){
+				// 	demosFolder.style.display = '';
+				// }
 				filterClear.innerHTML = iconFilter;
 				initSortable();
 			}
 		}
 
+		function getParentFolders(elem) {
+			var parents = [];
+			while(elem.parentNode && elem.parentNode.nodeName.toLowerCase() == 'ul') {
+				elem = elem.parentNode;
+				parents.push(elem);
+			}
+			return parents;
+		}
+
 		// clear filter
-		function filterSketchesClear(){
+		function filterSketchesClear(forceFocus){
 			if(menuSketchesFilter.value == ''){
-				menuSketchesFilter.focus();
+				if(forceFocus){
+					menuSketchesFilter.focus();
+				}
 			}else{
 				menuSketchesFilter.value = '';
 				filterSketches();
 			}
+			sketchScrollIntoView(true);
 		}
 
 		// padding version numbers of sketch
@@ -1906,7 +2380,7 @@ function println(msg){
 		}
 
 		// use sketch versions instead of timestamp
-		function versionCheck(sketchName){
+		function versionCheck(sketchName, importObj){
 			let tempName = sketchName;
 			let forkScores = tempName.split('_');
 			if(forkScores.length > 0){
@@ -1920,9 +2394,16 @@ function println(msg){
 			tempName = forkScores.join('_');
 
 			// check entire sketches for dup version name
-			while(searchSketches(tempName, settings.sketches)){
-				tempName = versionCheck(tempName);
+			if(importObj !== undefined){
+				while(searchSketches(tempName, settings.sketches) || searchSketches(tempName, importObj)){
+					tempName = versionCheck(tempName, importObj);
+				}
+			}else{
+				while(searchSketches(tempName, settings.sketches)){
+					tempName = versionCheck(tempName);
+				}
 			}
+
 				return tempName;
 		}
 
@@ -1932,37 +2413,44 @@ function println(msg){
 				cloneSketchCOCODING();
 				return false;
 			}
-			let forkName = versionCheck(settings.fileName);			
+			let forkName = versionCheck(settings.fileName);
+			let tc = timeDate();
 
+			let checkDemo = document.querySelectorAll('[data-id="'+settings.fileName+'"]')[0].classList.contains('demo');
 			let checkDir = searchJSON(settings.sketches, 'name', settings.fileName)[0];
 			settings.fileName = forkName;
 			updateSettings();
-			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos'){
+
+
+
+			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos' && !checkDemo || !demosLocked){
 				let useDir = searchJSON(settings.sketches, 'name', checkDir.parent)[0];
-				useDir.contents.unshift({'type':'sketch', 'name':forkName});
+				useDir.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 				useDir.toggle = 'expand';
 			}else{
-				settings.sketches.unshift({'type':'sketch', 'name':settings.fileName});
+				settings.sketches.unshift({'type':'sketch', 'name':settings.fileName, 'mod':tc});
 			}
-			
+
 			updateSketches();
 			localStorage[settings.fileName] = editor.getValue();
-			editor.focus(); 
+			editor.focus();
 			editor.session.off('change', cloneSketch);
+			sketchScrollIntoView(true);
 		}
 
 		function cloneSketchCOCODING(){
+			let tc = timeDate();
 			let forkSession = 'cc_'+settings.cocoding.namespace+'_'+settings.cocoding.timestamp;
 			if(searchJSON(settings.sketches, 'name', forkSession).length == 0){
 				addFolder(forkSession);
 			}
 			// let forkName = forkSession+'_'+timeStamp();
-			let forkName = versionCheck(settings.fileName);			
+			let forkName = versionCheck(settings.fileName);
 
 			settings.fileName = forkName;
 			updateSettings();
 			let forkObj = searchJSON(settings.sketches, 'name', forkSession)[0];
-			forkObj.contents.unshift({'type':'sketch', 'name':forkName});
+			forkObj.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 			forkObj.toggle = 'expand';
 			updateSketches();
 			localStorage[forkName] = editor.getValue();
@@ -1981,7 +2469,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall();
+						vexSmall(this.rootEl);
 					}
 				})
 
@@ -2026,11 +2514,11 @@ function println(msg){
 					recursiveFolderExpand(settings.sketches, sketch, '');
 					settings.fileName = sketch;
 					editor.setValue(localStorage[settings.fileName], 1);
-					
+
 					pLen = editor.getValue().length;
 					updateSketches();
 
-					setTimeout(function(){p5varsReset();recompile(true);}, 200);
+					p5varsReset();
 
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
@@ -2043,13 +2531,13 @@ function println(msg){
 					let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
 					if(searchSketches(settings.fileName, checkDemo) && demosLocked){
 						if(settings.fileName == 'new'){
-							window.location.hash = '#';
+							// window.location.hash = '#'; // *** removed for conflict w/ #bug + refs...
 						}
 						editor.getSession().on('change', cloneSketch);
 					}
-					
+
 				}else if(!localStorage.hasOwnProperty(sketch) && searchSketches(sketch, settings.sketches)){
-					
+
 					vex.dialog.confirm({
 						message:'Sketch code missing, remove from list?',
 						callback: function(value){
@@ -2072,7 +2560,7 @@ function println(msg){
 		}
 
 		function loadSketchTemplate(){
-			let tempPath = 'includes/templates/p5live_sketch.html';
+			let tempPath = 'includes/templates/p5live_sketch.html?' + makeid(5);;
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -2159,43 +2647,78 @@ function println(msg){
 
 		// export single sketch to JSON
 		function exportSketch(sketch){
-			let jsonExport = {};
-			jsonExport.sketches = [];
-			jsonExport.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
-			exportJSON(jsonExport, 'P5L_'+sketch+'_'+timeStamp()+'.json');
-			if(settings.debugMode){console.log(jsonExport);}
-		}
-
-		// export folder[s] w/ sketches to JSON
-		function exportFolder(folder){
-			let folderObj = searchJSON(settings.sketches, 'name', folder);
 			let tempSketches = {};
 			tempSketches.version = settings.version;
 			tempSketches.revision = settings.revision;
-			tempSketches.structure = folderObj;
-			tempSketches.sketches = [];
-			listSketches(folderObj).forEach(function (sketch){
-				if(localStorage.hasOwnProperty(sketch)){
-					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
-				}
-			});
-			exportJSON(tempSketches, 'P5L_FOLDER_' + folder + '_' + timeStamp() + '.json');
+			tempSketches.count = {sketches:1, folders:0};
+			tempSketches.structure = [];
+
+			let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
+			if(localStorage.hasOwnProperty(sketch)){
+				sketchDetails.code = localStorage.getItem(sketch);
+				tempSketches.structure.push(sketchDetails);
+				exportJSON(tempSketches, 'P5L_' + sketch + '_' + timeStamp(sketchDetails.mod) + '.json');
+			}else{
+				alertMsg('Sketch code missing...');
+			}
 		}
 
-		// export all sketches to JSON
-		function exportAllSketches(){
-			let tempSketches = {};
+		// export all/folder[s] w/ sketches to JSON
+		function exportSketches(folder){
+			let tempSketches = {}, objCopy, tempType;
 			tempSketches.version = settings.version;
-			tempSketches.structure = settings.sketches;
 			tempSketches.revision = settings.revision;
-			tempSketches.sketches = [];
-			listSketches(settings.sketches).forEach(function (sketch){
-				if(localStorage.hasOwnProperty(sketch)){
-					tempSketches.sketches.push({'sketchName':sketch, 'sketchCode':localStorage.getItem(sketch)});
-				}
-			});
-			exportJSON(tempSketches, 'P5L_SKETCHES_' + timeStamp() + '.json');
+
+			if(folder !== undefined){
+				let folderObj = searchJSON(settings.sketches, 'name', folder);
+				objCopy = JSON.parse(JSON.stringify(folderObj));
+				tempType = 'FOLDER_'+ folder+'_';
+			}else{
+				objCopy = JSON.parse(JSON.stringify(settings.sketches));
+				tempType = 'SKETCHES_';
+			}
+			if(!demosLocked && folder === 'demos'){
+				tempSketches.structure = exportAddCode(objCopy, true);
+			}else{
+				tempSketches.structure = exportAddCode(objCopy);
+			}
+
+			// remove demos
+			if(demosLocked){
+				tempSketches.structure = tempSketches.structure.filter(function( obj ) {
+					return obj.name !== 'demos';
+				});
+			}
+
+			let folderCount = findValues(tempSketches.structure, 'type', 'folder', 'name').length;
+			tempSketches.count = {sketches:listSketches(tempSketches.structure).length, folders:folderCount};
+			exportJSON(tempSketches, 'P5L_' + tempType + timeStamp() + '.json');
 		}
+
+		function exportPurgeDemos(obj){
+			let objPurge = [];
+
+			return obj;
+		}
+
+		function exportAddCode(objStructure, allowDemos) { // obj
+			for (let k in objStructure) {
+				let ric = objStructure[k];
+
+				if(ric.type == 'sketch'){
+					if(localStorage.hasOwnProperty(ric.name)){
+						ric.code = localStorage.getItem(ric.name);
+					}
+				}
+
+				// if folder, recurse deeper
+				if(ric.type == 'folder' && (ric.name != 'demos') || allowDemos){
+					ric.contents = exportAddCode(ric.contents, allowDemos);
+				}
+			};
+			return objStructure;
+		}
+
 
 		function listSketches(obj){
 			return findValues(obj, 'type', 'sketch', 'name');
@@ -2233,6 +2756,7 @@ function println(msg){
 			autoProcessQueue: false,
 			url: '/data', // unused but needed for URL expectation
 			acceptedFiles:'.json',
+			clickable:false,
 			init: function() {
 				this.on('addedfile', function(file, responseText) {
 					importSketches(myDropzone.files);
@@ -2285,15 +2809,35 @@ function println(msg){
 					if(jsonObj.hasOwnProperty('structure')){
 						let jsonStructureSorted = jsonObj.structure.reverse();
 
-						let jsonStructureNormal = jsonObjList.structure;
-						let count = (JSON.stringify(jsonObjList.structure).match(/name/g) || []).length;
-						if(searchJSON(jsonObjList.structure, 'name', 'demos').length > 0){
-							count -= searchJSON(settings.sketches, 'name', 'demos')[0].contents.length;
+						if(demosLocked){
+							jsonStructureSorted = jsonStructureSorted.filter(function( obj ) {
+								return obj.name !== 'demos';
+							});
+							if(jsonStructureSorted.length === 0){
+								return false;
+							}
 						}
-						let importData = 'Import the following ('+count+') items?<br>';
+
+						let jsonStructureNormal = jsonObjList.structure;
+						let count, importData;
+						if(!legacyImport(jsonObj)){
+							if(jsonObj.count.sketches === 1){
+								importSketchesParser(jsonStructureSorted);
+								return;
+							}
+							count = jsonObj.count.sketches + jsonObj.count.folders;
+							importData = 'Import the following ('+count+') items?<br>';
+						}else{
+							count = (JSON.stringify(jsonObjList.structure).match(/name/g) || []).length;
+							if(searchJSON(jsonObjList.structure, 'name', 'demos').length > 0){
+								count -= searchJSON(settings.sketches, 'name', 'demos')[0].contents.length;
+							}
+							importData = 'Import the following ('+count+') items?<br>';
+						}
+
 						let importDupFound = false;
-						for (let key in jsonStructureNormal) { 
-							if(searchSketches(jsonStructureNormal[key].name, settings.sketches && jsonStructureNormal[key].name.toLowerCase() != 'demos')){
+						for (let key in jsonStructureNormal) {
+							if(searchSketches(jsonStructureNormal[key].name, settings.sketches) && jsonStructureNormal[key].name.toLowerCase() != 'demos'){
 								importDupFound = true;
 							}
 						}
@@ -2303,57 +2847,159 @@ function println(msg){
 						importData += '<div id="importdump">';
 						importData += recursiveImportCheck(jsonStructureNormal, '', '');
 						importData += '</div>';
+						// *** add checkbox to ignore duplicates on import...
 
 						// first confirm importing of whole structure/sketches
 						vex.dialog.confirm({
 							unsafeMessage:importData,
 							callback: function(value){
 								if(value){
-									jsonStructureSorted.forEach(function(jsonItem){
-										if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
-											// foreach folder/sketch check duplicates and give unique names
-
-											// each base folder
-											if(searchSketches(jsonItem.name, settings.sketches)){ 
-												jsonItem.name += '_'+ timeStamp(); //versionCheck(jsonItem.name);
+									loaderSub.innerHTML = 'importing sketches...';
+									showLoader();
+									if(legacyImport(jsonObj)){
+										let legacyDemos = ["new", "P5LIVE_meta", "P5LIVE_COCODING_meta", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_primatives", "webgl_sphereBox", "slidersGrid", "textToPoints", "basel.codes", "this is a really long name", "osc_setup", "midi_setup"];
+										jsonStructureSorted.forEach(function(jsonItem){
+											if(jsonItem.mod === undefined){
+												jsonItem.mod = timeDate();
 											}
+											if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
+												// foreach folder/sketch check duplicates and give unique names
 
-											// each recursive sketch/folder within
-											recursiveNamecheck(jsonItem.contents, jsonObj.sketches);
+												// each base folder
+												if(searchSketches(jsonItem.name, settings.sketches)){
+													jsonItem.name += '_'+ timeStamp(); //versionCheck(jsonItem.name);
+												}
 
-											// add structure to top of sketches list
-											settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
-											
-										}else if(jsonItem.type == 'sketch'){
-											settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name});
-										}
-									})
-									updateSettings();
-									initSortable();
-									//updateSketches();
+												// each recursive sketch/folder within
+													recursiveNamecheck(jsonItem.contents, jsonObj.sketches);
 
-									// import structure as folder..
-									parseSketches(jsonObj);
+												// add structure to top of sketches list
+												settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+
+											}else if(jsonItem.type == 'sketch'){
+
+												if(legacyDemos.indexOf(jsonItem.name) == -1){
+													settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
+												}
+											}
+										})
+										updateSettings();
+										initSortable();
+										//updateSketches();
+
+										// import structure as folder..
+										parseSketches(jsonObj, legacyDemos);
+									}else{
+										// new importer from r34
+										importSketchesParser(jsonStructureSorted);
+									}
+									hideLoader();
 								}
+
 							}
-						})						
+						})
 					}else{
 						// import single sketch w/o confirm dialog
-						checkDupSketches(jsonObj, 'sketchName');
-						parseSketches(jsonObj);
+						if(legacyImport(jsonObj)){
+							checkDupSketches(jsonObj, 'sketchName');
+							parseSketches(jsonObj);
+						}
 					}
 				}
 				reader.readAsText(data[i]);
 			}
 		}
 
-		function recursiveImportCheck(objStructure, level, outputData) { // obj
-			for (let k in objStructure) { 
+		function legacyImport(obj){
+			if(obj.revision === undefined || obj.revision < 34){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
+		function importSketchesParser(importObj){
+			if(demosLocked){
+				importObj = importObj.filter(function( obj ) {
+					return obj.name !== 'demos';
+				});
+			}
+
+			recursiveImportDup(importObj, importObj);
+			importObj.forEach(function(jsonItem){
+				if(jsonItem.type == 'folder'){
+					settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+				}else if(jsonItem.type == 'sketch'){
+					settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
+				}
+			});
+			updateSettings();
+			initSortable();
+			recursiveImportCode(importObj);
+		}
+
+		function recursiveNames(obj, outputData){
+			if(outputData === undefined){
+				outputData = [];
+			}
+			for (let k in obj) {
+				let ric = obj[k];
+
+				// grab all names
+				if(ric.type == 'sketch'){
+					outputData.push(ric.name);
+				}
+
+				// if folder, go deeper
+				if(ric.type == 'folder'){
+					outputData.push(ric.name);
+					recursiveNames(ric.contents, outputData);
+				}
+			};
+			return outputData;
+		}
+
+		function recursiveImportDup(obj, objHold){
+			for (let k in obj) {
+				let allNames = recursiveNames(objHold);
+				let ric = obj[k];
+
+				if(searchSketches(ric.name, settings.sketches)){
+					ric.name = versionCheck(ric.name, allNames);
+				}
+
+				// if folder, go deeper
+				if(ric.type == 'folder'){
+					recursiveImportDup(ric.contents, obj);
+				}
+			};
+		}
+
+		function recursiveImportCode(obj){
+			for (let k in obj) {
+				let ric = obj[k];
+
+				// if sketch, add to localStorage
+				if(ric.type == 'sketch'){
+					localStorage.setItem(ric.name, ric.code);
+				}
+
+				// if folder, go deeper
+				if(ric.type == 'folder'){
+					recursiveImportCode(ric.contents);
+				}
+			};
+		}
+
+
+		function recursiveImportCheck(objStructure, level, outputData) {
+			for (let k in objStructure) {
 				let ric = objStructure[k];
 				let ricDup = '';
 
 				if(searchSketches(ric.name, settings.sketches)){
 					ricDup = 'class="importdump-dup"';
+					// ric.name += '_'+ timeStamp(); // versionCheck(rnc.name);
 				}
 
 				// if sketch, update sketches name too
@@ -2370,9 +3016,9 @@ function println(msg){
 			return outputData;
 		}
 
-		// recursively check for duplicate names when importing
+		// recursively check for duplicate names when importing ( < r34) or removing
 		function recursiveNamecheck(objStructure, objSketches) { // obj
-			for (let k in objStructure) { 
+			for (let k in objStructure) {
 				let rnc = objStructure[k];
 				let rncDup = false;
 				let rncPName = rnc.name;
@@ -2406,12 +3052,12 @@ function println(msg){
 				if(searchSketches(jsonSketches[i][keyName], settings.sketches)){
 					jsonSketches[i][keyName] = versionCheck(jsonSketches[i][keyName]);
 				}
-			}			
+			}
 		}
 
 		// recursively check folder containing sketch
 		function recursiveFolderExpand(objStructure, sketch, curFolder) { // obj
-			for (let key in objStructure) { 
+			for (let key in objStructure) {
 				// sketch, update sketches name too
 				if(objStructure[key].type == 'sketch' && objStructure[key].name == sketch){
 					if(curFolder!= '' && curFolder.toggle != 'expand'){
@@ -2429,32 +3075,39 @@ function println(msg){
 
 		// load demos
 		function loadDemos(){
-			let demosPath = 'includes/demos/P5L_demos_20191229172219.json?' + currentRevision;
+			let demosPath = 'includes/demos/P5L_demos.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, true);
 			request.send();
 			request.addEventListener('load', function(){
+				if(searchSketches('demos', settings.sketches)){
+					removeItemProcess('demos');
+				}
 				let jsonObj = JSON.parse(request.responseText);
-				recursiveNamecheck(jsonObj.structure, jsonObj.sketches);
+				let jsonItem = jsonObj.structure[0];
 
-				//add structure to top of sketches list
-				settings.sketches.push({'type':'folder', 'name':jsonObj.structure[0].name, 'toggle':jsonObj.structure[0].toggle, 'contents':jsonObj.structure[0].contents});
+				settings.sketches.push({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
 
 				updateSettings();
 				initSortable();
+				recursiveImportCode(jsonObj.structure);
 
-				parseSketches(jsonObj);
+				if(settings.fileName == 'new'){
+					loadDefault();
+				}
 			});
 		}
 
 		function refreshDemos(){
 			window.setTimeout(function(){
-				removeItemProcess('demos');
-				window.setTimeout(function(){loadDemos();}, 200);
+				if(searchSketches('demos', settings.sketches)){
+					removeItemProcess('demos');
+				}
+				window.setTimeout(function(){loadDemos();}, 100);
 			}, 200);
 		}
 
-		function parseSketches(jsonObj){
+		function parseSketches(jsonObj, legacyDemos){
 			let jsonSketches = jsonObj.sketches.reverse();
 			for(let i=0; i < jsonSketches.length; i++){
 				let sketchName = jsonSketches[i].sketchName;
@@ -2463,9 +3116,14 @@ function println(msg){
 
 				// add to settings if doesn't exist
 				if(!searchSketches(sketchName, settings.sketches)) {
-					settings.sketches.unshift({'type':'sketch', 'name':sketchName});
+					if(jsonSketches[i].mod === undefined){
+						jsonSketches[i].mod = timeDate();
+					}
+					if(legacyDemos === undefined || legacyDemos.indexOf(sketchName) == -1) {
+						settings.sketches.unshift({'type':'sketch', 'name':sketchName, 'mod':jsonSketches[i].mod});
+					}
 				}
-				
+
 				if(sketchName == settings.fileName){
 					loadSketch(sketchName);
 				}
@@ -2479,23 +3137,23 @@ function println(msg){
 
 		function legacySettings(){
 			if(typeof settings.sketches[0] != 'object'){
+				let tc = timeDate();
 				let order = settings.sketches;
 				let newOrder = [];
 				let oldDemos = ["aboutsketch", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_sphereBox", "textToPoints", "basel.codes", "this is a really long name"];
 				order.forEach(function(o){
 					if(!oldDemos.includes(o)){
-						newOrder.push({'name':o, 'type':'sketch'});
+						newOrder.push({'name':o, 'type':'sketch', 'mod':tc});
 					}
 				});
 				settings.sketches = newOrder;
 				updateSettings();
 			}
 
-			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){			
+			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){
+				//settings.refresh = false; // *** check this.. if needed?
 				loadDemos();
 			}
-
-			
 		}
 
 		function getOrder() {
@@ -2511,6 +3169,13 @@ function println(msg){
 						}
 
 						const nodeStats = { name: nodeName };
+
+						// add timestamps if they don't exist!
+						if(node.dataset.mod === undefined){
+							let tc = timeDate();
+							node.dataset.mod = tc;
+						}
+						nodeStats.mod = node.dataset.mod;
 
 						if (node.dataset.type == 'folder') {
 							nodeStats.type = 'folder';
@@ -2535,9 +3200,8 @@ function println(msg){
 			}
 		}
 
-		// initialize sortable 
+		// initialize sortable
 		function initSortable(){
-			sketchCount = 0;
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
 				let selSelected = false;
 				let htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
@@ -2545,39 +3209,52 @@ function println(msg){
 				initFolders(menuSketches);
 
 
-				function recurse(data, curFolder) {
-					let html = '<li class="sortable-placeholder" data-type="buffer"></li>'; 
-					for (let key in data) { 
+				function recurse(data, curFolder, parFolder) {
+					let html = '<li class="sortable-placeholder" data-type="buffer"></li>';
+					for (let key in data) {
 						let d = data[key];
+
+						// add timestamps if they don't exist!
+						if(d.mod === undefined){
+							let tc = timeDate();
+							d.mod = tc;
+						}
+
 						let marq = '';
 						let demoClass = ' drag-item ';
 						let demoFolder = '';
-						if(d.name.length > 15){marq = 'marq';}
+						if(d.name.length > 20 || (curFolder != '' && d.name.length > 18)){marq = 'marq';}
 						if(d.type == 'sketch'){
-							sketchCount+=1;
 							let selClass = '';
 							let navSketch = 'onmouseenter="showNav(this, \'' + d.name + '\', \'sketch\');" onmouseleave="hideNav(this);"';
-							if(curFolder == 'demos'){
+							if(curFolder == 'demos' || parFolder == 'demos'){
 								if(demosLocked){
-									navSketch = '';
-									demoClass = ' demo';
+									navSketch = 'onmouseenter="showNav(this, \'' + d.name + '\', \'demo-sketch\');" onmouseleave="hideNav(this);"';
+									demoClass += ' demo';
 								}
 							}
+
 							if(d.name == settings.fileName){
 								selClass = 'sketch-selected';
 								selSelected = true;
 							}
-							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="loadSketch(\''+d.name+'\')">'+iconFileLines + '' +d.name+'</div></li>';
+
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;loadSketch(\''+d.name+'\')">'+iconFileLines + '<div class="item-label">' +d.name+'</div></div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
 							let icon = iconFolderExpand;
 							let navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"';
+							if(parFolder == 'demos'){
+								navFolder = '';
+							}
 							if(curFolder == 'demos' && demosLocked){
 								navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'demos\');" onmouseleave="hideNav(this);"';
 								demoClass = ' demo';
 								demoFolder = 'id="demofolder"';
+								parFolder = curFolder;
 							}
-							if(settings.cocoding.active && curFolder == settings.cocoding.namespace){
+
+							if((settings.cocoding.active && curFolder == settings.cocoding.namespace)){
 								navFolder = '';
 							}
 							if(d.toggle == 'expand'){
@@ -2588,9 +3265,9 @@ function println(msg){
 								icon = iconFolderEmpty;
 								d.toggle = 'collapse';
 							}
-							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
-							html += '<div class="foldertitle" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span>' +d.name + '</div></div> ';
-							html += recurse(d.contents, curFolder);
+							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-mod="'+d.mod+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
+							html += '<div class="folder-title" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="navMouseOver = false;toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span><div class="item-label">' +d.name + '</div></div></div> ';
+							html += recurse(d.contents, curFolder, parFolder);
 							html += '</ul>';
 							curFolder = '';
 						}
@@ -2598,7 +3275,7 @@ function println(msg){
 					html += '';
 					return( html );
 				}
-				menuSketchesCounter.innerHTML = sketchCount;
+				menuSketchesCounter.innerHTML = document.querySelectorAll('.item-sketch:not(.demo)').length;
 
 				// main folder
 				new Sortable(menuSketches, options);
@@ -2623,6 +3300,18 @@ function println(msg){
 				if(menuSketchesFilter.value != ''){
 					filterSketches();
 				}
+
+				// scroll to selected sketch
+				sketchScrollIntoView();
+
+			}
+		}
+
+		function sketchScrollIntoView(forceScroll){
+			let selSketch = document.getElementsByClassName('sketch-selected');
+			if(selSketch.length > 0 && (sketchesFirstTime || forceScroll)){
+				selSketch[0].scrollIntoView();
+				sketchesFirstTime = false;
 			}
 		}
 
@@ -2672,14 +3361,34 @@ function println(msg){
 			}
 		}
 
-		function showNav(elm, elmID, elmType){
-			elm.style.width='calc(100%-78px)';
+		function showNav(elm, elmID, elmType, elmLevel){
+			//elm.style.width='calc(100%-78px)';
 			if(elmType == 'folder'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportFolder(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+				if(elmLevel === 1){
+					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+iconFolderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
+				}else{
+					if(!navMouseOver){
+						navMouseOver = true;
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+iconMoreHorizontal+'</a>';
+					}
+				}
+
 			}else if(elmType == 'sketch'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+iconAlignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a>';
+				if(elmLevel === 1){
+					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+iconAlignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
+				}else{
+					if(!navMouseOver){
+						navMouseOver = true;
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+iconMoreHorizontal+'</a>';
+					}
+				}
+
 			}else if(elmType == 'demos'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="refreshDemos(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconRefresh+'</a>';
+			}else if(elmType == 'demo-sketch'){
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\', true)" data-title="Inspect">'+iconAlignLeft+'</a>';
 			}else if(elmType == 'user'){
 				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="toggleEdit(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconToggleLeft+'</a>';
 			}else if(elmType == 'self'){
@@ -2696,21 +3405,24 @@ function println(msg){
 		function hideNav(elm){
 			elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '';
 			elm.style.width='calc(100%-5px)';
+			navMouseOver = false;
 		}
 
-		function addFolder(folderName){
+		function addFolder(folderName, subFolder){
 			let newID = versionCheck('folder');//'folder ' + Math.floor(Math.random()*99);
 			if(menuSketchesFilter.value != ''){
 				newID = versionCheck(menuSketchesFilter.value);
+			}else if(folderName != undefined){
+				newID = versionCheck(folderName);
 			}
-			
-			if(folderName == undefined){
+
+			if(folderName == undefined || subFolder){
 				vex.dialog.prompt({
 					message: 'Add Folder:',
 					value: newID, // placeholder
 					callback: function (value) {
 						if(value){
-							addFolderProcess(value);
+							addFolderProcess(value, folderName);
 						}
 					},
 					afterOpen: function(){
@@ -2723,23 +3435,29 @@ function println(msg){
 			}
 		}
 
-		function addFolderProcess(newID){
-			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
-			let tempHTML = menuSketches.innerHTML;
-			menuSketches.innerHTML = newFolder + tempHTML;
+		function addFolderProcess(newID, subFolder){
+			let tc = timeDate();
+			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'" data-mod="'+tc+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
+			if(subFolder != undefined){
+				let tempHTML = menuSketches.querySelectorAll('[data-id="'+subFolder+'"]')[0];
+				tempHTML.innerHTML = newFolder + tempHTML.innerHTML;
+			}else{
+				let tempHTML = menuSketches.innerHTML;
+				menuSketches.innerHTML = newFolder + tempHTML;
+			}
 			getOrder();
 		}
 
-		function inspectItem(itemName){
+		function inspectItem(itemName, itemLocked){
 			let inspectCode = localStorage.getItem(itemName);
 			let inspectEditor;
 
 			vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'Inspect Code:<br><br><div id="inspectcode" class="vex-long">'+inspectCode+'</div>',
+				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="popup-editor vex-long">'+inspectCode+'</div>',
 				callback: function (value) {},
 				buttons: [
-				{
+				!itemLocked ? {
 					type: 'submit',
 					text: 'SAVE',
 					className: 'my-button-class-name',
@@ -2755,6 +3473,8 @@ function println(msg){
 							setTimeout(function(){editor.setValue(localStorage.getItem(itemName), 1);}, 100);
 						}
 					}
+				} : {
+					className: 'hide-button' // hide if unused
 				}
 				,{
 					type: 'close',
@@ -2834,7 +3554,9 @@ function println(msg){
 					removeDetails += recursiveImportCheck(elmContents.contents, '', '');
 					removeDetails += '</div>';
 				}else{
-					icon = iconFolderEmpty;
+					// remove empty folders without warning
+					removeItemProcess(dataID);
+					return false;
 				}
 			}
 			vex.dialog.confirm({
@@ -2845,14 +3567,14 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall();
+					vexSmall(this.rootEl);
 				}
 			})
 		}
 
 		function removeItemProcess(dataID){
-			let selElm = document.querySelectorAll('[data-id="'+dataID+'"]')[0];
-			selElm.querySelectorAll('[data-id]').forEach(function(k){
+			let selElm = document.querySelectorAll('[data-id="'+dataID+'"]');
+			selElm[0].querySelectorAll('[data-id]').forEach(function(k){
 				localStorage.removeItem(k.dataset.id);
 				k.remove();
 			});
@@ -2868,7 +3590,10 @@ function println(msg){
 			// }
 
 			localStorage.removeItem(dataID);
-			selElm.remove();
+			for(let se of selElm){
+				se.remove();
+			}
+
 
 			getOrder();
 
@@ -2886,9 +3611,9 @@ function println(msg){
 
 		/* EDITOR KEY-CMDS */
 		let map = [];
-		window.onkeydown = function(event) {			
+		window.onkeydown = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
-			
+
 			if(map[16] && map[17]){
 				addSnippet(event.key);
 				event.preventDefault();
@@ -2909,7 +3634,7 @@ function println(msg){
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
-			pLen = editor.getValue().length; // len of editor
+			// pLen = editor.getValue().length; // len of editor
 		}
 
 		p5code.onkeyup = function(event) {
@@ -2919,9 +3644,65 @@ function println(msg){
 			}
 		};
 
+		menuCocodeChatInput.onkeydown = function(event){
+			if(event.keyCode == 13){
+				event.preventDefault();
+				if(settings.cocoding.active && menuCocodeChatInput.value.trim() != ''){
+					syncUp();
+					cocode.socket.emit('chat', {'type':'send', 'text':menuCocodeChatInput.value, 'msgID':settings.cocoding.msgID});
+					menuCocodeChatInput.value = '';
+					settings.cocoding.msgID = -1;
+					updateSettings();
+				}
+			}else{
+				chatPending();
+			}
+		}
+
+		menuCocodeChatInput.addEventListener('focus', () => {
+			chatPending();
+		});
+
+		menuCocodeChatInput.addEventListener('blur', () => {
+			chatPendingClear();
+		});
+
+		function chatPending(){
+			if(settings.cocoding.msgID == -1){
+				syncUp();
+				settings.cocoding.msgID = Math.floor(Math.random()*999)
+				updateSettings();
+				cocode.socket.emit('chat', {'type':'pending', 'text':'...', 'msgID':settings.cocoding.msgID});
+			}
+		}
+
+		function chatPendingClear(){
+			if(settings.cocoding.msgID != -1){
+				cocode.socket.emit('chat', {'type':'clear', 'text':'', 'msgID':settings.cocoding.msgID});
+			}
+			settings.cocoding.msgID = -1;
+			updateSettings();
+		}
+
+		function chatBlur(){
+			menuCocodeChatInput.blur();
+			if(settings.cocoding.msgID != -1){
+				cocode.socket.emit('chatPendingClear', {'msgID':settings.cocoding.msgID});
+			}
+			settings.cocoding.msgID = -1;
+			updateSettings();
+		}
+
 		function checkErrors(){
 			clearTimeout(errorTimer);
-			errorTimer = setTimeout(function(){checkErrorsWorker();}, settings.compileTimer);	
+			let checkErrorsDelay = settings.compileTimer;
+			if(settings.cocoding.active){
+				checkErrorsDelay = 1000;
+				settingsCompileTimer.value = 1000;
+				settingsCompileTimer.setAttribute('disabled', 'disabled');
+				settingsCompileTimer.style.opacity = .5;
+			}
+			errorTimer = setTimeout(function(){checkErrorsWorker();}, checkErrorsDelay);
 		}
 
 		function checkErrorsWorker(){
@@ -2935,7 +3716,7 @@ function println(msg){
 				}
 			}
 			if(errorsFound){
-				validCode = false; 
+				validCode = false;
 				checkErrors();
 			}else{
 				clearTimeout(errorTimer);
@@ -2955,6 +3736,34 @@ function println(msg){
 				return confirmationMessage;								//Webkit, Safari, Chrome
 			}
 		});
+
+		function syncdataConsoleMsg(msg){
+			if(typeof msg === 'object'){
+				msg = JSON.stringify(msg);
+			}
+			settings.syncdata.console.push(msg);
+			if(settings.syncdata.console.length > 100){
+				settings.syncdata.console = settings.syncdata.console.splice(0, 1);
+			}
+			updateSettings();
+
+			let syncdataConsole = document.getElementById('syncdata-console');
+			if(syncdataConsole != undefined){
+				syncdataConsole.innerHTML += '\n'+msg
+
+				let autoScroll = false;
+				if(syncdataConsole.scrollHeight - syncdataConsole.scrollTop < 200){
+					autoScroll = true;
+				}
+
+				if(autoScroll){
+					syncdataConsole.scrollTop = syncdataConsole.scrollHeight;
+				}else{
+					syncdataConsole.scrollTop += 1;
+				}
+			}
+
+		}
 
 		function consoleMessage(msg, timeDelay){
 			p5console.value = msg;
@@ -2986,10 +3795,10 @@ function println(msg){
 				}else{
 					p5code.style.height = '100vh';
 				}
-			
+
 				editor.resize();
 		}
-		
+
 
 
 		/* COMPILE CODE */
@@ -3004,9 +3813,9 @@ function println(msg){
 			let currline = editor.getSelectionRange().start.row;
 			let currCode = editor.session.getLine(currline);
 			curPos = editor.getCursorPosition();
-			
+
 			// catch missing {}'s
-			let codeNoComments = editor.getValue().replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'));
+			let codeNoComments = removeComments(editor.getValue());
 
 			let cbCount = {
 				l : (codeNoComments.match(/\{/g) || []).length,
@@ -3025,7 +3834,7 @@ function println(msg){
 					consoleHide();
 					braketError = false;
 				}
-				
+
 			}
 
 			// prevent compile while autocomplete popup visible
@@ -3033,33 +3842,33 @@ function println(msg){
 			if(acPopup != undefined){
 				if(acPopup.style.display != 'none'){
 					return false;
-				}				
+				}
 			}
 
 			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile || force){
 				if(validCode){
 					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
-						// buildSketch(); // 
+						// buildSketch(); //
 						updateBackground();
 						if(settings.cocoding.active){
 							if(settings.cocoding.sync){
 								if(settings.cocoding.level == 'admin'){
-									buildSketch(force); // 
+									buildSketch(force); //
 									cocode.recompile(force);
 								}
 							}else{
-								buildSketch(force); // 
+								buildSketch(force); //
 							}
 						}else{
-							buildSketch(force); // 
+							buildSketch(force); //
 						}
 
 						// if(settings.cocoding.active && settings.cocoding.sync && settings.cocoding.level == 'admin'){
-						// 	buildSketch(); // 
+						// 	buildSketch(); //
 						// 	updateBackground();
 						// 	cocode.recompile();
 						// }else if(){
-						// 	buildSketch(); // 
+						// 	buildSketch(); //
 						// 	updateBackground();
 						// }
 					}
@@ -3068,10 +3877,52 @@ function println(msg){
 			forceRecompile = false;
 		}
 
+		function removeComments(code){
+			return code.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'))
+		}
+
+		function processLibs(code){
+			let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			let sketchLoadScriptsRegEx = /(?:loadScripts|libs|scripts)\s+=\s+\[(.*["']\])/
+			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
+			let scriptsList = [];
+			if(sketchLoadScripts != undefined){
+				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '');
+				sketchLoadScripts = sketchLoadScripts.split(',');
+
+				for(let i=0; i < sketchLoadScripts.length; i++){
+					if(sketchLoadScripts[i] != ''){
+						scriptsList.push(sketchLoadScripts[i]);
+					}
+				}
+			}
+			return scriptsList;
+		}
+
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
 		function buildSketch(force){
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
-			let codeNoComments = editor.getValue().replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'));
+
+			// grab latest p5vars only before reload! no more interval...
+			if(sketchLoaded && p5f.frameCount != undefined){
+				p5vars.frameCount = p5f.frameCount+1;
+				p5vars.mouseX = p5f.mouseX;
+				p5vars.mouseY = p5f.mouseY;
+			}
+
+			if(!settings.cocoding.active && pLen != editor.getValue().length){
+				let sketchElm = document.querySelectorAll('[data-id="'+settings.fileName+'"]')[0];
+				let sketchDetails = searchJSON(settings.sketches, 'name', settings.fileName)[0];
+
+				if(sketchElm != undefined && sketchDetails != undefined){
+					sketchElm.setAttribute('data-mod', timeDate());
+					sketchDetails.mod = timeDate();
+					updateSettings();
+					pLen = editor.getValue().length;
+				}
+			}
+
+			let codeNoComments = removeComments(editor.getValue());
 
 			// softCompile
 			if(force == undefined && sketchLoaded){
@@ -3086,7 +3937,7 @@ function println(msg){
 
 
 				let allLines = codeNoComments.split('\n');
-				
+
 				// test purging of comments
 				// let offLines = 6;
 				// console.log(rawLines[offLines]);
@@ -3105,7 +3956,7 @@ function println(msg){
 							let className = allLines[i].match(/class\s([\w\d]*)/)[1].trim();
 							drawPos.push({type:'class', name:className, start:i});
 					}
-					
+
 					// count {} and mark where class/function ends
 					if(countBrackets){
 						if(allLines[i].includes('{')){
@@ -3176,55 +4027,78 @@ function println(msg){
 
 			// hardCompile
 			sketchLoaded = false;
+			cocodingRecompile = true;
 			let el = p5frameTemplate.cloneNode(true);
 			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
-			
-			// load scripts remote vs local (*** add custom options here)
+
+			let scriptsCol = [];
+
+			// load scripts remote vs local
 			for(let i=0; i < includeScripts.length; i++){
-				let s = document.createElement('script');
-				s.type = 'text/javascript';
-				if(window.location.hostname.includes('teddavis.org')){
-					s.src = includeScripts[i].remote;
+				if(p5Remote){
+					scriptsCol.push(includeScripts[i].remote);
 				}else{
-					s.src = includeScripts[i].local;
-					document.title = 'P5LIVE – OFFLINE';
+					scriptsCol.push(includeScripts[i].local);
 				}
-				iFrameBody.appendChild(s);
 			}
 
 			// check loadScripts / libs / scripts;
-			let sketchTest = codeNoComments;//editor.getValue();
-			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
-			// console.log(sketchTest)
-			let sketchLoadScriptsRegEx = /(?:loadScripts|libs|scripts)\s+=\s+\[(.*["']\])/
-			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
-			if(sketchLoadScripts !=undefined){
-				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
-				for(let i=0; i < sketchLoadScripts.length; i++){
-					let s = document.createElement('script');
-					s.type = 'text/javascript';
-					s.src = sketchLoadScripts[i];
-					iFrameBody.appendChild(s);
-				}
-
+			let scriptsList = processLibs(codeNoComments);
+			for(let i=0; i < scriptsList.length; i++){
+				scriptsCol.push(scriptsList[i]);
 			}
-			
+
+			// old way ***
+			// for(let sc of scriptsCol){
+			// 	let s = document.createElement('script');
+			// 	s.type = 'text/javascript';
+			// 	s.src = sc;
+			// 	s.async = false;
+			// 	iFrameBody.appendChild(s);
+			// }
 
 			// load sketch
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
 			let sketchCode = editor.getValue();
-			let updateVars = '\npmouseX='+p5vars.mouseX+';\npmouseY='+p5vars.mouseY+';\nmouseX='+p5vars.mouseX+';\nmouseY='+p5vars.mouseY+';\nframeCount='+p5vars.frameCount+';\n';
+			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
 
-			s.innerHTML = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+			let fullCode = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+
+			let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },async: false});';
+
+			s.innerHTML = sLoader;
+			// s.innerHTML = fullCode; // *** old way
+			if(settings.syncdata.active){
+				syncdataButtonToggle();
+			}
+
 			if(!settings.safeMode){
 				iFrameBody.appendChild(s);
 			}
 
 			// set dynamic html as iframe srcdoc
 			p5frame.srcdoc = el.innerHTML;
+
 			curPositions = [];
+		}
+
+		// compiling code after promise of loaded libs!
+		function pongReady(scriptName, scriptCode, scriptCallback){
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+				s.id = scriptName;
+				s.innerHTML = scriptCode;
+				if(p5f.document.getElementById(scriptName) == null){
+					p5f.document.head.appendChild(s);
+				}else{
+					p5f.document.getElementById(scriptName).innerHTML = scriptCode;
+				}
+
+				if(scriptCallback){
+					scriptCallback();
+				}
 		}
 
 		// softCompile function or class changes
@@ -3259,7 +4133,9 @@ function println(msg){
 						newBG = rgb2hex(cols[0].trim(), cols[0].trim(), cols[0].trim())
 					}
 				}
-				// document.body.style.background = newBG;
+				if(sketchLoaded){
+					p5f.document.body.style.background = newBG;
+				}
 				p5frame.style.background = newBG;
 			}
 		}
@@ -3294,7 +4170,7 @@ function println(msg){
 
 		/* SNIPPETS */
 		function loadSnippets(){
-			let snippetsPath = 'includes/demos/P5L_snippets_20191214.json?' + currentRevision;
+			let snippetsPath = 'includes/demos/P5L_snippets.json?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', snippetsPath, true);
 			request.send();
@@ -3312,7 +4188,7 @@ function println(msg){
 				}
 				editor.commands.removeCommands(dropCommands);
 			});
-			
+
 		}
 
 		function addSnippet(loadSnippet){
@@ -3327,7 +4203,7 @@ function println(msg){
 			let addDrawTop = snippetCode.draw.top;
 			let addDrawBottom = snippetCode.draw.bottom;
 
-			let curCode = editor.getValue();			
+			let curCode = editor.getValue();
 			let codeGlobalTop = addGlobalTop + '\n' + curCode;
 			let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
 			let codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
@@ -3388,11 +4264,11 @@ function println(msg){
 		}
 
 		function autoCompileUpdate(){
-			checkToggle('autoCompile', settings.autoCompile, settingsAutoMode);
+			checkToggle('autoCompile', settings.autoCompile, settingsAutoMode, 'Live Coding');
 			if(settings.autoCompile){
 				settingsCompileTimer.style.display = 'block';
 			}else{
-				settingsCompileTimer.style.display = 'none';				
+				settingsCompileTimer.style.display = 'none';
 			}
 		}
 
@@ -3419,13 +4295,13 @@ function println(msg){
 		}
 
 		function ecoRenderUpdate(){
-			checkToggle('ecoRender', settings.ecoRender, settingsEcoMode);
+			checkToggle('ecoRender', settings.ecoRender, settingsEcoMode, 'Eco Render');
 		}
 
 
 		// loop/noLoop on window blur
 
-		window.onblur = function () { 
+		window.onblur = function () {
 			// deactivate modifier keys
 			map[16] = false;
 			map[17] = false;
@@ -3433,20 +4309,21 @@ function println(msg){
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'blur');
 			}
-			if(settings.ecoRender && sketchLoaded && !settings.cocoding.sync){
+			if(settings.ecoRender && sketchLoaded && !settings.cocoding.sync && settings.editMode){
 				if(document.activeElement !== p5frame){
 					p5f.noLoop();
 				}
 			}
 		}
 
-		window.onfocus = function () { 
+		window.onfocus = function () {
 			// deactivate modifier keys
 			map[16] = false;
 			map[17] = false;
 
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'focus');
+				cocode.updateColor();
 			}
 			if(sketchLoaded && !paused){
 				p5f.loop();
@@ -3461,7 +4338,7 @@ function println(msg){
 		}
 
 		function fullscreenUpdate(){
-			checkToggle('fullscreenMode', settings.fullscreenMode, settingsFullscreen);
+			checkToggle('fullscreenMode', settings.fullscreenMode, settingsFullscreen, 'Full Screen');
 			if(settings.fullscreenMode){
 				if(sketchLoaded){
 					openFullscreen();
@@ -3482,7 +4359,7 @@ function println(msg){
 		}
 
 		function cursorToggleUpdate(){
-			checkToggle('canvasCursor', settings.canvasCursor, settingsCanvasCursor);
+			checkToggle('canvasCursor', settings.canvasCursor, settingsCanvasCursor, 'Canvas Cursor');
 			if(sketchLoaded){
 				if(!settings.canvasCursor){
 					p5f.noCursor();
@@ -3503,7 +4380,7 @@ function println(msg){
 		}
 
 		function consoleToggleUpdate(){
-			checkToggle('console', settings.console, settingsConsole);
+			checkToggle('console', settings.console, settingsConsole, 'Console');
 			if(!settings.console){
 				p5console.style.display = 'none';
 			}else{
@@ -3518,12 +4395,12 @@ function println(msg){
 		}
 
 		function menutabToggleUpdate(){
-			checkToggle('menutab', settings.menutab, settingsMenutab);
+			checkToggle('menutab', settings.menutab, settingsMenutab, 'Menu Tab');
 			if(!settings.menutab){
 				menuSwitch.style.display = 'none';
 			}else{
 				menuSwitch.style.display = 'block';
-			}	
+			}
 		}
 
 		//linenumbers toggle
@@ -3533,7 +4410,7 @@ function println(msg){
 		}
 
 		function linenumbersUpdate(){
-			checkToggle('linenumbers', settings.linenumbers, settingsLinenumbers);
+			checkToggle('linenumbers', settings.linenumbers, settingsLinenumbers, 'Line Numbers');
 			if(!settings.linenumbers){
 				editor.setOptions({
 					showLineNumbers: false, // false
@@ -3544,7 +4421,7 @@ function println(msg){
 					showLineNumbers: true, // false
 					showGutter: true, // false
 				});
-			}	
+			}
 		}
 
 		//autoComplete toggle
@@ -3554,7 +4431,7 @@ function println(msg){
 		}
 
 		function autocompleteUpdate(){
-			checkToggle('autocomplete', settings.autocomplete, settingsAutocomplete);
+			checkToggle('autocomplete', settings.autocomplete, settingsAutocomplete, 'Auto Autocomplete');
 			if(!settings.autocomplete){
 				editor.setOptions({
 					enableLiveAutocompletion: false
@@ -3563,7 +4440,7 @@ function println(msg){
 				editor.setOptions({
 					enableLiveAutocompletion: true
 				});
-			}	
+			}
 		}
 
 		// lockCode toggle
@@ -3573,7 +4450,7 @@ function println(msg){
 		}
 
 		function lockDragUpdate(){
-			checkToggle('lockcode', settings.lockcode, settingsLockDrag);
+			checkToggle('lockcode', settings.lockcode, settingsLockDrag, 'Lock Code on Drag');
 		}
 
 		// passEditorKeys toggle
@@ -3583,7 +4460,7 @@ function println(msg){
 		}
 
 		function passEditorKeysUpdate(){
-			checkToggle('passeditorkeys', settings.passEditorKeys, settingsPassEditorKeys);
+			checkToggle('passeditorkeys', settings.passEditorKeys, settingsPassEditorKeys, 'Pass-Thru Keypress');
 		}
 
 		// notify toggle
@@ -3593,7 +4470,28 @@ function println(msg){
 		}
 
 		function notifyToggleUpdate(){
-			checkToggle('notifytoggle', settings.notifyToggle, settingsNotify);
+			checkToggle('notifytoggle', settings.notifyToggle, settingsNotify, 'Notifications');
+		}
+
+		// tippy toggle
+		function tippyToggle(){
+			settings.tippyToggle = !settings.tippyToggle;
+			tippyToggleUpdate();
+		}
+
+		function tippyToggleUpdate(){
+			checkToggle('tippytoggle', settings.tippyToggle, settingsTippy, 'Tooltips');
+			loadTippy();
+		}
+
+		// multi-p5live toggle
+		function multitabToggle(){
+			settings.multitabToggle = !settings.multitabToggle;
+			multitabToggleUpdate();
+		}
+
+		function multitabToggleUpdate(){
+			checkToggle('multitabtoggle', settings.multitabToggle, settingsMultitab, 'Multi-P5LIVE Warning');
 		}
 
 		//exportcode toggle
@@ -3603,7 +4501,7 @@ function println(msg){
 		}
 
 		function exportcodeUpdate(){
-			checkToggle('exportCode', settings.exportCode, settingsExportcode);
+			checkToggle('exportCode', settings.exportCode, settingsExportcode, 'Snapshot Code');
 		}
 
 		//BGactive toggle
@@ -3613,13 +4511,13 @@ function println(msg){
 		}
 
 		function themeBGactiveToggleUpdate(){
-			checkToggle('themeBGactive', settings.themeBGactive, settingsBGactive);
+			checkToggle('themeBGactive', settings.themeBGactive, settingsBGactive, 'Code Background');
 			editor.renderer.updateFull();
 		}
 
 
 		// checkbox function
-		function checkToggle(checkName, checkVar, checkElm){
+		function checkToggle(checkName, checkVar, checkElm, checkNotify){
 			if(checkVar){
 				checkElm.checked = true;
 			}else{
@@ -3634,21 +4532,15 @@ function println(msg){
 				if(checkVar){
 					notifyChecked = 'checked';
 				}
-				let notifyTxt = '<input type="checkbox" ' + notifyChecked + '> ' + checkName;
+				let notifyName = checkName;
+				if(checkNotify !== undefined){
+					notifyName = checkNotify;
+				}
+				let notifyTxt = '<input type="checkbox" ' + notifyChecked + '> ' + notifyName;
 				notifyMsg(notifyTxt);
 			}
 			if(settings.debugMode){console.log(checkName+': '+settings[checkName]);}
 		}
-
-
-		// constant frameCount (great for recompiling)
-		let fcTimer = setInterval(function(){
-			if(sketchLoaded && p5f.frameCount != undefined){
-				p5vars.frameCount = p5f.frameCount;
-				p5vars.mouseX = p5f.mouseX;
-				p5vars.mouseY = p5f.mouseY;
-			}
-		}, 100);
 
 		function p5varsReset(){
 			p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0};
@@ -3679,7 +4571,7 @@ function println(msg){
 
 		// hide/show canvas
 		// future usage for etherpad editing...
-		
+
 		/*
 		function canvasToggle(){
 			const canv = document.querySelector('canvas');
@@ -3707,12 +4599,23 @@ function println(msg){
 
 		// hide/show menu
 		function menuToggle(show){
+			if(refVisible){
+				console.log('closing ref')
+					closeRef();
+			}
+
 			if(panelSettings.style.display == 'block'){
 				hideSettings();
 			}else{
 				settings.menuMode = show || !settings.menuMode;
 			}
-			
+
+			updateSettings();
+			menuToggleUpdate();
+		}
+
+		function hideMenu(){
+			settings.menuMode = false;
 			updateSettings();
 			menuToggleUpdate();
 		}
@@ -3722,10 +4625,14 @@ function println(msg){
 				menuPanel.style.marginRight = '-250px';
 				menuSwitch.innerHTML = '«';
 				window.setTimeout(hideSettings, 200);
+				menuVisible = false;
 				// menuPanel.style.overflow = "visible"; // test again w/ chromium
 			}else{
 				menuPanel.style.marginRight = '0px';
 				menuSwitch.innerHTML = '»';
+				filterSketchesClear();
+				// menuSketchesFilter.value = ''; // *** double check
+				menuVisible = true;
 				// menuPanel.style.overflow = "hidden";
 			}
 		}
@@ -3837,15 +4744,15 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall();
+						vexSmall(this.rootEl);
 					}
 				})
 			}
 		}
 
 
-		
-		
+
+
 		function loadAbout(){
 			let markedOptions = {
 				headerPrefix:'marked-'
@@ -3862,16 +4769,24 @@ function println(msg){
 
 				let p5liveabout = ptContent;
 				vex.dialog.alert({
-					focusFirstInput : false,
+					// focusFirstInput : false,
 					unsafeMessage:p5liveabout
 				})
 			});
 		}
 
-		
+
 
 		// Tooltips via tippy
 		function loadTippy(){
+			if(!settings.tippyToggle){
+				document.querySelectorAll('*').forEach(node => {
+				if (node._tippy) {
+					node._tippy.destroy();
+				}
+				});
+				return false;
+			}
 
 			tippy('.tippy', {
 				content(reference) {
@@ -3933,7 +4848,7 @@ function println(msg){
 		}
 
 		function loadHTMLTemplate(){
-			let tempPath = 'includes/templates/p5live_savehtml.html';
+			let tempPath = 'includes/templates/p5live_savehtml.html?' + makeid(5);
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -3950,21 +4865,15 @@ function println(msg){
 			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 
 			// check loadScripts;
-			let sketchTest = editor.getValue();
-			sketchTest = sketchTest.replace(/(?:\r\n|\r|\n|\t)/g, '');
-			let sketchLoadScriptsRegEx = /loadScripts\s+=\s+\[(.*["']\])/
-			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
-			if(sketchLoadScripts !=undefined){
-				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '').split(',');
-				for(let i=0; i < sketchLoadScripts.length; i++){
-					let s = document.createElement('script');
-					s.type = 'text/javascript';
-					s.src = sketchLoadScripts[i];
-					iFrameBody.appendChild(s);
-					iFrameBody.innerHTML += '\n\n';
-				}
-
+			let scriptsList = processLibs(removeComments(editor.getValue()));
+			for(let i=0; i < scriptsList.length; i++){
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+				s.src = scriptsList[i];
+				iFrameBody.appendChild(s);
+				iFrameBody.innerHTML += '\n\n';
 			}
+
 
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
@@ -3974,27 +4883,38 @@ function println(msg){
 			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
 		}
 
-		
-		function timeStamp(){
-			return (new Date()).toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+		function timeDate(){
+			let d = new Date() ;
+			d.setTime( d.getTime() - new Date().getTimezoneOffset()*60*1000 );
+			return d.getTime();
+		}
+
+		function timeStamp(timeInput){
+			let d = new Date();
+			d.setTime( d.getTime() - new Date().getTimezoneOffset()*60*1000 );
+			if(timeInput != undefined){
+				d = new Date(timeInput * 1);
+			}
+			return d.toISOString().replace(/[^0-9]/g, '').slice(0, -3);
 		}
 
 
-		
+
 		/* p5.js REFERENCE */
 
-		window.onhashchange = getRef;
+		window.onhashchange = getRef; // *** make preparser to prevent ref opening...
 
-		function toggleRef(){
-			if(refHolder.style.display == 'block'){
+		function toggleRef(force){
+			if(refVisible || force){
 				closeRef();
 			}else{
-				showRef();						
+				showRef();
 			}
 		}
 
 		function showRef(){
 			if(!downloadedRef){
+				loaderSub.innerHTML = 'load references...';
 				showLoader();
 				loadRef();
 				downloadedRef = true;
@@ -4004,7 +4924,21 @@ function println(msg){
 			}
 		}
 
+		// close references
+		function closeRef(){
+			window.location.hash = '#';
+			refHolder.style.display ='none';
+			refSearch = '';
+			refVisible = false;
+		}
+
 		function getRef(){
+			if(settings.menuMode || settingsVisible){
+				hideMenu();
+			}
+
+			refVisible = true;
+
 			if(window.location.hash != undefined && window.location.hash.length > 1){
 				let refPieces = window.location.hash.split('/');
 				let grabRef = '';
@@ -4022,98 +4956,216 @@ function println(msg){
 					// window.location = window.location.hash;
 				}
 
-				let snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(decodeURI(grabRef));
-				let ex = refList[snippetIndex];
-				let paramsCollect = [];
-				let paramsDesc = [];
-				if(ex.overloads != undefined || ex.params != undefined){
-					ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
-					if(ex.overloads != undefined){
-						ex.overloads.forEach(function(ol){
-							let params = [];
-							ol.params.forEach(function(param){
-								if(param.optional){
-									params.push('[' + param.name + ']');
-								}else{
-									params.push(param.name);
-								}
-								
-								if(paramsCollect.indexOf(param.name) === -1){
-									paramsCollect.push(param.name);
-									let paramHTML = '<div class="param"><div class="param-name">'+ param.name +"</div> "+ param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
-									paramsDesc.push(paramHTML);
-								}
+				if(grabRef != ''){
+					tippy.hideAll({ duration: 0 });
+					let snippetIndex = refList.map(function(d) { return d['name']; }).indexOf(decodeURI(grabRef));
+					let ex = refList[snippetIndex];
+					let paramsCollect = [];
+					let paramsDesc = [];
+					if(ex.overloads != undefined || ex.params != undefined){
+						ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
 
-							})
-							let paramsJoin = '';
-							if(params.length > 0){
-								paramsJoin = '(' + params.join(', ') + ')';
-							}
-							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
-						})
-					}else{
-						let params = [];
-						ex.params.forEach(function(param){
-							if(paramsCollect.indexOf(param.name) === -1){
-								if(param.optional){
-									params.push('[' + param.name + ']');
-								}else{
-									params.push(param.name);
+						if(ex.overloads != undefined){
+							ex.overloads.forEach(function(ol){
+								let params = [];
+								ol.params.forEach(function(param){
+									if(param.optional){
+										params.push('[' + param.name + ']');
+									}else{
+										params.push(param.name);
+									}
+
+									if(paramsCollect.indexOf(param.name) === -1){
+										paramsCollect.push(param.name);
+										let paramHTML = '<div class="param"><div class="//">'+ param.name +"</div> "+ param.description.trim() +'</div>';
+										paramsDesc.push(paramHTML);
+									}
+
+								})
+								let paramsJoin = '';
+								if(params.length > 0){
+									paramsJoin = '(' + params.join(', ') + ')';
 								}
-								let paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> ' + param.description.substring(0, param.description.length-2).replace(/<p[^>]*>/g, '') +'</div>';
-								paramsDesc.push(paramHTML);
-								paramsCollect.push(param.name);
+								ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
+							})
+						}else{
+							let params = [];
+							ex.params.forEach(function(param){
+								if(paramsCollect.indexOf(param.name) === -1){
+									if(param.optional){
+										params.push('[' + param.name + ']');
+									}else{
+										params.push(param.name);
+									}
+									if(param.description == ''){
+										param.description = '<br>';
+									}
+									let paramHTML = '<div class="param"><div class="param-name">' + param.name + '</div> <div class="param-desc">' + param.description +'</div></div>';
+									paramsDesc.push(paramHTML);
+									paramsCollect.push(param.name);
+								}
+							})
+							if(ex.module != 'Constants'){
+								let paramsJoin = '';
+								if(params.length > 0){
+									paramsJoin = '(' + params.join(', ') + ')';
+								}
+								ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 							}
-						})
-						if(ex.module != 'Constants'){
-							let paramsJoin = '';
-							if(params.length > 0){
-								paramsJoin = '(' + params.join(', ') + ')';
-							}
-							ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
 						}
+					}else{
+						ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
 					}
 
-				}else{
-					ref.innerHTML += '<a href="#"><div class="param-title">← ' + ex.name + '</div></a>';
+					let desc = '';
+					if(ex.descriptionHTML != undefined){
+						desc = ex.descriptionHTML;
+					}
+
+
+					ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc;
+					if(ex.examples.length > 0){
+						for(let example of ex.examples){
+							let exampleParse = 	example.replace(/\n/g, '<br> ');
+							ref.innerHTML += '<br><div class="ref-example js" type="js">'+exampleParse+'</div><br>';
+						}
+
+					}
+
+					let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">p5.js website reference →</a>';
+						ref.innerHTML += refLink;
+
+					hljs.configure({useBR: true});
+					document.querySelectorAll('.ref-example').forEach((block) => {
+					hljs.highlightBlock(block);
+					});
 				}
-
-				let desc = '';
-				if(ex.descriptionHTML != undefined){
-					desc = ex.descriptionHTML;
-				}
-
-				let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">» p5.js reference</a>'
-
-				ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc + refLink;
-
 			}else{
 				allRef();
 			}
 		}
 
+		function filterRefClear(forceFocus){
+			let filterInput = document.getElementById('ref-search');
+			if(filterInput.value == ''){
+				if(forceFocus){
+					filterInput.focus();
+				}
+			}else{
+				filterInput.value = '';
+				filterRef();
+			}
+		}
+
+		function filterRef(){
+			let filterInput = document.getElementById('ref-search');
+			let filterInputIcon = document.getElementById('ref-search-icon');
+			let refFilteredItems = refHolder.getElementsByClassName('all-ref');
+			let refModules = refHolder.getElementsByClassName('module');
+
+			if(filterInput.value != ''){
+				filterInputIcon.innerHTML = iconX;
+				refSearch = filterInput.value;
+				refHolder.scrollTop = 0;
+				for(let fi of refFilteredItems){
+					fi.classList.add('ref-hide');
+				}
+				for(let rm of refModules){
+					rm.classList.add('ref-collapse');
+				}
+
+				let filter = filterInput.value.toLowerCase().split(' ');
+
+				// remove empty while adding another word
+				filter = filter.filter(Boolean);
+
+				for(let rfi of refFilteredItems){
+					if ( filter.some((val) => rfi.getAttribute('data-name').toLowerCase().indexOf(val) !== -1)){
+					// if(rfi.getAttribute('data-name').toLowerCase().indexOf(filter) > -1){
+						rfi.classList.remove('ref-hide');
+					}
+				}
+				filterInput.focus();
+			}else{
+				refSearch = '';
+				filterInputIcon.innerHTML = iconFilter;
+				for(let fi of refFilteredItems){
+					fi.classList.remove('ref-hide');
+				}
+				for(let rm of refModules){
+					rm.classList.remove('ref-collapse');
+				}
+			}
+
+
+		}
+
+		function randomRef(c){
+			let refFilteredItems = refHolder.getElementsByClassName('all-ref');
+			let refFunctions = refHolder.getElementsByClassName('ref-link');
+			let refModules = refHolder.getElementsByClassName('module');
+			let showAll = document.getElementById('showall');
+			let rr;
+
+			c = setInterval(function(){
+				for(let fi of refFilteredItems){
+					fi.classList.add('ref-hide');
+				}
+				for(let rm of refModules){
+					rm.classList.add('ref-collapse');
+				}
+				rr = refFunctions[Math.floor(Math.random()*refFunctions.length)];
+				rr.classList.remove('ref-hide');
+			}, 50);
+			setTimeout(function(){clearInterval(c);rr.classList.add('ref-pulse');setTimeout(function(){rr.click()}, 500);}, 1000);
+		}
+
 		function allRef(){
-			ref.innerHTML = '<div class="ref-title">p5.js reference</div><br>';
+			let refValue = '';
+			ref.innerHTML = '<div class="ref-sticky"><div class="ref-title">p5.js References <a onclick="randomRef(0);" class="ref-random tippy" data-title="Surprise!">'+iconGift+'</a><br></div><div class="ref-search-holder"><span id="ref-search-icon" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)" onclick="filterRefClear(true)">'+iconFilter+'</span><input type="text" id="ref-search" placeholder="Search..." onkeyup="filterRef()" value="'+refSearch+'" onfocus="this.selectionStart = this.selectionEnd = this.value.length;" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)"></div></div>';
 			let all = [];
 			let grouped = groupBy(refList, (c) => c.module);
 			Object.keys(grouped).forEach(function(k){
 				let modHTML = '<div class="module" name="' + k + '" id="' + k + '"><div class="module-name">' + k + '</div>';
 				let modAll = [];
 				grouped[k].forEach(function(ci){
+
+					let noDesc = false;
+					let noParams = false;
+					if(ci.description.length == 0){
+						noDesc = true;
+					}else if(ci.params.length == 0){
+						noParams = true;
+					}
+
+					// debug single ref
+					// if(ci.name == 'touchEnded'){
+					// 	console.log(ci);
+					// }
+
 					if(ci.name != ''){
 						let title = '';
 						let desc = '';
-						title += ci.code.join('\n') + '\n\n';
+						title += ci.code.join('<br>') + '<br>';
 						let params = [];
 						ci.params.forEach(function(cip){
 							params.push(cip.name + ' - ' + cip.description);
 						});
-						title += params.join('\n') + '\n\n';
+						title += params.join('<br>') + '<br>';
 						if(ci.description != ''){
 							desc = ci.description;
 						}
-						title += desc;
-						modAll.push('<a href="#/p5/' + htmlEntities(ci.name) + '" title="' + htmlEntities(title) + '">' + htmlEntities(ci.name) + '</a><br>');
+
+						let dataName = 'data-name="' + ci.name + '"';
+						if(!noDesc){
+							if(noParams){
+								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(ci.description).trim() + '</div>">' + htmlEntities(ci.name) + '<br></a>');
+							}else{
+								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(title).trim() + '</div>">' + htmlEntities(ci.name) + '<br></a>');
+							}
+						}else{
+							modAll.push('<span class="all-ref ref-nolink tippy-left" '+dataName+' data-title="'+htmlEntities(ci.name)+'">' + htmlEntities(ci.name) + '<br></span>');
+						}
 					}
 				});
 				modHTML += modAll.join('');
@@ -4122,20 +5174,14 @@ function println(msg){
 			});
 
 			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
+			setTimeout(function(){loadTippy();}, 100);
 
 			// jump to category of viewed ref
 			if(window.location.hash != undefined && window.location.hash.length > 1){
 				let refPieces = window.location.hash.split('/');
 				if(refPieces.length == 1){
-					let refTopic = window.location.hash.substring(1);
-
-					const overflow = document.getElementById('refholder');
-					let anchor = document.getElementById(refTopic);
-
-					const rectOverflow = ref.getBoundingClientRect();
-					const rectAnchor = anchor.getBoundingClientRect();
-
-					overflow.scrollTop = rectAnchor.top - rectOverflow.top;
+					refHolder.scrollTop = refScroll;
+					filterRef();
 				}
 			}
 
@@ -4143,7 +5189,8 @@ function println(msg){
 		}
 
 		function loadRef(){
-			let refPath = 'includes/p5/data.json';
+			refList = [];
+			let refPath = 'includes/p5/data.json?' + settings.revision;
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
 			request.send();
@@ -4151,7 +5198,7 @@ function println(msg){
 				let jsonObj = JSON.parse(request.responseText.replace('referenceData = ', ''));
 				let grouped = groupBy(jsonObj.classitems, (c) => c.module);
 				let autoCompleteList = {'revision':currentRevision, 'version':jsonObj.project.version, 'codeKey':[{'[n]ame':'function/constant', '[p]arams':'params/module', '[t]ype':'[m]ethod'}], 'code':[]};
-				
+
 				// filter to own needs
 				Object.keys(grouped).forEach(function(k){
 					grouped[k].forEach(function(ci){
@@ -4170,7 +5217,26 @@ function println(msg){
 						}
 						let classCode = [];
 						let classParams = [];
+						let classExamples = [];
 						let paramsCollect = [];
+
+						if(ci.example != undefined){
+							let exs = ci.example[0].match(/<code.*>(.|\n)*?<\/code>/g);
+							if(exs == undefined){
+								console.log(ci.name +" : "+ ci.example)
+							}
+							for(let ex of exs){
+								classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
+							}
+						}
+
+						// if(ci.name == 'createNumberDict'){
+						// 	// console.log(ci.example[0].match(/<code>(.|\n)*?<\/code>/g));
+						// 	let exs = ci.example[0].match(/<code>(.|\n)*?<\/code>/g);
+						// 	for(let ex of exs){
+						// 		console.log(ex.replace(/<.*code?[^>]*>/g, ''));
+						// 	}
+						// }
 
 						if(ci.overloads != undefined || ci.params != undefined){
 							if(ci.overloads != undefined){
@@ -4184,10 +5250,10 @@ function println(msg){
 											params.push(param.name);
 											acParams.push(param.name);
 										}
-										
+
 										if(paramsCollect.indexOf(param.name) === -1){
-											paramsCollect.push(param.name);						
-											let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+											paramsCollect.push(param.name);
+											let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');
 											classParams.push({'name':param.name, 'description':paramDesc});
 										}
 									})
@@ -4211,7 +5277,7 @@ function println(msg){
 											acParams.push(param.name);
 										}
 										paramsCollect.push(param.name);
-										let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');	
+										let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?[^>]*>/g, '').replace(/\n/gi, ' ');
 										classParams.push({'name':param.name, 'description':paramDesc});
 									}
 								})
@@ -4221,7 +5287,7 @@ function println(msg){
 								autoCompleteList.code.push({'n':ci.name, 'p':acParams, 't':'m'});
 								if(acParams.length != params.length){
 									autoCompleteList.code.push({'n':ci.name, 'p':params, 't':'m'});
-								}								
+								}
 							}
 						}else if(ci.name != undefined && classItem.module != 'p5.sound' && classItem.module != 'Foundation'){
 							let acParam = classItem.module;
@@ -4230,19 +5296,20 @@ function println(msg){
 								acParam = [];
 								acType = 'm';
 							}
-							autoCompleteList.code.push({'n':ci.name, 'p':acParam, 't':acType});								
+							autoCompleteList.code.push({'n':ci.name, 'p':acParam, 't':acType});
 						}
 						classItem.code = classCode;
 						classItem.params = classParams;
+						classItem.examples = classExamples;
 						refList.push(classItem);
-						
+
 					});
 				});
 
 				// autoCompleteExport = true;
 				if(autoCompleteExport){
-					exportJSON(autoCompleteList, 'P5L_AUTOCOMPLETE_'+timeStamp()+'.json');			
-				}else{					
+					exportJSON(autoCompleteList, 'P5L_AUTOCOMPLETE_'+timeStamp()+'.json');
+				}else{
 					// console.log(autoCompleteList.code);
 				}
 				allRef();
@@ -4251,13 +5318,7 @@ function println(msg){
 				refHolder.style.display = 'block';
 				getRef();
 			});
-			
-		}
 
-		// close references
-		function closeRef(){
-			window.location.hash = '#';
-			refHolder.style.display ='none';
 		}
 
 		// group references
@@ -4280,8 +5341,8 @@ function println(msg){
 		window.addEventListener('mousemove', passMouseClick);
 		window.addEventListener('mouseup', passMouseClick);
 		window.addEventListener('mousedown', passMouseClick);
-		
-		
+
+
 		let pass = false;
 		function passMouse(event){
 			pass = !pass;
@@ -4293,9 +5354,9 @@ function println(msg){
 		function passMouseClick(event){
 			processMouse(event);
 		};
-		
+
 		let mouseFields = ['altKey', 'clientX', 'clientY', 'composed', 'ctrlKey', 'isTrusted', 'layerX', 'layerY', 'metaKey', 'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY', 'screenX', 'screenY', 'shiftKey', 'x', 'y', 'button', 'buttons', 'relatedTarget', 'region'];
-		
+
 		function getOpts(event, fields){
 			let opts = {};
 				fields.forEach(function(f) {
@@ -4305,7 +5366,7 @@ function println(msg){
 				});
 			return opts;
 		}
-		
+
 		function processMouse(event){
 			let opts = getOpts(event, mouseFields);
 			let copy = new MouseEvent(event.type, event);
@@ -4329,8 +5390,8 @@ function println(msg){
 				if(!settings.cocoding.active || (settings.cocoding.active && (settings.cocoding.level == 'admin' || settings.cocoding.writemode || !settings.cocoding.lockdown))){
 					editor.setReadOnly(false);
 				}
-			} 
-			
+			}
+
 		}
 
 
@@ -4340,7 +5401,7 @@ function println(msg){
 		window.addEventListener('keyup', sendKey);
 
 		let keyFields = ['altKey', 'bubbles', 'cancelBubble', 'cancelable', 'charCode', 'code', 'composed', 'ctrlKey', 'isTrusted', 'key', 'keyCode', 'location', 'metaKey', 'repeat', 'returnValue', 'shiftKey', 'type', 'which'];
-		
+
 
 		function sendKey(event){
 			let opts = getOpts(event, keyFields);
@@ -4362,7 +5423,7 @@ function println(msg){
 
 		/*	MISC */
 		function pop720(){
-			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=748');
+			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=720');
 		}
 
 		function showLoader(){
@@ -4371,7 +5432,7 @@ function println(msg){
 
 		function hideLoader(){
 			loader.style.display = 'none';
-			loaderSub.innerHTML = '';
+			// loaderSub.innerHTML = '';
 		}
 
 		/* View in fullscreen */
@@ -4406,32 +5467,64 @@ function println(msg){
 			vex.dialog.alert({
 				unsafeMessage:txt,
 				afterOpen: function(){
-					vexSmall();
+					vexSmall(this.rootEl);
 				}
 			})
 		}
 
 		/* Notification for settings changed by shortcut */
 		function notifyMsg(txt){
+			if(!settings.editMode){
+				return false;
+			}
 			notify.innerHTML = txt;
+			notify.style.display = 'block';
 			notify.style.opacity = 1.0;
+			if(menuPanel.style.marginRight == '0px'){
+				notify.style.right = '255px';
+			}else{
+				notify.style.right = '5px';
+			}
 			clearTimeout(notifyTimer);
+			let notifyDelay = txt.length*20;
 			notifyTimer = setTimeout(function(){
 				notify.style.opacity = 0;
-			}, 1500);
+				setTimeout(function(){notify.style.display = 'none';}, 500);
+
+			}, notifyDelay);
 			showNotify = false;
 		}
 
 		/* Sketches Congrats */
 		function sketchesCounter(){
-			let txtSuggest = '.';
-			if(sketchCount > 50){
-				txtSuggest = '!<br>Have fun + happy coding!';
+			settings.statscount++;
+			updateSettings();
+			let txtMsg = 'P5LIVE<span class="counters">Stats</span><br><br><hr><br>';
+			txtMsg += document.querySelectorAll('.item-folder:not(.demo)').length.toLocaleString()+'<span class="counters">Folders</span><br>';
+			txtMsg += document.querySelectorAll('.item-sketch:not(.demo)').length.toLocaleString()+'<span class="counters">Sketches</span><br>';
+
+			let totalChars = 0;
+			let totalLines = 0;
+			let sketchStats = {long:{count:0, name:''}, short:{count:9999, name:''}};
+			for(let is of document.querySelectorAll('.item-sketch:not(.demo)')){
+				let grabName = is.getAttribute('data-id');
+				let grabSketch = localStorage.getItem(grabName);
+				totalChars += grabSketch.replace('\n', '').replace('\t', '').length;
+				totalLines += grabSketch.split('\n').length;
+				if(grabSketch.split('\n').length > sketchStats.long.count){
+					sketchStats.long.count = grabSketch.split('\n').length;
+					sketchStats.long.name = grabName;
+				}
+				if(grabSketch.split('\n').length < sketchStats.short.count){
+					sketchStats.short.count = grabSketch.split('\n').length;
+					sketchStats.short.name = grabName;
+				}
 			}
-			if(sketchCount > 100){
-				txtSuggest = '!!<br>Have ideas for P5LIVE? <br><a href="https://github.com/ffd8/p5live/issues" target="_blank" style="color:#fff;">Suggest features on Github</a>.';
-			}
-			let txtMsg = 'You\'ve created ' + sketchCount + ' sketches' + txtSuggest;
+			txtMsg += totalChars.toLocaleString()+'<span class="counters">Characters</span><br>';
+			txtMsg += totalLines.toLocaleString()+'<span class="counters">Lines</span><br>';
+			txtMsg += sketchStats.short.count.toLocaleString()+'<span class="counters">Shortest ('+sketchStats.short.name+')</span><br>';
+			txtMsg += sketchStats.long.count.toLocaleString()+'<span class="counters">Longest ('+sketchStats.long.name+')</span><br>';
+			txtMsg += settings.statscount.toLocaleString()+'<span class="counters">Viewed Stats...</span><br>';
 			alertMsg(txtMsg);
 		}
 
@@ -4454,7 +5547,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall();
+						vexSmall(this.rootEl);
 					}
 				})
 			}else{
@@ -4469,7 +5562,7 @@ function println(msg){
 
 		function hashCode(s) {
 			let h;
-			for(let i = 0; i < s.length; i++) 
+			for(let i = 0; i < s.length; i++)
 				h = Math.imul(31, h) + s.charCodeAt(i) | 0;
 
 			return h;
@@ -4486,9 +5579,19 @@ function println(msg){
 
 		function cocoding(){
 			menuCocodeHolder.style.display = 'block';
+			menuCocodeChatHolder.style.display = 'block';
 			editor.setValue('// Loading COCODING Session: '+settings.cocoding.namespace, 1);
+			syncdataConsoleClear();
+			settings.syncdata.active = false;
+			settings.syncdata.libs = [];
+			settings.syncdata.cocodeadded = false;
+			updateSettings();
 			cocode = new CocodeApp(settings.cocoding.namespace);
-			// consoleMessage("When COCODING, code in editor is a sandbox. Clone it regularly to access later.", 0);
+			if(cocodingFirstTime){
+				setTimeout(function(){
+					cocode.rename();
+				}, 500);
+			}
 		}
 
 		// reset all cocoding except nick + color
@@ -4501,41 +5604,427 @@ function println(msg){
 			updateSettings();
 		}
 
-		function copyLink(elm){
-			let dummy = document.createElement('input'),
-			text = window.location.href;
 
-			document.body.appendChild(dummy);
-			dummy.value = text;
-			dummy.select();
-			document.execCommand('copy');
-			document.body.removeChild(dummy);
-			
-			// share info
-			let oldContent = elm._tippy.props.content;
-			elm._tippy.setContent('Copied!');
-			elm._tippy.show(200);
-			setTimeout(function(){
-				elm._tippy.hide();
-				elm._tippy.setContent(oldContent);
-			}, 800);
+		/*	SyncData */
+
+		// load presets
+		function syncDataPresetLoad(){
+			syncdataPresets = [];
+			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + makeid(5);
+			let request = new XMLHttpRequest();
+			request.open('GET', syncdataPresetsPath, true);
+			request.send();
+			request.addEventListener('load', function(){
+				let jsonObj = JSON.parse(request.responseText);
+				for(let p of jsonObj.structure[0].contents){
+					let presetName = p.name.replace('syncdata-', '');
+					let presetSketch = {code:p.code, name:presetName, protected:true};
+					syncdataPresets.push(presetSketch);
+				}
+
+				// load localSyncdataPresets
+				for(let sdp of settings.syncdata.sketches){
+					syncdataPresets.push(sdp);
+				}
+			});
 		}
 
-		function cocodeLayers(){
-			vex.dialog.confirm({
-				message: 'Replace current code with CoCodeLayers?',
-				callback: function (value) {
-					if (value) {
-						let collabPath = 'includes/demos/P5L_cocodeLayers_20190429.json';
-						let request = new XMLHttpRequest();
-						request.open('GET', collabPath, false);
-						request.send()
-						let jsonObj = JSON.parse(request.responseText);
-						editor.setValue(jsonObj.sketches[0].sketchCode, 1);
+		function syncdataWindow(){
+			let editorInit = true;
+			let reloadVex = false;
+			let reloadAlert = 0;
+			let syncdataPresetsOptions = '';
+			let doneDemos = false;
+			for(let sdp of syncdataPresets){
+				if(sdp.protected == false && !doneDemos){
+					syncdataPresetsOptions += '<option name="select-divider" value="select-divider" label="------------" disabled>';
+					doneDemos = true;
+				}
+				syncdataPresetsOptions += '<option name="'+sdp.name+'" value="'+sdp.name+'">'+sdp.name+'</option>';
+			}
+
+			let syncdataVex = vex.dialog.confirm({
+				focusFirstInput : false,
+				unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Sync local data with anyone in COCODING session!<br>Code below is saved in local settings, <code>Load Preset</code> replaces it.</div><select name="Presets" onchange="syncdataPresetChange(this.value)"><option name="select" value="select">Load Preset</option>'+syncdataPresetsOptions+'Load Preset</option></select> <span id="preset-button-group"><button onclick="vex.closeAll();syncdataPresetSave();" class="tippy" data-title="Create new preset">Save Preset</button> <button id="preset-button-remove" onclick="vex.closeAll();syncdataPresetRemove(this.name);" name="" class="tippy" data-title="Remove selected preset" style="display:none;">Remove Preset</button></span><br><br><div class="syncdata-header code-header">code</div><div id="syncdata" class="vex-long popup-editor"></div><div class="syncdata-header tippy-left" style="cursor:pointer;" data-title="Click to Clear Console" onclick="syncdataConsoleClear();">console</div><textarea id="syncdata-console" readonly="readonly">'+settings.syncdata.console.join('\n')+'</textarea>',
+
+				callback: function (value) {},
+				buttons: [
+				{
+					type: 'close',
+					text: '× CLOSE',
+					click: function(){
+						vex.close(syncdataVex);
+					}
+				},
+				{
+					type: 'submit',
+					text: settings.syncdata.active ? '► RE-RUN' : '► RUN', // iconPlay
+					click: function updateCode () {
+						settings.syncdata.active = true;
+						updateSettings();
+						syncdataButtonToggle();
+						recompile(true);
+						cocode.recompile();
+						prepReload();
+					}
+				},
+				settings.syncdata.active ? {
+					type: 'stop',
+					text: '◼ STOP',
+					click: function updateCode () {
+						settings.syncdata.active = false;
+						settings.syncdata.libs = [];
+						updateSettings();
+						syncdataSend({meta:'stop'});
+						syncdataButtonToggle();
+						recompile(true);
+						vex.close(syncdataVex);
+					}
+				} : {
+					className: 'hide-button' // hide if unused
+				},
+				settings.syncdata.active && settings.cocoding.level == 'admin' && !settings.syncdata.cocodeadded ? {
+					type: 'cocode',
+					text: '↓ COCODE',
+					click: function updateCode () {
+						settings.syncdata.cocodeadded = true;
+						updateSettings();
+						syncdataCocode();
+						vex.close(syncdataVex);
+					}
+				} : {
+					className: 'hide-button' // hide if unused
+				}
+
+				],
+				onSubmit: function(e) {
+					e.preventDefault();
+				},
+				afterOpen: function(){
+					syncdataEditor = ace.edit("syncdata");
+					syncdataEditor.setTheme(settings.theme);
+					syncdataEditor.session.setMode('ace/mode/javascript');
+					syncdataEditor.setOptions({
+						showPrintMargin: false,
+						animatedScroll: false,
+						displayIndentGuides: false,
+						useWorker: true,
+						showLineNumbers: true,
+						showGutter: true,
+						tabSize: 4, useSoftTabs: false,
+					});
+
+					syncdataEditor.setValue(settings.syncdata.code, settings.syncdata.cursor.row);
+
+					setTimeout(function(){
+						syncdataEditor.gotoLine(settings.syncdata.cursor.row, settings.syncdata.cursor.column);
+						let syncdataConsole = document.getElementById('syncdata-console');
+						syncdataConsole.scrollTop = syncdataConsole.scrollHeight;
+					}, 100);
+
+					syncdataEditor.getSession().on('change', function() {
+						settings.syncdata.code = syncdataEditor.getValue();
+					});
+
+					syncdataEditor.getSession().selection.on('changeCursor', function(){
+						if(!editorInit){
+							settings.syncdata.cursor = syncdataEditor.getCursorPosition();
+							updateSettings();
+
+						}
+					});
+
+					tidyCode(syncdataEditor);
+					loadTippy();
+					editorInit = false;
+				},
+				afterClose: function(){
+					if(reloadVex){
+						vex.close(reloadAlert);
+						syncdataWindow();
 					}
 				}
 			})
+
+
+
+			function prepReload(){
+				reloadVex = true;
+
+				vex.dialog.alert({
+					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Refreshing SyncData...</div>',
+					buttons:[],
+					afterOpen: function(){
+						reloadAlert = this;
+						vex.close(syncdataVex);
+					}
+				})
+			}
 		}
+
+		function syncdataPresetCheck(){
+			let presetName = document.getElementById('presetname-input').value;
+			let presetNameWarning = document.getElementById('presetname-warning');
+			presetNameWarning.innerHTML = '';
+			for(let sdp of settings.syncdata.sketches){
+				if(sdp.name == presetName){
+					presetNameWarning.innerHTML = 'SAVE will replace current preset.';
+				}
+			}
+		}
+
+		function syncdataPresetRemove(presetVal){
+			for(let i=0; i < syncdataPresets.length; i++){
+				if(syncdataPresets[i].name == presetVal && syncdataPresets[i].protected || presetVal == ''){
+					let thisVex = vex.dialog.alert({
+						unsafeMessage:'Can\'t remove P5LIVE preset...',
+					afterOpen: function(){
+						vexSmall(this.rootEl);
+					},
+					afterClose: function(){
+						syncdataWindow();
+					}
+					})
+					return false;
+				}
+			}
+
+			vex.dialog.confirm({
+				unsafeMessage: 'Remove Preset: '+presetVal,
+				callback: function (value) {
+					if (value) {
+						settings.syncdata.code = '// '+presetVal+' Removed!';
+						for(let i=0; i < settings.syncdata.sketches.length; i++){
+							if(settings.syncdata.sketches[i].name == presetVal){
+								settings.syncdata.sketches.splice(i, 1);//console.log(i);
+							}
+						}
+						for(let i=0; i < syncdataPresets.length; i++){
+							if(syncdataPresets[i].name == presetVal){
+								syncdataPresets.splice(i, 1);//console.log(i);
+							}
+						}
+						updateSettings();
+					}
+				},
+				afterOpen: function(){
+					vexSmall(this.rootEl);
+				},
+				afterClose: function(){
+					syncdataWindow();
+				}
+			})
+		}
+
+		function syncdataPresetSave(){
+				let presetChange = false;
+				let presetNamesFiltered = '';
+				for(let sdp of settings.syncdata.sketches){
+					presetNamesFiltered += '<option name="'+sdp.name+'" value="'+sdp.name+'">'+sdp.name+'</option>';
+				}
+				let setPresetVex = vex.dialog.confirm({
+					// focusFirstInput : false,
+					callback:function(){},
+					unsafeMessage:'<div style="font-size:10pt;line-height:1.3em;font-style:italic;">Set preset name or use existing one to replace it.<br><br><select name="Presets" onchange="document.getElementById(\'presetname-input\').value = this.value;syncdataPresetCheck();document.getElementById(\'presetname-input\').select();"><option name="" value="">Select User Preset</option>'+presetNamesFiltered+'</select><br><input style="font-size:14pt" id="presetname-input" name="presetname-input" type="text" value="" placeholder="Preset Name..." onkeyup="syncdataPresetCheck();"><br><span id="presetname-warning"></span>',
+					buttons: [
+					{
+						type: 'submit',
+						text: 'Save',
+						className: '',
+						click: function () {
+							let presetName = document.getElementById('presetname-input').value;
+							let presetNameWarning = document.getElementById('presetname-warning');
+
+							// check duplicate name
+							let replacePreset = false;
+							for(let sdp of settings.syncdata.sketches){
+								if(sdp.name == presetName){
+									replacePreset = true;
+								}
+							}
+
+							let newPreset = {code:settings.syncdata.code, name:presetName, protected:false};
+							if(replacePreset){
+								// replace preset
+								for(let i=0; i < settings.syncdata.sketches.length; i++){
+									if(settings.syncdata.sketches[i].name == presetName){
+										settings.syncdata.sketches[i].code = newPreset.code;
+									}
+								}
+								for(let i=0; i < syncdataPresets.length; i++){
+									if(syncdataPresets[i].name == presetName){
+										syncdataPresets[i].code = newPreset.code;
+									}
+								}
+							}else{
+								syncdataPresets.push(newPreset);
+								settings.syncdata.sketches.push(newPreset);
+							}
+							updateSettings();
+							presetChange = true;
+							vex.close(this);
+						}
+					}
+					,{
+						type: 'close',
+						text: 'Cancel',
+						click: function(){
+							vex.close(this);
+						}
+					}],
+					afterOpen: function(){
+						vexSmall(this.rootEl);
+						setTimeout(function(){document.getElementById('presetname-input').focus();}, 100);
+					},
+					afterClose: function(){
+						syncdataWindow();
+					}
+				})
+			}
+
+		function syncdataPresetChange(presetVal, localEditor){
+			if(presetVal != 'select'){
+				for(let sdp of syncdataPresets){
+					if(sdp.name == presetVal){
+						if(!sdp.protected){
+							document.getElementById('preset-button-remove').style.display = 'inline';
+							document.getElementById('preset-button-group').style.display = 'inline';
+						}else{
+							document.getElementById('preset-button-remove').style.display = 'none';
+						}
+						syncdataConsoleClear()
+						settings.syncdata.cursor = {row:0, column:0};
+						settings.syncdata.cocodeadded = false;
+						updateSettings();
+						syncdataEditor.setValue(sdp.code, -1);
+						document.getElementById('preset-button-remove').setAttribute('name', presetVal);
+						setTimeout(function(){
+							syncdataEditor.gotoLine(settings.syncdata.cursor.row, settings.syncdata.cursor.column);
+						}, 100);
+
+					}
+				}
+			}
+		}
+
+		function syncdataConsoleClear(){
+			settings.syncdata.console = [];
+			updateSettings();
+			if(document.getElementById('syncdata-console')){
+				document.getElementById('syncdata-console').innerHTML = '';
+			}
+		}
+
+		function syncdataButtonToggle(){
+			let syncdataBtn = document.getElementById('syncdata-button');
+			if(settings.syncdata.active){
+				syncdataBtn.style.backgroundColor = '#aaaa00';
+			}else{
+				syncdataBtn.style.backgroundColor = '#666';
+			}
+		}
+
+		function syncdataParse(){
+			if(settings.cocoding.active && settings.syncdata.active){
+				syncdataButtonToggle();
+				if(!settings.syncdata.active){
+					return false;
+				}
+
+				// parse scripts to p5Frame
+				settings.syncdata.libs = processLibs(removeComments(settings.syncdata.code));
+				updateSettings();
+
+				let scriptsCol = [];
+				for(let ccll of settings.syncdata.libs){
+					scriptsCol.push(ccll);
+				}
+
+				scriptsCol.push('includes/js/p5live.cocoding.js');
+
+				let syncdataID = 'syncdata-code';
+				// let scriptsColJoin = "'" + scriptsCol.join("','") + "'";
+				// scriptsColJoin += ",'includes/js/p5live.cocoding.js'";
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+
+				let syncdataCode = settings.syncdata.code;
+				if(syncdataCode.indexOf('/* 2 - COCODE */') > -1){
+					syncdataCode = syncdataCode.substr(0, syncdataCode.indexOf('/* 2 - COCODE */'));
+				}
+
+				let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("'+syncdataID+'", ' + JSON.stringify(syncdataCode) + '); },async: false});';
+
+				s.innerHTML = sLoader;
+
+				if(sketchLoaded){
+					if(scriptsCol.length > 1){
+						p5f.document.head.appendChild(s);
+					}else{
+						pongReady(syncdataID, syncdataCode);
+					}
+				}
+
+				document.getElementById('syncdata-button').style.backgroundColor = '#008800';
+			}
+		}
+
+		function syncdataCocode(){
+			let cocodeBreak = '/* 2 - COCODE */';
+			if(settings.syncdata.code.indexOf(cocodeBreak) == -1){
+				let thisVex = vex.dialog.alert({
+					unsafeMessage:'No COCODING snippet found. <br>Check it\'s preceded by:<br><pre>'+cocodeBreak+'</pre>',
+				afterOpen: function(){
+					vexSmall(this.rootEl);
+				}
+				})
+				return false;
+			}
+
+			var cocodeClipboard = settings.syncdata.code.substr(settings.syncdata.code.indexOf(cocodeBreak) + cocodeBreak.length);
+			var cocodeClipboard = cocodeClipboard.split('\n');
+			for(let i = 0; i < cocodeClipboard.length; i++){
+				var urlRegex =/^\/\//gm;
+				cocodeClipboard[i] = cocodeClipboard[i].replace(urlRegex, '');
+			}
+			cocodeClipboard = cocodeClipboard.join('\n');
+			let curCode = editor.getValue();
+			editor.setValue(curCode +"\n"+ cocodeClipboard, 1);
+			tidyCode(editor);
+			editor.gotoLine(0, 1, false);
+		}
+
+		function syncdataSend(obj){
+			if(settings.cocoding.lockdown){
+				if(settings.cocoding.level != 'admin' && !settings.cocoding.writemode){
+					return false;
+				}
+			}
+			syncUp();
+			obj.usesyncdata = settings.syncdata.active;
+			cocode.socket.emit('syncData', obj);
+		}
+
+		// GUI replaced by SyncData...
+		// function copyLink(elm){
+		// 	let dummy = document.createElement('input'),
+		// 	text = window.location.href;
+
+		// 	document.body.appendChild(dummy);
+		// 	dummy.value = text;
+		// 	dummy.select();
+		// 	document.execCommand('copy');
+		// 	document.body.removeChild(dummy);
+
+		// 	// share info
+		// 	let oldContent = elm._tippy.props.content;
+		// 	elm._tippy.setContent('Copied!');
+		// 	elm._tippy.show(200);
+		// 	setTimeout(function(){
+		// 		elm._tippy.hide();
+		// 		elm._tippy.setContent(oldContent);
+		// 	}, 800);
+		// }
 
 		function toggleLockdown(){
 			settings.cocoding.lockdown = !settings.cocoding.lockdown;
@@ -4545,10 +6034,17 @@ function println(msg){
 
 		function updateToggleLockdown(){
 			let settingsLockdown = document.getElementById('cocode-lockdown');
+			let syncdataBtn = document.getElementById('syncdata-button');
 			if(settings.cocoding.lockdown){
 				settingsLockdown.innerHTML = iconLock;
+				if(settings.cocoding.level != 'admin'){
+					syncdataBtn.setAttribute('disabled', 'disabled');
+				}else if(settings.cocoding.writemode){
+					syncdataBtn.removeAttribute('disabled');
+				}
 			}else{
 				settingsLockdown.innerHTML = iconUnlock;
+				syncdataBtn.removeAttribute('disabled');
 			}
 			toggleButtonActive(settingsLockdown, settings.cocoding.lockdown);
 
@@ -4556,6 +6052,7 @@ function println(msg){
 				let settingsSync = document.getElementById('cocode-sync');
 				if(settings.cocoding.lockdown){
 					settingsSync.removeAttribute('disabled');
+
 				}else{
 					settingsSync.setAttribute('disabled', 'disabled');
 					settings.cocoding.sync = false;
