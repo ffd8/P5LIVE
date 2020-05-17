@@ -5417,6 +5417,29 @@ function println(msg){
 					p5f.dispatchEvent(copy);
 				}
 			}
+
+			if(p5editor.style.visibility === 'visible') {
+				editorHandleKeyDownEvent(event);
+			}
+		}
+
+
+		// Handler for specific keys / key combinations when in the editor. 
+		function editorHandleKeyDownEvent(event) {
+			switch (true) {
+				// Go to end of the line
+				case event.key == "End":
+				case event.key == "ArrowRight" && event.metaKey === true:
+					editor.navigateLineEnd();
+					break;
+
+				// Go to the (meaningful) beginning of the line. Luckily As is smart enough to go to start of the code, 
+				// while still staying in front of all the indentation spaces.
+				case event.key == "Home":
+				case event.key == "ArrowLeft" && event.metaKey === true:
+					editor.navigateLineStart();
+					break;
+			}
 		}
 
 
