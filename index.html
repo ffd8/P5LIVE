@@ -5419,13 +5419,13 @@ function println(msg){
 			}
 
 			if(p5editor.style.visibility === 'visible') {
-				editorHandleKeyDownEvent(event);
+				editorHandleKeyEvent(event);
 			}
 		}
 
 
 		// Handler for specific keys / key combinations when in the editor. 
-		function editorHandleKeyDownEvent(event) {
+		function editorHandleKeyEvent(event) {
 			switch (true) {
 				// Go to end of the line
 				case event.key == "End":
