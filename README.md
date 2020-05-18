@@ -258,7 +258,7 @@ P5LIVE loads p5.js/p5.sound libraries by default. For additional libraries, load
 
 Add this snippet to the top of your sketch, placing one path per array item:  
 
-```
+```javascript
 let libs = [
 	""
 	,""

@@ -509,16 +509,7 @@ function println(msg){
 					,'init':'setupJumpSketches(settings.shortcuts["jump"].key)'
 					,'tippy':'Then combine w/ 1, 2,...0 to jump thru sketches'
 				}
-				,'endline':{
-					'name':'GoToLineEnd'
-					,'key':'ctrl+shift+right'
-					,'callback':'gotoLineEnd()'
-				}
-				,'startline':{
-					'name':'GoToLineStart'
-					,'key':'ctrl+shift+left'
-					,'callback':'gotoLineStart()'
-				}
+
 
 			},
 			'sketches': [],
@@ -536,7 +527,7 @@ function println(msg){
 			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'msgID':-1, 'hasAdmin':false},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
-			'themeBG': '#052544',
+			'themeBG': '#011F2F',
 			'themeBGactive': true,
 			'refresh':true
 		}
@@ -1684,20 +1675,20 @@ function println(msg){
 			}
 		}
 
-		function gotoLineEnd(){
-			let tempPos = editor.getCursorPosition();
-			editor.selection.moveTo(tempPos.row, editor.session.getLine(tempPos.row).length);
-		}
-
-		function gotoLineStart(){
-			let tempPos = editor.getCursorPosition();
-			editor.selection.moveTo(tempPos.row, 0);
-		}
 
 
-
-		/* CMD-KEYS (remove key conflicts) */
-		editor.commands.removeCommands(['gotoright','movelinesup', 'movelinesdown', 'gotolinestart', 'splitline', 'gotolineend', 'golineup', 'jumptomatching', 'golinedown', 'transposeletters']);
+		/* CMD-KEYS (removing key conflicts, replaced below w/o conflict) */
+		editor.commands.removeCommands([
+			'backspace' // ctrl + h
+			,'gotoright' // ctrl + f
+			,'golineup' // ctrl + p mac
+			,'golinedown' // ctrl + n
+			,'gotolinestart' // ctrl + a
+			,'gotolineend' // ctrl + e
+			,'jumptomatching' // ctrl + p windows
+			,'splitline' // ctrl + o (totally removed)
+			,'transposeletters' // ctrl + t (totally removed)
+			]);
 
 		// replace backspace w/o ctrl + h
 		editor.commands.addCommand({
@@ -1736,6 +1727,39 @@ function println(msg){
 			multiSelectAction: 'forEach',
 			scrollIntoView: 'cursor',
 			readOnly:!0
+		});
+
+		// replace gotolinestart w/o ctrl + a
+		editor.commands.addCommand({
+			name: "gotolinestart",
+			description: "Go to line start",
+			bindKey: { win: 'Alt-Left|Home', mac: 'Command-Left|Home' },
+			exec: function(editor) { editor.navigateLineStart(); },
+			multiSelectAction: "forEach",
+			scrollIntoView: "cursor",
+			readOnly: true
+		});
+
+		// replace gotolineend w/o ctrl + e
+		editor.commands.addCommand({
+			name: "gotolineend",
+			description: "Go to line end",
+			bindKey: { win: 'Alt-Right|End', mac: 'Command-Right|End' },
+			exec: function(editor) { editor.navigateLineEnd(); },
+			multiSelectAction: "forEach",
+			scrollIntoView: "cursor",
+			readOnly: true
+		});
+
+		// replace jumptomatching w/o ctrl + p
+		editor.commands.addCommand({
+			name: "jumptomatching",
+			description: "Jump to matching",
+			bindKey: { win: 'Ctrl-\\', mac: 'Command-\\' },
+			exec: function(editor) { editor.jumpToMatching(); },
+			multiSelectAction: "forEach",
+			scrollIntoView: "animate",
+			readOnly: true
 		});
 
 		// beautify!
@@ -3921,7 +3945,6 @@ function println(msg){
 			if(!settings.cocoding.active && pLen != editor.getValue().length){
 				let sketchElm = document.querySelectorAll('[data-id="'+settings.fileName+'"]')[0];
 				let sketchDetails = searchJSON(settings.sketches, 'name', settings.fileName)[0];
-
 				if(sketchElm != undefined && sketchDetails != undefined){
 					sketchElm.setAttribute('data-mod', timeDate());
 					sketchDetails.mod = timeDate();
@@ -4938,6 +4961,8 @@ function println(msg){
 			refHolder.style.display ='none';
 			refSearch = '';
 			refVisible = false;
+			editor.gotoLine(curPos.row+1, curPos.column);
+			editor.focus();
 		}
 
 		function getRef(){
@@ -5183,6 +5208,7 @@ function println(msg){
 
 			ref.innerHTML += '<div id="showall">' + all.join('') + '</div>';
 			setTimeout(function(){loadTippy();}, 100);
+			document.getElementById('ref-search').focus();
 
 			// jump to category of viewed ref
 			if(window.location.hash != undefined && window.location.hash.length > 1){
@@ -5431,7 +5457,8 @@ function println(msg){
 
 		/*	MISC */
 		function pop720(){
-			window.open (window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,height=720');
+			let popWindow = window.open(window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,innerHeight=720');
+			setTimeout(function(){popWindow.innerHeight = 720;}, 100);
 		}
 
 		function showLoader(){
