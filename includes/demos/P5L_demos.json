@@ -1,6 +1,6 @@
 {
-  "version": "1.3.0",
-  "revision": 34,
+  "version": "1.3.1",
+  "revision": 35,
   "structure": [
     {
       "name": "demos",
@@ -139,10 +139,16 @@
           "toggle": "collapse",
           "contents": [
             {
-              "name": "_libs_voronoi",
-              "mod": "1588876398472",
+              "name": "_libs_p5.glitch",
+              "mod": "1589926334304",
               "type": "sketch",
-              "code": "/*\t_libs_voronoi // cc teddavis.org 2020 */\n\nlet libs = [\n\t'https://cdn.jsdelivr.net/npm/voronoi@1.0.0/rhill-voronoi-core.js' // remote\n\t, 'includes/demos-data/js/rhill-voronoi-core.js' // load locally (if offline)\n\t, 'includes/demos-data/js/voronoi-p5live.js'\n];\n\nlet bbox, voronoi;\nlet sites = [],\n\tedges = [];\nlet initTypo = true;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbbox = {\n\t\txl: 0,\n\t\txr: width,\n\t\tyt: 0,\n\t\tyb: height\n\t};\n\tvoronoi = new Voronoi();\n\n\t// pre-loading custom points from 'voronoi-p5live.js'\n\ttypoPoints();\n\n\tstroke(255);\n\tstrokeWeight(2);\n\n}\n\nfunction draw() {\n\tbackground(0);\n\n\tif(mouseIsPressed) {\n\t\tif(initTypo) {\n\t\t\tsites = [];\n\t\t\tinitTypo = false;\n\t\t}\n\t\taddPoints(mouseX, mouseY);\n\t}\n\n\tbeginShape(LINES)\n\tfor(var i = 0; i < edges.length; i++) {\n\t\tlet edge = edges[i];\n\t\tvertex(edge.va.x, edge.va.y);\n\t\tvertex(edge.vb.x, edge.vb.y);\n\t}\n\tendShape();\n}\n\nfunction addPoints(x, y) {\n\tsites.push({\n\t\tx: x,\n\t\ty: y\n\t});\n\tresult = voronoi.compute(sites, bbox);\n\tedges = result.edges;\n}\n\n// custom preloaded points interpreter\nfunction typoPoints() {\n\tfor(let t of p5typo) {\n\t\tsites.push({\n\t\t\tx: t.x * width,\n\t\t\ty: t.y * height + height / 5\n\t\t});\n\t}\n\tresult = voronoi.compute(sites, bbox);\n\tedges = result.edges;\n}"
+              "code": "/*\t_libs_p5.glitch // cc teddavis.org 2020\t*/\n/*\tvisit https://p5.glitch.me to learn more\t*/\n\nlet libs = [\"includes/libs/p5.glitch.js\"];\n\nlet glitch, capture, w = 320, h = 240;\n\nfunction setup() {\n\tcapture = createCapture(VIDEO);\n\tcapture.size(w, h);\n\tcapture.hide();\n\n\tcreateCanvas(windowWidth, windowHeight);\n\n\tbackground(0);\n\timageMode(CENTER);\n\n\tglitch = new Glitch();\n\tglitch.pixelate(1);\n}\n\nfunction draw() {\n\tif(frameCount % 3 === 0) {\n\t\t\n\t\tif(!mouseIsPressed){\n\t\t\tglitch.loadImage(capture);\n\t\t}\n\t\t\n\t\t// map mouseX to # of randomBytes() + mouseY to limitBytes()\n\t\tglitch.limitBytes(map(mouseY, 0, height, 0, 1));\n\t\tglitch.randomBytes(map(mouseX, 0, width, 0, 100));\n\t\tglitch.buildImage();\n\t}\n\t\n\timage(glitch.image, width / 2, height / 2, glitch.width, glitch.height)\n}"
+            },
+            {
+              "name": "_libs_voronoi",
+              "mod": "1589926251815",
+              "type": "sketch",
+              "code": "/*\t_libs_voronoi // cc teddavis.org 2020 */\n\nlet libs = [\n\t'https://cdn.jsdelivr.net/npm/voronoi@1.0.0/rhill-voronoi-core.js' // remote\n\t, 'includes/libs/rhill-voronoi-core.js' // load locally (if offline)\n\t, 'includes/demos-data/js/voronoi-p5live.js'\n];\n\nlet bbox, voronoi;\nlet sites = [],\n\tedges = [];\nlet initTypo = true;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tbbox = {\n\t\txl: 0,\n\t\txr: width,\n\t\tyt: 0,\n\t\tyb: height\n\t};\n\tvoronoi = new Voronoi();\n\n\t// pre-loading custom points from 'voronoi-p5live.js'\n\ttypoPoints();\n\n\tstroke(255);\n\tstrokeWeight(2);\n\n}\n\nfunction draw() {\n\tbackground(0);\n\n\tif(mouseIsPressed) {\n\t\tif(initTypo) {\n\t\t\tsites = [];\n\t\t\tinitTypo = false;\n\t\t}\n\t\taddPoints(mouseX, mouseY);\n\t}\n\n\tbeginShape(LINES)\n\tfor(var i = 0; i < edges.length; i++) {\n\t\tlet edge = edges[i];\n\t\tvertex(edge.va.x, edge.va.y);\n\t\tvertex(edge.vb.x, edge.vb.y);\n\t}\n\tendShape();\n}\n\nfunction addPoints(x, y) {\n\tsites.push({\n\t\tx: x,\n\t\ty: y\n\t});\n\tresult = voronoi.compute(sites, bbox);\n\tedges = result.edges;\n}\n\n// custom preloaded points interpreter\nfunction typoPoints() {\n\tfor(let t of p5typo) {\n\t\tsites.push({\n\t\t\tx: t.x * width,\n\t\t\ty: t.y * height + height / 5\n\t\t});\n\t}\n\tresult = voronoi.compute(sites, bbox);\n\tedges = result.edges;\n}"
             }
           ]
         },
@@ -210,7 +216,7 @@
     }
   ],
   "count": {
-    "sketches": 21,
+    "sketches": 22,
     "folders": 10
   }
 }
