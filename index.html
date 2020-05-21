@@ -274,6 +274,10 @@
 						<input type="checkbox" id="settings-mutitabtoggle" name="settings-mutitabtoggle" value="settings-mutitabtoggle"> Multi-P5LIVE Warning
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Add _YYYYMMDD_HHMMSS to filenames?" onclick="timestampToggle();">
+						<input type="checkbox" id="settings-timestamptoggle" name="settings-timestamptoggle" value="settings-timestamptoggle"> Timestamp Exports
+					</div>
+
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
@@ -414,6 +418,7 @@ function println(msg){
 			'notifyToggle':true,
 			'tippyToggle':true,
 			'multitabToggle':true,
+			'timestampToggle':true,
 			'debugMode': false,
 			'editMode':true,
 			'safeMode': false,
@@ -573,6 +578,7 @@ function println(msg){
 		settingsNotify = document.getElementById('settings-notifytoggle'),
 		settingsTippy = document.getElementById('settings-tippytoggle'),
 		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
+		settingsTimestamp = document.getElementById('settings-timestamptoggle'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsShortcuts = document.getElementById('menu-shortcuts-holder'),
@@ -1917,6 +1923,7 @@ function println(msg){
 			notifyToggleUpdate();
 			tippyToggleUpdate();
 			multitabToggleUpdate();
+			timestampToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
@@ -2129,7 +2136,7 @@ function println(msg){
 				}
 			});
 
-			exportJSON(jsonExport, 'P5L_SETTINGS_'+timeStamp()+'.json');
+			exportJSON(jsonExport, 'P5L_SETTINGS'+timeStampFile()+'.json');
 		}
 
 		function importSettings(data){
@@ -2681,7 +2688,7 @@ function println(msg){
 			if(localStorage.hasOwnProperty(sketch)){
 				sketchDetails.code = localStorage.getItem(sketch);
 				tempSketches.structure.push(sketchDetails);
-				exportJSON(tempSketches, 'P5L_' + sketch + '_' + timeStamp(sketchDetails.mod) + '.json');
+				exportJSON(tempSketches, 'P5L_' + sketch + timeStampFile(sketchDetails.mod) + '.json');
 			}else{
 				alertMsg('Sketch code missing...');
 			}
@@ -2696,10 +2703,10 @@ function println(msg){
 			if(folder !== undefined){
 				let folderObj = searchJSON(settings.sketches, 'name', folder);
 				objCopy = JSON.parse(JSON.stringify(folderObj));
-				tempType = 'FOLDER_'+ folder+'_';
+				tempType = 'FOLDER_'+ folder+'';
 			}else{
 				objCopy = JSON.parse(JSON.stringify(settings.sketches));
-				tempType = 'SKETCHES_';
+				tempType = 'SKETCHES';
 			}
 			if(!demosLocked && folder === 'demos'){
 				tempSketches.structure = exportAddCode(objCopy, true);
@@ -2716,7 +2723,7 @@ function println(msg){
 
 			let folderCount = findValues(tempSketches.structure, 'type', 'folder', 'name').length;
 			tempSketches.count = {sketches:listSketches(tempSketches.structure).length, folders:folderCount};
-			exportJSON(tempSketches, 'P5L_' + tempType + timeStamp() + '.json');
+			exportJSON(tempSketches, 'P5L_' + tempType + timeStampFile() + '.json');
 		}
 
 		function exportPurgeDemos(obj){
@@ -4533,6 +4540,16 @@ function println(msg){
 			checkToggle('multitabtoggle', settings.multitabToggle, settingsMultitab, 'Multi-P5LIVE Warning');
 		}
 
+		// timestamp exports toggle
+		function timestampToggle(){
+			settings.timestampToggle = !settings.timestampToggle;
+			timestampToggleUpdate();
+		}
+
+		function timestampToggleUpdate(){
+			checkToggle('timestamptoggle', settings.timestampToggle, settingsTimestamp, 'Timestamp Exports');
+		}
+
 		//exportcode toggle
 		function exportcodeToggle(){
 			settings.exportCode = !settings.exportCode;
@@ -4872,7 +4889,7 @@ function println(msg){
 
 		function savePNG(){
 			if(sketchLoaded){
-				p5f.save('P5L_' + settings.fileName + '_' + timeStamp() + '.png');
+				p5f.save('P5L_' + settings.fileName + timeStampFile() + '.png');
 				if(settings.exportCode){
 					exportSketch(settings.fileName);
 					if(showNotify){
@@ -4915,7 +4932,7 @@ function println(msg){
 			s.innerHTML = '\n//' +settings.fileName+ '\n\n' + editor.getValue() +'\n\n'+ p5custom.value;
 			iFrameBody.appendChild(s);
 			iFrameBody.innerHTML += '\n\n';
-			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
+			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + timeStampFile() + '.html', 'text/html');
 		}
 
 		function timeDate(){
@@ -4931,6 +4948,10 @@ function println(msg){
 				d = new Date(timeInput * 1);
 			}
 			return d.toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+		}
+
+		function timeStampFile(timeInput){
+			return (settings.timestampToggle) ? '_' + timeStamp(timeInput) : '';
 		}
 
 
@@ -5346,7 +5367,7 @@ function println(msg){
 
 				// autoCompleteExport = true;
 				if(autoCompleteExport){
-					exportJSON(autoCompleteList, 'P5L_AUTOCOMPLETE_'+timeStamp()+'.json');
+					exportJSON(autoCompleteList, 'P5L_AUTOCOMPLETE'+timeStampFile()+'.json');
 				}else{
 					// console.log(autoCompleteList.code);
 				}
