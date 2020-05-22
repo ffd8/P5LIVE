@@ -3892,7 +3892,7 @@ function println(msg){
 				}
 			}
 
-			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile || force){
+			if((currCode.search(/^\s(?:for|while)(|\s)(\()/) == -1) || forceRecompile || force){
 				if(validCode){
 					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
 						// buildSketch(); //
