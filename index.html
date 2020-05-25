@@ -4051,12 +4051,12 @@ function println(msg){
 				}
 
 				// catch custom functions in preload + setup
-				for(let i=0; i<functionPos.length; i++){
-					for(let j=0; j < curPositions.length; j++){
-						let fPos = functionPos[j];
-						if(fPos >= drawPos[i].start && fPos <= drawPos[i].end){
+				for(let i=0; i < functionPos.length; i++){
+					let fPos = functionPos[i];
+					for(let j=0; j < drawPos.length; j++){
+						if(fPos >= drawPos[j].start && fPos <= drawPos[j].end){
 							// console.log(drawPos[i].name); // debug where chage occured
-							if(drawPos[i].name == 'setup' || drawPos[i].name == 'preload'){ // && !settings.cocoding.active
+							if(drawPos[j].name == 'setup' || drawPos[j].name == 'preload'){ // && !settings.cocoding.active
 								softFunction = false;
 							}
 						}
