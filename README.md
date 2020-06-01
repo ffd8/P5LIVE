@@ -52,12 +52,13 @@ Details below to run via python webserver or nodejs/npm.
   
 ## MENU
 ### P5LIVE PANEL 
-<img src="includes/images/menu-p5live-8.png" width="220px">  
+<img src="includes/images/menu-p5live-9.png" width="220px">  
 
 - <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About, 👋 you're reading me now.  
 - <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts.  
 - <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle embeded p5.js reference.  
-- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png [+ .json], `CTRL + S`, exports image [+ snapshot of code].  
+- <img class="svg" src="includes/icons/monitor.svg" height="12px"> Visuals-only Popup, for projecting canvas output without code + interace.  
+- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png, `CTRL + S`, exports image [+ code if active in settings].  
 - <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export 1-page website (must re-link paths to custom assets).
 
 ### SETTINGS PANEL  
@@ -279,6 +280,9 @@ By special request (P5LIVE for remote meditation sessions?!), there's a `view on
 - COCODING, `/?cc=*****&edit=0`  
 - Solo, `/?edit=0`
 
+### VISUALS-ONLY POPUP
+Incase you want to project or stream the visuals-only (no code + interface) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch a popup with a video feed of your P5LIVE canvas. 
+
 ### EXPORT / IMPORT
 Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.json` into the browser.
 
@@ -309,6 +313,7 @@ Additional custom functions are available in every sketch:
 
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
+- `windowResize()` is set by default to keep your sketch fullscreen. Incase you're working with a smaller canvas, add `windowResized = null;` inside of your setup() to prevent automatic resizing.
 
 
 ## OFFLINE SERVER
