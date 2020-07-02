@@ -307,7 +307,6 @@ Loads a new sketch.
 - If the browser has completely hung, (rare issue between MBP/Chrome/libraries)  
 `sudo killall coreaudiod` (first take off headphones + turndown stereo!)
 
-
 ### FUNCTIONS
 Additional custom functions are available in every sketch:  
 
@@ -317,7 +316,10 @@ Additional custom functions are available in every sketch:
 
 
 ## OFFLINE SERVER
-### Basic webserver using Python (without COCODING/OSC):  
+### Basic - Python  
+Use for quickest setup or to run multiple instances (each with their own sketches storage).  
+NO COCODING + OSC with this technique.  
+
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER` 
@@ -327,15 +329,40 @@ Additional custom functions are available in every sketch:
 - P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
 - To quit, `CTRL + C` in Terminal (or command prompt)
 
-### Fancy webserver using nodejs/npm (with COCODING/OSC):  
+Port `5000` is suggested, for alternative, just type desired one in snippet above and remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
+
+### Fancy - nodejs/npm  
+Use for all features (COCODING + OSC) + optional HTTPS mode. 
+  
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
-- Install Node.js + NPM ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) / [binary installers](https://nodejs.org/en/download/))  
+- Install Node.js + NPM ([binary installers](https://nodejs.org/en/download/))  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER`  
 - type `npm install`, press `ENTER`  
 - type `npm start`, press `ENTER`  (for custom port: `npm start ####`)
 - P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
 - To quit, `CTRL + C` in Terminal (or command prompt)
+
+Port `5000` is suggested, for alternative, add desired port number to start command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
+
+### HTTPS
+If using **Fancy** offline server, you may want to COCODE with peers on the same local network. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you are `localhost`, any connected peers are simply `http`, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!
+
+#### Local (same network, works offline):    
+- Start P5LIVE with `npm start https`, or custom port `npm start #### https`  
+- HTTPS port is automatically 1 digit higher than P5LIVE (5000 » 5001).  
+- Share https address displayed in Terminal, ie: `https://xxxxx.local:5001`  
+- Connected peers must accept 'unsecure' (self-gen) certificate with `Advanced` button upon loading URL. Certificates are generative + cached, renewing after 60 days.  
+- Enjoy Offline Server COCODING!  
+
+#### Remote (anyone across internet w/ [ngrok](https://ngrok.com/docs#getting-started)!):  
+- Start P5LIVE offline server (see above)  
+- [Download ngrok](https://ngrok.com/download)  
+- Open another tab in Terminal, `cd` to the folder containing **ngrok**  
+- Type `ngrok http 5000` and press `ENTER` (tunnels to localhost:5000)  
+- Check output for forwarding URL to share with remote peers:  
+`https://########.ngrok.io`  
+- Enjoy Online [Self-hosted] Server COCODING!
 
 
 ## TOOLS USED
@@ -363,6 +390,8 @@ Listed in order of adoption:
 - [mousetrap.js](https://craig.is/killing/mice), custom shortcut key bindings
 - [loadjs](https://github.com/muicss/loadjs/), in series loading of libs + sketch
 - [highlight.js](https://highlightjs.org/), higlighting of p5.js examples
+- [http-proxy](https://github.com/http-party/node-http-proxy), https tunneling
+- [pem](https://github.com/Dexus/pem), self-generated generative ssl certificates
 
 
 ## INSPIRATION
