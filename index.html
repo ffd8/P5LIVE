@@ -4117,7 +4117,7 @@ function println(msg){
 			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
 
-			let fullCode = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+			let fullCode = p5custom.value + codeSetup + 'new p5(); sketchStatus();';
 
 			let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },async: false});';
 
@@ -4938,10 +4938,10 @@ function println(msg){
 
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			s.innerHTML = '\n//' +settings.fileName+ '\n\n' + editor.getValue() +'\n\n'+ p5custom.value;
+			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + editor.getValue();
 			iFrameBody.appendChild(s);
 			iFrameBody.innerHTML += '\n\n';
-			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + timeStampFile() + '.html', 'text/html');
+			download('<!DOCTYPE html>\n<html>\n' + el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + timeStampFile() + '.html', 'text/html');
 		}
 
 		function timeDate(){
