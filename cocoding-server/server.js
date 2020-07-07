@@ -10,6 +10,13 @@ for(let arg of process.argv){
 	}
 }
 
+// https mode
+let useHTTPS = false;
+if(process.argv.indexOf('https') > -1){
+	useHTTPS = true;
+}
+
+
 const express = require('express')
 , app = express()
 , server = require('http').createServer(app)
@@ -17,6 +24,54 @@ const express = require('express')
 , RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
 , port = tPort
 , requestStats = require('request-stats')
+, https = require('https')
+, fs = require('fs')
+, pem = require('pem')
+, httpProxy = require('http-proxy')
+
+
+// HTTPS
+const pemPath = './includes/ssl/pem';
+const portHTTPS = parseInt(tPort) + 1;
+
+if(useHTTPS){
+	pem.createCertificate({ days: 60, selfSigned: true }, (err, keys) => {
+		if (!err) {
+			fs.readFile(pemPath, (err, json) => {
+				if (!err) {
+					const keys = JSON.parse(json);
+					//console.log('old keys')
+					startServer(keys);
+				}else{
+					fs.writeFile(pemPath, JSON.stringify(keys), { mode: 0o444 }, (err) => {
+						if (!err) {
+							//console.log('new keys')
+							startServer(keys);
+						}
+					});
+				}
+			});
+		}
+	});
+}
+
+function startServer(keys){
+	httpProxy.createServer({
+		target: {
+			host: 'localhost',
+			port: tPort
+		},
+		ssl: {
+			key: keys.serviceKey,
+			cert: keys.certificate
+		},
+		ws: true
+	}).listen(portHTTPS, ()=>{
+		let os = require('os');
+		let ip = Object.values(os.networkInterfaces()).reduce((r, list) => r.concat(list.reduce((rr, i) => rr.concat(i.family==='IPv4' && !i.internal && i.address || []), [])), []);
+		console.log('HTTPS for PEERS! share » https://' + ip + ':' + portHTTPS + ' || https://' + os.hostname() + ':' + portHTTPS);
+	});
+}
 
 // OSC
 let iop, osc, oscServer, oscClient, isConnected;
@@ -37,19 +92,19 @@ ccStats.max = {active:0, syncdata:0, syncchunk:0, size:0,};
 
 /* STATS */
 function callEveryHour() {
-    setInterval(function(){
-    	countdown = 1000 * 60 * 60;
-    	ccStats.req = 4000;
-    }, 1000 * 60 * 60);
+	setInterval(function(){
+		countdown = 1000 * 60 * 60;
+		ccStats.req = 4000;
+	}, 1000 * 60 * 60);
 }
 
 function callEveryMinute() {
-    setInterval(function(){
-    	reportStats();
-    	countdown -= (1000 * ccStatsReporting);
-    	ccStats.timer = Math.floor(countdown/1000/60);
-    	console.log(JSON.stringify(ccStats)); // *** good/bad ideae?
-    }, 1000 * ccStatsReporting); // 60
+	setInterval(function(){
+		reportStats();
+		countdown -= (1000 * ccStatsReporting);
+		ccStats.timer = Math.floor(countdown/1000/60);
+		console.log(JSON.stringify(ccStats)); // *** good/bad ideae?
+	}, 1000 * ccStatsReporting); // 60
 }
 
 function setupStats(){
@@ -93,7 +148,7 @@ app.get('/', function (req, res) {
 				}else{
 					// report rooms are full
 					io.of('/' + ccRaw).on('connection', function(socket){
-					  socket.emit('full');
+						socket.emit('full');
 					});
 				}
 			}
@@ -104,10 +159,10 @@ app.get('/', function (req, res) {
 io.set('transports', ['websocket']);
 
 io.origins((origin, callback) => {
-  if (online && origin !== 'https://teddavis.org') {
-    return callback('origin not allowed', false);
-  }
-  callback(null, true);
+	if (online && origin !== 'https://teddavis.org') {
+		return callback('origin not allowed', false);
+	}
+	callback(null, true);
 });
 
 // OSC
@@ -120,27 +175,27 @@ if(!online){
 			}
 			// oscConnected++;
 			// console.log('OSC - connected - ' + oscConnected);
-	    	oscServer = new osc.Server(obj.server.port, obj.server.host);
-		    oscClient = new osc.Client(obj.client.host, obj.client.port);
+			oscServer = new osc.Server(obj.server.port, obj.server.host);
+			oscClient = new osc.Client(obj.client.host, obj.client.port);
 			isConnected = true;
-		    // oscClient.send('/status', socket.id + ' connected');
+			// oscClient.send('/status', socket.id + ' connected');
 			oscServer.on('message', function(msg, rinfo) {
 				socket.emit('message', msg);
 			});
 			socket.emit('connected', 1);
 		});
-	 	socket.on('message', function (obj) {
-	 		if(isConnected){
+		socket.on('message', function (obj) {
+			if(isConnected){
 				oscClient.send.apply(oscClient, obj);
 			}
-	  	});
+		});
 		socket.on('disconnect', function(){
 			if (isConnected) {
 				closeOSC();
 				// oscDisconnected++;
 				// console.log('OSC - disconnected - ' + oscDisconnected);
 			}
-	  	});
+		});
 	});
 }
 
@@ -186,12 +241,12 @@ function reportStats(){
 			}
 
 			for (var key in cc[ccRaw].settings.people) {
-			    if (!cc[ccRaw].settings.people.hasOwnProperty(key)) continue;
+				if (!cc[ccRaw].settings.people.hasOwnProperty(key)) continue;
 
-			    var obj = cc[ccRaw].settings.people[key];
-			    if(obj.usesyncdata){
-			    	ccStats.syncdata++;
-			    }
+				var obj = cc[ccRaw].settings.people[key];
+				if(obj.usesyncdata){
+					ccStats.syncdata++;
+				}
 			}
 		}
 	}
@@ -515,8 +570,8 @@ class Namespace {
 			let chatMsgs = [];
 			for(let c of settings.chat){
 				if(settings.people[c.id] != undefined){
-					c.nick =  settings.people[c.id].nick;
-					c.color =  settings.people[c.id].color;
+					c.nick = settings.people[c.id].nick;
+					c.color = settings.people[c.id].color;
 				}
 				let chatMsg = {
 					'nick': c.nick,
@@ -536,7 +591,7 @@ module.exports = Namespace;
 
 const listener = server.listen(port, function() {
 	if(!online){
-  		console.log('P5 is LIVE! visit » http://localhost:' + listener.address().port);
+		console.log('P5 is LIVE! visit » http://localhost:' + listener.address().port);
 	}else{
 		console.log('P5 is LIVE! Running on port: ' + listener.address().port);
 	}

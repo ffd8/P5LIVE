@@ -47,7 +47,7 @@
 		<textarea id="p5-console"></textarea>
 	</div>
 
-	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts" srcdoc="" ></iframe>
+	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts allow-downloads allow-pointer-lock" srcdoc="" ></iframe>
 	<div id="p5-frame-cover"></div>
 
 	<div id="refholder">
@@ -67,19 +67,22 @@
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span></div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
-					<button class="menu-button tippy" onclick="loadAbout();" data-title="About">
+					<button class="menu-button tippy" onclick="loadAbout();this.blur();" data-title="About">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
 					</button>
-					<button class="menu-button tippy" onclick="showSettings();" data-title="Settings">
+					<button class="menu-button tippy" onclick="showSettings();this.blur();" data-title="Settings">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
 					</button>
-					<button class="menu-button tippy" onclick="showRef();" data-title="p5.js Reference">
+					<button class="menu-button tippy" onclick="showRef();this.blur();" data-title="p5.js Reference">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button class="menu-button tippy" onclick="savePNG();" data-title="Export Snapshot<br>PNG [+ CODE]">
+					<button class="menu-button tippy" onclick="popStream(true);this.blur();" data-title="Visuals-only Popup">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+					</button>
+					<button class="menu-button tippy" onclick="savePNG();this.blur();" data-title="Export Snapshot<br>PNG [+ CODE]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
-					<button class="menu-button tippy" onclick="saveHTML();" data-title="Export HTML">
+					<button class="menu-button tippy" onclick="saveHTML();this.blur();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
 
@@ -274,6 +277,10 @@
 						<input type="checkbox" id="settings-mutitabtoggle" name="settings-mutitabtoggle" value="settings-mutitabtoggle"> Multi-P5LIVE Warning
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Add _YYYYMMDD_HHMMSS to filenames?" onclick="timestampToggle();">
+						<input type="checkbox" id="settings-timestamptoggle" name="settings-timestamptoggle" value="settings-timestamptoggle"> Timestamp Exports
+					</div>
+
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
@@ -366,7 +373,7 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentRevision = 35;
+		let currentRevision = 36;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -393,7 +400,7 @@ function println(msg){
 
 		// settings
 		let initSettings = {
-			'version':'1.3.1',
+			'version':'1.3.2',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15,
@@ -414,6 +421,7 @@ function println(msg){
 			'notifyToggle':true,
 			'tippyToggle':true,
 			'multitabToggle':true,
+			'timestampToggle':true,
 			'debugMode': false,
 			'editMode':true,
 			'safeMode': false,
@@ -573,6 +581,7 @@ function println(msg){
 		settingsNotify = document.getElementById('settings-notifytoggle'),
 		settingsTippy = document.getElementById('settings-tippytoggle'),
 		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
+		settingsTimestamp = document.getElementById('settings-timestamptoggle'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsShortcuts = document.getElementById('menu-shortcuts-holder'),
@@ -595,7 +604,7 @@ function println(msg){
 		pLen = 0, paused = false,
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
-		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0},
+		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0}, newBG = '',
 		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		showNotify = false, navMouseOver = false,
@@ -603,7 +612,8 @@ function println(msg){
 		demosLocked = true, autoCompleteExport = false,
 		syncdataEditor, syncdataPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false,
-		cocodingRecompile = false;
+		cocodingRecompile = false,
+		p5pop, p5popStream, p5popActive = false
 		;
 
 		// force off
@@ -700,6 +710,8 @@ function println(msg){
 		let iconGift = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-gift"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>';
 
 		let iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
+
+		let iconMaximize = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>';
 
 		let iconMoreVertical = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>';
 
@@ -906,9 +918,9 @@ function println(msg){
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					if(developBranch){
-						this.socket = io('https://p5live-server-develop.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
+						this.socket = io('https://cocoding.p5live.org/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}else{
-						this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
+						this.socket = io('https://cocoding.p5live.org/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}
 				}
 				this.rgaConnect();
@@ -1833,6 +1845,7 @@ function println(msg){
 				//p5varsReset();
 
 				sketchLoaded = true;
+				popStream();
 				syncdataParse(); // promise for syncdata if active
 				if(sketchLoaded && cocodingRecompile && settings.cocoding.level == 'admin'){
 					cocode.recompile(true);
@@ -1917,6 +1930,7 @@ function println(msg){
 			notifyToggleUpdate();
 			tippyToggleUpdate();
 			multitabToggleUpdate();
+			timestampToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
@@ -2129,7 +2143,7 @@ function println(msg){
 				}
 			});
 
-			exportJSON(jsonExport, 'P5L_SETTINGS_'+timeStamp()+'.json');
+			exportJSON(jsonExport, 'P5L_SETTINGS'+timeStampFile()+'.json');
 		}
 
 		function importSettings(data){
@@ -2681,7 +2695,7 @@ function println(msg){
 			if(localStorage.hasOwnProperty(sketch)){
 				sketchDetails.code = localStorage.getItem(sketch);
 				tempSketches.structure.push(sketchDetails);
-				exportJSON(tempSketches, 'P5L_' + sketch + '_' + timeStamp(sketchDetails.mod) + '.json');
+				exportJSON(tempSketches, 'P5L_' + sketch + timeStampFile(sketchDetails.mod) + '.json');
 			}else{
 				alertMsg('Sketch code missing...');
 			}
@@ -2696,10 +2710,10 @@ function println(msg){
 			if(folder !== undefined){
 				let folderObj = searchJSON(settings.sketches, 'name', folder);
 				objCopy = JSON.parse(JSON.stringify(folderObj));
-				tempType = 'FOLDER_'+ folder+'_';
+				tempType = 'FOLDER_'+ folder+'';
 			}else{
 				objCopy = JSON.parse(JSON.stringify(settings.sketches));
-				tempType = 'SKETCHES_';
+				tempType = 'SKETCHES';
 			}
 			if(!demosLocked && folder === 'demos'){
 				tempSketches.structure = exportAddCode(objCopy, true);
@@ -2716,7 +2730,7 @@ function println(msg){
 
 			let folderCount = findValues(tempSketches.structure, 'type', 'folder', 'name').length;
 			tempSketches.count = {sketches:listSketches(tempSketches.structure).length, folders:folderCount};
-			exportJSON(tempSketches, 'P5L_' + tempType + timeStamp() + '.json');
+			exportJSON(tempSketches, 'P5L_' + tempType + timeStampFile() + '.json');
 		}
 
 		function exportPurgeDemos(obj){
@@ -3523,6 +3537,11 @@ function println(msg){
 
 		// rename sketch/folder
 		function renameItem(itemName, itemType){
+			let existingItems = [];
+			for(let di of menuSketches.getElementsByClassName('drag-item')){
+				existingItems.push(di.getAttribute('data-id'));
+			}
+
 			vex.dialog.prompt({
 				message: 'Rename:',
 				value: itemName, // placeholder
@@ -3531,14 +3550,17 @@ function println(msg){
 						let newName = value.replace(/["']/g, '');
 						if(newName != '' && newName != itemName){
 							let sketchesFlat = JSON.stringify(settings.sketches);
-							if( sketchesFlat.indexOf('"'+itemName+'"') > -1 ) {
-								if( sketchesFlat.indexOf('"'+newName+'"') == -1 ) {
+							if( existingItems.indexOf(itemName) > -1 ) {
+								if( existingItems.indexOf(newName) === -1  && newName.toLowerCase() !== 'demos') {
 									let sketchesFixed = sketchesFlat.replace('"'+itemName+'"', '"'+newName+'"');
 									settings.sketches = JSON.parse(sketchesFixed);
 								}else{
 									vex.dialog.alert({
-										message:'"'+newName +'" already exists. Pick a new name',
-										callback: function(){renameItem(itemName, itemType)}
+										unsafeMessage:'"'+newName +'" already exists. <br>Pick a new name',
+										callback: function(){renameItem(itemName, itemType)},
+										afterOpen: function(){
+											vexSmall(this.rootEl);
+										}
 									})
 									return false;
 								}
@@ -3877,7 +3899,7 @@ function println(msg){
 				}
 			}
 
-			if((currCode.search('for') == -1 && currCode.search('while') == -1) || forceRecompile || force){
+			if((currCode.search(/^\s(?:for|while)(|\s)(\()/) == -1) || forceRecompile || force){
 				if(validCode){
 					if(editor.getValue().indexOf('function setup()') != -1){ // check setup exists
 						// buildSketch(); //
@@ -4036,12 +4058,12 @@ function println(msg){
 				}
 
 				// catch custom functions in preload + setup
-				for(let i=0; i<functionPos.length; i++){
-					for(let j=0; j < curPositions.length; j++){
-						let fPos = functionPos[j];
-						if(fPos >= drawPos[i].start && fPos <= drawPos[i].end){
+				for(let i=0; i < functionPos.length; i++){
+					let fPos = functionPos[i];
+					for(let j=0; j < drawPos.length; j++){
+						if(fPos >= drawPos[j].start && fPos <= drawPos[j].end){
 							// console.log(drawPos[i].name); // debug where chage occured
-							if(drawPos[i].name == 'setup' || drawPos[i].name == 'preload'){ // && !settings.cocoding.active
+							if(drawPos[j].name == 'setup' || drawPos[j].name == 'preload'){ // && !settings.cocoding.active
 								softFunction = false;
 							}
 						}
@@ -4095,7 +4117,7 @@ function println(msg){
 			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
 
-			let fullCode = codeSetup + p5custom.value + 'new p5(); sketchStatus();';
+			let fullCode = p5custom.value + codeSetup + 'new p5(); sketchStatus();';
 
 			let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },async: false});';
 
@@ -4153,7 +4175,7 @@ function println(msg){
 			nonComments = nonComments.replace(/\s*\/\/.*\n/g, '\n').replace(/\s*\/\*[\s\S]*?\*\//g, '');
 			let bgMatches = bgReg.exec(nonComments);
 			if(bgMatches != null){
-				let newBG = '';
+				newBG = '';
 				if(bgMatches[1].includes('#')){
 					newBG = bgMatches[1].replace(/["']/g, '');
 				}else{
@@ -4525,6 +4547,16 @@ function println(msg){
 			checkToggle('multitabtoggle', settings.multitabToggle, settingsMultitab, 'Multi-P5LIVE Warning');
 		}
 
+		// timestamp exports toggle
+		function timestampToggle(){
+			settings.timestampToggle = !settings.timestampToggle;
+			timestampToggleUpdate();
+		}
+
+		function timestampToggleUpdate(){
+			checkToggle('timestamptoggle', settings.timestampToggle, settingsTimestamp, 'Timestamp Exports');
+		}
+
 		//exportcode toggle
 		function exportcodeToggle(){
 			settings.exportCode = !settings.exportCode;
@@ -4796,13 +4828,9 @@ function println(msg){
 				let markedReadme = marked(request.responseText, markedOptions);
 				let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
 				markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
-				let ptContent = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
+				let p5liveabout = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
 
-				let p5liveabout = ptContent;
-				vex.dialog.alert({
-					// focusFirstInput : false,
-					unsafeMessage:p5liveabout
-				})
+				vex.dialog.alert({unsafeMessage:p5liveabout})
 			});
 		}
 
@@ -4862,13 +4890,15 @@ function println(msg){
 			});
 		}
 
+		// *** dropdown tippy here = eventual exports/recording nav
+
 
 
 		/*	EXPORT ASSETS	*/
 
 		function savePNG(){
 			if(sketchLoaded){
-				p5f.save('P5L_' + settings.fileName + '_' + timeStamp() + '.png');
+				p5f.save('P5L_' + settings.fileName + timeStampFile() + '.png');
 				if(settings.exportCode){
 					exportSketch(settings.fileName);
 					if(showNotify){
@@ -4908,10 +4938,10 @@ function println(msg){
 
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			s.innerHTML = '\n//' +settings.fileName+ '\n\n' + editor.getValue() +'\n\n'+ p5custom.value;
+			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + editor.getValue();
 			iFrameBody.appendChild(s);
 			iFrameBody.innerHTML += '\n\n';
-			download('<!DOCTYPE html>\n<html>\n'+el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + '_' + timeStamp() + '.html', 'text/html');
+			download('<!DOCTYPE html>\n<html>\n' + el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + timeStampFile() + '.html', 'text/html');
 		}
 
 		function timeDate(){
@@ -4927,6 +4957,10 @@ function println(msg){
 				d = new Date(timeInput * 1);
 			}
 			return d.toISOString().replace(/[^0-9]/g, '').slice(0, -3);
+		}
+
+		function timeStampFile(timeInput){
+			return (settings.timestampToggle) ? '_' + timeStamp(timeInput) : '';
 		}
 
 
@@ -5342,7 +5376,7 @@ function println(msg){
 
 				// autoCompleteExport = true;
 				if(autoCompleteExport){
-					exportJSON(autoCompleteList, 'P5L_AUTOCOMPLETE_'+timeStamp()+'.json');
+					exportJSON(autoCompleteList, 'P5L_AUTOCOMPLETE'+timeStampFile()+'.json');
 				}else{
 					// console.log(autoCompleteList.code);
 				}
@@ -5459,6 +5493,37 @@ function println(msg){
 		function pop720(){
 			let popWindow = window.open(window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,innerHeight=720');
 			setTimeout(function(){popWindow.innerHeight = 720;}, 100);
+		}
+
+		function popStream(force){
+			if(force){
+				p5popActive = true;
+			}
+			if(sketchLoaded && p5popActive){
+				p5popStream = p5f.document.querySelector('canvas').captureStream()
+
+				if(p5pop && !p5pop.closed){
+					p5pop.vid.srcObject = p5popStream;
+				}else{
+					// technique built upon : http://plnkr.co/edit/jDzbtPYrYItQ4peplOAN
+					let popup_html = '<!DOCTYPE html><html><head><title>P5LIVE - VISUALS STREAM</title></head><body><div id="but" style="position:fixed;right:5px;top:5px;z-index:10;border:none;color:#fff;padding:5px;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">'+iconMaximize+'</div><br><video id="vid" playsinline autoplay muted style="position:fixed;left:0;top:0;width:100vw;height:100vh;background-color:#000;"></video><script>var vid=document.getElementById("vid");document.body.style.margin="0";document.body.style.background="'+newBG+'";function openFullscreen(){if(vid.requestFullscreen) {vid.requestFullscreen(); } else if (vid.mozRequestFullScreen) { /* Firefox */ vid.mozRequestFullScreen();}else if(vid.webkitRequestFullscreen) {/* Chrome, Safari & Opera */ vid.webkitRequestFullscreen();}else if(vid.msRequestFullscreen){/* IE/Edge */ vid.msRequestFullscreen();}}<\/script><style>::-webkit-media-controls {display:none !important;}<\/style></body></html>';
+					let popup_url = URL.createObjectURL(new Blob([popup_html], {
+					  type: 'text/html'
+					}));
+					p5pop = window.open(popup_url, "P5LIVE - VISUALS STREAM", 'left=0,top=0,width=0,height=0');
+					URL.revokeObjectURL(popup_url);
+					p5pop.onload = function() {
+						p5pop.vid.srcObject = p5popStream;
+						// let ctrls = p5pop.document.getElementById("controldiv");
+						// ctrls.disabled="true";
+					}
+
+					// if p5pop closed
+					p5pop.onbeforeunload = function() {
+						p5popActive = false;
+					}
+				}
+			}
 		}
 
 		function showLoader(){

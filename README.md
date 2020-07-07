@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.3.1  
+v 1.3.2  
 cc [teddavis.org](http://teddavis.org) – 2019-2020  
 p5.js collaborative live-coding vj environment!
 
@@ -52,12 +52,13 @@ Details below to run via python webserver or nodejs/npm.
   
 ## MENU
 ### P5LIVE PANEL 
-<img src="includes/images/menu-p5live-8.png" width="220px">  
+<img src="includes/images/menu-p5live-9.png" width="220px">  
 
 - <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About, 👋 you're reading me now.  
 - <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts.  
 - <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle embeded p5.js reference.  
-- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png [+ .json], `CTRL + S`, exports image [+ snapshot of code].  
+- <img class="svg" src="includes/icons/monitor.svg" height="12px"> Visuals-only Popup, for projecting canvas output without code + interace.  
+- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png, `CTRL + S`, exports image [+ code if active in settings].  
 - <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export 1-page website (must re-link paths to custom assets).
 
 ### SETTINGS PANEL  
@@ -82,6 +83,7 @@ Details below to run via python webserver or nodejs/npm.
 - [x] Notifications, display notifications (shortcut settings + chat). 
 - [x] Tooltips, displays extra info on hover. 
 - [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
+- [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
 - Code Size, `15pt` adjust font size of editor.  
 - Code Background, [x] toggle + set color behind lines of code.  
 - Theme, select custom styling of code.
@@ -278,6 +280,9 @@ By special request (P5LIVE for remote meditation sessions?!), there's a `view on
 - COCODING, `/?cc=*****&edit=0`  
 - Solo, `/?edit=0`
 
+### VISUALS-ONLY POPUP
+Incase you want to project or stream the visuals-only (no code + interface) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch a popup with a video feed of your P5LIVE canvas. 
+
 ### EXPORT / IMPORT
 Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.json` into the browser.
 
@@ -302,16 +307,19 @@ Loads a new sketch.
 - If the browser has completely hung, (rare issue between MBP/Chrome/libraries)  
 `sudo killall coreaudiod` (first take off headphones + turndown stereo!)
 
-
 ### FUNCTIONS
 Additional custom functions are available in every sketch:  
 
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
+- `windowResize()` is set by default to keep your sketch fullscreen. Incase you're working with a smaller canvas, add `windowResized = null;` inside of your setup() to prevent automatic resizing.
 
 
 ## OFFLINE SERVER
-### Basic webserver using Python (without COCODING/OSC):  
+### Basic - Python  
+Use for quickest setup or to run multiple instances (each with their own sketches storage).  
+NO COCODING + OSC with this technique.  
+
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER` 
@@ -321,9 +329,13 @@ Additional custom functions are available in every sketch:
 - P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
 - To quit, `CTRL + C` in Terminal (or command prompt)
 
-### Fancy webserver using nodejs/npm (with COCODING/OSC):  
+Port `5000` is suggested, for alternative, just type desired one in snippet above and remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
+
+### Fancy - nodejs/npm  
+Use for all features (COCODING + OSC) + optional HTTPS mode. 
+  
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
-- Install Node.js + NPM ([official guide](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) / [binary installers](https://nodejs.org/en/download/))  
+- Install Node.js + NPM ([binary installers](https://nodejs.org/en/download/))  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER`  
 - type `npm install`, press `ENTER`  
@@ -331,12 +343,33 @@ Additional custom functions are available in every sketch:
 - P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
 - To quit, `CTRL + C` in Terminal (or command prompt)
 
+Port `5000` is suggested, for alternative, add desired port number to start command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
+
+### HTTPS
+If using **Fancy** offline server, you may want to COCODE with peers on the same local network. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you are `localhost`, any connected peers are simply `http`, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!
+
+#### Local (same network, works offline):    
+- Start P5LIVE with `npm start https`, or custom port `npm start #### https`  
+- HTTPS port is automatically 1 digit higher than P5LIVE (5000 » 5001).  
+- Share https address displayed in Terminal, ie: `https://xxxxx.local:5001`  
+- Connected peers must accept 'unsecure' (self-gen) certificate with `Advanced` button upon loading URL. Certificates are generative + cached, renewing after 60 days.  
+- Enjoy Offline Server COCODING!  
+
+#### Remote (anyone across internet w/ [ngrok](https://ngrok.com/docs#getting-started)!):  
+- Start P5LIVE offline server (see above)  
+- [Download ngrok](https://ngrok.com/download)  
+- Open another tab in Terminal, `cd` to the folder containing **ngrok**  
+- Type `ngrok http 5000` and press `ENTER` (tunnels to localhost:5000)  
+- Check output for forwarding URL to share with remote peers:  
+`https://########.ngrok.io`  
+- Enjoy Online [Self-hosted] Server COCODING!
+
 
 ## TOOLS USED
 P5LIVE is possible thanks to these amazing open-source projects.  
 Listed in order of adoption:  
 
-- [p5.js](https://p5js.org), magic – v1.0.0
+- [p5.js](https://p5js.org), magic – v1.0.x (compiled 02.07.20)
 - [ace editor](https://ace.c9.io), code editor on top
 - [peeredit / rga.js](https://github.com/jorendorff/peeredit), syncing text for cocoding
 - [socket.io](https://socket.io/), websockets for cocoding
@@ -350,13 +383,16 @@ Listed in order of adoption:
 - [Roboto Mono](https://github.com/google/roboto), font
 - [Feather Icons](https://feathericons.com), gui icons 
 - [loading.io](https://loading.io/css/), css spinning intro loader
-- [glitch.com](https://glitch.com), nodejs websocket hosting
+- ~~[glitch.com](https://glitch.com), nodejs websocket hosting~~
 - [node-osc](https://github.com/MylesBorins/node-osc), osc connection
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 - [dropzone.js](https://www.dropzonejs.com/), drag + drop importing
 - [mousetrap.js](https://craig.is/killing/mice), custom shortcut key bindings
 - [loadjs](https://github.com/muicss/loadjs/), in series loading of libs + sketch
 - [highlight.js](https://highlightjs.org/), higlighting of p5.js examples
+- [http-proxy](https://github.com/http-party/node-http-proxy), https tunneling
+- [pem](https://github.com/Dexus/pem), self-generated generative ssl certificates
+- [FHNW](https://www.fhnw.ch/), nodejs websockets cocoding-server
 
 
 ## INSPIRATION
