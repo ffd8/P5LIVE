@@ -369,7 +369,7 @@ If using **Fancy** offline server, you may want to COCODE with peers on the same
 P5LIVE is possible thanks to these amazing open-source projects.  
 Listed in order of adoption:  
 
-- [p5.js](https://p5js.org), magic – v1.0.0
+- [p5.js](https://p5js.org), magic – v1.0.x (compiled 02.07.20)
 - [ace editor](https://ace.c9.io), code editor on top
 - [peeredit / rga.js](https://github.com/jorendorff/peeredit), syncing text for cocoding
 - [socket.io](https://socket.io/), websockets for cocoding
@@ -383,7 +383,7 @@ Listed in order of adoption:
 - [Roboto Mono](https://github.com/google/roboto), font
 - [Feather Icons](https://feathericons.com), gui icons 
 - [loading.io](https://loading.io/css/), css spinning intro loader
-- [glitch.com](https://glitch.com), nodejs websocket hosting
+- ~~[glitch.com](https://glitch.com), nodejs websocket hosting~~
 - [node-osc](https://github.com/MylesBorins/node-osc), osc connection
 - [WebMidi.js](https://github.com/djipco/webmidi), midi connection
 - [dropzone.js](https://www.dropzonejs.com/), drag + drop importing
@@ -392,6 +392,7 @@ Listed in order of adoption:
 - [highlight.js](https://highlightjs.org/), higlighting of p5.js examples
 - [http-proxy](https://github.com/http-party/node-http-proxy), https tunneling
 - [pem](https://github.com/Dexus/pem), self-generated generative ssl certificates
+- [FHNW](https://www.fhnw.ch/), nodejs websockets cocoding-server
 
 
 ## INSPIRATION
