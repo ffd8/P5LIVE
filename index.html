@@ -918,9 +918,9 @@ function println(msg){
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					if(developBranch){
-						this.socket = io('https://p5live-server-develop.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
+						this.socket = io('https://cocoding.p5live.org/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}else{
-						this.socket = io('https://p5live-server.glitch.me/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
+						this.socket = io('https://cocoding.p5live.org/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}
 				}
 				this.rgaConnect();
