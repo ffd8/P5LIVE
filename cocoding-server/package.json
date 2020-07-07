@@ -33,6 +33,8 @@
   "homepage": "https://github.com/ffd8/p5live/",
   "dependencies": {
     "express": "^4.17.1",
+    "http-proxy": "^1.18.1",
+    "pem": "^1.14.4",
     "request-stats": "^3.0.0",
     "socket.io": "^2.3.0"
   }
