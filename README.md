@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.3.2  
+v 1.3.3  
 cc [teddavis.org](http://teddavis.org) – 2019-2020  
 p5.js collaborative live-coding vj environment!
 
@@ -369,7 +369,7 @@ If using **Fancy** offline server, you may want to COCODE with peers on the same
 P5LIVE is possible thanks to these amazing open-source projects.  
 Listed in order of adoption:  
 
-- [p5.js](https://p5js.org), magic – v1.0.x (compiled 02.07.20)
+- [p5.js](https://p5js.org), magic – v1.1.9
 - [ace editor](https://ace.c9.io), code editor on top
 - [peeredit / rga.js](https://github.com/jorendorff/peeredit), syncing text for cocoding
 - [socket.io](https://socket.io/), websockets for cocoding

@@ -315,7 +315,7 @@ h2{
 	padding-left:5px;
 	padding-bottom:5px;
 }
-.invisible:hover{
+.invisible, .invisible:hover{
 	opacity:0.3 !important;
 }
 .feather {

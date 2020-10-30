@@ -166,19 +166,22 @@
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE</div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
-					<button class="menu-button tippy invisible" disabled onclick="loadAbout();" data-title="About P5LIVE">
+					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="About P5LIVE">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
 					</button>
 					<button class="menu-button tippy" onclick="hideSettings();" data-title="Hide Settings">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
 					</button>
-					<button class="menu-button tippy invisible" disabled onclick="showRef();" data-title="p5.js Referenc">
+					<button class="menu-button tippy invisible"  onclick="hideSettings();" data-title="p5.js Referenc">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
-					<button class="menu-button tippy invisible" disabled onclick="savePNG();" data-title="Export Snapshot<br>PNG [+ CODE]">
+					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="Visuals-only Popup">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+					</button>
+					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="Export Snapshot<br>PNG [+ CODE]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
-					<button class="menu-button tippy invisible" disabled onclick="saveHTML();" data-title="Export HTML">
+					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
 
@@ -373,7 +376,7 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentRevision = 36;
+		let currentRevision = 37;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -400,7 +403,7 @@ function println(msg){
 
 		// settings
 		let initSettings = {
-			'version':'1.3.2',
+			'version':'1.3.3',
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15,
@@ -5321,7 +5324,7 @@ function println(msg){
 
 										if(paramsCollect.indexOf(param.name) === -1){
 											paramsCollect.push(param.name);
-											let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?p[^>]*>/g, '').replace(/\n/gi, ' ');
+											let paramDesc = param.description.substring(0, param.description.length-1).replace(/<.*?[^>]*>/g, '').replace(/\n/gi, ' ');
 											classParams.push({'name':param.name, 'description':paramDesc});
 										}
 									})
