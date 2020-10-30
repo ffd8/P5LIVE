@@ -1,6 +1,6 @@
 {
-  "revision": 29,
-  "version": "1.0.0",
+  "revision": 37,
+  "version": "1.1.9",
   "codeKey": [
     {
       "[n]ame": "function/constant",
@@ -424,6 +424,12 @@
     {
       "n": "noErase",
       "p": [],
+      "t": "m"
+    },
+    {
+      "p": [
+        "error"
+      ],
       "t": "m"
     },
     {
@@ -1081,7 +1087,8 @@
         "path",
         "normalize",
         "[successCallback]",
-        "[failureCallback]"
+        "[failureCallback]",
+        "[fileType]"
       ],
       "t": "m"
     },
@@ -1097,7 +1104,8 @@
       "p": [
         "path",
         "[successCallback]",
-        "[failureCallback]"
+        "[failureCallback]",
+        "[fileType]"
       ],
       "t": "m"
     },
@@ -1808,6 +1816,11 @@
       "t": "m"
     },
     {
+      "n": "isLooping",
+      "p": [],
+      "t": "m"
+    },
+    {
       "n": "push",
       "p": [],
       "t": "m"
@@ -1972,14 +1985,14 @@
     {
       "n": "select",
       "p": [
-        "name"
+        "selectors"
       ],
       "t": "m"
     },
     {
       "n": "select",
       "p": [
-        "name",
+        "selectors",
         "[container]"
       ],
       "t": "m"
@@ -1987,14 +2000,14 @@
     {
       "n": "selectAll",
       "p": [
-        "name"
+        "selectors"
       ],
       "t": "m"
     },
     {
       "n": "selectAll",
       "p": [
-        "name",
+        "selectors",
         "[container]"
       ],
       "t": "m"
@@ -2165,14 +2178,29 @@
     },
     {
       "n": "createRadio",
-      "p": [],
+      "p": [
+        "containerElement"
+      ],
       "t": "m"
     },
     {
       "n": "createRadio",
       "p": [
-        "[divId]"
+        "containerElement",
+        "[name]"
       ],
+      "t": "m"
+    },
+    {
+      "n": "createRadio",
+      "p": [
+        "name"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "createRadio",
+      "p": [],
       "t": "m"
     },
     {
@@ -2189,26 +2217,42 @@
     },
     {
       "n": "createInput",
+      "p": [
+        "value"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "createInput",
+      "p": [
+        "value",
+        "[type]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "createInput",
       "p": [],
       "t": "m"
     },
     {
       "n": "createInput",
       "p": [
-        "[value]",
-        "[type]"
+        "[value]"
       ],
       "t": "m"
     },
     {
       "n": "createFileInput",
-      "p": [],
+      "p": [
+        "callback"
+      ],
       "t": "m"
     },
     {
       "n": "createFileInput",
       "p": [
-        "[callback]",
+        "callback",
         "[multiple]"
       ],
       "t": "m"
@@ -2507,7 +2551,7 @@
     {
       "n": "autoplay",
       "p": [
-        "autoplay"
+        "shouldAutoplay"
       ],
       "t": "m"
     },
@@ -4407,24 +4451,6 @@
     {
       "n": "loadTable",
       "p": [
-        "filename",
-        "options"
-      ],
-      "t": "m"
-    },
-    {
-      "n": "loadTable",
-      "p": [
-        "filename",
-        "options",
-        "[callback]",
-        "[errorCallback]"
-      ],
-      "t": "m"
-    },
-    {
-      "n": "loadTable",
-      "p": [
         "filename"
       ],
       "t": "m"
@@ -4433,6 +4459,8 @@
       "n": "loadTable",
       "p": [
         "filename",
+        "[extension]",
+        "[header]",
         "[callback]",
         "[errorCallback]"
       ],
@@ -5460,8 +5488,7 @@
       "n": "add",
       "p": [
         "v1",
-        "v2",
-        "target"
+        "v2"
       ],
       "t": "m"
     },
@@ -5469,7 +5496,8 @@
       "n": "add",
       "p": [
         "v1",
-        "v2"
+        "v2",
+        "[target]"
       ],
       "t": "m"
     },
@@ -5532,8 +5560,7 @@
       "n": "sub",
       "p": [
         "v1",
-        "v2",
-        "target"
+        "v2"
       ],
       "t": "m"
     },
@@ -5541,13 +5568,70 @@
       "n": "sub",
       "p": [
         "v1",
-        "v2"
+        "v2",
+        "[target]"
       ],
       "t": "m"
     },
     {
       "n": "mult",
       "p": [
+        "n"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "x",
+        "y"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "x",
+        "y",
+        "[z]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "arr"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "v"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "x",
+        "y"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "x",
+        "y",
+        "[z]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "v",
         "n"
       ],
       "t": "m"
@@ -5557,14 +5641,47 @@
       "p": [
         "v",
         "n",
-        "target"
+        "[target]"
       ],
       "t": "m"
     },
     {
       "n": "mult",
       "p": [
-        "v",
+        "v0",
+        "v1"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "v0",
+        "v1",
+        "[target]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "v0",
+        "arr"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "mult",
+      "p": [
+        "v0",
+        "arr",
+        "[target]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
         "n"
       ],
       "t": "m"
@@ -5572,6 +5689,55 @@
     {
       "n": "div",
       "p": [
+        "x",
+        "y"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "x",
+        "y",
+        "[z]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "arr"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "v"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "x",
+        "y"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "x",
+        "y",
+        "[z]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "v",
         "n"
       ],
       "t": "m"
@@ -5581,15 +5747,41 @@
       "p": [
         "v",
         "n",
-        "target"
+        "[target]"
       ],
       "t": "m"
     },
     {
       "n": "div",
       "p": [
-        "v",
-        "n"
+        "v0",
+        "v1"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "v0",
+        "v1",
+        "[target]"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "v0",
+        "arr"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "div",
+      "p": [
+        "v0",
+        "arr",
+        "[target]"
       ],
       "t": "m"
     },
@@ -5732,8 +5924,7 @@
       "p": [
         "v1",
         "v2",
-        "amt",
-        "target"
+        "amt"
       ],
       "t": "m"
     },
@@ -5742,7 +5933,8 @@
       "p": [
         "v1",
         "v2",
-        "amt"
+        "amt",
+        "[target]"
       ],
       "t": "m"
     },
@@ -6716,7 +6908,15 @@
     {
       "n": "specularMaterial",
       "p": [
-        "v1"
+        "gray"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "specularMaterial",
+      "p": [
+        "gray",
+        "[alpha]"
       ],
       "t": "m"
     },
@@ -6724,8 +6924,18 @@
       "n": "specularMaterial",
       "p": [
         "v1",
-        "[v2]",
-        "[v3]"
+        "v2",
+        "v3"
+      ],
+      "t": "m"
+    },
+    {
+      "n": "specularMaterial",
+      "p": [
+        "v1",
+        "v2",
+        "v3",
+        "[alpha]"
       ],
       "t": "m"
     },
