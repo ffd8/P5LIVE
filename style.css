@@ -352,6 +352,21 @@ h2{
 	width:100%;
 	height:30px;
 }
+.menu-sketches-buttons-extended{
+	display:none;
+	flex-direction: row;
+	padding-left:0px;
+	margin-bottom: 0px;
+	position:relative;
+	height:30px;
+	border-top:1px solid #888;
+}
+.menu-sketches-buttons-extended .menu-button{
+	background:#444;
+}
+.menu-sketches-buttons-extended .menu-button:hover{
+	background:#222;
+}
 #menu-sketches-filter{
 	position:relative;
 	width:100%;

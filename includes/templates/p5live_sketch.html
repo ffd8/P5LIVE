@@ -28,6 +28,7 @@
 		var p5code = p5p.getElementById('p5-code');
 		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
 		var pmsg = '';
+		var chalkboard;
 
 		function pingReady(scriptName, scriptCode, scriptCallback){
 			window.parent.pongReady(scriptName, scriptCode, scriptCallback);
@@ -165,6 +166,23 @@
 
 		function parseData(obj){
 			// placeholder function;
+		}
+
+
+		// chalkboard
+		var p5live = {};
+		p5live.chalkboard = function(chalkboardSketch){
+			if(parent.chalkboardInit){
+				// console.log(JSON.stringify(parent.chalkboardFrame.layer))
+				let chalkboard = parent.chalkboardFrame.chalkboard;
+				let chalkboardSelected = parent.chalkboardFrame.chalkboardSel;
+				if(chalkboardSketch !== undefined){
+					chalkboardSelected = chalkboardSketch;
+				}
+				return chalkboard[chalkboardSelected];
+			}else{
+				return createGraphics(4, 4);
+			}
 		}
 
 	</script>

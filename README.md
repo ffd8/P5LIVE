@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.3.3  
+v 1.3.4  
 cc [teddavis.org](http://teddavis.org) – 2019-2020  
 p5.js collaborative live-coding vj environment!
 
@@ -8,13 +8,14 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + N` » new sketch
 - `CTRL + ENTER` » softCompile
 - `CTRL + SHIFT + ENTER` » hardCompile
-- `CTRL + A` » autocompile toggle
 - `CTRL + E` » editor toggle
 - `CTRL + M` » menu toggle
+- `CTRL + A` » autocompile toggle
 - `CTRL + ,` » settings toggle
+- `CTRL + R` » references toggle
+- `CTRL + B` » chalkboard toggle
 - `CTRL + T` » tidy code
 - `CTRL + SPACE` » autocomplete
-- `CTRL + R` » references toggle
 - `CTRL + C` » cursor toggle
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
@@ -31,19 +32,19 @@ Clearing browser history/data will likely erase all sketches + settings.
 localStorage is unique and isolated per http[s]:domain:port,  
 so export/import to migrate between online / offline / browsers.
 
-The file structure changed in 1.3.0, so make sure all copies of P5LIVE are up to date.  
-You can import any old sketches, but newly saved ones won't open in  versions < 1.3.0.
+The file structure changed in v1.3, so make sure all copies of P5LIVE are up to date.  
+You can import any old sketches, but newly saved ones won't open in  versions < 1.3.
 
 
 ## INSTALL
 Online: [p5live.org](https://p5live.org)
 
-Offline: [github.com/ffd8/p5live](https://github.com/ffd8/p5live)   
+Offline: [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-server)   
 Details below to run via python webserver or nodejs/npm.
 
 
 ## GETTING STARTED
-### LIVE-CODE IN 5... 4... 3...  
+### LIVE-CODE IN 3... 2... 1...  
 <img src="includes/images/menu-sketches-new-7.png" width="220px">  
 
 - <img class="svg" src="includes/icons/file-plus.svg" height="12px"> Create New Sketch or `CTRL + N` and start coding!  
@@ -52,12 +53,17 @@ Details below to run via python webserver or nodejs/npm.
   
 ## MENU
 ### P5LIVE PANEL 
-<img src="includes/images/menu-p5live-9.png" width="220px">  
+<img src="includes/images/menu-p5live-10.png" width="220px">  
 
 - <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About, 👋 you're reading me now.  
 - <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts.  
 - <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle embeded p5.js reference.  
+- <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboard, `CTRL + B`, toggle chalkboard over for annotations.  
 - <img class="svg" src="includes/icons/monitor.svg" height="12px"> Visuals-only Popup, for projecting canvas output without code + interace.  
+- <img class="svg" src="includes/icons/save.svg" height="12px"> Export, click to reveal sub-menu:  
+
+<img src="includes/images/menu-p5live-export-1.png" width="220px">
+
 - <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png, `CTRL + S`, exports image [+ code if active in settings].  
 - <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export 1-page website (must re-link paths to custom assets).
 
@@ -247,6 +253,27 @@ Hover over functions for `parameters` tooltip, click to read the full detailed r
 <img src="includes/images/refs-example-1.png" width="230px">  
 
 Beyond params and descriptions, the example's code is now embedded with js highlighting.
+
+### CHALKBOARD
+Teaching a class with P5LIVE and need to explain a mathematical concept or highlight code?  
+Toggle a <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboard from the P5LIVE Panel or shortcut `CTRL + B`.
+
+<img src="includes/images/chalkboard-1.png" width="500px">
+
+Use `DRAWINGS` pulldown to activate 1 of 10 isolated layers to draw on. All drawings remain until either pressing the `🗑️` clear button or refreshing the page. Adjust `COLOR`, `WEIGHT`, `OPACITY` of the *CHALK*, separately adjust the `COLOR` and `OPACITY` of the board (background). This enables you to completely cover up the editor/visuals below for explaining concepts. Dim the *BOARD* if annotating or highlighting code (dim opacity of *CHALK*).
+
+You can even access the drawing within your p5 sketch!  
+
+```
+p5live.chalkboard() // grabs active drawing
+p5live.chalkboard(#) // grabs specific drawing (1 – 10)
+```
+This drawing can then be displayed and played with as a manual drawing layer within your sketch:
+
+```
+image(p5live.chalkboard(), 0, 0);
+```
+
 
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  

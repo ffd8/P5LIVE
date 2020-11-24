@@ -29,9 +29,21 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?34">
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?37">
+	<style type="text/css">
+		#chalkboard{
+			position:fixed;
+			width:100vw;//calc(100vw - 250px);
+			height:100vh;
+			z-index:99;
+			border:none;
+			outline:none;
+			display:none;
+		}
+	</style>
 </head>
 <body>
+	<iframe id="chalkboard"></iframe>
 	<div id="p5-drop"> </div>
 	<div id="loader">
 		<div id="loader-msg">
@@ -76,16 +88,26 @@
 					<button class="menu-button tippy" onclick="showRef();this.blur();" data-title="p5.js Reference">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
+
+					<button class="menu-button tippy" onclick="toggleChalkboard();this.blur();" data-title="Toggle Chalkboard">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+					</button>
 					<button class="menu-button tippy" onclick="popStream(true);this.blur();" data-title="Visuals-only Popup">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
 					</button>
+
+					<button id="button-export" class="menu-button menu-button-extend tippy" onclick="toggleButtonsExtended('export');this.blur();" data-title="Export">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+					</button>
+				</div>
+
+				<div class="menu-sketches-buttons-extended" id="p5live-buttons-export" style="">
 					<button class="menu-button tippy" onclick="savePNG();this.blur();" data-title="Export Snapshot<br>PNG [+ CODE]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
 					<button class="menu-button tippy" onclick="saveHTML();this.blur();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
-
 				</div>
 			</div>
 
@@ -175,15 +197,19 @@
 					<button class="menu-button tippy invisible"  onclick="hideSettings();" data-title="p5.js Referenc">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
+
+					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="Toggle Chalkboard">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+					</button>
 					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="Visuals-only Popup">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
 					</button>
-					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="Export Snapshot<br>PNG [+ CODE]">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+
+					<button id="button-export" class="menu-button menu-button-extend tippy invisible" onclick="hideSettings();" data-title="Export">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
 					</button>
-					<button class="menu-button tippy invisible" onclick="hideSettings();" data-title="Export HTML">
-						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-					</button>
+
+
 
 				</div>
 			</div>
@@ -376,6 +402,7 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
+		let currentVersion = '1.3.4';
 		let currentRevision = 37;
 		let developBranch = false;
 
@@ -403,7 +430,7 @@ function println(msg){
 
 		// settings
 		let initSettings = {
-			'version':'1.3.3',
+			'version':currentVersion,
 			'revision':currentRevision,
 			'welcome':true,
 			'fontSize':15,
@@ -463,6 +490,11 @@ function println(msg){
 					'name':'References Toggle'
 					,'key':'ctrl+r'
 					,'callback':'toggleRef()'
+				}
+				,'chalkboard':{
+					'name':'Chalkboard Toggle'
+					,'key':'ctrl+b'
+					,'callback':'toggleChalkboard()'
 				}
 				,'autocompile':{
 					'name':'Live-Coding Toggle'
@@ -540,7 +572,10 @@ function println(msg){
 			'theme': 'ace/theme/gob',
 			'themeBG': '#011F2F',
 			'themeBGactive': true,
-			'refresh':true
+			'refresh':true,
+			'chalkboard': {
+				'backgroundColor':'#00280A', 'backgroundOpacity':.75, 'strokeColor':'#ffffff', 'strokeWeight':10, 'strokeOpacity':1.0,
+			}
 		}
 
 		// init variabless
@@ -599,6 +634,7 @@ function println(msg){
 		loader = document.getElementById('loader'),
 		loaderSub = document.getElementById('loader-sub'),
 		notify = document.getElementById('notify'),
+		chalkboard = document.getElementById('chalkboard'),
 		shortcutRecording = false, p5Remote = false,
 		menuVisible = false, refVisible = false, settingsVisible = false,
 		settings = getSettings(),
@@ -617,6 +653,10 @@ function println(msg){
 		cocodingFirstTime = false, cocodingShowMic = false,
 		cocodingRecompile = false,
 		p5pop, p5popStream, p5popActive = false
+		;
+
+		var chalkboardVisible = false, chalkboardInit = false, chalkboardSettingsUpdate,
+		chalkboardFrame
 		;
 
 		// force off
@@ -696,80 +736,45 @@ function println(msg){
 		p5editor.style.visibility = 'visible';
 
 		// ICONS!
-		let iconBookmark = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>';
-
-		let iconCheckSquare = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-square"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
-
-		let iconEye = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
-
-		let iconFolderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
-
-		let iconFolderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
-
-		let iconFolderExpand = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
-
-		let iconFileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
-
-		let iconGift = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-gift"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>';
-
-		let iconSettings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
-
-		let iconMaximize = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>';
-
-		let iconMoreVertical = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>';
-
-		let iconMoreHorizontal = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>';
-
-		let iconRadio = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
-
-		let iconRename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
-
-		let iconRefresh = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>';
-
-		let iconExport = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
-
-		let iconRemove = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
-
-		let iconCopy ='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-
-		let iconUnlock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>';
-
-		let iconLock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
-
-		let iconMicOff = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic-off"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
-
-		let iconMic = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
-
-		let iconEdit = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
-
-		let iconToggleLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>';
-
-		let iconToggleRight = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>';
-
-		let iconScreencast = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
-
-		let iconPlay = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
-
-		let iconPower = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>';
-
-		let iconXCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
-
-		let iconCheckCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
-
-		let iconShield = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>';
-
-		let iconUser = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
-
-		let iconUsers = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
-
-		let iconUserCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
-
-		let iconAlignLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-align-left"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>';
-
-		let iconFilter = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>';
-
-		let iconX = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
-
+		var icon = {};
+		icon.alignLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-align-left"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>';
+		icon.bookmark = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-bookmark"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>';
+		icon.checkCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-circle"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>';
+		icon.checkSquare = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check-square"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>';
+		icon.copy ='<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+		icon.edit = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>';
+		icon.export = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
+		icon.eye = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+		icon.fileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+		icon.filter = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>';
+		icon.folderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
+		icon.folderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+		icon.folderExpand = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-plus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
+		icon.gift = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-gift"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect x="2" y="7" width="20" height="5"></rect><line x1="12" y1="22" x2="12" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>';
+		icon.lock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ff0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>';
+		icon.maximize = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-maximize"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>';
+		icon.micOff = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic-off"><line x1="1" y1="1" x2="23" y2="23"></line><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"></path><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
+		icon.mic = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-mic"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>';
+		icon.moreVertical = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-vertical"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>';
+		icon.moreHorizontal = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>';
+		icon.play = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+		icon.power = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-power"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path><line x1="12" y1="2" x2="12" y2="12"></line></svg>';
+		icon.radio = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
+		icon.refresh = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-refresh-cw"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>';
+		icon.remove = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+		icon.rename = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class=" feather-small feather-edit-3"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>';
+		icon.save = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>';
+		icon.screencast = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-radio"><circle cx="12" cy="12" r="2"></circle><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"></path></svg>';
+		icon.settings = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>';
+		icon.shield = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-shield"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>';
+		icon.toggleLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-left"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="8" cy="12" r="3"></circle></svg>';
+		icon.toggleRight = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-toggle-right"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"></rect><circle cx="16" cy="12" r="3"></circle></svg>';
+		icon.user = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>';
+		icon.users = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+		icon.userCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user-check"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>';
+		icon.unlock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>';
+		icon.x = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
+		icon.xCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
 
 
 		// code-line color picker
@@ -1163,9 +1168,9 @@ function println(msg){
 							if(settings.cocoding.lockdown){
 								if(settings.cocoding.level == 'admin'){
 									if(users[i].writemode){
-										userNav = '<a class=" tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleRight+'</a>';
+										userNav = '<a class=" tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+icon.toggleRight+'</a>';
 									}else{
-										userNav = '<a class=" tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+iconToggleLeft+'</a>';
+										userNav = '<a class=" tippy" onclick="cocode.toggleEdit(\''+users[i].nick+'\')" data-title="Toggle EditMode">'+icon.toggleLeft+'</a>';
 									}
 								}
 							}
@@ -1173,7 +1178,7 @@ function println(msg){
 							let active = '';
 							let marq = '';
 							let writeClass = '';
-							let userIcon = iconUsers;
+							let userIcon = icon.users;
 							if(settings.cocoding.lockdown){
 								if(users[i].request){
 									writeClass = ' write-req ';
@@ -1182,7 +1187,7 @@ function println(msg){
 								}
 							}
 							if(users[i].level == 'admin'){
-								userIcon = iconShield;
+								userIcon = icon.shield;
 							}
 
 							if(users[i].nick.length > 10){marq = 'marq';}
@@ -1195,7 +1200,7 @@ function println(msg){
 							if(users[i].usesyncdata && (!settings.cocoding.lockdown || users[i].writemode)){
 								userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
 									userNavIcons += '<div class="cocoding-sketch-button-user">'+userIcon+'</div>';
-									userNavIcons += '<div class="cocoding-sketch-button-radio">'+iconRadio+'</div>';
+									userNavIcons += '<div class="cocoding-sketch-button-radio">'+icon.radio+'</div>';
 								userNavIcons += '</div>';
 							}else{
 								userNavIcons += '<div class="cocoding-sketch-button">'+userIcon+'</div>';
@@ -1204,9 +1209,9 @@ function println(msg){
 							if(cocodingShowMic){
 								userNavIconsCount++;
 								if(1==1){
-									userNavIcons += '<div class="cocoding-sketch-button">'+iconMicOff+'</div>';
+									userNavIcons += '<div class="cocoding-sketch-button">'+icon.micOff+'</div>';
 								}else{
-									userNavIcons += '<div class="cocoding-sketch-button">'+iconMic+'</div>';
+									userNavIcons += '<div class="cocoding-sketch-button">'+icon.mic+'</div>';
 								}
 							}
 
@@ -1235,7 +1240,7 @@ function println(msg){
 						}
 					}
 						let selfNav = '';
-						let userIcon = iconUser;
+						let userIcon = icon.user;
 
 
 						let writeClass = '';
@@ -1248,7 +1253,7 @@ function println(msg){
 						}
 
 						if(settings.cocoding.level == 'admin'){
-							userIcon = iconShield;
+							userIcon = icon.shield;
 						}
 
 						let marq = '';
@@ -1258,7 +1263,7 @@ function println(msg){
 						let userNavIcons = '<div class="cocoding-nav">';
 						if(settings.syncdata.active && (!settings.cocoding.lockdown || settings.cocoding.writemode)){
 							userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
-								userNavIcons += '<div class="cocoding-sketch-button-user">'+iconRadio+'</div>';
+								userNavIcons += '<div class="cocoding-sketch-button-user">'+icon.radio+'</div>';
 								userNavIcons += '<div class="cocoding-sketch-button-radio">'+userIcon+'</div>';
 							userNavIcons += '</div>';
 						}else{
@@ -1268,18 +1273,18 @@ function println(msg){
 						if(cocodingShowMic){
 							userNavIconsCount++;
 							if(1==1){
-								userNavIcons += '<div class="cocoding-sketch-button">'+iconMicOff+'</div>';
+								userNavIcons += '<div class="cocoding-sketch-button">'+icon.micOff+'</div>';
 							}else{
-								userNavIcons += '<div class="cocoding-sketch-button">'+iconMic+'</div>';
+								userNavIcons += '<div class="cocoding-sketch-button">'+icon.mic+'</div>';
 							}
 						}
 
 						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown){
-							let userEditIcon = iconEdit;
+							let userEditIcon = icon.edit;
 							let userEditRequest = 'onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')"';
 							let userEditTippy = 'Request Edit';
 							if(settings.cocoding.writemode){
-								userEditIcon = iconCheckSquare
+								userEditIcon = icon.checkSquare
 								userEditRequest = '';
 								userEditTippy = 'You can Edit!';
 							}
@@ -1313,7 +1318,7 @@ function println(msg){
 				// incase no admin is present, offer it
 				let renameAdmin = '';
 				if(!settings.cocoding.hasAdmin){
-					renameAdmin = '<span id="cocoding-rename-admin" class="tippy" data-title="Claim Admin" onclick="cocode.checkAdmin();" style="cursor:pointer;width:25px;">'+iconShield+'</span>'; //
+					renameAdmin = '<span id="cocoding-rename-admin" class="tippy" data-title="Claim Admin" onclick="cocode.checkAdmin();" style="cursor:pointer;width:25px;">'+icon.shield+'</span>'; //
 				}
 
 				vex.dialog.open({
@@ -1695,6 +1700,7 @@ function println(msg){
 		/* CMD-KEYS (removing key conflicts, replaced below w/o conflict) */
 		editor.commands.removeCommands([
 			'backspace' // ctrl + h
+			,'gotoleft' // ctrl + f
 			,'gotoright' // ctrl + f
 			,'golineup' // ctrl + p mac
 			,'golinedown' // ctrl + n
@@ -1719,6 +1725,16 @@ function println(msg){
 			name: 'gotoright',
 			bindKey: { win: 'Right', mac: 'Right' },
 			exec: function(e,t) { e.navigateRight(t.times) },
+			multiSelectAction: 'forEach',
+			scrollIntoView: 'cursor',
+			readOnly:!0
+		});
+
+		// replace gotoleft w/o ctrl + b
+		editor.commands.addCommand({
+			name: 'gotoleft',
+			bindKey: { win: 'Left', mac: 'Left' },
+			exec: function(e,t) { e.navigateLeft(t.times) },
 			multiSelectAction: 'forEach',
 			scrollIntoView: 'cursor',
 			readOnly:!0
@@ -2062,6 +2078,33 @@ function println(msg){
 			}
 		}
 
+		// toggle extended P5LIVE nav buttons
+		function toggleButtonsExtended(elm){
+			let ebNav = document.getElementById('p5live-buttons-' + elm);
+			let ebButton = document.getElementById('button-' + elm);
+
+			let toggleOn = false;
+			if(ebNav.style.display !== "flex"){
+				toggleOn = true;
+			}
+
+			let ebButtons = document.getElementsByClassName('menu-button-extend');
+			for(let eb of ebButtons){
+				eb.style.background = "#666";
+			}
+
+			let ebList = document.getElementsByClassName('menu-sketches-buttons-extended');
+			for(let eb of ebList){
+				eb.style.display = "none";
+			}
+
+			if(toggleOn){
+				ebNav.style.display = "flex";
+				ebButton.style.background='#444';
+			}
+			resizeSketchesHolder();
+		}
+
 
 
 		/*	SKETCHES TASKS	*/
@@ -2337,12 +2380,12 @@ function println(msg){
 
 						// if item folder, filter-reveal all children
 						if(fi.getAttribute('data-type') == 'folder'){
-							fi.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+							fi.getElementsByClassName('menu-folder-svg')[0].innerHTML = icon.folderEmpty;
 							let fiKids = fi.getElementsByClassName('drag-item');
 							for(let fik of fiKids){
 								fik.classList.add('filter');
 								if(fik.getAttribute('data-type') == 'folder'){
-									fik.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+									fik.getElementsByClassName('menu-folder-svg')[0].innerHTML = icon.folderEmpty;
 								}
 							}
 						}
@@ -2351,7 +2394,7 @@ function println(msg){
 						let folderParents = getParentFolders(fi);
 						for(let fp of folderParents){
 							fp.classList.add('filter');
-							fp.getElementsByClassName('menu-folder-svg')[0].innerHTML = iconFolderEmpty;
+							fp.getElementsByClassName('menu-folder-svg')[0].innerHTML = icon.folderEmpty;
 						}
 					} else {
 						// else hide item
@@ -2378,7 +2421,7 @@ function println(msg){
 				// }
 
 				// change filter icon based on state
-				filterClear.innerHTML = iconX;
+				filterClear.innerHTML = icon.x;
 			}else{
 				// show all if filter empty
 				for (let fi of filterItems) {
@@ -2387,7 +2430,7 @@ function println(msg){
 				// if(demosFolder != undefined){
 				// 	demosFolder.style.display = '';
 				// }
-				filterClear.innerHTML = iconFilter;
+				filterClear.innerHTML = icon.filter;
 				initSortable();
 			}
 		}
@@ -2687,7 +2730,7 @@ function println(msg){
 		}
 
 		// export single sketch to JSON
-		function exportSketch(sketch){
+		function exportSketch(sketch, customTimestamp){
 			let tempSketches = {};
 			tempSketches.version = settings.version;
 			tempSketches.revision = settings.revision;
@@ -2698,7 +2741,11 @@ function println(msg){
 			if(localStorage.hasOwnProperty(sketch)){
 				sketchDetails.code = localStorage.getItem(sketch);
 				tempSketches.structure.push(sketchDetails);
-				exportJSON(tempSketches, 'P5L_' + sketch + timeStampFile(sketchDetails.mod) + '.json');
+				let tempTimestamp = timeStampFile(sketchDetails.mod);
+				if(customTimestamp !== undefined){
+					tempTimestamp = customTimestamp;
+				}
+				exportJSON(tempSketches, 'P5L_' + sketch + tempTimestamp + '.json');
 			}else{
 				alertMsg('Sketch code missing...');
 			}
@@ -3045,12 +3092,12 @@ function println(msg){
 
 				// if sketch, update sketches name too
 				if(objStructure[k].type == 'sketch'){
-					outputData += level + iconFileLines +'<span '+ricDup+'>'+ ric.name + '</span><br>';
+					outputData += level + icon.fileLines +'<span '+ricDup+'>'+ ric.name + '</span><br>';
 				}
 
 				// if folder, recurse deeper
 				if(ric.type == 'folder' && ric.name != 'demos'){
-					outputData += level + iconFolderEmpty +'<span '+ricDup+'>'+ ric.name + '</span><br>';
+					outputData += level + icon.folderEmpty +'<span '+ricDup+'>'+ ric.name + '</span><br>';
 					outputData = recursiveImportCheck(ric.contents, '&nbsp;&nbsp;'+level, outputData);
 				}
 			};
@@ -3280,10 +3327,10 @@ function println(msg){
 								selSelected = true;
 							}
 
-							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;loadSketch(\''+d.name+'\')">'+iconFileLines + '<div class="item-label">' +d.name+'</div></div></li>';
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;loadSketch(\''+d.name+'\')">'+icon.fileLines + '<div class="item-label">' +d.name+'</div></div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
-							let icon = iconFolderExpand;
+							let iconSel = icon.folderExpand;
 							let navFolder = 'onmouseenter="showNav(this, \''+d.name+'\', \'folder\');" onmouseleave="hideNav(this);"';
 							if(parFolder == 'demos'){
 								navFolder = '';
@@ -3299,15 +3346,15 @@ function println(msg){
 								navFolder = '';
 							}
 							if(d.toggle == 'expand'){
-								icon = iconFolderCollapse;
+								iconSel = icon.folderCollapse;
 							}
 
 							if(d.contents.length == 0){
-								icon = iconFolderEmpty;
+								iconSel = icon.folderEmpty;
 								d.toggle = 'collapse';
 							}
 							html += '<ul '+demoFolder+' class="item-folder ' + d.toggle + demoClass + '" data-type="folder" data-id="'+d.name+'" data-mod="'+d.mod+'" data-toggle="'+d.toggle+'" ondragover="dragOver(this)" >';
-							html += '<div class="folder-title" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="navMouseOver = false;toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+icon+'</span><div class="item-label">' +d.name + '</div></div></div> ';
+							html += '<div class="folder-title" '+navFolder+'><div class="menu-sketch-nav"></div><div onclick="navMouseOver = false;toggle(this);" class="menu-folder '+marq+'"><span class="menu-folder-svg">'+iconSel+'</span><div class="item-label">' +d.name + '</div></div></div> ';
 							html += recurse(d.contents, curFolder, parFolder);
 							html += '</ul>';
 							curFolder = '';
@@ -3385,14 +3432,14 @@ function println(msg){
 				let divFolder = elm.parentNode.parentNode;
 				if(divFolder.dataset.toggle == 'expand'){
 					divFolder.dataset.toggle = 'collapse';
-					elm.innerHTML = iconFolderExpand;
+					elm.innerHTML = icon.folderExpand;
 					divFolder.childNodes.forEach((k) => {
 						if(k.tagName == 'UL' || k.tagName == 'LI')
 							k.style.display = 'none';
 					});
 				}else{
 					divFolder.dataset.toggle = 'expand';
-					elm.innerHTML = iconFolderCollapse;
+					elm.innerHTML = icon.folderCollapse;
 					divFolder.childNodes.forEach((k) => {
 						if(k.tagName == 'UL' || k.tagName == 'LI')
 							k.style.display = 'block';
@@ -3407,37 +3454,37 @@ function println(msg){
 			if(elmType == 'folder'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+iconFolderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+icon.folderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button">'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
-						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+iconMoreHorizontal+'</a>';
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+icon.moreHorizontal+'</a>';
 					}
 				}
 
 			}else if(elmType == 'sketch'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+iconAlignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+iconRename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+iconExport+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+iconRemove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+iconBookmark+'</a><a class="menu-sketch-button">'+iconMoreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button">'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
-						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+iconMoreHorizontal+'</a>';
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+icon.moreHorizontal+'</a>';
 					}
 				}
 
 			}else if(elmType == 'demos'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="refreshDemos(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconRefresh+'</a>';
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="refreshDemos(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+icon.refresh+'</a>';
 			}else if(elmType == 'demo-sketch'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\', true)" data-title="Inspect">'+iconAlignLeft+'</a>';
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\', true)" data-title="Inspect">'+icon.alignLeft+'</a>';
 			}else if(elmType == 'user'){
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="toggleEdit(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+iconToggleLeft+'</a>';
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button tippy" onclick="toggleEdit(\''+elmID+'\', \''+elmType+'\')" data-title="Refresh">'+icon.toggleLeft+'</a>';
 			}else if(elmType == 'self'){
 				let reqClass = '';
 				if(settings.cocoding.request){
 					reqClass = ' req ';
 				}
-				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a id="request-'+elmID+'" class="menu-sketch-button tippy '+reqClass+'" onclick="cocode.editRequest(\''+elmID+'\')" data-title="Request Edit">'+iconEdit+'</a>';
+				elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a id="request-'+elmID+'" class="menu-sketch-button tippy '+reqClass+'" onclick="cocode.editRequest(\''+elmID+'\')" data-title="Request Edit">'+icon.edit+'</a>';
 			}
 
 			loadTippy();
@@ -3478,7 +3525,7 @@ function println(msg){
 
 		function addFolderProcess(newID, subFolder){
 			let tc = timeDate();
-			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'" data-mod="'+tc+'"><a onclick="toggle(this);">'+iconFolderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
+			let newFolder = '<ul class="item-folder" ondragover="dragOver(this)" data-type="folder" data-toggle="expand" data-id="'+newID+'" data-mod="'+tc+'"><a onclick="toggle(this);">'+icon.folderEmpty+'</a> Folder<div class="sketches" style="display:block" ></div></ul>';
 			if(subFolder != undefined){
 				let tempHTML = menuSketches.querySelectorAll('[data-id="'+subFolder+'"]')[0];
 				tempHTML.innerHTML = newFolder + tempHTML.innerHTML;
@@ -3593,9 +3640,9 @@ function println(msg){
 		// taking out the trash
 		function removeItem(dataID, elmType){
 			let removeDetails = '';
-			let icon = iconFileLines;
+			let iconSel = icon.fileLines;
 			if(elmType == 'folder'){
-				icon = iconFolderCollapse;
+				iconSel = icon.folderCollapse;
 				let elmContents = searchJSON(settings.sketches, 'name', dataID)[0];
 				if(elmContents.type == 'folder' && elmContents.contents.length > 0){
 					removeDetails = '<div class="remove-header">Includes:</div>'
@@ -3609,7 +3656,7 @@ function println(msg){
 				}
 			}
 			vex.dialog.confirm({
-				unsafeMessage: 'Delete '+elmType+': <br><span class="remove-icon">'+icon +'</span> <span class="remove-dump importdump-dup">'+ dataID + '</span><br>'+removeDetails,
+				unsafeMessage: 'Delete '+elmType+': <br><span class="remove-icon">'+iconSel +'</span> <span class="remove-dump importdump-dup">'+ dataID + '</span><br>'+removeDetails,
 				callback: function (value) {
 					if (value) {
 						removeItemProcess(dataID);
@@ -4365,7 +4412,7 @@ function println(msg){
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'blur');
 			}
-			if(settings.ecoRender && sketchLoaded && !settings.cocoding.sync && settings.editMode){
+			if(settings.ecoRender && sketchLoaded && !settings.cocoding.sync && settings.editMode && !chalkboardVisible){
 				if(document.activeElement !== p5frame){
 					p5f.noLoop();
 				}
@@ -4701,6 +4748,11 @@ function println(msg){
 				menuVisible = true;
 				// menuPanel.style.overflow = "hidden";
 			}
+
+			// toggle position of chalkboard
+			if(chalkboardFrame !== undefined){
+				chalkboardFrame.checkMenu();
+			}
 		}
 
 
@@ -4901,9 +4953,10 @@ function println(msg){
 
 		function savePNG(){
 			if(sketchLoaded){
-				p5f.save('P5L_' + settings.fileName + timeStampFile() + '.png');
+				let tempTimestamp = timeStampFile();
+				p5f.save('P5L_' + settings.fileName + tempTimestamp + '.png');
 				if(settings.exportCode){
-					exportSketch(settings.fileName);
+					exportSketch(settings.fileName, tempTimestamp); // *****
 					if(showNotify){
 						notifyMsg('Snapshot Saved');
 					}
@@ -5134,7 +5187,7 @@ function println(msg){
 			let refModules = refHolder.getElementsByClassName('module');
 
 			if(filterInput.value != ''){
-				filterInputIcon.innerHTML = iconX;
+				filterInputIcon.innerHTML = icon.x;
 				refSearch = filterInput.value;
 				refHolder.scrollTop = 0;
 				for(let fi of refFilteredItems){
@@ -5158,7 +5211,7 @@ function println(msg){
 				filterInput.focus();
 			}else{
 				refSearch = '';
-				filterInputIcon.innerHTML = iconFilter;
+				filterInputIcon.innerHTML = icon.filter;
 				for(let fi of refFilteredItems){
 					fi.classList.remove('ref-hide');
 				}
@@ -5192,7 +5245,7 @@ function println(msg){
 
 		function allRef(){
 			let refValue = '';
-			ref.innerHTML = '<div class="ref-sticky"><div class="ref-title">p5.js References <a onclick="randomRef(0);" class="ref-random tippy" data-title="Surprise!">'+iconGift+'</a><br></div><div class="ref-search-holder"><span id="ref-search-icon" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)" onclick="filterRefClear(true)">'+iconFilter+'</span><input type="text" id="ref-search" placeholder="Search..." onkeyup="filterRef()" value="'+refSearch+'" onfocus="this.selectionStart = this.selectionEnd = this.value.length;" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)"></div></div>';
+			ref.innerHTML = '<div class="ref-sticky"><div class="ref-title">p5.js References <a onclick="randomRef(0);" class="ref-random tippy" data-title="Surprise!">'+icon.gift+'</a><br></div><div class="ref-search-holder"><span id="ref-search-icon" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)" onclick="filterRefClear(true)">'+icon.filter+'</span><input type="text" id="ref-search" placeholder="Search..." onkeyup="filterRef()" value="'+refSearch+'" onfocus="this.selectionStart = this.selectionEnd = this.value.length;" class="tippy-left" data-title="Filter References<br>(separate words for an <i>and</i> search)"></div></div>';
 			let all = [];
 			let grouped = groupBy(refList, (c) => c.module);
 			Object.keys(grouped).forEach(function(k){
@@ -5493,11 +5546,51 @@ function println(msg){
 
 
 		/*	MISC */
+
+		/* CHALKBOARD */
+		function toggleChalkboard(force){
+			chalkboardVisible = !chalkboardVisible;
+			if(force != undefined){
+				chalkboardVisible = force;
+			}
+
+			if(chalkboardVisible){
+				chalkboard.style.display = 'inline';
+				editor.blur();
+				if(!chalkboardInit){
+					let opts = new URLSearchParams(settings.chalkboard).toString();
+					chalkboard.src = "includes/templates/p5live_chalkboard.html?"+opts;
+					chalkboardInit = true;
+					chalkboardFrame = chalkboard.contentWindow;
+				}
+				// chalkboard.style.width = "calc(100vw - 250px)"; // *** add to menu/ref/settings toggle
+			}else{
+				chalkboard.style.display = 'none';
+				editor.focus();
+			}
+		}
+
+		function chalkboardSettings(param, opts){
+			settings.chalkboard[param] = opts;
+				updateSettings();
+				console.log("updating: "+param+" to: "+opts);
+
+			// clearTimeout(chalkboardSettingsUpdate);
+			// chalkboardSettingsUpdate = setTimeout(function(){
+			// 	settings.chalkboard[param] = opts;
+			// 	updateSettings();
+			// 	console.log("updating: "+param+" to: "+opts);
+			// }, 500);
+		}
+
+
+		/* IG sized popout */
 		function pop720(){
 			let popWindow = window.open(window.location.href, 'mywindow', 'menubar=0,resizable=0,width=720,innerHeight=720');
 			setTimeout(function(){popWindow.innerHeight = 720;}, 100);
 		}
 
+		/* Stream Visuals only to another window */
 		function popStream(force){
 			if(force){
 				p5popActive = true;
@@ -5509,7 +5602,7 @@ function println(msg){
 					p5pop.vid.srcObject = p5popStream;
 				}else{
 					// technique built upon : http://plnkr.co/edit/jDzbtPYrYItQ4peplOAN
-					let popup_html = '<!DOCTYPE html><html><head><title>P5LIVE - VISUALS STREAM</title></head><body><div id="but" style="position:fixed;right:5px;top:5px;z-index:10;border:none;color:#fff;padding:5px;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">'+iconMaximize+'</div><br><video id="vid" playsinline autoplay muted style="position:fixed;left:0;top:0;width:100vw;height:100vh;background-color:#000;"></video><script>var vid=document.getElementById("vid");document.body.style.margin="0";document.body.style.background="'+newBG+'";function openFullscreen(){if(vid.requestFullscreen) {vid.requestFullscreen(); } else if (vid.mozRequestFullScreen) { /* Firefox */ vid.mozRequestFullScreen();}else if(vid.webkitRequestFullscreen) {/* Chrome, Safari & Opera */ vid.webkitRequestFullscreen();}else if(vid.msRequestFullscreen){/* IE/Edge */ vid.msRequestFullscreen();}}<\/script><style>::-webkit-media-controls {display:none !important;}<\/style></body></html>';
+					let popup_html = '<!DOCTYPE html><html><head><title>P5LIVE - VISUALS STREAM</title></head><body><div id="but" style="position:fixed;right:5px;top:5px;z-index:10;border:none;color:#fff;padding:5px;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">'+icon.maximize+'</div><br><video id="vid" playsinline autoplay muted style="position:fixed;left:0;top:0;width:100vw;height:100vh;background-color:#000;"></video><script>var vid=document.getElementById("vid");document.body.style.margin="0";document.body.style.background="'+newBG+'";function openFullscreen(){if(vid.requestFullscreen) {vid.requestFullscreen(); } else if (vid.mozRequestFullScreen) { /* Firefox */ vid.mozRequestFullScreen();}else if(vid.webkitRequestFullscreen) {/* Chrome, Safari & Opera */ vid.webkitRequestFullscreen();}else if(vid.msRequestFullscreen){/* IE/Edge */ vid.msRequestFullscreen();}}<\/script><style>::-webkit-media-controls {display:none !important;}<\/style></body></html>';
 					let popup_url = URL.createObjectURL(new Blob([popup_html], {
 					  type: 'text/html'
 					}));
@@ -5521,10 +5614,12 @@ function println(msg){
 						// ctrls.disabled="true";
 					}
 
-					// if p5pop closed
-					p5pop.onbeforeunload = function() {
-						p5popActive = false;
-					}
+					var p5popTick = setInterval(function() {
+				      if (p5pop.closed) {
+				        p5popActive = false;
+				        clearInterval(p5popTick);
+				      }
+				    }, 500);
 				}
 			}
 		}
@@ -5565,6 +5660,14 @@ function println(msg){
 			}
 		}
 
+		function checkMenu(){
+			if(menuPanel.style.marginRight == '0px'){
+				return true;
+			}else{
+				return false;
+			}
+		}
+
 		/* General Alert */
 		function alertMsg(txt){
 			vex.dialog.alert({
@@ -5583,7 +5686,7 @@ function println(msg){
 			notify.innerHTML = txt;
 			notify.style.display = 'block';
 			notify.style.opacity = 1.0;
-			if(menuPanel.style.marginRight == '0px'){
+			if(checkMenu()){
 				notify.style.right = '255px';
 			}else{
 				notify.style.right = '5px';
@@ -5761,7 +5864,7 @@ function println(msg){
 				},
 				{
 					type: 'submit',
-					text: settings.syncdata.active ? '► RE-RUN' : '► RUN', // iconPlay
+					text: settings.syncdata.active ? '► RE-RUN' : '► RUN', // icon.play
 					click: function updateCode () {
 						settings.syncdata.active = true;
 						updateSettings();
@@ -6139,14 +6242,14 @@ function println(msg){
 			let settingsLockdown = document.getElementById('cocode-lockdown');
 			let syncdataBtn = document.getElementById('syncdata-button');
 			if(settings.cocoding.lockdown){
-				settingsLockdown.innerHTML = iconLock;
+				settingsLockdown.innerHTML = icon.lock;
 				if(settings.cocoding.level != 'admin'){
 					syncdataBtn.setAttribute('disabled', 'disabled');
 				}else if(settings.cocoding.writemode){
 					syncdataBtn.removeAttribute('disabled');
 				}
 			}else{
-				settingsLockdown.innerHTML = iconUnlock;
+				settingsLockdown.innerHTML = icon.unlock;
 				syncdataBtn.removeAttribute('disabled');
 			}
 			toggleButtonActive(settingsLockdown, settings.cocoding.lockdown);
