@@ -753,6 +753,7 @@ h2{
 	margin-right:0px;
 	max-width:60px !important;
 	overflow:hidden;
+	white-space: nowrap;
 	float:left;
 }
 .longname{
@@ -772,7 +773,7 @@ h2{
 .chat-item-self{
 }
 .chat-item:nth-child(even) {background: #333}
-.chat-item:nth-child(odd) {background: #333}
+.chat-item:nth-child(odd) {background: #393939}
 .pending-chat{
 	opacity:.25;
 	animation: sync 1.5s linear infinite;
@@ -1395,6 +1396,11 @@ li{
 	background:#666;
 	padding:0 1px 0 1px;
 	box-sizing: border-box;
+}
+.vex pre code{
+	border:none;
+	background:none;
+	padding:0;
 }
 .vex-dialog-button:hover{
 	background:#ddd;

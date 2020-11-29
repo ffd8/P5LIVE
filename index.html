@@ -249,7 +249,7 @@
 						</div>
 						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-compile code on keyup" onclick="autoCompileToggle();">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile">
-						Live Coding</div> 
+						Live Coding</div>
 							<select id="settings-compiletimer" style="" class="tippy" data-title="Delay from keyUp to compile" onchange="compileTimerChange();">
 									<option value="250">250ms</option>
 									<option value="500">500ms</option>
@@ -404,7 +404,7 @@ function println(msg){
 		/* INIT */
 		let currentVersion = '1.3.4';
 		let currentRevision = 37;
-		let developBranch = false;
+		let developBranch = true;
 
 		// resetP5(); // manual reset
 
@@ -905,7 +905,7 @@ function println(msg){
 					if(!showCursors){
 						el.style.display = 'none';
 					}
-					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;">'+pos.id+'</div>';
+					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;white-space: nowrap;">'+pos.id+'</div>';
 					p5editor.appendChild(el);
 				}
 			}
@@ -1532,7 +1532,7 @@ function println(msg){
 				let msgHTML = '<div class="chat-item" '+msgID+'>';
 					msgHTML += '<div class="chatmsg '+pendingChat+'">';
 					let marq = '';
-					if(msg.nick.length > 9){marq = 'longname marq';}
+					if(msg.nick.length > 7){marq = 'longname marq';}
 					msgHTML += '<div class="chatname '+marq+'" style="background:'+msg.color+';">'+msg.nick+'</div>&nbsp;';
 					msgHTML += '<span class="chattext ">'+linkify(msg.text)+'</span>';
 					msgHTML += '</div>';
@@ -1570,7 +1570,10 @@ function println(msg){
 					}
 
 					for (let key in this.users) {
-						marker.cursors.push({row:this.users[key].cursor.row, column:this.users[key].cursor.column, color:this.users[key].color, id:this.users[key].nick});
+						// don't show own cursor, if lockdown, only show those with write access
+						if((!settings.cocoding.lockdown || (settings.cocoding.lockdown && this.users[key].writemode)) && this.users[key].nick !== settings.cocoding.nick){
+							marker.cursors.push({row:this.users[key].cursor.row, column:this.users[key].cursor.column, color:this.users[key].color, id:this.users[key].nick});
+						}
 					};
 					marker.redraw();
 			}
@@ -2048,7 +2051,7 @@ function println(msg){
 
 			// test multiple open
 			// inspiration: https://stackoverflow.com/a/43291970/10885535
-			if(settings.multitabToggle){
+			if(settings.multitabToggle && settings.editMode){
 				localStorage.openpages = Date.now();
 				var onLocalStorageEvent = function(e){
 					if(e.key == "openpages"){
@@ -2643,6 +2646,24 @@ function println(msg){
 			}
 		}
 
+		window.addEventListener('beforeunload', function (e) {
+		    e.preventDefault();
+		    // alert('are you sure?')
+		    // backupSketches();
+		    // e.returnValue = '';
+		});
+
+		function backupSketches(){
+			let tempPath = '/backup';
+
+			let request = new XMLHttpRequest();
+			request.open('POST', tempPath, true);
+			request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+			let tempSketches = exportSketchesPrepare();
+			tempSketches.timestamp = timeStampFile();
+			request.send(JSON.stringify(tempSketches));
+		}
+
 		function loadSketchTemplate(){
 			let tempPath = 'includes/templates/p5live_sketch.html?' + makeid(5);;
 			let request = new XMLHttpRequest();
@@ -2752,7 +2773,7 @@ function println(msg){
 		}
 
 		// export all/folder[s] w/ sketches to JSON
-		function exportSketches(folder){
+		function exportSketchesPrepare(folder){
 			let tempSketches = {}, objCopy, tempType;
 			tempSketches.version = settings.version;
 			tempSketches.revision = settings.revision;
@@ -2780,7 +2801,13 @@ function println(msg){
 
 			let folderCount = findValues(tempSketches.structure, 'type', 'folder', 'name').length;
 			tempSketches.count = {sketches:listSketches(tempSketches.structure).length, folders:folderCount};
-			exportJSON(tempSketches, 'P5L_' + tempType + timeStampFile() + '.json');
+
+			return {'sketches':tempSketches, 'type':tempType};
+		}
+
+		function exportSketches(folder){
+			let tempSketches = exportSketchesPrepare(folder);
+			exportJSON(tempSketches.sketches, 'P5L_' + tempSketches.type + timeStampFile() + '.json');
 		}
 
 		function exportPurgeDemos(obj){
@@ -3623,9 +3650,10 @@ function println(msg){
 								localStorage.removeItem(itemName);
 								if(settings.fileName == itemName){
 									settings.fileName = newName;
-									if(!settings.cocoding.active){
-										setTimeout(function(){ loadSketch(newName); }, 100);
-									}
+									// *** removing below if no prob, no need to refresh??
+									// if(!settings.cocoding.active){
+									// 	setTimeout(function(){ loadSketch(newName); }, 100);
+									// }
 								}
 							}
 						}
@@ -4369,7 +4397,7 @@ function println(msg){
 		function autoCompileUpdate(){
 			checkToggle('autoCompile', settings.autoCompile, settingsAutoMode, 'Live Coding');
 			if(settings.autoCompile){
-				settingsCompileTimer.style.display = 'block';
+				settingsCompileTimer.style.display = 'inline';
 			}else{
 				settingsCompileTimer.style.display = 'none';
 			}

@@ -9,4 +9,6 @@
 /package-lock.json
 /lib
 /electronjs
+/_stats
+/_backups
 
