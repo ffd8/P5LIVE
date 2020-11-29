@@ -662,7 +662,7 @@ function println(msg){
 		loaderSub = document.getElementById('loader-sub'),
 		notify = document.getElementById('notify'),
 		chalkboard = document.getElementById('chalkboard'),
-		shortcutRecording = false, p5Remote = false,
+		shortcutRecording = false,
 		menuVisible = false, refVisible = false, settingsVisible = false,
 		settings = getSettings(),
 		validCode = true, sketchesFirstTime = true,
@@ -682,8 +682,9 @@ function println(msg){
 		p5pop, p5popStream, p5popActive = false
 		;
 
-		var chalkboardVisible = false, chalkboardInit = false, chalkboardSettingsUpdate,
-		chalkboardFrame
+		var chalkboardVisible = false, chalkboardInit = false,
+		chalkboardSettingsUpdate, chalkboardFrame,
+		p5l = {'remote':false, 'fancy':false}
 		;
 
 		// force off
@@ -949,7 +950,7 @@ function println(msg){
 				this.initialized = false;
 				this.socket = '';
 				this.namespace = namespace;
-				if(!p5Remote){
+				if(!p5l.remote){
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					if(developBranch){
@@ -1936,10 +1937,24 @@ function println(msg){
 		function loadSettings(){
 			// check online or offline
 			if(window.location.hostname.includes('teddavis.org')){
-				p5Remote = true;
+				p5l.remote = true;
 			}else{
-				p5Remote = false;
+				p5l.remote = false;
 				document.title = 'P5LIVE – OFFLINE';
+
+				// check fancy
+				let request = new XMLHttpRequest();
+				request.open('GET', './fancy', true);
+				request.send();
+				request.addEventListener('load', function(){
+					if(request.status !== 404){
+							p5l.fancy = true;
+							console.log("P5LIVE is running Offline Server – Fancy!");
+					}else{
+						console.log("P5LIVE is running Offline Server – Simple");
+						return false;
+					}
+				});
 			}
 
 			// make sure all settings are there
@@ -2693,7 +2708,7 @@ function println(msg){
 		}
 
 		window.addEventListener('beforeunload', function (e) {
-			if(!settings.cocoding.active && !cocodingUnload){
+			if(!settings.cocoding.active && !cocodingUnload){ // ignore if toggling COCODING
 			    e.preventDefault();
 			    let freq = settings.backup.frequency;
 			    let lastBackup = settings.backup.last;
@@ -2723,7 +2738,6 @@ function println(msg){
 			    		}
 			    	break;
 			    }
-
 			}
 		});
 
@@ -2731,8 +2745,8 @@ function println(msg){
 			let tempSketches = exportSketchesPrepare();
 			tempSketches.sketches.settings = exportSettingsPrepare();
 			tempSketches.timestamp = timeStampFile();
-			p5Remote = true;
-			if(!p5Remote){
+
+			if(!p5l.remote && p5l.fancy){
 				let tempPath = '/backup';
 				let request = new XMLHttpRequest();
 				request.open('POST', tempPath, true);
@@ -4248,7 +4262,7 @@ function println(msg){
 
 			// load scripts remote vs local
 			for(let i=0; i < includeScripts.length; i++){
-				if(p5Remote){
+				if(p5l.remote){
 					scriptsCol.push(includeScripts[i].remote);
 				}else{
 					scriptsCol.push(includeScripts[i].local);

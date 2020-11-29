@@ -231,6 +231,10 @@ if(!online){
 	  fs.writeFile(dir + '/P5L_BACKUP'+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
 	  res.send('OK');
 	});
+
+	app.get('/fancy', express.json({type: '*/*'}), (req, res) => {
+	  res.send('fancy');
+	});
 }
 
 io.set('transports', ['websocket']);
