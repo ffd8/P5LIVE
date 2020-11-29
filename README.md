@@ -29,11 +29,13 @@ Sketches are **_ONLY_** saved in your browser's localStorage.
 Export all (<img class="svg" src="includes/icons/download.svg" height="12px">) sketches + settings regularly.  
 Clearing browser history/data will likely erase all sketches + settings.
 
+In [Fancy (nodejs) Offline Server](https://github.com/ffd8/P5LIVE#offline-server), see `Settings Panel` for auto-saving backups to P5LIVE folder.
+
 localStorage is unique and isolated per http[s]:domain:port,  
 so export/import to migrate between online / offline / browsers.
 
 The file structure changed in v1.3, so make sure all copies of P5LIVE are up to date.  
-You can import any old sketches, but newly saved ones won't open in  versions < 1.3.
+You can import old sketches, but newly saved ones won't open in versions < 1.3.
 
 
 ## INSTALL
@@ -76,7 +78,7 @@ Details below to run via python webserver or nodejs/npm.
 - <img class="svg" src="includes/icons/download.svg" height="12px"> Export Settings
   
 #### Options
-- [x] Live Coding, auto-compile code on keyup, recompiles if error-free.  
+- [x] Live Coding, [500ms], auto-compile error-free code on keyup, with set delay.  
 - [x] Eco Render, noLoop() if window loses focus (save computer resources).  
 - [x] Cursor, display cursor (when editor is hidden).  
 - [x] Console, display console messages (print / errors / warnings).  
@@ -90,9 +92,11 @@ Details below to run via python webserver or nodejs/npm.
 - [x] Tooltips, displays extra info on hover. 
 - [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
 - [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
+- Backups, [off], (offline fancy server) auto backup sketches to P5LIVE folder.  
 - Code Size, `15pt` adjust font size of editor.  
 - Code Background, [x] toggle + set color behind lines of code.  
-- Theme, select custom styling of code.
+- Code Theme, [Green on Black], select custom styling of editor.
+- Code Keybinding, [ace], select custom keybindings of editor.
 
 #### Shortcuts
 Customize keyboard shortcuts by clicking on name + press a new key combination.  

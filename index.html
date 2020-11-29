@@ -249,8 +249,8 @@
 						</div>
 						<div class="tippy-left" style="cursor:help;float:left;" data-title="Auto-compile code on keyup" onclick="autoCompileToggle();">
 						<input type="checkbox" id="settings-autocompile" name="settings-autocompile" value="settings-autocompile">
-						Live Coding</div>
-							<select id="settings-compiletimer" style="" class="tippy" data-title="Delay from keyUp to compile" onchange="compileTimerChange();">
+						Live Coding</div> 
+							<select id="settings-compiletimer" class="tippy menu-settings-dropdown" style="" data-title="Delay for compile after keyUp" onchange="compileTimerChange();">
 									<option value="250">250ms</option>
 									<option value="500">500ms</option>
 									<option value="1000">1000ms</option>
@@ -310,12 +310,24 @@
 						<input type="checkbox" id="settings-timestamptoggle" name="settings-timestamptoggle" value="settings-timestamptoggle"> Timestamp Exports
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Backup sketches to P5LIVE/_backups folder">
+						Backups:
+						<select id="menu-settings-backup" class="menu-settings-dropdown" onchange=""> <!-- setBackups(this.selectedIndex); -->
+							<option value="">Disabled</option>
+							<option value="">On Close</option>
+							<option value="">Daily</option>
+							<option value="">Weekly</option>
+							<option value="">Monthly</option>
+						</select>
+						<button class="menu-settings-dropdown backup-now" onclick="backupSketches();">Now</button>
+					</div>
+
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Editor font-size">
-						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeAdjust(this.value);"> pt
+						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeSet(this.value);"> pt
 					</div>
 
 					<div class="tippy-left" style="cursor:help;" data-title="Color behind lines of code">
@@ -323,8 +335,8 @@
 						<div id="pickr" class="pickr"></div>
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Set editor theme">
-						Theme:
-						<select id="menu-settings-theme" onchange="setTheme(this.selectedIndex);">
+						Code Theme:
+						<select id="menu-settings-theme"  class="menu-settings-dropdown" onchange="setTheme(this.selectedIndex);">
 							<option value="ace/theme/gob">Green on Black</option>
 							<option value="ace/theme/ambiance">Ambiance</option>
 							<option value="ace/theme/cobalt">Cobalt</option>
@@ -332,6 +344,17 @@
 							<option value="ace/theme/twilight">Twilight</option>
 						</select>
 					</div>
+
+					<div class="tippy-left" style="cursor:help;" data-title="Set keybindings <br>(adjust shortcuts as needed)">
+						Code Keybinding:
+						<select id="menu-settings-keybindings" class="menu-settings-dropdown" onchange="setKeybinding(this.value);">
+							<option value="keybinding">Ace</option>
+							<option value="sublime">Sublime</option>
+							<option value="vim">Vim</option>
+							<option value="emacs">Emacs</option>
+						</select>
+					</div>
+
 
 				<h2>SHORTCUTS</h2>
 					<div id="menu-shortcuts-holder">
@@ -433,7 +456,6 @@ function println(msg){
 			'version':currentVersion,
 			'revision':currentRevision,
 			'welcome':true,
-			'fontSize':15,
 			'autoCompile':true,
 			'compileTimer':500,
 			'ecoRender': true,
@@ -441,10 +463,6 @@ function println(msg){
 			'console': true,
 			'fullscreenMode':false,
 			'fileName': '',
-			'linenumbers': false,
-			'autocomplete': false,
-			'lockcode':true,
-			'passEditorKeys':false,
 			'menuMode': true,
 			'menutab':true,
 			'exportCode':true,
@@ -519,12 +537,12 @@ function println(msg){
 				,'fontbigger':{
 					'name':'Increase Fontsize'
 					,'key':'ctrl+='
-					,'callback':'fontSizeAdjust(parseFloat(settings.fontSize) + 0.25)'
+					,'callback':'fontSizeAdjust(0.25)'
 				}
 				,'fontsmaller':{
 					'name':'Decrease Fontsize'
 					,'key':'ctrl+-'
-					,'callback':'fontSizeAdjust(parseFloat(settings.fontSize) - 0.25)'
+					,'callback':'fontSizeAdjust(- 0.25)'
 				}
 				,'pause':{
 					'name':'Pause'
@@ -555,6 +573,9 @@ function println(msg){
 
 
 			},
+			'editor':{
+				'fontSize':15, 'keybinding':'keybinding', 'linenumbers':false, 'autocomplete': false, 'lockcode':true, 'passEditorKeys':false,
+			},
 			'sketches': [],
 			'statscount': 0,
 			'syncdata': {
@@ -575,6 +596,9 @@ function println(msg){
 			'refresh':true,
 			'chalkboard': {
 				'backgroundColor':'#00280A', 'backgroundOpacity':.75, 'strokeColor':'#ffffff', 'strokeWeight':10, 'strokeOpacity':1.0,
+			},
+			'backups' : {
+				'frequency':0, 'last':0,
 			}
 		}
 
@@ -630,6 +654,7 @@ function println(msg){
 		panelSettings = document.getElementById('panel-settings'),
 		menuSwitch = document.getElementById('menu-switch'),
 		menuTheme = document.getElementById('menu-settings-theme'),
+		menuKeybindings = document.getElementById('menu-settings-keybindings'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
 		loader = document.getElementById('loader'),
 		loaderSub = document.getElementById('loader-sub'),
@@ -650,7 +675,7 @@ function println(msg){
 		curPos, curPositions = [], updateCursor, showCursors = false, notifyTimer,
 		demosLocked = true, autoCompleteExport = false,
 		syncdataEditor, syncdataPresets = [],
-		cocodingFirstTime = false, cocodingShowMic = false,
+		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
 		p5pop, p5popStream, p5popActive = false
 		;
@@ -1701,100 +1726,112 @@ function println(msg){
 
 
 		/* CMD-KEYS (removing key conflicts, replaced below w/o conflict) */
-		editor.commands.removeCommands([
-			'backspace' // ctrl + h
-			,'gotoleft' // ctrl + f
-			,'gotoright' // ctrl + f
-			,'golineup' // ctrl + p mac
-			,'golinedown' // ctrl + n
-			,'gotolinestart' // ctrl + a
-			,'gotolineend' // ctrl + e
-			,'jumptomatching' // ctrl + p windows
-			,'splitline' // ctrl + o (totally removed)
-			,'transposeletters' // ctrl + t (totally removed)
-			]);
+		function setEditorCommands(){
+			if(settings.editor.keybinding == 'vim'){
+				ace.config.loadModule('ace/keyboard/vim', function(module) {
+				   var VimApi = module.CodeMirror.Vim;
+				   VimApi.defineEx('write', 'w', function(cm, input) {
+				      recompile(true);
+				   });
+				});
+			}else{
+				editor.commands.removeCommands([
+					'backspace' // ctrl + h
+					,'gotoleft' // ctrl + f
+					,'gotoright' // ctrl + f
+					,'golineup' // ctrl + p mac
+					,'golinedown' // ctrl + n
+					,'gotolinestart' // ctrl + a
+					,'gotolineend' // ctrl + e
+					,'jumptomatching' // ctrl + p windows
+					,'splitline' // ctrl + o (totally removed)
+					,'transposeletters' // ctrl + t (totally removed)
+					]);
 
-		// replace backspace w/o ctrl + h
-		editor.commands.addCommand({
-			name: 'backspace',
-			bindKey: { win: 'Shift-Backspace|Backspace', mac: 'Ctrl-Backspace|Shift-Backspace|Backspace' },
-			exec: function(e) { e.remove('left') },
-			multiSelectAction: 'forEach',
-			scrollIntoView: 'cursor'
-		});
+				// replace backspace w/o ctrl + h
+				editor.commands.addCommand({
+					name: 'backspace',
+					bindKey: { win: 'Shift-Backspace|Backspace', mac: 'Ctrl-Backspace|Shift-Backspace|Backspace' },
+					exec: function(e) { e.remove('left') },
+					multiSelectAction: 'forEach',
+					scrollIntoView: 'cursor'
+				});
 
-		// replace gotoright w/o ctrl + f
-		editor.commands.addCommand({
-			name: 'gotoright',
-			bindKey: { win: 'Right', mac: 'Right' },
-			exec: function(e,t) { e.navigateRight(t.times) },
-			multiSelectAction: 'forEach',
-			scrollIntoView: 'cursor',
-			readOnly:!0
-		});
+				// replace gotoright w/o ctrl + f
+				editor.commands.addCommand({
+					name: 'gotoright',
+					bindKey: { win: 'Right', mac: 'Right' },
+					exec: function(e,t) { e.navigateRight(t.times) },
+					multiSelectAction: 'forEach',
+					scrollIntoView: 'cursor',
+					readOnly:!0
+				});
 
-		// replace gotoleft w/o ctrl + b
-		editor.commands.addCommand({
-			name: 'gotoleft',
-			bindKey: { win: 'Left', mac: 'Left' },
-			exec: function(e,t) { e.navigateLeft(t.times) },
-			multiSelectAction: 'forEach',
-			scrollIntoView: 'cursor',
-			readOnly:!0
-		});
+				// replace gotoleft w/o ctrl + b
+				editor.commands.addCommand({
+					name: 'gotoleft',
+					bindKey: { win: 'Left', mac: 'Left' },
+					exec: function(e,t) { e.navigateLeft(t.times) },
+					multiSelectAction: 'forEach',
+					scrollIntoView: 'cursor',
+					readOnly:!0
+				});
 
-		// replace golineup w/o ctrl + p
-		editor.commands.addCommand({
-			name: 'golineup',
-			bindKey: { win: 'Up', mac: 'Up' },
-			exec: function(e,t) { e.navigateUp(t.times) },
-			multiSelectAction: 'forEach',
-			scrollIntoView: 'cursor',
-			readOnly:!0
-		});
+				// replace golineup w/o ctrl + p
+				editor.commands.addCommand({
+					name: 'golineup',
+					bindKey: { win: 'Up', mac: 'Up' },
+					exec: function(e,t) { e.navigateUp(t.times) },
+					multiSelectAction: 'forEach',
+					scrollIntoView: 'cursor',
+					readOnly:!0
+				});
 
-		// replace golinedown w/o ctrl + n
-		editor.commands.addCommand({
-			name: 'golinedown',
-			bindKey: { win: 'Down', mac: 'Down' },
-			exec: function(e,t) { e.navigateDown(t.times) },
-			multiSelectAction: 'forEach',
-			scrollIntoView: 'cursor',
-			readOnly:!0
-		});
+				// replace golinedown w/o ctrl + n
+				editor.commands.addCommand({
+					name: 'golinedown',
+					bindKey: { win: 'Down', mac: 'Down' },
+					exec: function(e,t) { e.navigateDown(t.times) },
+					multiSelectAction: 'forEach',
+					scrollIntoView: 'cursor',
+					readOnly:!0
+				});
 
-		// replace gotolinestart w/o ctrl + a
-		editor.commands.addCommand({
-			name: "gotolinestart",
-			description: "Go to line start",
-			bindKey: { win: 'Alt-Left|Home', mac: 'Command-Left|Home' },
-			exec: function(editor) { editor.navigateLineStart(); },
-			multiSelectAction: "forEach",
-			scrollIntoView: "cursor",
-			readOnly: true
-		});
+				// replace gotolinestart w/o ctrl + a
+				editor.commands.addCommand({
+					name: "gotolinestart",
+					description: "Go to line start",
+					bindKey: { win: 'Alt-Left|Home', mac: 'Command-Left|Home' },
+					exec: function(editor) { editor.navigateLineStart(); },
+					multiSelectAction: "forEach",
+					scrollIntoView: "cursor",
+					readOnly: true
+				});
 
-		// replace gotolineend w/o ctrl + e
-		editor.commands.addCommand({
-			name: "gotolineend",
-			description: "Go to line end",
-			bindKey: { win: 'Alt-Right|End', mac: 'Command-Right|End' },
-			exec: function(editor) { editor.navigateLineEnd(); },
-			multiSelectAction: "forEach",
-			scrollIntoView: "cursor",
-			readOnly: true
-		});
+				// replace gotolineend w/o ctrl + e
+				editor.commands.addCommand({
+					name: "gotolineend",
+					description: "Go to line end",
+					bindKey: { win: 'Alt-Right|End', mac: 'Command-Right|End' },
+					exec: function(editor) { editor.navigateLineEnd(); },
+					multiSelectAction: "forEach",
+					scrollIntoView: "cursor",
+					readOnly: true
+				});
 
-		// replace jumptomatching w/o ctrl + p
-		editor.commands.addCommand({
-			name: "jumptomatching",
-			description: "Jump to matching",
-			bindKey: { win: 'Ctrl-\\', mac: 'Command-\\' },
-			exec: function(editor) { editor.jumpToMatching(); },
-			multiSelectAction: "forEach",
-			scrollIntoView: "animate",
-			readOnly: true
-		});
+				// replace jumptomatching w/o ctrl + p
+				editor.commands.addCommand({
+					name: "jumptomatching",
+					description: "Jump to matching",
+					bindKey: { win: 'Ctrl-\\', mac: 'Command-\\' },
+					exec: function(editor) { editor.jumpToMatching(); },
+					multiSelectAction: "forEach",
+					scrollIntoView: "animate",
+					readOnly: true
+				});
+			}
+		}
+
 
 		// beautify!
 		let beautifyOptions = {
@@ -1816,9 +1853,6 @@ function println(msg){
 			'e4x': false
 		}
 
-		// fix german keyboard binding for /
-		// editor.commands.bindKey("cmd-shift-7", "togglecomment")
-		// editor.commands.bindKey("ctrl-shift-7", "togglecomment")
 
 		/* DEBUG EDITOR COMMANDS + STORAGE */
 
@@ -1960,6 +1994,8 @@ function println(msg){
 			loadSketchTemplate();
 			loadHTMLTemplate();
 			loaderSub.innerHTML = 'snippets...';
+			loadKeybindings();
+			setEditorCommands();
 			loadSnippets();
 			loaderSub.innerHTML = 'SyncData presets...';
 			syncDataPresetLoad();
@@ -2246,25 +2282,26 @@ function println(msg){
 			let shortcutsList = '';
 			Object.keys(settings.shortcuts).forEach(function(sc, cc){
 				let shortcut = settings.shortcuts[sc];
+				let shortcutOG = initSettings.shortcuts[sc];
 
-				if(shortcut.init != undefined){
-					eval(shortcut.init);
+				if(shortcutOG.init != undefined){
+					eval(shortcutOG.init);
 				}else{
 					Mousetrap.bind(shortcut.key, function(){
 						if(settings.notifyToggle){
 							showNotify = true;
 						}
-						eval(shortcut.callback);
+						eval(shortcutOG.callback);
 						return false;
 					}).stopCallback = function(e, element, combo) {};
 				}
 
 				let shortcutTippy = 'Click to modify shortcut';
-				if(shortcut.tippy != undefined){
-					shortcutTippy += '<br>'+shortcut.tippy;
+				if(shortcutOG.tippy != undefined){
+					shortcutTippy += '<br>' + shortcutOG.tippy;
 				}
 
-				shortcutsList +='<div class="shortcut-item tippy-left" data-title="' + shortcutTippy + '" onclick="recordShortcut(this, \''+sc+'\')">' + shortcut.name + ' <div class="shortcut-keys" ><span id="shortcut-' + sc + '" class="shortcut-input">' + parseShortcut(shortcut.key) + '</span></div></div>';
+				shortcutsList +='<div class="shortcut-item tippy-left" data-title="' + shortcutTippy + '" onclick="recordShortcut(this, \''+sc+'\')">' + shortcutOG.name + ' <div class="shortcut-keys" ><span id="shortcut-' + sc + '" class="shortcut-input">' + parseShortcut(shortcut.key) + '</span></div></div>';
 			});
 			settingsShortcuts.innerHTML = shortcutsList;
 			loadTippy();
@@ -2647,10 +2684,13 @@ function println(msg){
 		}
 
 		window.addEventListener('beforeunload', function (e) {
-		    e.preventDefault();
+			if(!settings.cocoding.active && !cocodingUnload){
+			    e.preventDefault();
 		    // alert('are you sure?')
 		    // backupSketches();
-		    // e.returnValue = '';
+		    // e.returnValue = 'sure?';
+
+			}
 		});
 
 		function backupSketches(){
@@ -4536,13 +4576,13 @@ function println(msg){
 
 		//linenumbers toggle
 		function linenumbersToggle(){
-			settings.linenumbers = !settings.linenumbers;
+			settings.editor.linenumbers = !settings.editor.linenumbers;
 			linenumbersUpdate();
 		}
 
 		function linenumbersUpdate(){
-			checkToggle('linenumbers', settings.linenumbers, settingsLinenumbers, 'Line Numbers');
-			if(!settings.linenumbers){
+			checkToggle('linenumbers', settings.editor.linenumbers, settingsLinenumbers, 'Line Numbers');
+			if(!settings.editor.linenumbers){
 				editor.setOptions({
 					showLineNumbers: false, // false
 					showGutter: false, // false
@@ -4557,13 +4597,13 @@ function println(msg){
 
 		//autoComplete toggle
 		function autocompleteToggle(){
-			settings.autocomplete = !settings.autocomplete;
+			settings.editor.autocomplete = !settings.editor.autocomplete;
 			autocompleteUpdate();
 		}
 
 		function autocompleteUpdate(){
-			checkToggle('autocomplete', settings.autocomplete, settingsAutocomplete, 'Auto Autocomplete');
-			if(!settings.autocomplete){
+			checkToggle('autocomplete', settings.editor.autocomplete, settingsAutocomplete, 'Auto Autocomplete');
+			if(!settings.editor.autocomplete){
 				editor.setOptions({
 					enableLiveAutocompletion: false
 				});
@@ -4576,22 +4616,22 @@ function println(msg){
 
 		// lockCode toggle
 		function lockDragToggle(){
-			settings.lockcode = !settings.lockcode;
+			settings.editor.lockcode = !settings.editor.lockcode;
 			lockDragUpdate();
 		}
 
 		function lockDragUpdate(){
-			checkToggle('lockcode', settings.lockcode, settingsLockDrag, 'Lock Code on Drag');
+			checkToggle('lockcode', settings.editor.lockcode, settingsLockDrag, 'Lock Code on Drag');
 		}
 
 		// passEditorKeys toggle
 		function passEditorKeysToggle(){
-			settings.passEditorKeys = !settings.passEditorKeys;
+			settings.editor.passEditorKeys = !settings.editor.passEditorKeys;
 			passEditorKeysUpdate();
 		}
 
 		function passEditorKeysUpdate(){
-			checkToggle('passeditorkeys', settings.passEditorKeys, settingsPassEditorKeys, 'Pass-Thru Keypress');
+			checkToggle('passeditorkeys', settings.editor.passEditorKeys, settingsPassEditorKeys, 'Pass-Thru Keypress');
 		}
 
 		// notify toggle
@@ -4810,6 +4850,25 @@ function println(msg){
 			}
 		}
 
+		// load keybindings
+		function loadKeybindings(){
+			for(let i=0; i < menuKeybindings.options.length; i++){
+				let opt = menuKeybindings.options[i];
+				if(settings.editor.keybinding == opt.value){
+					setKeybinding(opt.value);
+					menuKeybindings.selectedIndex = i;
+				}
+			}
+		}
+
+		// set keybindings
+		function setKeybinding(sel){
+			settings.editor.keybinding = sel;
+			updateSettings();
+			editor.setKeyboardHandler('ace/keyboard/'+sel);
+			setEditorCommands();
+		}
+
 		// paused for launch.. to visit in future!
 		function styleMenu(){
 			// buttons
@@ -4854,17 +4913,22 @@ function println(msg){
 
 		// adjust fontsize
 		function fontSizeAdjust(newVal){
-			settings.fontSize = newVal;
+			settings.editor.fontSize = parseFloat(settings.editor.fontSize) + parseFloat(newVal);
 			updateSettings();
 			fontSizeUpdate();
 		}
 
+		function fontSizeSet(newVal){
+			settings.editor.fontSize = parseFloat(newVal);
+			updateSettings();
+			fontSizeUpdate();
+		}
 
 		function fontSizeUpdate(){
 			if(settingsFontsize !== document.activeElement){
-				settingsFontsize.value = settings.fontSize;
+				settingsFontsize.value = settings.editor.fontSize;
 			}
-			p5code.style.fontSize = settings.fontSize + 'pt';
+			p5code.style.fontSize = settings.editor.fontSize + 'pt';
 		}
 
 
@@ -5536,7 +5600,7 @@ function println(msg){
 			}
 
 			// prevent drag+drop+shift of code, while mouseDragging visuals
-			if(event.type == 'mousedown' && settings.lockdown){
+			if(event.type == 'mousedown' && settings.editor.lockcode){
 				editor.setReadOnly(true);
 			}else if(event.type == 'mouseup'){
 				if(!settings.cocoding.active || (settings.cocoding.active && (settings.cocoding.level == 'admin' || settings.cocoding.writemode || !settings.cocoding.lockdown))){
@@ -5559,7 +5623,7 @@ function println(msg){
 			let opts = getOpts(event, keyFields);
 			let copy = new KeyboardEvent(event.type, event);
 
-			if(p5editor.style.visibility != 'visible' || settings.passEditorKeys){
+			if(p5editor.style.visibility != 'visible' || settings.editor.passEditorKeys){
 				if(settings.cocoding.active && settings.cocoding.sync){
 					if(settings.cocoding.level == 'admin'){
 						p5f.dispatchEvent(copy);
@@ -5804,6 +5868,7 @@ function println(msg){
 
 		function cocodingExit(sketch){
 			cocodingReset();
+			cocodingUnload = true;
 			settings.fileName = sketch;
 			updateSettings;
 			// loadSketch(settings.fileName);

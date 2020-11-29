@@ -821,14 +821,24 @@ button[disabled]{
 .menu-settings div{
 	outline:none;
 }
-#menu-settings-theme{
-	width:50%;
-	margin-left:40px;
+.menu-settings-dropdown{
+	width:auto;
 	font-size:8pt;
 	border:1px solid #888;
 	outline:none;
 	background:none;
 	color:#fff;
+}
+.menu-settings-dropdown option{
+	padding:0;
+}
+.backup-now:hover{
+	cursor:pointer;
+	background:#444;
+}
+#menu-settings-theme{
+	/*width:50%;*/
+	/*margin-left:40px;*/
 }
 #menu-settings-bg{
 	float:right;
@@ -860,8 +870,6 @@ button[disabled]{
 }
 #settings-compiletimer{
 	display:none;
-	float:right;
-	margin:5px 10px 0;
 	outline:none;
 	border:1px solid #888;
 	background:none;
