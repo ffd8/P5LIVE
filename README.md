@@ -92,11 +92,11 @@ Details below to run via python webserver or nodejs/npm.
 - [x] Tooltips, displays extra info on hover. 
 - [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
 - [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
-- Backups, [off], (offline fancy server) auto backup sketches to P5LIVE folder.  
 - Code Size, `15pt` adjust font size of editor.  
 - Code Background, [x] toggle + set color behind lines of code.  
 - Code Theme, [Green on Black], select custom styling of editor.
-- Code Keybinding, [ace], select custom keybindings of editor.
+- Code Keybinding, [ace], select alternative keybindings of editor.
+- Backup, [off], (offline fancy) auto backup P5LIVE (sketches + settings). `Now` - on demand.  
 
 #### Shortcuts
 Customize keyboard shortcuts by clicking on name + press a new key combination.  

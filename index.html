@@ -310,18 +310,6 @@
 						<input type="checkbox" id="settings-timestamptoggle" name="settings-timestamptoggle" value="settings-timestamptoggle"> Timestamp Exports
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Backup sketches to P5LIVE/_backups folder">
-						Backups:
-						<select id="menu-settings-backup" class="menu-settings-dropdown" onchange=""> <!-- setBackups(this.selectedIndex); -->
-							<option value="">Disabled</option>
-							<option value="">On Close</option>
-							<option value="">Daily</option>
-							<option value="">Weekly</option>
-							<option value="">Monthly</option>
-						</select>
-						<button class="menu-settings-dropdown backup-now" onclick="backupSketches();">Now</button>
-					</div>
-
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
@@ -354,6 +342,18 @@
 							<option value="vim">Vim</option>
 							<option value="emacs">Emacs</option>
 						</select>
+					</div>
+
+					<div class="tippy-left" style="cursor:help;" data-title="Backup sketches to P5LIVE/_backups folder">
+						Backup:
+						<select id="menu-settings-backup" class="menu-settings-dropdown" onchange="setBackup(this.selectedIndex);">
+							<option value="0">Disabled</option>
+							<option value="1">On Exit</option>
+							<option value="2">Daily</option>
+							<option value="3">Weekly</option>
+							<option value="4">Monthly</option>
+						</select>
+						<button class="menu-settings-dropdown backup-now" onclick="backupSketches();">Now</button>
 					</div>
 
 
@@ -402,10 +402,10 @@ function println(msg){
 	<link rel="stylesheet" href="includes/js/highlight/a11y-dark.css" />
 
 	<!-- Scripts -->
-	<script src="includes/js/ace/src-noconflict/ace.js?8" type="text/javascript" charset="utf-8"></script>
-	<script src="includes/js/ace/src-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/Sortable.js"></script>
-	<script src="includes/js/beautify.js"></script>
+	<script src="includes/js/beautify.min.js"></script>
 	<script src="includes/js/pickr/pickr.min.js"></script>
 	<script src="includes/js/popper.min.js"></script>
 	<script src="includes/js/tippy.all.js"></script>
@@ -598,7 +598,7 @@ function println(msg){
 			'chalkboard': {
 				'backgroundColor':'#00280A', 'backgroundOpacity':.75, 'strokeColor':'#ffffff', 'strokeWeight':10, 'strokeOpacity':1.0,
 			},
-			'backups' : {
+			'backup' : {
 				'frequency':0, 'last':0,
 			}
 		}
@@ -645,8 +645,11 @@ function println(msg){
 		settingsTippy = document.getElementById('settings-tippytoggle'),
 		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
 		settingsTimestamp = document.getElementById('settings-timestamptoggle'),
+		settingsTheme = document.getElementById('menu-settings-theme'),
 		settingsBGactive = document.getElementById('settings-usebg'),
+		settingsKeybindings = document.getElementById('menu-settings-keybindings'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
+		settingsBackup = document.getElementById('menu-settings-backup'),
 		settingsShortcuts = document.getElementById('menu-shortcuts-holder'),
 		refHolder = document.getElementById('refholder'),
 		ref = document.getElementById('ref'),
@@ -654,8 +657,6 @@ function println(msg){
 		panelMenu = document.getElementById('panel-menu'),
 		panelSettings = document.getElementById('panel-settings'),
 		menuSwitch = document.getElementById('menu-switch'),
-		menuTheme = document.getElementById('menu-settings-theme'),
-		menuKeybindings = document.getElementById('menu-settings-keybindings'),
 		menuCocoding = document.getElementById('menu-cocode-header'),
 		loader = document.getElementById('loader'),
 		loaderSub = document.getElementById('loader-sub'),
@@ -708,7 +709,7 @@ function println(msg){
 
 		function loadAutoComplete(){
 			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
-			let tempPath = 'includes/p5/P5L_autocomplete.json?' + makeid(5);
+			let tempPath = 'includes/p5/P5L_autocomplete.json?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -1997,6 +1998,7 @@ function println(msg){
 			loaderSub.innerHTML = 'snippets...';
 			loadKeybindings();
 			setEditorCommands();
+			loadBackup();
 			loadSnippets();
 			loaderSub.innerHTML = 'SyncData presets...';
 			syncDataPresetLoad();
@@ -2218,7 +2220,7 @@ function println(msg){
 			});
 		}
 
-		function exportSettings(){
+		function exportSettingsPrepare(){
 			let jsonExport = {};
 			jsonExport.doctype = 'P5L_SETTINGS';
 			jsonExport.date = timeStamp();
@@ -2228,8 +2230,11 @@ function println(msg){
 					jsonExport.settings[k] = settings[k];
 				}
 			});
+			return jsonExport;
+		}
 
-			exportJSON(jsonExport, 'P5L_SETTINGS'+timeStampFile()+'.json');
+		function exportSettings(){
+			exportJSON(exportSettingsPrepare(), 'P5L_SETTINGS'+timeStampFile()+'.json');
 		}
 
 		function importSettings(data){
@@ -2242,35 +2247,38 @@ function println(msg){
 				let reader = new FileReader();
 				reader.onload = function(data) {
 					let tSettings = JSON.parse(data.target.result);
-					let jsonObjList = JSON.parse(data.target.result);
-					if(tSettings.hasOwnProperty('doctype') && tSettings.doctype == 'P5L_SETTINGS'){
-						let warnImport = 'Replace settings with imported file?';
-						if(tSettings.revision < initSettings.revision){
-							warnImport += '<br>Imported settings are from an earlier version of P5LIVE, hopefully this will work...';
-						}
-
-						// first confirm importing of settings
-						vex.dialog.confirm({
-							unsafeMessage:warnImport,
-							callback: function(value){
-								if(value){
-									Object.keys(tSettings.settings).forEach(function(k){
-										if(settings.hasOwnProperty(k)){
-											settings[k] = tSettings.settings[k];
-										}
-									});
-									updateSettings();
-									loadSettings();
-								}
-							}
-						})
-					}else{
-						vex.dialog.alert({
-							message:'Oops, select a P5L_SETTINGS file.'
-						})
-					}
+					importSettingsParse(tSettings);
 				}
 				reader.readAsText(data[i]);
+			}
+		}
+
+		function importSettingsParse(tSettings){
+			if(tSettings.hasOwnProperty('doctype') && tSettings.doctype == 'P5L_SETTINGS'){
+				let warnImport = 'Replace settings with imported file?';
+				if(tSettings.revision < initSettings.revision){
+					warnImport += '<br>Imported settings are from an earlier version of P5LIVE, hopefully this will work...';
+				}
+
+				// first confirm importing of settings
+				vex.dialog.confirm({
+					unsafeMessage:warnImport,
+					callback: function(value){
+						if(value){
+							Object.keys(tSettings.settings).forEach(function(k){
+								if(settings.hasOwnProperty(k)){
+									settings[k] = tSettings.settings[k];
+								}
+							});
+							updateSettings();
+							loadSettings();
+						}
+					}
+				})
+			}else{
+				vex.dialog.alert({
+					message:'Oops, select a P5L_SETTINGS file.'
+				})
 			}
 		}
 
@@ -2687,26 +2695,59 @@ function println(msg){
 		window.addEventListener('beforeunload', function (e) {
 			if(!settings.cocoding.active && !cocodingUnload){
 			    e.preventDefault();
-		    // alert('are you sure?')
-		    // backupSketches();
-		    // e.returnValue = 'sure?';
+			    let freq = settings.backup.frequency;
+			    let lastBackup = settings.backup.last;
+
+			    let dateLast = new Date(settings.backup.last)
+				let dateNow = new Date();
+				let timeDiff = Math.abs(dateNow.getTime() - dateLast.getTime());
+				let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+			    switch(freq){
+			    	case 1: // every exit
+			    		backupSketches();
+			    	break;
+			    	case 2: // daily
+			    		if(diffDays > 1){
+			    			backupSketches();
+			    		}
+			    	break;
+			    	case 3: // weekly
+			    		if(diffDays > 7){
+			    			backupSketches();
+			    		}
+			    	break;
+			    	case 4: // monthly
+			    		if(diffDays > 30){
+			    			backupSketches();
+			    		}
+			    	break;
+			    }
 
 			}
 		});
 
 		function backupSketches(){
-			let tempPath = '/backup';
-
-			let request = new XMLHttpRequest();
-			request.open('POST', tempPath, true);
-			request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
 			let tempSketches = exportSketchesPrepare();
+			tempSketches.sketches.settings = exportSettingsPrepare();
 			tempSketches.timestamp = timeStampFile();
-			request.send(JSON.stringify(tempSketches));
+			p5Remote = true;
+			if(!p5Remote){
+				let tempPath = '/backup';
+				let request = new XMLHttpRequest();
+				request.open('POST', tempPath, true);
+				request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+				request.send(JSON.stringify(tempSketches));
+			}else{
+				exportJSON(tempSketches.sketches, 'P5L_BACKUP' + tempSketches.timestamp + '.json');
+			}
+
+			settings.backup.last = new Date().getTime();
+			updateSettings();
 		}
 
 		function loadSketchTemplate(){
-			let tempPath = 'includes/templates/p5live_sketch.html?' + makeid(5);;
+			let tempPath = 'includes/templates/p5live_sketch.html?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -3231,7 +3272,7 @@ function println(msg){
 
 		// load demos
 		function loadDemos(){
-			let demosPath = 'includes/demos/P5L_demos.json?' + makeid(5);
+			let demosPath = 'includes/demos/P5L_demos.json?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, true);
 			request.send();
@@ -4342,7 +4383,7 @@ function println(msg){
 
 		/* SNIPPETS */
 		function loadSnippets(){
-			let snippetsPath = 'includes/demos/P5L_snippets.json?' + makeid(5);
+			let snippetsPath = 'includes/demos/P5L_snippets.json?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', snippetsPath, true);
 			request.send();
@@ -4827,18 +4868,18 @@ function println(msg){
 
 		// load theme
 		function loadTheme(){
-			for(let i=0; i < menuTheme.options.length; i++){
-				let opt = menuTheme.options[i];
+			for(let i=0; i < settingsTheme.options.length; i++){
+				let opt = settingsTheme.options[i];
 				if(settings.theme == opt.value){
-					menuTheme.selectedIndex = i;
+					settingsTheme.selectedIndex = i;
 				}
 			}
 		}
 
 		// set theme
 		function setTheme(sel){
-			editor.setTheme(menuTheme.value);
-			settings.theme = menuTheme.value;
+			editor.setTheme(settingsTheme.value);
+			settings.theme = settingsTheme.value;
 			updateSettings();
 		}
 
@@ -4853,11 +4894,11 @@ function println(msg){
 
 		// load keybindings
 		function loadKeybindings(){
-			for(let i=0; i < menuKeybindings.options.length; i++){
-				let opt = menuKeybindings.options[i];
+			for(let i=0; i < settingsKeybindings.options.length; i++){
+				let opt = settingsKeybindings.options[i];
 				if(settings.editor.keybinding == opt.value){
 					setKeybinding(opt.value);
-					menuKeybindings.selectedIndex = i;
+					settingsKeybindings.selectedIndex = i;
 				}
 			}
 		}
@@ -4868,6 +4909,21 @@ function println(msg){
 			updateSettings();
 			editor.setKeyboardHandler('ace/keyboard/'+sel);
 			setEditorCommands();
+		}
+
+		function loadBackup(){
+			for(let i=0; i < settingsBackup.options.length; i++){
+				let opt = settingsBackup.options[i];
+				if(settings.backup.frequency == opt.value){
+					settingsBackup.selectedIndex = i;
+				}
+			}
+			// setBackup(settings.backup.frequency);
+		}
+
+		function setBackup(sel){
+			settings.backup.frequency = sel;
+			updateSettings();
 		}
 
 		// paused for launch.. to visit in future!
@@ -5407,7 +5463,7 @@ function println(msg){
 
 		function loadRef(){
 			refList = [];
-			let refPath = 'includes/p5/data.json?' + settings.revision;
+			let refPath = 'includes/p5/data.json?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
 			request.send();
@@ -5910,7 +5966,7 @@ function println(msg){
 		// load presets
 		function syncDataPresetLoad(){
 			syncdataPresets = [];
-			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + makeid(5);
+			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', syncdataPresetsPath, true);
 			request.send();

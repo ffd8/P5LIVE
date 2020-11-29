@@ -228,7 +228,7 @@ if(!online){
 	  let dir = './_backups';
 	  !fs.existsSync(dir) && fs.mkdirSync(dir);
 
-	  fs.writeFile(dir + '/P5L_SKETCHES'+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
+	  fs.writeFile(dir + '/P5L_BACKUP'+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
 	  res.send('OK');
 	});
 }
