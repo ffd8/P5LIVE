@@ -2994,13 +2994,26 @@ function println(msg){
 					}
 				});
 				this.on('error', function(file, responseText) {
-					vex.dialog.alert({
-						unsafeMessage:'Error importing. <br>Only P5LIVE exports are accepted.',
-					})
+					badImport();
 					myDropzone.files = []; // clear list
 				});
 			},
 		});
+
+		function badImport(){
+			vex.dialog.alert({
+				unsafeMessage:'Error importing. <br>Only P5LIVE exports are accepted.',
+			})
+		}
+
+		function IsJsonString(str) {
+		  try {
+		    let json = JSON.parse(str);
+		    return (typeof json === 'object');
+		  } catch (e) {
+		    return false;
+		  }
+		}
 
 		function importSettingsDialog(){
 			document.getElementById('file-input-settings').click();
@@ -3012,11 +3025,25 @@ function println(msg){
 
 		// import sketches from JSON
 		function importSketches(data){
+			loaderSub.innerHTML = 'checking duplicates...';
+			showLoader();
 			for(let i=0; i < data.length; i++){
 				let reader = new FileReader();
 				reader.onload = function(data) {
+					if(!IsJsonString(data.target.result)){
+						hideLoader();
+						return false;
+					}
 					let jsonObj = JSON.parse(data.target.result);
 					let jsonObjList = JSON.parse(data.target.result);
+					let isBackup = false, isBackupSettings = false, isBackupSketches = false;
+					if(jsonObj.hasOwnProperty('settings') && jsonObj.settings.hasOwnProperty('doctype')){
+						if(jsonObj.settings.doctype === 'P5L_SETTINGS'){
+							isBackup = true;
+						}
+
+					}
+
 					if(jsonObj.hasOwnProperty('structure')){
 						let jsonStructureSorted = jsonObj.structure.reverse();
 
@@ -3037,13 +3064,17 @@ function println(msg){
 								return;
 							}
 							count = jsonObj.count.sketches + jsonObj.count.folders;
-							importData = 'Import the following ('+count+') items?<br>';
+							importData = 'Import the following ('+count+') sketches?<br>';
+
+							if(isBackup){
+								importData = 'P5LIVE Backup Detected! <br><br>SETTINGS:<br><input type="checkbox" id="backup-settings" name="backup-settings" checked> Import settings?<br><br>SKETCHES:<br><input type="checkbox" id="backup-sketches" name="backup-sketches" checked> Import sketches ('+count+')?<br>' ;
+							}
 						}else{
 							count = (JSON.stringify(jsonObjList.structure).match(/name/g) || []).length;
 							if(searchJSON(jsonObjList.structure, 'name', 'demos').length > 0){
 								count -= searchJSON(settings.sketches, 'name', 'demos')[0].contents.length;
 							}
-							importData = 'Import the following ('+count+') items?<br>';
+							importData = 'Import the following ('+count+') sketches?<br>';
 						}
 
 						let importDupFound = false;
@@ -3060,60 +3091,80 @@ function println(msg){
 						importData += '</div>';
 						// *** add checkbox to ignore duplicates on import...
 
+						hideLoader();
 						// first confirm importing of whole structure/sketches
 						vex.dialog.confirm({
 							unsafeMessage:importData,
 							callback: function(value){
 								if(value){
-									loaderSub.innerHTML = 'importing sketches...';
-									showLoader();
-									if(legacyImport(jsonObj)){
-										let legacyDemos = ["new", "P5LIVE_meta", "P5LIVE_COCODING_meta", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_primatives", "webgl_sphereBox", "slidersGrid", "textToPoints", "basel.codes", "this is a really long name", "osc_setup", "midi_setup"];
-										jsonStructureSorted.forEach(function(jsonItem){
-											if(jsonItem.mod === undefined){
-												jsonItem.mod = timeDate();
-											}
-											if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
-												// foreach folder/sketch check duplicates and give unique names
+									if(isBackup){
+										isBackupSettings = document.getElementById('backup-settings').checked;
+										isBackupSketches = document.getElementById('backup-sketches').checked;
 
-												// each base folder
-												if(searchSketches(jsonItem.name, settings.sketches)){
-													jsonItem.name += '_'+ timeStamp(); //versionCheck(jsonItem.name);
-												}
-
-												// each recursive sketch/folder within
-													recursiveNamecheck(jsonItem.contents, jsonObj.sketches);
-
-												// add structure to top of sketches list
-												settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
-
-											}else if(jsonItem.type == 'sketch'){
-
-												if(legacyDemos.indexOf(jsonItem.name) == -1){
-													settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
-												}
-											}
-										})
-										updateSettings();
-										initSortable();
-										//updateSketches();
-
-										// import structure as folder..
-										parseSketches(jsonObj, legacyDemos);
-									}else{
-										// new importer from r34
-										importSketchesParser(jsonStructureSorted);
 									}
-									hideLoader();
+
+									if(!isBackup || (isBackup && isBackupSketches)){
+										loaderSub.innerHTML = 'importing sketches...';
+										showLoader();
+										if(legacyImport(jsonObj)){
+											let legacyDemos = ["new", "P5LIVE_meta", "P5LIVE_COCODING_meta", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_primatives", "webgl_sphereBox", "slidersGrid", "textToPoints", "basel.codes", "this is a really long name", "osc_setup", "midi_setup"];
+											jsonStructureSorted.forEach(function(jsonItem){
+												if(jsonItem.mod === undefined){
+													jsonItem.mod = timeDate();
+												}
+												if(jsonItem.type == 'folder' && (jsonItem.name.toLowerCase() != 'demos' || searchJSON(settings.sketches, 'name', 'demos').length == 0)){
+													// foreach folder/sketch check duplicates and give unique names
+
+													// each base folder
+													if(searchSketches(jsonItem.name, settings.sketches)){
+														jsonItem.name += '_'+ timeStamp(); //versionCheck(jsonItem.name);
+													}
+
+													// each recursive sketch/folder within
+														recursiveNamecheck(jsonItem.contents, jsonObj.sketches);
+
+													// add structure to top of sketches list
+													settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
+
+												}else if(jsonItem.type == 'sketch'){
+
+													if(legacyDemos.indexOf(jsonItem.name) == -1){
+														settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
+													}
+												}
+											})
+											updateSettings();
+											initSortable();
+											//updateSketches();
+
+											// import structure as folder..
+											parseSketches(jsonObj, legacyDemos);
+										}else{
+											// new importer from r34
+											importSketchesParser(jsonStructureSorted);
+										}
+										hideLoader();
+									}
+									// if backup, check settings import
+									if(isBackupSettings){
+										importSettingsParse(jsonObj.settings);
+									}
+
 								}
 
 							}
 						})
 					}else{
+
+
 						// import single sketch w/o confirm dialog
 						if(legacyImport(jsonObj)){
 							checkDupSketches(jsonObj, 'sketchName');
 							parseSketches(jsonObj);
+						}else{
+							hideLoader();
+							badImport();
+							return false;
 						}
 					}
 				}
@@ -3122,8 +3173,12 @@ function println(msg){
 		}
 
 		function legacyImport(obj){
-			if(obj.revision === undefined || obj.revision < 34){
-				return true;
+			if(obj.hasOwnProperty('revision')){
+				if(obj.revision === undefined || obj.revision < 34){
+					return true;
+				}else{
+					return false;
+				}
 			}else{
 				return false;
 			}
