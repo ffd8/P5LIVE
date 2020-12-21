@@ -3201,9 +3201,22 @@ function println(msg){
 						// return false;
 
 						if(!legacyImport(jsonObj)){
+							// immediately import if single sketch, ask to load
 							if(jsonObj.count.sketches === 1 && jsonObj.structure[0].type === 'sketch'){
 								importSketchesParser(jsonStructure.reverse(), false);
 								hideLoader();
+								vex.dialog.confirm({
+									unsafeMessage: 'Load Imported Sketch?<br><div id="importdump"><div class="import-sketch">'+icon.fileLines+' ' + jsonObj.structure[0].name+'</div></div>',
+									callback: function (value) {
+										if (value) {
+											loadSketch(loadLatest());
+											setTimeout(function (){sketchScrollIntoView(true);}, 100);
+										}
+									},
+									afterOpen: function(){
+										vexSmall(this.rootEl);
+									}
+								})
 								return;
 							}
 							count = jsonObj.count.sketches;
@@ -3418,7 +3431,7 @@ function println(msg){
 			if(skipDups){
 				importObj = filterJSON(importObj, 'dup', false)
 			}
-			console.log(importObj)
+			//console.log(importObj)
 
 			recursiveImportDup(importObj, importObj);
 			importObj.forEach(function(jsonItem){
