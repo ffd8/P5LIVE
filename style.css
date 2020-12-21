@@ -597,6 +597,9 @@ h2{
 	text-align:right;
 	cursor:pointer;
 }
+.menu-more svg{
+	animation: request 1s linear infinite;
+}
 .menu-sketch-button,  .item-sketch .menu-sketch-button{
 	color:#fff;
 	flex:1;
@@ -1146,8 +1149,12 @@ li{
 #importdump svg{
 	height:12px;
 }
-.importdump-dup{
+.dup span{
 	background:#cc0000;
+	opacity:.75;
+}
+.importdump-dup-folder{
+	background:#cc6600;
 	opacity:.75;
 }
 

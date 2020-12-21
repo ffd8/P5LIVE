@@ -1,6 +1,7 @@
 'use strict';
 let online = false; // set online
-let debugStats = true; // report stats
+let debugStats = false; // report stats
+let developBranch = false; // dev mode (false for production)
 
 // custom port
 let tPort = process.env.PORT || 5000;
@@ -82,7 +83,7 @@ if(!online){
 const maxSpaces = 500; // check memory for number of namespaces...
 const purgeCounter = 24; // hours until removing namespace
 let cc = new Object(); // store namespaces
-let ccStatsReporting = 30; // sec
+let ccStatsReporting = (online) ? 60 : 15; // sec
 let ccStatsWriting = 60; // min
 let ccStats = {'time':timestamp(), 'cc':0, 'ns':0, 'nsMax':0, 'nsTwo':0, 'sd':0, 'max':{}, 'nsMap':[]};
 ccStats.max = {cc:0, ns:0, nsMax:0, nsTwo:0, sd:0, sdMax:0};
@@ -105,7 +106,7 @@ function hourlyStats(){
 	let writeStats = JSON.stringify(ccStats) + '\n';
 	let dir = './_stats';
 	!fs.existsSync(dir) && fs.mkdirSync(dir);
-	fs.writeFile(dir + '/p5l_stats_' + new Date().getFullYear() + '.txt', writeStats, { flag: 'a+' }, err => {})
+	fs.writeFile(dir + '/P5L_STATS_' + new Date().getFullYear()+'-' + tPort + '.txt', writeStats, { flag: 'a+' }, err => {})
 	console.log('writing hourlyStats...');
 }
 
@@ -199,7 +200,7 @@ app.use(function (req, res, next) {
 })
 
 app.get('/', function (req, res) {
-	if(online){
+	if(online && !developBranch){
 		res.redirect('https://teddavis.org/p5live');
 	}else{
 		res.sendFile(__dirname + '/index.html');
@@ -228,7 +229,7 @@ if(!online){
 	  let dir = './_backups';
 	  !fs.existsSync(dir) && fs.mkdirSync(dir);
 
-	  fs.writeFile(dir + '/P5L_BACKUP'+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
+	  fs.writeFile(dir + '/P5L_BACKUP_'+tPort+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
 	  res.send('OK');
 	});
 
@@ -240,7 +241,7 @@ if(!online){
 io.set('transports', ['websocket']);
 
 io.origins((origin, callback) => {
-	if (online && origin !== 'https://teddavis.org') {
+	if (online && origin !== 'https://teddavis.org' && !developBranch) {
 		return callback('origin not allowed', false);
 	}
 	callback(null, true);
@@ -336,6 +337,12 @@ class Namespace {
 					, 'purgeTimer' : null
 					, 'purgeCounter' : purgeCounter
 				})
+			},
+			clearHistory: function() {
+				Object.assign(this, {
+					'rga': new RGA(0)
+					, 'fc' : 0
+				})
 			}
 		}
 		this.settings.reset(); // init values
@@ -385,7 +392,6 @@ class Namespace {
 			if(settings.userId == 1){
 				socket.emit('init');
 			}
-
 
 			RGA.tieToSocket(settings.rga, socket);
 
@@ -493,7 +499,10 @@ class Namespace {
 			})
 
 			socket.on('codeReplace', function(reqData){
-				io.of(settings.name).emit('codeReplace', reqData);
+				settings.clearHistory(); // ***
+				// RGA.tieToSocket(settings.rga, socket);
+				// io.of(settings.name).emit('rgaReconnect');
+				socket.emit('codeReplace', reqData);
 			})
 
 			socket.on('editRequest', function(reqData){

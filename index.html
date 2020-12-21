@@ -418,6 +418,7 @@ function println(msg){
 	<script src="includes/js/mousetrap/mousetrap-pause.min.js"></script>
 	<script src="includes/js/highlight/highlight.pack.js"></script>
 	<script src="includes/js/name_generator.js"></script>
+	<script src="includes/js/loopBreaker.min.js"></script>
 
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
@@ -427,7 +428,7 @@ function println(msg){
 
 		/* INIT */
 		let currentVersion = '1.3.4';
-		let currentRevision = 37;
+		let currentRevision = 38;
 		let developBranch = true;
 
 		// resetP5(); // manual reset
@@ -443,6 +444,8 @@ function println(msg){
 				callback: function (value) {
 					if (value) {
 						localStorage.clear();
+						// localStorage.settings = initSettings;
+						// updateSettings();
 						location.reload();
 					}
 				},
@@ -571,8 +574,6 @@ function println(msg){
 					,'init':'setupJumpSketches(settings.shortcuts["jump"].key)'
 					,'tippy':'Then combine w/ 1, 2,...0 to jump thru sketches'
 				}
-
-
 			},
 			'editor':{
 				'fontSize':15, 'keybinding':'keybinding', 'linenumbers':false, 'autocomplete': false, 'lockcode':true, 'passEditorKeys':false,
@@ -589,7 +590,7 @@ function println(msg){
 				'namespace': '',
 				'cocodeadded':false
 			},
-			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'msgID':-1, 'hasAdmin':false},
+			'cocoding': {'active':false, 'timestamp':null, 'nick':'', 'namespace':'', 'lockdown':false, 'level':'', 'token':0, 'sync':false, 'request':false, 'writemode':false, 'color':'#00aa00', 'cursor':{'row':0, 'column':0}, 'msgID':-1, 'hasAdmin':false, 'error':false, 'code':''},
 			'scripts': ['includes/p5/p5.min.js', 'includes/p5/addons/p5.sound.min.js'],
 			'theme': 'ace/theme/gob',
 			'themeBG': '#011F2F',
@@ -875,10 +876,10 @@ function println(msg){
 
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
-			'remote':'https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/p5.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js'
 		}, {
 			'local':'includes/p5/addons/p5.sound.min.js',
-			'remote':'https://cdn.jsdelivr.net/npm/p5@1.0.0/lib/addons/p5.sound.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js'
 		}];
 
 
@@ -954,7 +955,7 @@ function println(msg){
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					if(developBranch){
-						this.socket = io('https://cocoding.p5live.org/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
+						this.socket = io('https://cocoding-dev.p5live.org/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}else{
 						this.socket = io('https://cocoding.p5live.org/' + this.namespace, { transports: ['websocket'], secure: true, query : {nick : settings.cocoding.nick} });
 					}
@@ -962,11 +963,6 @@ function println(msg){
 				this.rgaConnect();
 				this.users = {};
 				editor.setWrapBehavioursEnabled(false);
-				// editor.getSession().on('change', function(delta){
-				// 	curPos = delta.start;
-				// 	curPositions.push(delta.start);
-				// 	checkErrors();
-				// });
 
 				this.updateColor();
 				this.token();
@@ -1115,12 +1111,16 @@ function println(msg){
 
 				this.socket.on('codeReplace', (data)=>{
 					syncDown();
-					RGA.AceEditorRGA.prototype.destroy;
-					RGA.AceEditorRGA._lastText = data.code;
+					// RGA.AceEditorRGA.prototype.destroy;
+
+					// RGA.AceEditorRGA._lastText = data.code;
+					// this.rgaConnect();
 					if(settings.cocoding.level == 'admin'){
 						editor.setValue('', 1);
+						// this.rgaConnect();
 						window.setTimeout(function(){editor.setValue(data.code, 1);}, 300);
 					}
+
 					window.setTimeout(function(){cocode.recompile()}, 400);
 					window.setTimeout(function(){recompile(true)}, 500);
 				});
@@ -1267,71 +1267,117 @@ function println(msg){
 							}
 						}
 					}
-						let selfNav = '';
-						let userIcon = icon.user;
+
+					let selfNav = '';
+					let userIcon = icon.user;
 
 
-						let writeClass = '';
-						if(settings.cocoding.lockdown && settings.cocoding.level != 'admin'){
-							if(usersSelf.request){
-								writeClass = ' write-req ';
-							}else if(settings.cocoding.writemode){
-								writeClass = ' write-access ';
-							}
+					let writeClass = '';
+					if(settings.cocoding.lockdown && settings.cocoding.level != 'admin'){
+						if(usersSelf.request){
+							writeClass = ' write-req ';
+						}else if(settings.cocoding.writemode){
+							writeClass = ' write-access ';
 						}
+					}
 
-						if(settings.cocoding.level == 'admin'){
-							userIcon = icon.shield;
-						}
+					if(settings.cocoding.level == 'admin'){
+						userIcon = icon.shield;
+					}
 
-						let marq = '';
-						if(settings.cocoding.nick.length > 10){marq = 'marq';}
+					let marq = '';
+					if(settings.cocoding.nick.length > 10){marq = 'marq';}
 
-						let userNavIconsCount = 1;
-						let userNavIcons = '<div class="cocoding-nav">';
-						if(settings.syncdata.active && (!settings.cocoding.lockdown || settings.cocoding.writemode)){
-							userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
-								userNavIcons += '<div class="cocoding-sketch-button-user">'+icon.radio+'</div>';
-								userNavIcons += '<div class="cocoding-sketch-button-radio">'+userIcon+'</div>';
-							userNavIcons += '</div>';
-						}else{
-							userNavIcons += '<div class="cocoding-sketch-button">'+userIcon+'</div>';
-						}
-
-						if(cocodingShowMic){
-							userNavIconsCount++;
-							if(1==1){
-								userNavIcons += '<div class="cocoding-sketch-button">'+icon.micOff+'</div>';
-							}else{
-								userNavIcons += '<div class="cocoding-sketch-button">'+icon.mic+'</div>';
-							}
-						}
-
-						if(settings.cocoding.level == 'user' && settings.cocoding.lockdown){
-							let userEditIcon = icon.edit;
-							let userEditRequest = 'onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')"';
-							let userEditTippy = 'Request Edit';
-							if(settings.cocoding.writemode){
-								userEditIcon = icon.checkSquare
-								userEditRequest = '';
-								userEditTippy = 'You can Edit!';
-							}
-							if(writeClass == ' write-req '){
-								userEditTippy = 'Request Pending...';
-							}
-							userNavIcons += '<div class="cocoding-sketch-button tippy" id="request-'+settings.cocoding.nick+'" '+userEditRequest+' data-title="'+userEditTippy+'">'+userEditIcon+'</div>';
-						}
-
+					let userNavIconsCount = 1;
+					let userNavIcons = '<div class="cocoding-nav">';
+					if(settings.syncdata.active && (!settings.cocoding.lockdown || settings.cocoding.writemode)){
+						userNavIcons += '<div class="cocoding-sketch-button user-radio-toggle">';
+							userNavIcons += '<div class="cocoding-sketch-button-user">'+icon.radio+'</div>';
+							userNavIcons += '<div class="cocoding-sketch-button-radio">'+userIcon+'</div>';
 						userNavIcons += '</div>';
+					}else{
+						userNavIcons += '<div class="cocoding-sketch-button">'+userIcon+'</div>';
+					}
 
-						let ccNameStyle = {};
-						ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
+					if(cocodingShowMic){
+						userNavIconsCount++;
+						if(1==1){
+							userNavIcons += '<div class="cocoding-sketch-button">'+icon.micOff+'</div>';
+						}else{
+							userNavIcons += '<div class="cocoding-sketch-button">'+icon.mic+'</div>';
+						}
+					}
 
-						menuCocodeSketches.innerHTML = '<li id="cocodingself" style="background:'+settings.cocoding.color+';" class="item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch cocoding-user"><div class="cocoding-name '+marq+' tippy" data-title="Set Color + Nickname" style="width:'+ccNameStyle.width+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div>'+userNavIcons+'</div></li>' + usersHTML;
-						loadTippy();
-						this.syncCursors(usersRaw);
-					});
+					if(settings.cocoding.level == 'user' && settings.cocoding.lockdown){
+						let userEditIcon = icon.edit;
+						let userEditRequest = 'onclick="cocode.editRequest(\''+settings.cocoding.nick+'\')"';
+						let userEditTippy = 'Request Edit';
+						if(settings.cocoding.writemode){
+							userEditIcon = icon.checkSquare
+							userEditRequest = '';
+							userEditTippy = 'You can Edit!';
+						}
+						if(writeClass == ' write-req '){
+							userEditTippy = 'Request Pending...';
+						}
+						userNavIcons += '<div class="cocoding-sketch-button tippy" id="request-'+settings.cocoding.nick+'" '+userEditRequest+' data-title="'+userEditTippy+'">'+userEditIcon+'</div>';
+					}
+
+					userNavIcons += '</div>';
+
+					let ccNameStyle = {};
+					ccNameStyle.width = 'calc(100% - '+(userNavIconsCount*20)+'px)';
+
+					menuCocodeSketches.innerHTML = '<li id="cocodingself" style="background:'+settings.cocoding.color+';" class="item-sketch menu-sketch-holder '+writeClass+'" '+activeSelf+' >'+selfNav+'<div class="menu-sketch cocoding-user"><div class="cocoding-name '+marq+' tippy" data-title="Set Color + Nickname" style="width:'+ccNameStyle.width+';" onclick="cocode.rename();">' +settings.cocoding.nick+'</div>'+userNavIcons+'</div></li>' + usersHTML;
+					loadTippy();
+					this.syncCursors(usersRaw);
+				});
+
+				this.socket.on('connect_error', err => this.cocodeError(err));
+				this.socket.on('connect_failed', err => this.cocodeError(err));
+				this.socket.on('reconnect', msg => this.cocodeReconnect());
+			}
+
+			cocodeError(err){
+				editor.setReadOnly(true);
+
+				// offer to save code if connection lost
+				if(!settings.cocoding.error){
+					vex.dialog.confirm({
+						unsafeMessage: 'COCODING – Connection lost...<br>Clone session code, just to be safe?',
+						callback: function (value) {
+							if (value) {
+								cloneSketchCOCODING();
+							}
+						},
+						afterOpen: function(){
+							vexSmall(this.rootEl);
+						}
+					})
+				settings.cocoding.error = true;
+				updateSettings();
 				}
+
+				// console.log('WSx error: '+settings.cocoding.error);
+			}
+
+			cocodeReconnect(){
+				vex.dialog.confirm({
+					unsafeMessage: 'COCODING – Server refreshed...<br>Press \'OK\' to auto-refresh browser.<br><br>You\'ll need to manually inspect and paste code into new session.<br>',
+					callback: function (value) {
+						if (value) {
+							location.reload();
+						}
+					},
+					afterOpen: function(){
+						vexSmall(this.rootEl);
+					}
+				})
+				settings.cocoding.error = false;
+				updateSettings();
+				// console.log('WSx error: '+settings.cocoding.error);
+			}
+
 
 			rgaConnect(){
 				syncUp();
@@ -1386,7 +1432,7 @@ function println(msg){
 						loadTippy();
 						vexSmall(this.rootEl);
 						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
-						let defaultColor = '00aa00';
+						let defaultColor = '#00aa00';
 
 						if(settings.cocoding.color != null){
 							defaultColor = settings.cocoding.color;
@@ -1936,8 +1982,11 @@ function println(msg){
 		// react to settings once gathered
 		function loadSettings(){
 			// check online or offline
-			if(window.location.hostname.includes('teddavis.org')){
+			if(window.location.hostname.includes('teddavis.org') || window.location.hostname.includes('dev.p5live.org')){
 				p5l.remote = true;
+				if(developBranch){
+					document.title = 'P5LIVE – DEVELOP';
+				}
 			}else{
 				p5l.remote = false;
 				document.title = 'P5LIVE – OFFLINE';
@@ -2022,12 +2071,9 @@ function println(msg){
 			loadColorPicker();
 			vex.defaultOptions.className = 'vex-theme-plain'
 			legacySettings(); // update sketches from 1.0.2
+
 			if(settings.cocoding != undefined){
 				settings.cocoding.active = false;
-			}else{
-				// settings = initSettings;
-				// updateSettings();
-				// window.setTimeout(function(){location.reload(true);}, 300);
 			}
 			settings.safeMode = false;
 			updateSketches();
@@ -2050,6 +2096,16 @@ function println(msg){
 			}else{
 				loaderSub.innerHTML = 'shortcuts...';
 				updateShortcuts();
+			}
+
+			// load sketch by param
+			if(getParam('sketch') != undefined){
+				let urlSketch = decodeURI(getParam('sketch'));
+				if(searchSketches(urlSketch, settings.sketches)){
+					settings.fileName = urlSketch;
+					updateSettings();
+					setTimeout(function(){sketchScrollIntoView(true);}, 400);
+				}
 			}
 
 			if(getParam('cc') != undefined){
@@ -2076,6 +2132,12 @@ function println(msg){
 				}
 				updateSketches();
 				cocoding();
+
+				if(window.location.hash.substring(1).toLowerCase() === 'bug'){
+					console.log('bug!');
+					settings.safeMode = true;
+					updateSettings();
+				}
 			}else if(window.location.hash){
 				if(window.location.hash.substring(1) === 'new'){
 					loadDefault();
@@ -2304,14 +2366,20 @@ function println(msg){
 			Mousetrap.unpause();
 
 			let shortcutsList = '';
-			Object.keys(settings.shortcuts).forEach(function(sc, cc){
+			Object.keys(initSettings.shortcuts).forEach(function(sc, cc){
 				let shortcut = settings.shortcuts[sc];
 				let shortcutOG = initSettings.shortcuts[sc];
+				// console.log(sc +" / "+ initSettings.shortcuts[sc])
+
+				let shortcutKey = shortcutOG.key;
+				if(shortcut.key !== undefined && shortcut.key !== shortcutOG.key){
+					shortcutKey = shortcut.key;
+				}
 
 				if(shortcutOG.init != undefined){
 					eval(shortcutOG.init);
 				}else{
-					Mousetrap.bind(shortcut.key, function(){
+					Mousetrap.bind(shortcutKey, function(){
 						if(settings.notifyToggle){
 							showNotify = true;
 						}
@@ -2325,7 +2393,7 @@ function println(msg){
 					shortcutTippy += '<br>' + shortcutOG.tippy;
 				}
 
-				shortcutsList +='<div class="shortcut-item tippy-left" data-title="' + shortcutTippy + '" onclick="recordShortcut(this, \''+sc+'\')">' + shortcutOG.name + ' <div class="shortcut-keys" ><span id="shortcut-' + sc + '" class="shortcut-input">' + parseShortcut(shortcut.key) + '</span></div></div>';
+				shortcutsList +='<div class="shortcut-item tippy-left" data-title="' + shortcutTippy + '" onclick="recordShortcut(this, \''+sc+'\')">' + shortcutOG.name + ' <div class="shortcut-keys" ><span id="shortcut-' + sc + '" class="shortcut-input">' + parseShortcut(shortcutKey) + '</span></div></div>';
 			});
 			settingsShortcuts.innerHTML = shortcutsList;
 			loadTippy();
@@ -2395,11 +2463,13 @@ function println(msg){
 
 		// bug
 		function loadBug(){
-			settings.safeMode = true;
-			let bugName = settings.fileName;
-			updateSettings();
-			loadDefault();
-			inspectItem(bugName)
+			if(!settings.cocoding.active){
+				settings.safeMode = true;
+				let bugName = settings.fileName;
+				updateSettings();
+				loadDefault();
+				inspectItem(bugName);
+			}
 		}
 
 		// set sketches list to localstorage
@@ -2561,6 +2631,7 @@ function println(msg){
 				cloneSketchCOCODING();
 				return false;
 			}
+			let cloneName = settings.fileName;
 			let forkName = versionCheck(settings.fileName);
 			let tc = timeDate();
 
@@ -2576,7 +2647,9 @@ function println(msg){
 				useDir.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 				useDir.toggle = 'expand';
 			}else{
-				settings.sketches.unshift({'type':'sketch', 'name':settings.fileName, 'mod':tc});
+				// cloning above sketch!
+				let cloneLocation = jsonIndex('name', cloneName, settings.sketches);
+				settings.sketches.splice(cloneLocation, 0, {'type':'sketch', 'name':settings.fileName, 'mod':tc});
 			}
 
 			updateSketches();
@@ -2584,6 +2657,16 @@ function println(msg){
 			editor.focus();
 			editor.session.off('change', cloneSketch);
 			sketchScrollIntoView(true);
+		}
+
+		function jsonIndex(key, name, obj){
+			let c = 0;
+			for(let s of obj){
+				if(s[key] == name){
+					return c;
+				}
+				c++;
+			}
 		}
 
 		function cloneSketchCOCODING(){
@@ -2608,6 +2691,7 @@ function println(msg){
 		function loadSketch(sketch, lineNum){
 			if(settings.cocoding.active){
 
+				// **** temp off for testing code replace below
 				vex.dialog.confirm({
 					message: 'Exit COCODING?',
 					callback: function (value) {
@@ -2634,6 +2718,7 @@ function println(msg){
 								// editor.setValue(localStorage[sketch], 1);
 								// window.setTimeout(function(){cocode.recompile()}, 300);
 								// window.setTimeout(function(){recompile(true)}, 400);
+								return;
 							}
 						}
 					})
@@ -2655,6 +2740,7 @@ function println(msg){
 					}
 				}
 				*/
+
 			}else {
 				if(localStorage.hasOwnProperty(sketch)){
 					editor.getSession().off('change', cloneSketch);
@@ -2678,9 +2764,9 @@ function println(msg){
 
 					let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
 					if(searchSketches(settings.fileName, checkDemo) && demosLocked){
-						if(settings.fileName == 'new'){
+						// if(settings.fileName == 'new'){
 							// window.location.hash = '#'; // *** removed for conflict w/ #bug + refs...
-						}
+						// }
 						editor.getSession().on('change', cloneSketch);
 					}
 
@@ -2804,6 +2890,10 @@ function println(msg){
 			}
 		}
 
+		function cloneJSON(obj){
+			return JSON.parse(JSON.stringify(obj));
+		}
+
 		function searchJSON(obj, key, value, out, dir) {
 			if(out == undefined){
 				out = [];
@@ -2811,14 +2901,47 @@ function println(msg){
 			if(Array.isArray(obj)){
 				obj.forEach(function(o){
 					if(o[key] == value){
-						if(dir != undefined){
+						if(dir !== undefined){
 							o.parent = dir;
 						}
 						out.push(o);
-					}else
-
-					if(o.contents){
+					}else if(o.contents){ // *** else if or just if??
 						searchJSON(o.contents, key, value, out, o.name);
+					}
+				});
+			}
+
+			return out;
+		}
+
+		function filterJSON(obj, key, value, out, dir) {
+			if(out == undefined){
+				out = [];
+			}
+			if(Array.isArray(obj)){
+				obj.forEach(function(o){
+					if(o[key] == value){
+						if(dir !== undefined){
+							o.parent = dir;
+						}
+						if(o.type == 'folder'){
+							for( var i = 0; i < o.contents.length; i++){
+								if(o.contents[i].dup){
+									o.contents.splice(i, 1);
+								}
+							}
+							out.push(o);
+						}
+
+						if(o.type == 'sketch'){
+							if(!searchSketches(o.name, out)){
+								out.push(o);
+							}
+						}
+					}
+
+					if(o.contents){ // *** else if or just if??
+						filterJSON(o.contents, key, value, out, o.name);
 					}
 				});
 			}
@@ -2876,10 +2999,10 @@ function println(msg){
 
 			if(folder !== undefined){
 				let folderObj = searchJSON(settings.sketches, 'name', folder);
-				objCopy = JSON.parse(JSON.stringify(folderObj));
+				objCopy = cloneJSON(folderObj);
 				tempType = 'FOLDER_'+ folder+'';
 			}else{
-				objCopy = JSON.parse(JSON.stringify(settings.sketches));
+				objCopy = cloneJSON(settings.sketches);
 				tempType = 'SKETCHES';
 			}
 			if(!demosLocked && folder === 'demos'){
@@ -3000,9 +3123,13 @@ function println(msg){
 			},
 		});
 
-		function badImport(){
+		function badImport(customType){
+			let type = '.json';
+			if(customType !== undefined){
+				type = customType;
+			}
 			vex.dialog.alert({
-				unsafeMessage:'Error importing. <br>Only P5LIVE exports are accepted.',
+				unsafeMessage:'Error importing. <br>Only P5LIVE '+type+' are accepted.',
 			})
 		}
 
@@ -3045,29 +3172,45 @@ function println(msg){
 					}
 
 					if(jsonObj.hasOwnProperty('structure')){
-						let jsonStructureSorted = jsonObj.structure.reverse();
+						let count, importData;
+						let jsonStructure = jsonObjList.structure;
+						recursiveDupCheck(jsonStructure); // flag dups
+						let jsonStructureDups = filterJSON(cloneJSON(jsonStructure), 'dup', false);
+
+						// console.log(jsonStructureDups);
+						// console.log(recursiveDupFilter(jsonStructure))
+						//recursiveDupFilter(jsonStructure);
+						//console.log(filterJSON(jsonStructure, 'dup', false));
+
+						// let jsonStructureSorted = jsonObj.structure.reverse();
 
 						if(demosLocked){
-							jsonStructureSorted = jsonStructureSorted.filter(function( obj ) {
+							jsonStructure = jsonStructure.filter(function( obj ) {
 								return obj.name !== 'demos';
 							});
-							if(jsonStructureSorted.length === 0){
+							if(jsonStructure.length === 0){
 								return false;
 							}
 						}
 
-						let jsonStructureNormal = jsonObjList.structure;
-						let count, importData;
+
+						// console.log(jsonStructure)
+						// console.log(recursiveDupCheck(jsonStructureDups));
+
+						// hideLoader();
+						// return false;
+
 						if(!legacyImport(jsonObj)){
-							if(jsonObj.count.sketches === 1){
-								importSketchesParser(jsonStructureSorted);
+							if(jsonObj.count.sketches === 1 && jsonObj.structure[0].type === 'sketch'){
+								importSketchesParser(jsonStructure.reverse(), false);
+								hideLoader();
 								return;
 							}
-							count = jsonObj.count.sketches + jsonObj.count.folders;
-							importData = 'Import the following ('+count+') sketches?<br>';
+							count = jsonObj.count.sketches;
+							importData = 'Import the following <span id="import-count">('+count+')</span> sketches?<br>';
 
 							if(isBackup){
-								importData = 'P5LIVE Backup Detected! <br><br>SETTINGS:<br><input type="checkbox" id="backup-settings" name="backup-settings" checked> Import settings?<br><br>SKETCHES:<br><input type="checkbox" id="backup-sketches" name="backup-sketches" checked> Import sketches ('+count+')?<br>' ;
+								importData = 'P5LIVE Backup Detected! <br><br>SETTINGS:<br><input type="checkbox" id="backup-settings" name="backup-settings" checked> Import settings?<br><br>SKETCHES:<br><input type="checkbox" id="backup-sketches" name="backup-sketches" checked onchange="toggleImport(this.checked)"> Import sketches <span id="import-count">('+count+')</span>?<br>' ;
 							}
 						}else{
 							count = (JSON.stringify(jsonObjList.structure).match(/name/g) || []).length;
@@ -3078,16 +3221,16 @@ function println(msg){
 						}
 
 						let importDupFound = false;
-						for (let key in jsonStructureNormal) {
-							if(searchSketches(jsonStructureNormal[key].name, settings.sketches) && jsonStructureNormal[key].name.toLowerCase() != 'demos'){
+						for (let key in jsonStructure) {
+							if(searchSketches(jsonStructure[key].name, settings.sketches) && jsonStructure[key].name.toLowerCase() != 'demos'){
 								importDupFound = true;
 							}
 						}
 						if(importDupFound){
-							importData += '<span style="font-size:10pt;"><span class="importdump-dup">Duplicates</span> given a unique _timestamp</span><br>';
+							importData += '<span id="dups-check"><input id="dups-checkbox" type="checkbox" onchange="toggleDups(this.checked, '+count+');"> <span class="importdump-dup">Skip duplicates?</span></span><br>';
 						}
 						importData += '<div id="importdump">';
-						importData += recursiveImportCheck(jsonStructureNormal, '', '');
+						importData += recursiveImportWarning(jsonStructure, '', '');
 						importData += '</div>';
 						// *** add checkbox to ignore duplicates on import...
 
@@ -3097,6 +3240,10 @@ function println(msg){
 							unsafeMessage:importData,
 							callback: function(value){
 								if(value){
+									let dupsCheckbox = false;
+									if(importDupFound){
+										dupsCheckbox = document.getElementById('dups-checkbox').checked;
+									}
 									if(isBackup){
 										isBackupSettings = document.getElementById('backup-settings').checked;
 										isBackupSketches = document.getElementById('backup-sketches').checked;
@@ -3108,7 +3255,7 @@ function println(msg){
 										showLoader();
 										if(legacyImport(jsonObj)){
 											let legacyDemos = ["new", "P5LIVE_meta", "P5LIVE_COCODING_meta", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_primatives", "webgl_sphereBox", "slidersGrid", "textToPoints", "basel.codes", "this is a really long name", "osc_setup", "midi_setup"];
-											jsonStructureSorted.forEach(function(jsonItem){
+											jsonStructure.forEach(function(jsonItem){
 												if(jsonItem.mod === undefined){
 													jsonItem.mod = timeDate();
 												}
@@ -3141,7 +3288,9 @@ function println(msg){
 											parseSketches(jsonObj, legacyDemos);
 										}else{
 											// new importer from r34
-											importSketchesParser(jsonStructureSorted);
+											//console.log(dupsCheckbox)
+											importSketchesParser(jsonStructure.reverse(), dupsCheckbox);
+											hideLoader();
 										}
 										hideLoader();
 									}
@@ -3152,24 +3301,97 @@ function println(msg){
 
 								}
 
+							},
+							afterOpen: function(){
+								vexFocus();
 							}
 						})
 					}else{
-
-
 						// import single sketch w/o confirm dialog
 						if(legacyImport(jsonObj)){
 							checkDupSketches(jsonObj, 'sketchName');
 							parseSketches(jsonObj);
+							hideLoader();
 						}else{
 							hideLoader();
-							badImport();
+							badImport('SKETCHES');
 							return false;
 						}
 					}
 				}
 				reader.readAsText(data[i]);
 			}
+			hideLoader();
+		}
+
+		function toggleImport(importsCheck){
+			let imports = document.getElementById('importdump');
+			let importDup = document.getElementById('dups-check');
+			let importDupCheck = document.getElementById('dups-checkbox');
+
+			imports.style.opacity = 1.0;
+			if(!importsCheck){
+				imports.style.opacity = .25;
+			}
+
+			if(importDup !== null){
+				importDup.style.opacity = 1.0;
+				importDupCheck.disabled = false;
+				if(!importsCheck){
+					importDup.style.opacity = .25;
+					importDupCheck.disabled = true;
+				}
+			}
+		}
+
+		function toggleDups(skipDups, count){
+			let importCount = document.getElementById('import-count');
+			let dups = document.getElementById('importdump').getElementsByClassName('import-sketch dup');
+			let contents = document.getElementById('importdump').getElementsByClassName('import-contents');
+			let dirs = document.getElementById('importdump').getElementsByClassName('import-folder');
+			console.log(count +" / "+dups.length)
+			for(let d of dups){
+				d.style.display = "block";
+				importCount.innerHTML = count;
+				if(skipDups){
+					d.style.display = "none";
+					importCount.innerHTML = count - (dups.length);
+				}
+			}
+			for(let d of dirs){
+				d.style.display = "block";
+				let dContents = d.parentNode.childNodes;
+				let dCount = dContents.length;
+				for(let dc of dContents){
+					if(dc.style.display == 'none'){
+						dCount--;
+					}
+				}
+				if(dCount <= 1){
+					d.style.display = "none";
+				}
+				// console.log(dContents.length +" / "+ dCount)
+				// if(d.childNodes.length == 0){
+				// 	d.parentNode.style.display = "none";
+				// }
+			}
+
+			// for(let d of contents){
+			// 	d.style.display = "block";
+			// 	let dContents = d.getElementsByClassName('import-sketch');
+			// 	let dCount = dContents.length;
+			// 	// console.log(dContents)
+			// 	for(let dc of dContents){
+			// 		if(dc.style.display == 'none'){
+			// 			dCount--;
+			// 		}
+			// 	}
+			// 	if(dCount <= 1){
+			// 		d.style.display = "none";
+			// 	}
+			// }
+			// console.log(objDup)
+			// console.log(objNormal)
 		}
 
 		function legacyImport(obj){
@@ -3179,29 +3401,39 @@ function println(msg){
 				}else{
 					return false;
 				}
+			}else if(obj.hasOwnProperty('sketches')){
+				return true;
 			}else{
 				return false;
 			}
 		}
 
-		function importSketchesParser(importObj){
+		function importSketchesParser(importObj, skipDups){
 			if(demosLocked){
 				importObj = importObj.filter(function( obj ) {
 					return obj.name !== 'demos';
 				});
 			}
 
+			if(skipDups){
+				importObj = filterJSON(importObj, 'dup', false)
+			}
+			console.log(importObj)
+
 			recursiveImportDup(importObj, importObj);
 			importObj.forEach(function(jsonItem){
 				if(jsonItem.type == 'folder'){
 					settings.sketches.unshift({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
 				}else if(jsonItem.type == 'sketch'){
-					settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
+					// if(!skipDups || (skipDups && jsonItem.hasOwnProperty('dups') && !jsonItem.dups)){
+						settings.sketches.unshift({'type':'sketch', 'name':jsonItem.name, 'mod':jsonItem.mod});
+					// }
+
 				}
 			});
 			updateSettings();
 			initSortable();
-			recursiveImportCode(importObj);
+			recursiveImportCode(importObj); // add code after sketches menu updated
 		}
 
 		function recursiveNames(obj, outputData){
@@ -3234,6 +3466,8 @@ function println(msg){
 					ric.name = versionCheck(ric.name, allNames);
 				}
 
+				delete ric['dup'];
+
 				// if folder, go deeper
 				if(ric.type == 'folder'){
 					recursiveImportDup(ric.contents, obj);
@@ -3257,26 +3491,100 @@ function println(msg){
 			};
 		}
 
+		function recursiveDupCheck(obj, objHold){
+			for (let k in obj) {
+				let ric = obj[k];
+				ric.dup = false;
 
-		function recursiveImportCheck(objStructure, level, outputData) {
+				if(searchSketches(ric.name, settings.sketches)){
+					ric.dup = true;
+				}
+
+				// if folder, go deeper
+				if(ric.type == 'folder'){
+					recursiveDupCheck(ric.contents, obj);
+				}
+			};
+		}
+
+		// function recursiveDupFilter(obj, objHold, level){
+		// 	if(objHold === undefined){
+		// 		objHold = [];//JSON.parse(JSON.stringify(obj));
+		// 	}
+		// 	if(level === undefined){
+		// 		level = 0;
+		// 	}
+
+		// 	// searchJSON(obj, key, value, out, dir)
+		// 	let objCopy = cloneJSON(obj);
+		// 	if(level > 0){
+		// 		obj = obj.contents;
+		// 	}
+		// 	for (let k in obj) {
+		// 		let ric = obj[k];
+		// 		// ric.dup = false;
+
+		// 		// !searchSketches(ric.name, settings.sketches)
+		// 		if(level == 0 && ric.type == 'sketch' && !ric.dup){
+		// 			objHold.push(ric);
+		// 			//delete obj[k];
+		// 		}
+
+		// 		// if(ric.type == 'folder'){
+		// 		// 	// curFolder = ric.name;
+		// 		// 	if(!searchSketches(ric.name, settings.sketches)){
+		// 		// 		let objContents = ric.contents;
+		// 		// 		objHold.push(ric);
+		// 		// 		// ric.dup = true;
+		// 		// 	}
+		// 		// 	recursiveDupFilter(ric.contents, objHold);
+		// 		// }
+
+		// 		// if(!searchSketches(ric.name, settings.sketches)){
+		// 		// 	objHold.push(ric);
+		// 		// 	// ric.dup = true;
+		// 		// }
+
+		// 		// if folder, go deeper
+		// 		if(ric.type == 'folder'){
+		// 			// console.log(ric.contents.length);
+		// 			if(!searchSketches(ric.name, settings.sketches)){
+		// 				objHold.push(ric);
+		// 				//ric.dup = true;
+		// 			}
+		// 			recursiveDupFilter(ric, objHold, level+1);
+		// 		}
+		// 	};
+		// 	console.log(objHold)
+
+		// 	//return objHold;
+		// }
+
+		function recursiveImportWarning(objStructure, level, outputData) {
 			for (let k in objStructure) {
 				let ric = objStructure[k];
 				let ricDup = '';
 
 				if(searchSketches(ric.name, settings.sketches)){
-					ricDup = 'class="importdump-dup"';
+					// ricDup = 'class="importdump-dup"';
+					ricDup = 'dup"';
+					// if(ric.type == 'folder'){
+					// 	ricDup = 'class="importdump-dup-folder"';
+					// }
 					// ric.name += '_'+ timeStamp(); // versionCheck(rnc.name);
 				}
 
 				// if sketch, update sketches name too
 				if(objStructure[k].type == 'sketch'){
-					outputData += level + icon.fileLines +'<span '+ricDup+'>'+ ric.name + '</span><br>';
+					outputData += '<div class="import-sketch '+ricDup+'">' + level + icon.fileLines +'<span>'+ ric.name + '</span></div>';
 				}
 
 				// if folder, recurse deeper
 				if(ric.type == 'folder' && ric.name != 'demos'){
-					outputData += level + icon.folderEmpty +'<span '+ricDup+'>'+ ric.name + '</span><br>';
-					outputData = recursiveImportCheck(ric.contents, '&nbsp;&nbsp;'+level, outputData);
+					outputData += '<div class="import-contents">';
+						outputData += '<div class="import-folder '+ricDup+'">' + level + icon.folderEmpty +'<span>'+ ric.name + '</span></div>'; //  '+ricDup+' // removed from folder...
+						outputData = recursiveImportWarning(ric.contents, '&nbsp;&nbsp;'+level, outputData);
+					outputData += '</div>';
 				}
 			};
 			return outputData;
@@ -3632,22 +3940,22 @@ function println(msg){
 			if(elmType == 'folder'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+icon.folderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button">'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+icon.folderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
-						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+icon.moreHorizontal+'</a>';
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button menu-more" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+icon.moreHorizontal+'</a>';
 					}
 				}
 
 			}else if(elmType == 'sketch'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button">'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
-						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+icon.moreHorizontal+'</a>';
+						elm.getElementsByClassName('menu-sketch-nav')[0].innerHTML = '<a class="menu-sketch-button menu-more" onmouseenter="showNav(this, \'' + elmID + '\', \''+elmType+'\', 1);" >'+icon.moreHorizontal+'</a>';
 					}
 				}
 
@@ -3745,7 +4053,10 @@ function println(msg){
 				,{
 					type: 'close',
 					text: 'CLOSE',
-					className: 'my-button-class-name'
+					className: 'my-button-class-name',
+					click: function(){
+						editor.focus();
+					}
 				}]
 			})
 			inspectEditor = ace.edit("inspectcode");
@@ -3761,6 +4072,8 @@ function println(msg){
 				tabSize: 4, useSoftTabs: false,
 			});
 			tidyCode(inspectEditor);
+			inspectEditor.focus();
+			inspectEditor.moveCursorTo(0,0);
 		}
 
 		// rename sketch/folder
@@ -3785,7 +4098,7 @@ function println(msg){
 								}else{
 									vex.dialog.alert({
 										unsafeMessage:'"'+newName +'" already exists. <br>Pick a new name',
-										callback: function(){renameItem(itemName, itemType)},
+										callback: function(){renameItem(newName, itemType)},
 										afterOpen: function(){
 											vexSmall(this.rootEl);
 										}
@@ -3826,7 +4139,7 @@ function println(msg){
 				if(elmContents.type == 'folder' && elmContents.contents.length > 0){
 					removeDetails = '<div class="remove-header">Includes:</div>'
 					removeDetails += '<div id="importdump" class="remove-dump">';
-					removeDetails += recursiveImportCheck(elmContents.contents, '', '');
+					removeDetails += recursiveImportWarning(elmContents.contents, '', '');
 					removeDetails += '</div>';
 				}else{
 					// remove empty folders without warning
@@ -4093,6 +4406,25 @@ function println(msg){
 		}
 
 		function recompile(force){
+
+			// catch #bug attempt to recompile while COCODING
+			if(force && settings.safeMode){
+				vex.dialog.confirm({
+					message:'#bug » recompile sketch?',
+					callback: function(value){
+						if(value){
+							settings.safeMode = false;
+							updateSettings();
+							window.location.hash = '#';
+							recompile(force);
+						}
+					},
+					afterOpen: function(){
+						vexSmall(this.rootEl);
+					}
+				})
+			}
+
 			let currline = editor.getSelectionRange().start.row;
 			let currCode = editor.session.getLine(currline);
 			curPos = editor.getCursorPosition();
@@ -4166,16 +4498,13 @@ function println(msg){
 
 		function processLibs(code){
 			let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
-			let sketchLoadScriptsRegEx = /(?:loadScripts|libs|scripts)\s+=\s+\[(.*["']\])/
-			let sketchLoadScripts = sketchLoadScriptsRegEx.exec(sketchTest);
+			let sketchScriptsString = sketchTest.match(/(?=loadScripts|libs|scripts).*?(\])/);
 			let scriptsList = [];
-			if(sketchLoadScripts != undefined){
-				sketchLoadScripts = sketchLoadScripts[1].replace(/["']/g, '').replace(/[' '|\]]/g, '');
-				sketchLoadScripts = sketchLoadScripts.split(',');
-
+			if(sketchScriptsString != undefined){
+				let sketchLoadScripts = sketchScriptsString[0].match(/(["'])(?:(?=(\\?))\2.)*?\1/g);
 				for(let i=0; i < sketchLoadScripts.length; i++){
 					if(sketchLoadScripts[i] != ''){
-						scriptsList.push(sketchLoadScripts[i]);
+						scriptsList.push(sketchLoadScripts[i].replace(/["']/g, ''));
 					}
 				}
 			}
@@ -4311,7 +4640,9 @@ function println(msg){
 			sketchLoaded = false;
 			cocodingRecompile = true;
 			let el = p5frameTemplate.cloneNode(true);
-			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
+
+			let iFrameHead = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
+			let iFrameBody = el.getElementsByTagName('body')[0];//el.document.getElementsByTagName('body')[0];
 
 			let scriptsCol = [];
 
@@ -4331,37 +4662,48 @@ function println(msg){
 			}
 
 			// old way ***
-			// for(let sc of scriptsCol){
-			// 	let s = document.createElement('script');
-			// 	s.type = 'text/javascript';
-			// 	s.src = sc;
-			// 	s.async = false;
-			// 	iFrameBody.appendChild(s);
-			// }
+			for(let sc of scriptsCol){
+				let s = document.createElement('script');
+				s.type = 'text/javascript';
+				s.src = sc;
+				// s.async = false;
+				iFrameHead.appendChild(s);
+			}
+
+
 
 			// load sketch
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
 			let sketchCode = editor.getValue();
+
+			// break infinite loops
+			if(!sketchCode.match(/(\/\/).*(no.*protect)/g)){
+				sketchCode = loopBreaker(sketchCode).code;
+			}
+
+			// console.log(sketchCode);
 			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
-
 			let fullCode = p5custom.value + codeSetup + 'new p5(); sketchStatus();';
 
-			let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },async: false});';
+			// *** disabling loadjs route.. failed is missing file.. (needed for remote/local lib loading)
+			// let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },error: function(pathsNotFound) {console.log(pathsNotFound);},async: false});';
 
-			s.innerHTML = sLoader;
-			// s.innerHTML = fullCode; // *** old way
+			// s.innerHTML = sLoader;
+			s.innerHTML = fullCode; // *** old (better?) way
+
 			if(settings.syncdata.active){
 				syncdataButtonToggle();
 			}
 
-			if(!settings.safeMode){
-				iFrameBody.appendChild(s);
-			}
-
-			// set dynamic html as iframe srcdoc
+			// updated route, load html, then script once ready
 			p5frame.srcdoc = el.innerHTML;
+			p5frame.onload = function(){
+				if(!settings.safeMode){
+					p5f.document.body.appendChild(s);
+				}
+			}
 
 			curPositions = [];
 		}
@@ -4393,6 +4735,11 @@ function println(msg){
 			}
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
+
+			// break infinite loops
+			if(!editor.getValue().match(/(\/\/).*(no.*protect)/g)){
+				curCodeTemp = loopBreaker(curCodeTemp).code;
+			}
 			s.innerHTML = curCodeTemp;
 			p5f.document.head.appendChild(s);
 		}
@@ -5103,7 +5450,12 @@ function println(msg){
 				markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
 				let p5liveabout = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
 
-				vex.dialog.alert({unsafeMessage:p5liveabout})
+				vex.dialog.alert({
+					unsafeMessage:p5liveabout,
+					afterOpen: function(){
+						vexFocus();
+					}
+				})
 			});
 		}
 
@@ -5163,9 +5515,6 @@ function println(msg){
 			});
 		}
 
-		// *** dropdown tippy here = eventual exports/recording nav
-
-
 
 		/*	EXPORT ASSETS	*/
 
@@ -5174,7 +5523,7 @@ function println(msg){
 				let tempTimestamp = timeStampFile();
 				p5f.save('P5L_' + settings.fileName + tempTimestamp + '.png');
 				if(settings.exportCode){
-					exportSketch(settings.fileName, tempTimestamp); // *****
+					exportSketch(settings.fileName, tempTimestamp);
 					if(showNotify){
 						notifyMsg('Snapshot Saved');
 					}
@@ -5729,7 +6078,7 @@ function println(msg){
 			if(event.type == 'mousedown' && settings.editor.lockcode){
 				editor.setReadOnly(true);
 			}else if(event.type == 'mouseup'){
-				if(!settings.cocoding.active || (settings.cocoding.active && (settings.cocoding.level == 'admin' || settings.cocoding.writemode || !settings.cocoding.lockdown))){
+				if(!settings.cocoding.active || (settings.cocoding.active && !settings.cocoding.error && (settings.cocoding.level == 'admin' || settings.cocoding.writemode || !settings.cocoding.lockdown))){
 					editor.setReadOnly(false);
 				}
 			}
@@ -5896,6 +6245,10 @@ function println(msg){
 			})
 		}
 
+		function vexFocus(){
+			setTimeout(function(){document.getElementsByClassName('vex-dialog-button-primary')[0].focus();}, 500);
+		}
+
 		/* Notification for settings changed by shortcut */
 		function notifyMsg(txt){
 			if(!settings.editMode){
@@ -6010,6 +6363,7 @@ function println(msg){
 			settings.syncdata.active = false;
 			settings.syncdata.libs = [];
 			settings.syncdata.cocodeadded = false;
+			settings.cocoding.error = false;
 			updateSettings();
 			cocode = new CocodeApp(settings.cocoding.namespace);
 			if(cocodingFirstTime){
@@ -6378,7 +6732,21 @@ function println(msg){
 					syncdataCode = syncdataCode.substr(0, syncdataCode.indexOf('/* 2 - COCODE */'));
 				}
 
-				let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("'+syncdataID+'", ' + JSON.stringify(syncdataCode) + '); },async: false});';
+				// break infinite loops
+				if(!syncdataCode.match(/(\/\/).*(no.*protect)/g)){
+					syncdataCode = loopBreaker(syncdataCode).code;
+				}
+
+				// **** possible to avoid loadjs for syncdata?
+				// for(let sc of scriptsCol){
+				// 	let sds = document.createElement('script');
+				// 	sds.type = 'text/javascript';
+				// 	sds.src = sc;
+				// 	// s.async = false;
+				// 	// p5f.document.body.appendChild(sds);
+				// }
+
+				let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("'+syncdataID+'", ' + JSON.stringify(syncdataCode) + '); },error: function(pathsNotFound) {},async: false});';
 
 				s.innerHTML = sLoader;
 

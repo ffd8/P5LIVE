@@ -78,7 +78,9 @@
 					// only send to window console if unique!
 					if(m != pmsg){
 						window.parent.console.log(m); // also send to parent console!
-						window.parent.syncdataConsoleMsg(m); // also send to syncdata console!
+						if(window.parent.syncdataConsoleMsg !== undefined){
+							window.parent.syncdataConsoleMsg(m); // also send to syncdata console!
+						}
 						pmsg = m;
 					}
 					clearTimeout(p5consoleTimer);

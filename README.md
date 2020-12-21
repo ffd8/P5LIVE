@@ -25,17 +25,20 @@ p5.js collaborative live-coding vj environment!
 
 
 ## SAVING
-Sketches are **_ONLY_** saved in your browser's localStorage.  
+Sketches are **_ONLY_** saved in your browser's localStorage..!  
 Export all (<img class="svg" src="includes/icons/download.svg" height="12px">) sketches + settings regularly.  
 Clearing browser history/data will likely erase all sketches + settings.
 
-In [Fancy (nodejs) Offline Server](https://github.com/ffd8/P5LIVE#offline-server), see `Settings Panel` for auto-saving backups to P5LIVE folder.
+localStorage is unique and isolated per http[s] / domain / port,  
+so export/import all sketches to migrate between online / offline / browsers.  
+You can now use `Settings Panel`-> `Backup` -> `Now` to export all settings + sketches.
 
-localStorage is unique and isolated per http[s]:domain:port,  
-so export/import to migrate between online / offline / browsers.
+*The file structure changed in v1.3, so make sure all copies of P5LIVE are up to date.  
+You can import old sketches, but newly saved ones won't open in versions < 1.3.*
 
-The file structure changed in v1.3, so make sure all copies of P5LIVE are up to date.  
-You can import old sketches, but newly saved ones won't open in versions < 1.3.
+#### Automatic Backups
+See `Settings Panel`-> `Backup` to automatically export a P5LIVE backup file at varying intervals.  
+If using [Fancy (nodejs) Offline Server](https://github.com/ffd8/P5LIVE#offline-server), it will save these backups to your P5LIVE folder rather than downloads.
 
 
 ## INSTALL
@@ -96,7 +99,7 @@ Details below to run via python webserver or nodejs/npm.
 - Code Background, [x] toggle + set color behind lines of code.  
 - Code Theme, [Green on Black], select custom styling of editor.
 - Code Keybinding, [ace], select alternative keybindings of editor.
-- Backup, [off], (offline fancy) auto backup P5LIVE (sketches + settings). `Now` - on demand.  
+- Backup, [off], saves/downloads P5LIVE (sketches + settings) at intervals. `Now` - on demand.  
 
 #### Shortcuts
 Customize keyboard shortcuts by clicking on name + press a new key combination.  
@@ -311,6 +314,9 @@ By special request (P5LIVE for remote meditation sessions?!), there's a `view on
 - COCODING, `/?cc=*****&edit=0`  
 - Solo, `/?edit=0`
 
+You can also load a sketch by URL (for media installation), just add `sketch=name_of_sketch` !  
+Example: [\_meta\_P5LIVE](https://p5live.org/?sketch=_meta_P5LIVE)
+
 ### VISUALS-ONLY POPUP
 Incase you want to project or stream the visuals-only (no code + interface) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch a popup with a video feed of your P5LIVE canvas. 
 
@@ -329,21 +335,24 @@ For example,  *demos/_input/_input_osc* and run Processing sketch, [p5live\_osc\
 or use the OSC snippet (`CTRL + SHIFT + O`) and set host/in/out ports.  
 
 ### BUG/CRASH?! 
-Infinite loop? Broken code?  
+Infinite loop? Broken code? P5LIVE now ships with an infinite loop breaker, thus rendering previous tricks more or less obsolete... nevertheless, these may still be useful:
 
 - Add `#bug` to URL and press `ENTER`.  
-Stops compiler, loads a new sketch and opens inspector to fix issue.
+Stops compiler, loads a new sketch and opens inspector to fix issue and save.
 - Add `#new` to URL and press `ENTER`.  
 Loads a new sketch.
 - If the browser has completely hung, (rare issue between MBP/Chrome/libraries)  
 `sudo killall coreaudiod` (first take off headphones + turndown stereo!)
+
+*Incase you need a loop to run more than 10000 times ||  1 second,  
+add `// noprotect` anywhere in your code.*
 
 ### FUNCTIONS
 Additional custom functions are available in every sketch:  
 
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
-- `windowResize()` is set by default to keep your sketch fullscreen. Incase you're working with a smaller canvas, add `windowResized = null;` inside of your setup() to prevent automatic resizing.
+- `windowResize()` is set by default to keep your sketch fullscreen. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
 
 
 ## OFFLINE SERVER
@@ -424,6 +433,7 @@ Listed in order of adoption:
 - [http-proxy](https://github.com/http-party/node-http-proxy), https tunneling
 - [pem](https://github.com/Dexus/pem), self-generated generative ssl certificates
 - [FHNW](https://www.fhnw.ch/), nodejs websockets cocoding-server
+- [loop-breaker](https://github.com/popcodeorg/loop-breaker), inifinite-loop protection
 
 
 ## INSPIRATION
