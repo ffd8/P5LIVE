@@ -310,6 +310,10 @@
 						<input type="checkbox" id="settings-timestamptoggle" name="settings-timestamptoggle" value="settings-timestamptoggle"> Timestamp Exports
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Autosave session code <br>if server connection lost?" onclick="cocodingAutosaveToggle();">
+						<input type="checkbox" id="settings-cocodingautosavetoggle" name="settings-cocodingautosavetoggle" value="settings-cocodingautosavetoggle"> Backup COCODING
+					</div>
+
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
 						<span>Libs:</span>
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
@@ -474,6 +478,7 @@ function println(msg){
 			'tippyToggle':true,
 			'multitabToggle':true,
 			'timestampToggle':true,
+			'cocodingAutosaveToggle':true,
 			'debugMode': false,
 			'editMode':true,
 			'safeMode': false,
@@ -646,6 +651,7 @@ function println(msg){
 		settingsTippy = document.getElementById('settings-tippytoggle'),
 		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
 		settingsTimestamp = document.getElementById('settings-timestamptoggle'),
+		settingsCocodingAutosave = document.getElementById('settings-cocodingautosavetoggle'),
 		settingsTheme = document.getElementById('menu-settings-theme'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsKeybindings = document.getElementById('menu-settings-keybindings'),
@@ -1342,7 +1348,7 @@ function println(msg){
 				// editor.setReadOnly(true);
 
 				// // offer to save code if connection lost
-				if(!settings.cocoding.error){
+				if(!settings.cocoding.error && settings.cocodingAutosaveToggle){
 					cloneSketchCOCODING();
 					vex.dialog.alert({
 						unsafeMessage: 'COCODING – Connection lost...<br>Session code cloned, just to be safe!',
@@ -1358,7 +1364,7 @@ function println(msg){
 			}
 
 			cocodeReconnect(){
-				if(!settings.cocoding.error){
+				if(!settings.cocoding.error && settings.cocodingAutosaveToggle){
 					cloneSketchCOCODING();
 					settings.cocoding.error = true;
 					updateSettings();
@@ -2056,6 +2062,7 @@ function println(msg){
 			tippyToggleUpdate();
 			multitabToggleUpdate();
 			timestampToggleUpdate();
+			cocodingAutosaveToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
 			themeBGactiveToggleUpdate();
@@ -5148,6 +5155,16 @@ function println(msg){
 
 		function timestampToggleUpdate(){
 			checkToggle('timestamptoggle', settings.timestampToggle, settingsTimestamp, 'Timestamp Exports');
+		}
+
+		// timestamp exports toggle
+		function cocodingAutosaveToggle(){
+			settings.cocodingAutosaveToggle = !settings.cocodingAutosaveToggle;
+			cocodingAutosaveToggleUpdate();
+		}
+
+		function cocodingAutosaveToggleUpdate(){
+			checkToggle('cocodingautosavetoggle', settings.cocodingAutosaveToggle, settingsCocodingAutosave, 'COCODING Autosave');
 		}
 
 		//exportcode toggle

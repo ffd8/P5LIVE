@@ -1,6 +1,6 @@
 # P5LIVE
 v 1.3.4  
-cc [teddavis.org](http://teddavis.org) – 2019-2020  
+cc [teddavis.org](http://teddavis.org) – 2019 - 2021  
 p5.js collaborative live-coding vj environment!
 
 
@@ -31,13 +31,13 @@ Clearing browser history/data will likely erase all sketches + settings.
 
 localStorage is unique and isolated per http[s] / domain / port,  
 so export/import all sketches to migrate between online / offline / browsers.  
-You can now use `Settings Panel`-> `Backup` -> `Now` to export all settings + sketches.
+You can now use `Settings Panel`» `Backup` » `Now` to export all settings + sketches.
 
 *The file structure changed in v1.3, so make sure all copies of P5LIVE are up to date.  
 You can import old sketches, but newly saved ones won't open in versions < 1.3.*
 
 #### Automatic Backups
-See `Settings Panel`-> `Backup` to automatically export a P5LIVE backup file at varying intervals.  
+See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals.  
 If using [Fancy (nodejs) Offline Server](https://github.com/ffd8/P5LIVE#offline-server), it will save these backups to your P5LIVE folder rather than downloads.
 
 
@@ -95,6 +95,7 @@ Details below to run via python webserver or nodejs/npm.
 - [x] Tooltips, displays extra info on hover. 
 - [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
 - [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
+- [x] Backup COCODING, Autosave session code if server connection lost.  
 - Code Size, `15pt` adjust font size of editor.  
 - Code Background, [x] toggle + set color behind lines of code.  
 - Code Theme, [Green on Black], select custom styling of editor.
@@ -267,19 +268,20 @@ Toggle a <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboar
 
 <img src="includes/images/chalkboard-1.png" width="500px">
 
-Use `DRAWINGS` pulldown to activate 1 of 10 isolated layers to draw on. All drawings remain until either pressing the `🗑️` clear button or refreshing the page. Adjust `COLOR`, `WEIGHT`, `OPACITY` of the *CHALK*, separately adjust the `COLOR` and `OPACITY` of the board (background). This enables you to completely cover up the editor/visuals below for explaining concepts. Dim the *BOARD* if annotating or highlighting code (dim opacity of *CHALK*).
+Use `DRAWINGS` pulldown to activate 1 of 10 isolated layers to draw on. All drawings remain until either pressing the `🗑️` clear button, DELETE key or refreshing the page. Adjust `COLOR`, `WEIGHT`, `OPACITY` of the *CHALK*, separately adjust the `COLOR` and `OPACITY` of the board (background). This enables you to completely cover up the editor/visuals below for explaining concepts. Dim the *BOARD* if annotating or highlighting code (dim opacity of *CHALK*).
 
-You can even access the drawing within your p5 sketch!  
+You can even access the drawings within your p5 sketch!  
 
 ```
 p5live.chalkboard() // grabs active drawing
-p5live.chalkboard(#) // grabs specific drawing (1 – 10)
+p5live.chalkboard(#) // grab specific drawing (0 – 9)
 ```
 This drawing can then be displayed and played with as a manual drawing layer within your sketch:
 
 ```
 image(p5live.chalkboard(), 0, 0);
 ```
+For examples, see `DEMOS` » `_CANVAS` » `_canvas_chalkboard` + `..._animation`
 
 
 ### SNIPPETS  
@@ -323,6 +325,8 @@ Incase you want to project or stream the visuals-only (no code + interface) from
 ### EXPORT / IMPORT
 Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.json` into the browser.
 
+See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals.  
+
 ### PERFORMANCE
 Lagging or retina display creates too large of a canvas?  
 Use `pixelDensity(1);` in `setup()`.
@@ -335,7 +339,7 @@ For example,  *demos/_input/_input_osc* and run Processing sketch, [p5live\_osc\
 or use the OSC snippet (`CTRL + SHIFT + O`) and set host/in/out ports.  
 
 ### BUG/CRASH?! 
-Infinite loop? Broken code? P5LIVE now ships with an infinite loop breaker, thus rendering previous tricks more or less obsolete... nevertheless, these may still be useful:
+Infinite loop? Broken code? P5LIVE now ships includes an infinite loop breaker, thus rendering previous tricks more or less obsolete... nevertheless, these may still be useful:
 
 - Add `#bug` to URL and press `ENTER`.  
 Stops compiler, loads a new sketch and opens inspector to fix issue and save.
