@@ -1,6 +1,6 @@
 {
   "version": "1.3.4",
-  "revision": 37,
+  "revision": 38,
   "structure": [
     {
       "name": "demos",
@@ -63,6 +63,18 @@
               "mod": "1607472481404",
               "type": "sketch",
               "code": "/*\n\t_canvas_embed // cc teddavis.org 2020\n\thow to embed (almost) ANYTHING behind our sketch!\n*/\n\nlet vidFrame, embedURL = \"https://www.youtube.com/embed/7HubjUPIftQ\";\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tlet vidW = windowWidth;\n\tlet vidH = vidW / 16 * 9;\n\tvidFrame = createDiv('vidPlayer');\n\tvidFrame.position(0, 0);\n\t// setup for YT, but replace with iframe of choice\n\tvidFrame.html('<iframe width=\"' + vidW + '\" height=\"' + vidH + '\" src=\"' + embedURL + '?rel=0&mute=1&autoplay=1&loop=1&controls=0\" frameborder=\"0\" allow=\"autoplay; encrypted-media;\" allowfullscreen></iframe>');\n\tvidFrame.style('pointer-events', 'none'); // prevent losing mouse\n\tvidFrame.style('z-index', -1); // send video back\n}\n\nfunction draw() {\n\t// clear() // avoid background()\n\tnoCursor();\n\tfill(255);\n\ttextSize(100);\n\ttextAlign(CENTER, CENTER);\n\ttext(\"☕\", mouseX, mouseY);\n\ttranslate(mouseX, height - mouseY);\n\trotate(radians(180));\n\ttext(\"☕\", 0, 0);\n}"
+            },
+            {
+              "name": "_canvas_chalkboard",
+              "mod": "1608651581390",
+              "type": "sketch",
+              "code": "/*\n\t_canvas_chalkboard // cc teddavis.org 2020\n\tdisplay the Chalkboard in your sketch!\n\t\n\t- 'CTRL + B', or open from P5LIVE panel\n\t- set 'Drawing' from 0 - 9, set color, draw!\n\t- grab the current one p5live.chalkboard()\n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\timageMode(CENTER)\n}\n\nfunction draw() {\n\tbackground(0, 15);\n\n\t// push();\n\t// draw from center out\t\n\ttranslate(width / 2, height / 2);\n\t// rotate!\n\trotate(radians(frameCount * 144.2))\n\n\t// display selected drawing\n\timage(p5live.chalkboard(), 0, 0);\n\t// pop();\n}"
+            },
+            {
+              "name": "_canvas_chalkboard_animation",
+              "mod": "1608650635149",
+              "type": "sketch",
+              "code": "/*\n\t_canvas_chalkboard_animation // cc teddavis.org 2020\n\tuse the Chalkboard feature for ~10 frame animations!\n\t\n\t- 'CTRL + B', or open from P5LIVE panel\n\t- set 'Drawing' from 0 - 9, set color, draw!\n\t- grab them with p5live.chalkboard(#), # floors + wraps 0-9!\n\t- enjoy the show!\n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\timageMode(CENTER)\n}\n\nfunction draw() {\n\tbackground(0, 10);\n\n\t// draw from center out (for rotation fun?!)\t\n\ttranslate(width / 2, height / 2);\n\n\t// look at specific chalkboard, 0 - 9\n\t// image(p5live.chalkboard(0), 0, 0)\n\n\t// animate through all 10 frames (uses %10 in the backend!)\n\timage(p5live.chalkboard(frameCount * .25), 0, 0)\n\n\t// animate only first 3 frames\n\t// image(p5live.chalkboard((frameCount * .25) % 3), 0, 0)\n}"
             }
           ]
         },
@@ -270,9 +282,9 @@
             },
             {
               "name": "_shader_texture",
-              "mod": "1607473305382",
+              "mod": "1608645985127",
               "type": "sketch",
-              "code": "/*\t\n\t_shader_texture // cc teddavis.org 2020\t\n\tdemo applying shaders as texture on 3D primatives\n*/\n\n// define global variables for a texture (tex) and shader (warp)\nlet tex, theShader;\n\nfunction preload() {\n\t// load vert/frag defined below\n\ttheShader = loadShader('data/shaders/trippy.vert', 'data/shaders/trippy.frag');\n}\n\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL); // Shaders require WEBGL\n\tbackground(0);\n\tnoStroke();\n\n\t// create texture to hold shader\n\ttex = createGraphics(windowWidth, windowHeight, WEBGL);\n\ttex.noStroke();\n}\n\n\nfunction draw() {\n\t// draw shader to texture\n\ttex.shader(theShader); // apply shader\n\n\t// set uniforms\n\ttheShader.setUniform('u_resolution', [width, height]);\n\ttheShader.setUniform('u_time', frameCount * .01);\n\n\t// set + display shader\n\ttex.noStroke();\n\ttex.rect(0, 0, width, height);\n\n\t// set shader as texture for 3D primatives\n\ttexture(tex);\n\n\t// draw 3D environment\n\torbitControl(5);\n\ttranslate(sin(frameCount * .004) * width / 3, sin(frameCount * .008) * height / 8)\n\trotateX(radians(frameCount / 2));\n\tsphere(height * .125);\n\trotateZ(radians(-frameCount))\n\tellipse(0, 0, 400);\n\n}\n\n/* SHADER DEFINITIONS */\n\nlet vertShader = `\n\t//standard vertex shader\n\tattribute vec3 aPosition;\n\n\tvoid main() {\n\t\n\t\t// Copy the position data into a vec4, adding 1.0 as the w parameter\n\t\tvec4 positionVec4 = vec4(aPosition, 1.0);\n\t\n\t\t// Scale to make the output fit the canvas\n\t\tpositionVec4.xy = positionVec4.xy * 2.0 - 1.0; \n\t\n\t\t// Send the vertex information on to the fragment shader\n\t\tgl_Position = positionVec4;\n\t}\n`;\n\n\nlet fragShader = `\n\tprecision mediump float;\n\n\tuniform vec2 u_resolution; // This is passed in as a uniform from the sketch.js file\n\tuniform float u_time;// send time\n\t\n\tvoid main() {\n\t\t// position of the pixel divided by resolution, to get normalized positions on the canvas\n\t\tvec2 st = gl_FragCoord.xy/u_resolution.xy; \n\t\n\t\tgl_FragColor = vec4(abs(sin(u_time + st.x*2.0)),abs(sin(u_time / st.y)),abs(sin(u_time)),1.0); // R,G,B,A\n\n\t}\n`;"
+              "code": "/*\t\n\t_shader_texture // cc teddavis.org 2020\t\n\tdemo applying shaders as texture on 3D primatives\n*/\n\n// define global variables for a texture (tex) and shader (warp)\nlet tex, theShader;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL); // Shaders require WEBGL\n\tbackground(0);\n\tnoStroke();\n\n\t// create texture to hold shader\n\ttex = createGraphics(windowWidth, windowHeight, WEBGL);\n\ttheShader = tex.createShader(vertShader, fragShader);\n\ttex.noStroke();\n}\n\n\nfunction draw() {\n\t// draw shader to texture\n\ttex.shader(theShader); // apply shader\n\n\t// set uniforms\n\ttheShader.setUniform('u_resolution', [width, height]);\n\ttheShader.setUniform('u_time', frameCount * .01);\n\n\t// set + display shader\n\ttex.noStroke();\n\ttex.rect(0, 0, width, height);\n\n\t// set shader as texture for 3D primatives\n\ttexture(tex);\n\n\t// draw 3D environment\n\torbitControl(5);\n\ttranslate(sin(frameCount * .004) * width / 3, sin(frameCount * .008) * height / 8)\n\trotateX(radians(frameCount / 2));\n\tsphere(height * .125);\n\trotateZ(radians(-frameCount))\n\tellipse(0, 0, 400);\n\n}\n\n/* SHADER DEFINITIONS */\n\nlet vertShader = `\n\t//standard vertex shader\n\tattribute vec3 aPosition;\n\n\tvoid main() {\n\t\n\t\t// Copy the position data into a vec4, adding 1.0 as the w parameter\n\t\tvec4 positionVec4 = vec4(aPosition, 1.0);\n\t\n\t\t// Scale to make the output fit the canvas\n\t\tpositionVec4.xy = positionVec4.xy * 2.0 - 1.0; \n\t\n\t\t// Send the vertex information on to the fragment shader\n\t\tgl_Position = positionVec4;\n\t}\n`;\n\n\nlet fragShader = `\n\tprecision mediump float;\n\n\tuniform vec2 u_resolution; // This is passed in as a uniform from the sketch.js file\n\tuniform float u_time;// send time\n\t\n\tvoid main() {\n\t\t// position of the pixel divided by resolution, to get normalized positions on the canvas\n\t\tvec2 st = gl_FragCoord.xy/u_resolution.xy; \n\t\n\t\tgl_FragColor = vec4(abs(sin(u_time + st.x*2.0)),abs(sin(u_time / st.y)),abs(sin(u_time)),1.0); // R,G,B,A\n\n\t}\n`;"
             },
             {
               "name": "_shader_shadertoy_template",
@@ -298,7 +310,7 @@
     }
   ],
   "count": {
-    "sketches": 33,
+    "sketches": 35,
     "folders": 12
   }
 }

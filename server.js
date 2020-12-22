@@ -86,7 +86,8 @@ let cc = new Object(); // store namespaces
 let ccStatsReporting = (online) ? 60 : 15; // sec
 let ccStatsWriting = 60; // min
 let ccStats = {'time':timestamp(), 'cc':0, 'ns':0, 'nsMax':0, 'nsTwo':0, 'sd':0, 'max':{}, 'nsMap':[]};
-ccStats.max = {cc:0, ns:0, nsMax:0, nsTwo:0, sd:0, sdMax:0};
+let ccStatsMaxCounter = 0;
+initMaxStats();
 
 /* STATS */
 function setupStats(){
@@ -107,7 +108,15 @@ function hourlyStats(){
 	let dir = './_stats';
 	!fs.existsSync(dir) && fs.mkdirSync(dir);
 	fs.writeFile(dir + '/P5L_STATS_' + new Date().getFullYear()+'-' + tPort + '.txt', writeStats, { flag: 'a+' }, err => {})
-	console.log('writing hourlyStats...');
+	ccStatsMaxCounter++;
+	if(ccStatsMaxCounter >= 24){
+		initMaxStats(); // start max count over
+	}
+	//console.log('writing hourlyStats...');
+}
+
+function initMaxStats(){
+	ccStats.max = {cc:0, ns:0, nsMax:0, nsTwo:0, sd:0, sdMax:0};
 }
 
 function reportStats(){

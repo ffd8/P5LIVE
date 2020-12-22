@@ -1339,33 +1339,37 @@ function println(msg){
 			}
 
 			cocodeError(err){
-				editor.setReadOnly(true);
+				// editor.setReadOnly(true);
 
-				// offer to save code if connection lost
+				// // offer to save code if connection lost
 				if(!settings.cocoding.error){
-					vex.dialog.confirm({
-						unsafeMessage: 'COCODING – Connection lost...<br>Clone session code, just to be safe?',
-						callback: function (value) {
-							if (value) {
-								cloneSketchCOCODING();
-							}
-						},
+					cloneSketchCOCODING();
+					vex.dialog.alert({
+						unsafeMessage: 'COCODING – Connection lost...<br>Session code cloned, just to be safe!',
 						afterOpen: function(){
 							vexSmall(this.rootEl);
 						}
 					})
-				settings.cocoding.error = true;
-				updateSettings();
-				}
 
+					settings.cocoding.error = true;
+					updateSettings();
+				}
 				// console.log('WSx error: '+settings.cocoding.error);
 			}
 
 			cocodeReconnect(){
-				vex.dialog.confirm({
-					unsafeMessage: 'COCODING – Server refreshed...<br>Press \'OK\' to auto-refresh browser.<br><br>You\'ll need to manually inspect and paste code into new session.<br>',
+				if(!settings.cocoding.error){
+					cloneSketchCOCODING();
+					settings.cocoding.error = true;
+					updateSettings();
+				}
+
+				vex.dialog.alert({
+					unsafeMessage: 'COCODING – Server Rebooted<br><br>Session code auto-saved! Manually inspect, copy + paste it into the session.<br>',
 					callback: function (value) {
 						if (value) {
+							settings.cocoding.error = false;
+							updateSettings();
 							location.reload();
 						}
 					},
@@ -1373,8 +1377,7 @@ function println(msg){
 						vexSmall(this.rootEl);
 					}
 				})
-				settings.cocoding.error = false;
-				updateSettings();
+
 				// console.log('WSx error: '+settings.cocoding.error);
 			}
 
@@ -2121,7 +2124,7 @@ function println(msg){
 				settings.cocoding.active = true;
 				menuCocodeSync.style.display = 'inline';
 				if(settings.cocoding.timestamp == null){
-					settings.cocoding.timestamp = timeStamp();
+					settings.cocoding.timestamp = timeStamp().substring(0, 8);
 				}
 				menuCocode.style.display = 'block';
 				settings.fileName = ccSpace;
@@ -3723,7 +3726,8 @@ function println(msg){
 		/* MENU » SKETCHES */
 
 		function legacySettings(){
-			if(typeof settings.sketches[0] != 'object'){
+			//console.log(settings);
+			if(settings.sketches != null && typeof settings.sketches[0] != 'object'){
 				let tc = timeDate();
 				let order = settings.sketches;
 				let newOrder = [];

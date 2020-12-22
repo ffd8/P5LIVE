@@ -212,8 +212,7 @@
 		butClear = createButton('🗑️');
 		butClear.parent('nav-clear');
 		butClear.mousePressed(function(){
-			clear();
-			chalkboard[chalkboardSel].clear();
+			clearDrawing();
 		});
 
 		butSave = createButton('💾');
@@ -221,6 +220,11 @@
 		butSave.mousePressed(function(){
 			chalkboard[chalkboardSel].save("P5L_CHALK_" + window.parent.timeStamp() + ".png");
 		});
+	}
+
+	function clearDrawing(){
+		clear();
+		chalkboard[chalkboardSel].clear();
 	}
 
 	function draw() {
@@ -261,12 +265,28 @@
 	}
 
 	function setChalkboard(val){
-		chalkboardSel = val-1;
+		chalkboardSel = val;
 		loop();
 	}
 
 	// iFrame got focus()?!
 	document.onkeydown = function(event){
+		// DELETE to clear drawing
+		if(event.keyCode == 8){
+			clearDrawing();
+		}
+
+		// hotswap drawings by #keys (1 = 0... both weird and normal)
+		if(event.keyCode >= 48 && event.keyCode <= 57){
+			let cbSel = document.getElementById('chalk-slate');
+			let cbKey = event.keyCode - 49;
+			if(cbKey < 0){
+				cbKey = 9;
+			}
+			cbSel.value = cbKey;
+			chalkboardSel = cbKey;
+		}
+
 		// on CONTROL, return focus and activate CONTROL
 		if(event.keyCode == 17){
 			window.parent.focus();
@@ -306,6 +326,7 @@
 				<div class="label">DRAWING</div>
 				<div id="nav-stroke-slate">
 					<select id="chalk-slate" onchange="setChalkboard(this.value);">
+						<option>0</option>
 						<option>1</option>
 						<option>2</option>
 						<option>3</option>
@@ -315,7 +336,6 @@
 						<option>7</option>
 						<option>8</option>
 						<option>9</option>
-						<option>10</option>
 					</select>
 				</div>
 			</div>

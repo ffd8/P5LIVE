@@ -179,7 +179,7 @@
 				let chalkboard = parent.chalkboardFrame.chalkboard;
 				let chalkboardSelected = parent.chalkboardFrame.chalkboardSel;
 				if(chalkboardSketch !== undefined){
-					chalkboardSelected = chalkboardSketch;
+					chalkboardSelected = Math.floor(chalkboardSketch)%10;
 				}
 				return chalkboard[chalkboardSelected];
 			}else{
