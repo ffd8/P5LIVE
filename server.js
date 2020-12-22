@@ -1,6 +1,7 @@
 'use strict';
 let online = false; // set online
-let debugStats = false; // report glitch.com limits
+let debugStats = false; // report stats
+let developBranch = false; // dev mode (false for production)
 
 // custom port
 let tPort = process.env.PORT || 5000;
@@ -23,7 +24,6 @@ const express = require('express')
 , io = require('socket.io')(server)
 , RGA = (online) ? require('./js/rga.js') : require('./includes/js/rga.js') // remove includes for online
 , port = tPort
-, requestStats = require('request-stats')
 , https = require('https')
 , fs = require('fs')
 , pem = require('pem')
@@ -81,40 +81,115 @@ if(!online){
 }
 
 const maxSpaces = 500; // check memory for number of namespaces...
-const purgeCounter = 60; // sec until removing namespace
-let cc = {}; // store namespaces
-let ccStatsReporting = 15; // sec
-let ccStats = {};
-ccStats.req = 4000;
-let countdown = 1000 * 60 * 60;
-ccStats.timer = 60;
-ccStats.max = {active:0, syncdata:0, syncchunk:0, size:0,};
+const purgeCounter = 24; // hours until removing namespace
+let cc = new Object(); // store namespaces
+let ccStatsReporting = (online) ? 60 : 15; // sec
+let ccStatsWriting = 60; // min
+let ccStats = {'time':timestamp(), 'cc':0, 'ns':0, 'nsMax':0, 'nsTwo':0, 'sd':0, 'max':{}, 'nsMap':[]};
+let ccStatsMaxCounter = 0;
+initMaxStats();
 
 /* STATS */
-function callEveryHour() {
-	setInterval(function(){
-		countdown = 1000 * 60 * 60;
-		ccStats.req = 4000;
-	}, 1000 * 60 * 60);
-}
-
-function callEveryMinute() {
-	setInterval(function(){
-		reportStats();
-		countdown -= (1000 * ccStatsReporting);
-		ccStats.timer = Math.floor(countdown/1000/60);
-		console.log(JSON.stringify(ccStats)); // *** good/bad ideae?
-	}, 1000 * ccStatsReporting); // 60
-}
-
 function setupStats(){
 	if(debugStats){
-		callEveryHour();
-		callEveryMinute();
+		setInterval(function(){
+			reportStats();
+			console.log(JSON.stringify(ccStats));
+		}, 1000 * ccStatsReporting); // sec
+
+		setInterval(function(){
+			hourlyStats();
+		}, 1000 * 60 * ccStatsWriting); // min
+	}
+}
+
+function hourlyStats(){
+	let writeStats = JSON.stringify(ccStats) + '\n';
+	let dir = './_stats';
+	!fs.existsSync(dir) && fs.mkdirSync(dir);
+	fs.writeFile(dir + '/P5L_STATS_' + new Date().getFullYear()+'-' + tPort + '.txt', writeStats, { flag: 'a+' }, err => {})
+	ccStatsMaxCounter++;
+	if(ccStatsMaxCounter >= 24){
+		initMaxStats(); // start max count over
+	}
+	//console.log('writing hourlyStats...');
+}
+
+function initMaxStats(){
+	ccStats.max = {cc:0, ns:0, nsMax:0, nsTwo:0, sd:0, sdMax:0};
+}
+
+function reportStats(){
+	ccStats.cc = 0;
+	ccStats.sd = 0;
+	ccStats.nsTwo = 0;
+	ccStats.nsMap = [];
+	ccStats.time = timestamp();
+	ccStats.ns = 0;
+	for(let i=0; i < Object.keys(cc).length; i++){
+		let ccRaw = Object.keys(cc)[i];
+		if(cc[ccRaw] !== undefined && Object.keys(cc[ccRaw].settings.people) !== undefined){
+			let ccCount = Object.keys(cc[ccRaw].settings.people).length;
+
+			// max cc
+			if(ccCount > ccStats.nsMax){
+				ccStats.nsMax = ccCount;
+				if(ccCount > ccStats.max.ns){
+					ccStats.max.nsMax = ccCount;
+				}
+			}
+
+			ccStats.cc += ccCount;
+			if(ccCount > 2){
+				ccStats.nsMap.push(ccCount);
+			}else if(ccCount == 2){
+				ccStats.nsTwo++;
+			}
+
+			if(ccCount > 0){
+				ccStats.ns++;
+			}
+
+			for (var key in cc[ccRaw].settings.people) {
+				if (!cc[ccRaw].settings.people.hasOwnProperty(key)) continue;
+
+				var obj = cc[ccRaw].settings.people[key];
+				if(obj.usesyncdata){
+					ccStats.sd++;
+				}
+			}
+		}
+	}
+	ccStats.nsMap.sort(function(a, b){return b-a});
+
+
+	if(ccStats.cc > ccStats.max.cc){
+		ccStats.max.cc = ccStats.cc;
+	}
+
+	if(ccStats.ns > ccStats.max.ns){
+		ccStats.max.ns = ccStats.ns;
+	}
+
+	if(ccStats.nsMap.length > ccStats.max.ns){
+		ccStats.max.ns = ccStats.nsMap.length;
+	}
+
+	if(ccStats.nsTwo > ccStats.max.nsTwo){
+		ccStats.max.nsTwo = ccStats.nsTwo;
+	}
+
+	if(ccStats.sd > ccStats.max.sd){
+		ccStats.max.sd = ccStats.sd;
 	}
 }
 
 setupStats();
+
+function timestamp(){
+	return new Date().toISOString().replace(/[^0-9]/g, '_').slice(0, -5);
+}
+
 
 function hashCode(s) {
 	let h;
@@ -134,7 +209,7 @@ app.use(function (req, res, next) {
 })
 
 app.get('/', function (req, res) {
-	if(online){
+	if(online && !developBranch){
 		res.redirect('https://teddavis.org/p5live');
 	}else{
 		res.sendFile(__dirname + '/index.html');
@@ -156,10 +231,26 @@ app.get('/', function (req, res) {
 	}
 })
 
+// backup sketches
+if(!online){
+	app.post('/backup', express.json({limit: '5mb', type: '*/*'}), (req, res) => {
+	  // res.json(req.body);
+	  let dir = './_backups';
+	  !fs.existsSync(dir) && fs.mkdirSync(dir);
+
+	  fs.writeFile(dir + '/P5L_BACKUP_'+tPort+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
+	  res.send('OK');
+	});
+
+	app.get('/fancy', express.json({type: '*/*'}), (req, res) => {
+	  res.send('fancy');
+	});
+}
+
 io.set('transports', ['websocket']);
 
 io.origins((origin, callback) => {
-	if (online && origin !== 'https://teddavis.org') {
+	if (online && origin !== 'https://teddavis.org' && !developBranch) {
 		return callback('origin not allowed', false);
 	}
 	callback(null, true);
@@ -211,7 +302,6 @@ function closeOSC(){
 // IT WORKS, dynamic namespaces to class!
 const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
 	if(online){
-		ccStats.req--;
 		let ccRaw = socket.nsp.name.substring(1);
 		if(ccRaw != null && ccRaw.length == 5){
 			if(cc[ccRaw] === undefined || cc[ccRaw] === null){
@@ -224,59 +314,13 @@ const dynamicNsp = io.of(/^\/*/).on('connect', (socket) => {
 	}
 });
 
-function reportStats(){
-	ccStats.active = 0;
-	ccStats.syncdata = 0;
-	ccStats.nodes = [];
-	for(let i=0; i < Object.keys(cc).length; i++){
-		let ccRaw = Object.keys(cc)[i];
-		if(cc[ccRaw] != undefined && Object.keys(cc[ccRaw].settings.people) != undefined){
-			let ccCount = Object.keys(cc[ccRaw].settings.people).length;
-			if(ccCount > ccStats.max.nodes){
-				ccStats.max.nodes = ccCount;
-			}
-			ccStats.active += ccCount;
-			if(ccCount > 1){
-				ccStats.nodes.push(ccCount);
-			}
-
-			for (var key in cc[ccRaw].settings.people) {
-				if (!cc[ccRaw].settings.people.hasOwnProperty(key)) continue;
-
-				var obj = cc[ccRaw].settings.people[key];
-				if(obj.usesyncdata){
-					ccStats.syncdata++;
-				}
-			}
-		}
-	}
-	ccStats.nodes.sort(function(a, b){return b-a});
-
-	if(ccStats.syncdata > ccStats.max.syncdata){
-		ccStats.max.syncdata = ccStats.syncdata;
-	}
-
-	if(ccStats.active > ccStats.max.active){
-		ccStats.max.active = ccStats.active;
-	}
-
-}
-
-requestStats(server, function (stats) {
-	// console.log(stats.req.path)
-	ccStats.req--;
-})
-
 // must be after app.get()!
 if(!online){
 	app.use(express.static('./')); //, { maxAge: 3600000 } enable 1-hour cache for fast local loading
 }
 
-// *** remove RGA / data
 function purgeNamespace(nsp){
-	cc[nsp] = {};
 	delete cc[nsp];
-	//console.log('removed: '' + nsp);
 }
 
 // tip for using socket in class!
@@ -284,20 +328,33 @@ function purgeNamespace(nsp){
 class Namespace {
 	constructor(name, io) {
 		this.settings = {
-			'name' : name
-			, 'token' : hashCode(name)
-			, 'users' : {}
-			, 'people' : {}
-			, 'chat' : []
-			, 'rga': new RGA(0)
-			, 'userId': 0
-			, 'lockdown' : false
-			, 'purgeTimer' : null
-			, 'sync' : false
-			, 'fc' : 0
-			, 'request' : false
-			, 'hasAdmin' : false
+			reset: function() {
+				Object.assign(this, {
+					'name' : name
+					, 'token' : hashCode(name)
+					, 'users' : {}
+					, 'people' : {}
+					, 'chat' : []
+					, 'rga': new RGA(0)
+					, 'userId': 0
+					, 'lockdown' : false
+					, 'purgeTimer' : null
+					, 'sync' : false
+					, 'fc' : 0
+					, 'request' : false
+					, 'hasAdmin' : false
+					, 'purgeTimer' : null
+					, 'purgeCounter' : purgeCounter
+				})
+			},
+			clearHistory: function() {
+				Object.assign(this, {
+					'rga': new RGA(0)
+					, 'fc' : 0
+				})
+			}
 		}
+		this.settings.reset(); // init values
 
 		if(online){
 			this.settings.namespace = io;
@@ -330,14 +387,10 @@ class Namespace {
 				clearPendingChat();
 				// set timer to trash namespace...
 				if(Object.keys(settings.people).length == 0){
-					//console.log('purging: ' + namespace);
 					settings.purgeTimer = setTimeout(function(){
-						for(let i=0; i<Object.keys(settings.rga); i++){
-							Object.keys(settings.rga)[i] = null;
-						}
-						 //rga = new RGA(0); // need to trash rga.history()
-						purgeNamespace(settings.namespace);
-					}, (1000 * settings.purgeCounter));
+						settings.reset(); // really removes code/chat
+						purgeNamespace(settings.namespace); // sets to undefined
+					}, (1000 * 60 * 60 * settings.purgeCounter)); // hours
 				}
 			});
 
@@ -349,45 +402,50 @@ class Namespace {
 				socket.emit('init');
 			}
 
-
 			RGA.tieToSocket(settings.rga, socket);
 
 			socket.on('login', function(newid){
-				// check existing name, add random id if so
-				let flatUsers = JSON.stringify(settings.people);
-				if(flatUsers.indexOf('"'+newid+'"') > -1 ){
-					let suffix = Math.floor(Math.random()*99);
-					newid += '_'+suffix;
-					socket.emit('rename', newid);
+				if(settings.people[socket.id] !== undefined){
+					// check existing name, add random id if so
+					let flatUsers = JSON.stringify(settings.people);
+					if(flatUsers.indexOf('"'+newid+'"') > -1 ){
+						let suffix = Math.floor(Math.random()*99);
+						newid += '_'+suffix;
+						socket.emit('rename', newid);
+					}
+					settings.people[socket.id].nick = newid;
+					syncChat();
+					syncSettings();
 				}
-				settings.people[socket.id].nick = newid;
-				syncChat();
-				syncSettings();
 			})
 
 			socket.on('updateColor', function(newcolor){
-				settings.people[socket.id].color = newcolor;
-				syncChat();
-				syncSettings();
+				if(settings.people[socket.id] !== undefined){
+					settings.people[socket.id].color = newcolor;
+					syncChat();
+					syncSettings();
+				}
 			})
 
 			socket.on('token', function(token){
-				// check credentials + allow only one admin
-				if(token == settings.token && !settings.hasAdmin){
-					settings.people[socket.id].level = 'admin';
-					settings.people[socket.id].writemode = true;
-					settings.request = false;
-					// console.log(settings.people[socket.id].nick);
-				}else{
-					settings.people[socket.id].level = 'user';
-					if(settings.lockdown){
-						settings.people[socket.id].writemode = false;
+				if(settings.people[socket.id] !== undefined){
+					// check credentials + allow only one admin
+					if(token == settings.token && !settings.hasAdmin){
+						settings.people[socket.id].level = 'admin';
+						settings.people[socket.id].writemode = true;
+						settings.request = false;
+						// console.log(settings.people[socket.id].nick);
+					}else{
+						settings.people[socket.id].level = 'user';
+						if(settings.lockdown){
+							settings.people[socket.id].writemode = false;
+						}
 					}
-				}
-				socket.emit('setLevel', settings.people[socket.id].level);
-				syncSettings();
+					socket.emit('setLevel', settings.people[socket.id].level);
+					syncSettings();
 
-				checkAdmin();
+					checkAdmin();
+				}
 			})
 
 			socket.on('checkAdmin', function(){
@@ -421,8 +479,10 @@ class Namespace {
 			});
 
 			socket.on('status', function(statusMode){
-				settings.people[socket.id].status = statusMode;
-				syncUsers();
+				if(settings.people[socket.id] !== undefined){
+					settings.people[socket.id].status = statusMode;
+					syncUsers();
+				}
 			});
 
 			socket.on('codeReplaceRequest', function(reqData){
@@ -448,12 +508,17 @@ class Namespace {
 			})
 
 			socket.on('codeReplace', function(reqData){
-				io.of(settings.name).emit('codeReplace', reqData);
+				settings.clearHistory(); // ***
+				// RGA.tieToSocket(settings.rga, socket);
+				// io.of(settings.name).emit('rgaReconnect');
+				socket.emit('codeReplace', reqData);
 			})
 
 			socket.on('editRequest', function(reqData){
-				settings.people[socket.id].request = reqData.mode;
-				syncUsers();
+				if(settings.people[socket.id] !== undefined){
+					settings.people[socket.id].request = reqData.mode;
+					syncUsers();
+				}
 			})
 
 			socket.on('rejectRequest', function(reqData){
@@ -483,45 +548,51 @@ class Namespace {
 			})
 
 			socket.on('cursor', function(pos){
-				settings.people[socket.id].cursor = pos;
-				syncCursors();
+				if(settings.people[socket.id] !== undefined){
+					settings.people[socket.id].cursor = pos;
+					syncCursors();
+				}
 			});
 
 			socket.on('syncData', function(obj){
-				let syncdataActive = settings.people[socket.id].usesyncdata;
-				if((syncdataActive != obj.usesyncdata)){
-					settings.people[socket.id].usesyncdata = obj.usesyncdata;
-					syncSettings();
+				if(settings.people[socket.id] !== undefined){
+					let syncdataActive = settings.people[socket.id].usesyncdata;
+					if((syncdataActive != obj.usesyncdata)){
+						settings.people[socket.id].usesyncdata = obj.usesyncdata;
+						syncSettings();
+					}
+
+					if(JSON.stringify(obj).length > ccStats.max.sdMax){
+						ccStats.max.sdMax = JSON.stringify(obj).length;
+					}
+					io.of(settings.name).emit('syncData', obj);
 				}
-				if(JSON.stringify(obj).length > ccStats.max.syncchunk){
-					ccStats.max.syncchunk = JSON.stringify(obj).length
-				}
-				io.of(settings.name).emit('syncData', obj);
 			});
 
 			socket.on('chat', function(obj){
-				let chatMsg = {
-					'nick': settings.people[socket.id].nick,
-					'color': settings.people[socket.id].color,
-					'id':socket.id,
-					'text': obj.text,
-					'type':obj.type,
-					'msgID':obj.msgID
-				}
-				if(obj.type == 'send'){
-					settings.chat.push(chatMsg);
-					addChat(chatMsg);
-				}else if(obj.type == 'pending' || obj.type == 'clear'){
-					let selMsg = {
-						'nick': chatMsg.nick,
-						'color': chatMsg.color,
-						'text': chatMsg.text,
-						'type':chatMsg.type,
-						'msgID':chatMsg.msgID
+				if(settings.people[socket.id] !== undefined){
+					let chatMsg = {
+						'nick': settings.people[socket.id].nick,
+						'color': settings.people[socket.id].color,
+						'id':socket.id,
+						'text': obj.text,
+						'type':obj.type,
+						'msgID':obj.msgID
 					}
-					socket.broadcast.emit('addChat', selMsg);
+					if(obj.type == 'send'){
+						settings.chat.push(chatMsg);
+						addChat(chatMsg);
+					}else if(obj.type == 'pending' || obj.type == 'clear'){
+						let selMsg = {
+							'nick': chatMsg.nick,
+							'color': chatMsg.color,
+							'text': chatMsg.text,
+							'type':chatMsg.type,
+							'msgID':chatMsg.msgID
+						}
+						socket.broadcast.emit('addChat', selMsg);
+					}
 				}
-
 			});
 
 		});
@@ -569,7 +640,7 @@ class Namespace {
 		let syncChat = function(){
 			let chatMsgs = [];
 			for(let c of settings.chat){
-				if(settings.people[c.id] != undefined){
+				if(settings.people[c.id] !== undefined){
 					c.nick = settings.people[c.id].nick;
 					c.color = settings.people[c.id].color;
 				}

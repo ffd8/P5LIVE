@@ -1,6 +1,6 @@
 # P5LIVE
-v 1.3.3  
-cc [teddavis.org](http://teddavis.org) – 2019-2020  
+v 1.3.4  
+cc [teddavis.org](http://teddavis.org) – 2019 - 2021  
 p5.js collaborative live-coding vj environment!
 
 
@@ -8,13 +8,14 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + N` » new sketch
 - `CTRL + ENTER` » softCompile
 - `CTRL + SHIFT + ENTER` » hardCompile
-- `CTRL + A` » autocompile toggle
 - `CTRL + E` » editor toggle
 - `CTRL + M` » menu toggle
+- `CTRL + A` » autocompile toggle
 - `CTRL + ,` » settings toggle
+- `CTRL + R` » references toggle
+- `CTRL + B` » chalkboard toggle
 - `CTRL + T` » tidy code
 - `CTRL + SPACE` » autocomplete
-- `CTRL + R` » references toggle
 - `CTRL + C` » cursor toggle
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
@@ -24,26 +25,31 @@ p5.js collaborative live-coding vj environment!
 
 
 ## SAVING
-Sketches are **_ONLY_** saved in your browser's localStorage.  
+Sketches are **_ONLY_** saved in your browser's localStorage..!  
 Export all (<img class="svg" src="includes/icons/download.svg" height="12px">) sketches + settings regularly.  
 Clearing browser history/data will likely erase all sketches + settings.
 
-localStorage is unique and isolated per http[s]:domain:port,  
-so export/import to migrate between online / offline / browsers.
+localStorage is unique and isolated per http[s] / domain / port,  
+so export/import all sketches to migrate between online / offline / browsers.  
+You can now use `Settings Panel`» `Backup` » `Now` to export all settings + sketches.
 
-The file structure changed in 1.3.0, so make sure all copies of P5LIVE are up to date.  
-You can import any old sketches, but newly saved ones won't open in  versions < 1.3.0.
+*The file structure changed in v1.3, so make sure all copies of P5LIVE are up to date.  
+You can import old sketches, but newly saved ones won't open in versions < 1.3.*
+
+#### Automatic Backups
+See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals.  
+If using [Fancy (nodejs) Offline Server](https://github.com/ffd8/P5LIVE#offline-server), it will save these backups to your P5LIVE folder rather than downloads.
 
 
 ## INSTALL
 Online: [p5live.org](https://p5live.org)
 
-Offline: [github.com/ffd8/p5live](https://github.com/ffd8/p5live)   
+Offline: [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-server)   
 Details below to run via python webserver or nodejs/npm.
 
 
 ## GETTING STARTED
-### LIVE-CODE IN 5... 4... 3...  
+### LIVE-CODE IN 3... 2... 1...  
 <img src="includes/images/menu-sketches-new-7.png" width="220px">  
 
 - <img class="svg" src="includes/icons/file-plus.svg" height="12px"> Create New Sketch or `CTRL + N` and start coding!  
@@ -52,12 +58,17 @@ Details below to run via python webserver or nodejs/npm.
   
 ## MENU
 ### P5LIVE PANEL 
-<img src="includes/images/menu-p5live-9.png" width="220px">  
+<img src="includes/images/menu-p5live-10.png" width="220px">  
 
 - <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About, 👋 you're reading me now.  
 - <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts.  
 - <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle embeded p5.js reference.  
+- <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboard, `CTRL + B`, toggle chalkboard over for annotations.  
 - <img class="svg" src="includes/icons/monitor.svg" height="12px"> Visuals-only Popup, for projecting canvas output without code + interace.  
+- <img class="svg" src="includes/icons/save.svg" height="12px"> Export, click to reveal sub-menu:  
+
+<img src="includes/images/menu-p5live-export-1.png" width="220px">
+
 - <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png, `CTRL + S`, exports image [+ code if active in settings].  
 - <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export 1-page website (must re-link paths to custom assets).
 
@@ -70,7 +81,7 @@ Details below to run via python webserver or nodejs/npm.
 - <img class="svg" src="includes/icons/download.svg" height="12px"> Export Settings
   
 #### Options
-- [x] Live Coding, auto-compile code on keyup, recompiles if error-free.  
+- [x] Live Coding, [500ms], auto-compile error-free code on keyup, with set delay.  
 - [x] Eco Render, noLoop() if window loses focus (save computer resources).  
 - [x] Cursor, display cursor (when editor is hidden).  
 - [x] Console, display console messages (print / errors / warnings).  
@@ -84,9 +95,12 @@ Details below to run via python webserver or nodejs/npm.
 - [x] Tooltips, displays extra info on hover. 
 - [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
 - [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
+- [x] Backup COCODING, Autosave session code if server connection lost.  
 - Code Size, `15pt` adjust font size of editor.  
 - Code Background, [x] toggle + set color behind lines of code.  
-- Theme, select custom styling of code.
+- Code Theme, [Green on Black], select custom styling of editor.
+- Code Keybinding, [ace], select alternative keybindings of editor.
+- Backup, [off], saves/downloads P5LIVE (sketches + settings) at intervals. `Now` - on demand.  
 
 #### Shortcuts
 Customize keyboard shortcuts by clicking on name + press a new key combination.  
@@ -248,6 +262,28 @@ Hover over functions for `parameters` tooltip, click to read the full detailed r
 
 Beyond params and descriptions, the example's code is now embedded with js highlighting.
 
+### CHALKBOARD
+Teaching a class with P5LIVE and need to explain a mathematical concept or highlight code?  
+Toggle a <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboard from the P5LIVE Panel or shortcut `CTRL + B`.
+
+<img src="includes/images/chalkboard-1.png" width="500px">
+
+Use `DRAWINGS` pulldown to activate 1 of 10 isolated layers to draw on. All drawings remain until either pressing the `🗑️` clear button, DELETE key or refreshing the page. Adjust `COLOR`, `WEIGHT`, `OPACITY` of the *CHALK*, separately adjust the `COLOR` and `OPACITY` of the board (background). This enables you to completely cover up the editor/visuals below for explaining concepts. Dim the *BOARD* if annotating or highlighting code (dim opacity of *CHALK*).
+
+You can even access the drawings within your p5 sketch!  
+
+```
+p5live.chalkboard() // grabs active drawing
+p5live.chalkboard(#) // grab specific drawing (0 – 9)
+```
+This drawing can then be displayed and played with as a manual drawing layer within your sketch:
+
+```
+image(p5live.chalkboard(), 0, 0);
+```
+For examples, see `DEMOS` » `_CANVAS` » `_canvas_chalkboard` + `..._animation`
+
+
 ### SNIPPETS  
 Add custom snippets to '/includes/demos/P5L_snippets.json'.  
 Load snippet via custom shortcut, `CTRL + SHIFT + key`  
@@ -280,11 +316,16 @@ By special request (P5LIVE for remote meditation sessions?!), there's a `view on
 - COCODING, `/?cc=*****&edit=0`  
 - Solo, `/?edit=0`
 
+You can also load a sketch by URL (for media installation), just add `sketch=name_of_sketch` !  
+Example: [\_meta\_P5LIVE](https://p5live.org/?sketch=_meta_P5LIVE)
+
 ### VISUALS-ONLY POPUP
 Incase you want to project or stream the visuals-only (no code + interface) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch a popup with a video feed of your P5LIVE canvas. 
 
 ### EXPORT / IMPORT
 Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.json` into the browser.
+
+See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals.  
 
 ### PERFORMANCE
 Lagging or retina display creates too large of a canvas?  
@@ -298,21 +339,24 @@ For example,  *demos/_input/_input_osc* and run Processing sketch, [p5live\_osc\
 or use the OSC snippet (`CTRL + SHIFT + O`) and set host/in/out ports.  
 
 ### BUG/CRASH?! 
-Infinite loop? Broken code?  
+Infinite loop? Broken code? P5LIVE now ships includes an infinite loop breaker, thus rendering previous tricks more or less obsolete... nevertheless, these may still be useful:
 
 - Add `#bug` to URL and press `ENTER`.  
-Stops compiler, loads a new sketch and opens inspector to fix issue.
+Stops compiler, loads a new sketch and opens inspector to fix issue and save.
 - Add `#new` to URL and press `ENTER`.  
 Loads a new sketch.
 - If the browser has completely hung, (rare issue between MBP/Chrome/libraries)  
 `sudo killall coreaudiod` (first take off headphones + turndown stereo!)
+
+*Incase you need a loop to run more than 10000 times ||  1 second,  
+add `// noprotect` anywhere in your code.*
 
 ### FUNCTIONS
 Additional custom functions are available in every sketch:  
 
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
-- `windowResize()` is set by default to keep your sketch fullscreen. Incase you're working with a smaller canvas, add `windowResized = null;` inside of your setup() to prevent automatic resizing.
+- `windowResize()` is set by default to keep your sketch fullscreen. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
 
 
 ## OFFLINE SERVER
@@ -393,6 +437,7 @@ Listed in order of adoption:
 - [http-proxy](https://github.com/http-party/node-http-proxy), https tunneling
 - [pem](https://github.com/Dexus/pem), self-generated generative ssl certificates
 - [FHNW](https://www.fhnw.ch/), nodejs websockets cocoding-server
+- [loop-breaker](https://github.com/popcodeorg/loop-breaker), inifinite-loop protection
 
 
 ## INSPIRATION

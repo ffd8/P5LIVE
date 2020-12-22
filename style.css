@@ -155,6 +155,15 @@ hr{
 	height:100vh;
 	border:none;
 }
+#chalkboard{
+	position:fixed;
+	width:100vw;
+	height:100vh;
+	z-index:99;
+	border:none;
+	outline:none;
+	display:none;
+}
 .ace_selection{
 	background:rgba(255, 191, 0, .5) !important ;
 	border-radius:0 !important;
@@ -351,6 +360,21 @@ h2{
 	position:relative;
 	width:100%;
 	height:30px;
+}
+.menu-sketches-buttons-extended{
+	display:none;
+	flex-direction: row;
+	padding-left:0px;
+	margin-bottom: 0px;
+	position:relative;
+	height:30px;
+	border-top:1px solid #888;
+}
+.menu-sketches-buttons-extended .menu-button{
+	background:#444;
+}
+.menu-sketches-buttons-extended .menu-button:hover{
+	background:#222;
 }
 #menu-sketches-filter{
 	position:relative;
@@ -582,6 +606,9 @@ h2{
 	text-align:right;
 	cursor:pointer;
 }
+.menu-more svg{
+	animation: request 1s linear infinite;
+}
 .menu-sketch-button,  .item-sketch .menu-sketch-button{
 	color:#fff;
 	flex:1;
@@ -738,6 +765,7 @@ h2{
 	margin-right:0px;
 	max-width:60px !important;
 	overflow:hidden;
+	white-space: nowrap;
 	float:left;
 }
 .longname{
@@ -757,7 +785,7 @@ h2{
 .chat-item-self{
 }
 .chat-item:nth-child(even) {background: #333}
-.chat-item:nth-child(odd) {background: #333}
+.chat-item:nth-child(odd) {background: #393939}
 .pending-chat{
 	opacity:.25;
 	animation: sync 1.5s linear infinite;
@@ -783,7 +811,6 @@ h2{
 button:disabled,
 button[disabled]{
 	opacity:.25;
-	//pointer-events: none;
 }
 
 .write-req, .write-req:hover{
@@ -805,14 +832,24 @@ button[disabled]{
 .menu-settings div{
 	outline:none;
 }
-#menu-settings-theme{
-	width:50%;
-	margin-left:40px;
+.menu-settings-dropdown{
+	width:auto;
 	font-size:8pt;
 	border:1px solid #888;
 	outline:none;
 	background:none;
 	color:#fff;
+}
+.menu-settings-dropdown option{
+	padding:0;
+}
+.backup-now:hover{
+	cursor:pointer;
+	background:#444;
+}
+#menu-settings-theme{
+	/*width:50%;*/
+	/*margin-left:40px;*/
 }
 #menu-settings-bg{
 	float:right;
@@ -844,8 +881,6 @@ button[disabled]{
 }
 #settings-compiletimer{
 	display:none;
-	float:right;
-	margin:5px 10px 0;
 	outline:none;
 	border:1px solid #888;
 	background:none;
@@ -1122,8 +1157,12 @@ li{
 #importdump svg{
 	height:12px;
 }
-.importdump-dup{
+.dup span{
 	background:#cc0000;
+	opacity:.75;
+}
+.importdump-dup-folder{
+	background:#cc6600;
 	opacity:.75;
 }
 
@@ -1380,6 +1419,11 @@ li{
 	background:#666;
 	padding:0 1px 0 1px;
 	box-sizing: border-box;
+}
+.vex pre code{
+	border:none;
+	background:none;
+	padding:0;
 }
 .vex-dialog-button:hover{
 	background:#ddd;

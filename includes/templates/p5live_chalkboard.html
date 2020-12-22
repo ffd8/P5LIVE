@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>P5LIVE - chalkboard</title>
+	<meta charset="utf-8">
+	<script src="../p5/p5.min.js"></script>
+	<style type="text/css">
+		@font-face {
+			font-family: 'roboto_mono';
+			src: url('../fonts/robotomono-regular-webfont.woff2') format('woff2'),
+			url('../fonts/robotomono-regular-webfont.woff') format('woff');
+			font-weight: 400;
+			font-style: normal;
+		}
+		@font-face {
+			font-family: 'roboto_mono';
+			src: url('../fonts/robotomono-light-webfont.woff2') format('woff2'),
+			url('../fonts/robotomono-light-webfont.woff') format('woff');
+			font-weight: 200;
+			font-style: normal;
+		}
+		body{
+			font-family: 'roboto_mono';
+			font-weight:400;
+			font-size:7pt;
+			margin:0;
+			overflow:hidden;
+			cursor:crosshair;
+		}
+		*{
+			box-sizing: border-box;
+		}
+		#backdrop{
+			position:fixed;
+			width:100vw;
+			height:100vh;
+			z-index:-2;
+			/*background:green;*/
+			opacity:80%;
+		}
+		#chalk{
+			position:fixed;
+			width:100vw;
+			height:100vh;
+			top:0;
+			left:0;
+			z-index:-1;
+			margin:0;
+			opacity:100%;
+		}
+		#chalk-slate{
+			outline:none;
+		}
+		#nav{
+			position:fixed;
+			right:285px;
+			top:15px;
+			width:auto;
+			height:50px;
+			background:#111;
+			border:1px solid #eee;
+			color:#fff;
+		}
+		#nav button{
+			height:30px;
+		}
+		.nav-elm{
+			float:left;
+			width:auto;
+			height:48px;
+
+			/*border:1px solid #fff;*/
+		}
+		.nav-elm:hover{
+			background:#222;
+		}
+		.label{
+			margin-top:0px;
+			/*height:15px;*/
+			border-bottom:1px solid #eee;
+			margin-bottom:1px;
+			padding:0;
+			opacity:.75;
+			/*line-height:1em;*/
+		}
+		.panelname{
+			font-size:14pt;
+			font-weight:700;
+			color:#fff;
+			border:none;
+		}
+		.nav-elm:hover .label{
+			opacity:1.0;
+		}
+		.nav-panel{
+			margin-right:20px;
+		}
+		.nav-elm, .nav-panel{
+			float:left;
+			padding:0px 3px 0 3px;
+		}
+		.sliders {
+			-webkit-appearance: none;
+			border-radius: 10px;
+			background: #aaa;
+			height: 3px;
+			border: 3px solid #aaa;
+			outline: none;
+			width:50px;
+		}
+		input{
+			padding:0;
+			margin:0;
+		}
+		canvas{
+			/*position:fixed;
+			width:100vw;
+			height:100vh;
+			top:0;
+			left:0;
+			z-index:-1;
+			margin:0;
+			opacity:100%;*/
+		}
+	</style>
+<script type="text/javascript">
+	let p5p = parent.document;
+	let p5console = p5p.getElementById('p5-console');
+	let chalkboardSettingsTimer;
+
+	// ES5/Safari backup
+	Object.fromEntries = arr => Object.assign({}, ...Array.from(arr, ([k, v]) => ({[k]: v}) ));
+	let settings = Object.fromEntries(new URLSearchParams(location.search));
+
+	let colBG, colPen;
+	let slider, butClear;
+	var chalkboard = [];
+	var chalkboardSel = 0;
+
+	function setup() {
+		let cvn = createCanvas(windowWidth, windowHeight);
+		cvn.parent('chalk');
+		for(let i=0; i<10;i++){
+			chalkboard.push(createGraphics(width, height));
+		}
+
+		backdrop.style.backgroundColor = settings.backgroundColor;
+		colBG = createColorPicker(settings.backgroundColor);
+		colBG.parent('nav-background-color');
+		colBG.style('width', '50px');
+		colBG.input(function(){
+			backdrop.style.backgroundColor = hexColors(colBG.color().levels);
+
+			clearTimeout(chalkboardSettingsTimer);
+			chalkboardSettingsTimer = setTimeout(function(){
+				window.parent.chalkboardSettings('backgroundColor', hexColors(colBG.color().levels));
+			}, 500);
+		});
+
+		backdrop.style.opacity = float(settings.backgroundOpacity);
+		opacBG = createSlider(0.0, 1.0, float(settings.backgroundOpacity), 0.01);
+		opacBG.parent('nav-background-opacity');
+		opacBG.addClass('sliders');
+		opacBG.input(function(){
+			backdrop.style.opacity = opacBG.value();
+
+			clearTimeout(chalkboardSettingsTimer);
+			chalkboardSettingsTimer = setTimeout(function(){
+				window.parent.chalkboardSettings('backgroundOpacity', opacBG.value());
+			}, 500);
+		});
+
+		colPen = createColorPicker(settings.strokeColor);
+		colPen.parent('nav-stroke-color');
+		colPen.style('width', '50px');
+		colPen.input(function(){
+			clearTimeout(chalkboardSettingsTimer);
+			chalkboardSettingsTimer = setTimeout(function(){
+				window.parent.chalkboardSettings('strokeColor', hexColors(colPen.color().levels));
+			}, 500);
+		});
+
+		sliderSW = createSlider(1, 30, int(settings.strokeWeight));
+		sliderSW.parent('nav-stroke-weight');
+		sliderSW.addClass('sliders');
+		sliderSW.input(function(){
+			clearTimeout(chalkboardSettingsTimer);
+			chalkboardSettingsTimer = setTimeout(function(){
+				window.parent.chalkboardSettings('strokeWeight', sliderSW.value());
+			}, 500);
+		});
+
+		chalk.style.opacity = float(settings.strokeOpacity);
+		opacPen = createSlider(0.0, 1.0, float(settings.strokeOpacity), 0.01);
+		opacPen.parent('nav-stroke-opacity');
+		opacPen.addClass('sliders');
+		opacPen.input(function(){
+			chalk.style.opacity = opacPen.value();
+			clearTimeout(chalkboardSettingsTimer);
+			chalkboardSettingsTimer = setTimeout(function(){
+				window.parent.chalkboardSettings('strokeOpacity', opacPen.value());
+			}, 500);
+		});
+
+		butClear = createButton('🗑️');
+		butClear.parent('nav-clear');
+		butClear.mousePressed(function(){
+			clearDrawing();
+		});
+
+		butSave = createButton('💾');
+		butSave.parent('nav-save');
+		butSave.mousePressed(function(){
+			chalkboard[chalkboardSel].save("P5L_CHALK_" + window.parent.timeStamp() + ".png");
+		});
+	}
+
+	function clearDrawing(){
+		clear();
+		chalkboard[chalkboardSel].clear();
+	}
+
+	function draw() {
+		clear();
+		noCursor();
+
+		chalkboard[chalkboardSel].stroke(colPen.color());
+		chalkboard[chalkboardSel].strokeWeight(sliderSW.value());
+		if(mouseIsPressed && (mouseY > nav.getBoundingClientRect().bottom || mouseX < nav.getBoundingClientRect().left)){
+			chalkboard[chalkboardSel].line(mouseX, mouseY, pmouseX, pmouseY)
+		}
+
+		image(chalkboard[chalkboardSel], 0, 0)
+
+		push();
+		fill(colPen.color())
+		stroke(150) // b or w or g??
+		strokeWeight(1)
+		ellipse(mouseX, mouseY, sliderSW.value())
+		pop();
+	}
+
+	function mousePressed(){
+		pmouseX = mouseX;
+		pmouseY = mouseY;
+		loop();
+	}
+
+	function mouseMoved(){
+		loop();
+	}
+	function mouseReleased(){
+		noLoop();
+	}
+
+	function hexColors(col){
+		return "#" + ((1 << 24) + (col[0] << 16) + (col[1] << 8) + col[2]).toString(16).slice(1);
+	}
+
+	function setChalkboard(val){
+		chalkboardSel = val;
+		loop();
+	}
+
+	// iFrame got focus()?!
+	document.onkeydown = function(event){
+		// DELETE to clear drawing
+		if(event.keyCode == 8){
+			clearDrawing();
+		}
+
+		// hotswap drawings by #keys (1 = 0... both weird and normal)
+		if(event.keyCode >= 48 && event.keyCode <= 57){
+			let cbSel = document.getElementById('chalk-slate');
+			let cbKey = event.keyCode - 49;
+			if(cbKey < 0){
+				cbKey = 9;
+			}
+			cbSel.value = cbKey;
+			chalkboardSel = cbKey;
+		}
+
+		// on CONTROL, return focus and activate CONTROL
+		if(event.keyCode == 17){
+			window.parent.focus();
+			window.setTimeout(function(){window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));}, 100);
+		}
+	}
+
+	document.addEventListener('keydown', forwardKey);
+	document.addEventListener('keyup', forwardKey);
+
+	function forwardKey(event){
+		window.parent.sendKey(event);
+	}
+
+	var pmsg = "";
+	var console = {
+		log: function(m){
+			// only send to window console if unique!
+			if(m != pmsg){
+				window.parent.console.log(m); // also send to parent console!
+				pmsg = m;
+			}
+		}
+	}
+
+</script>
+
+</head>
+<body>
+	<div id="nav">
+		<div class="nav-elm" style="border-right:1px solid #eee;">
+			<div class="nav-panel">
+				<div class="label panelname">CHALK</div>
+				<div></div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">DRAWING</div>
+				<div id="nav-stroke-slate">
+					<select id="chalk-slate" onchange="setChalkboard(this.value);">
+						<option>0</option>
+						<option>1</option>
+						<option>2</option>
+						<option>3</option>
+						<option>4</option>
+						<option>5</option>
+						<option>6</option>
+						<option>7</option>
+						<option>8</option>
+						<option>9</option>
+					</select>
+				</div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">COLOR</div>
+				<div id="nav-stroke-color"></div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">WEIGHT</div>
+				<div id="nav-stroke-weight"></div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">OPACITY</div>
+				<div id="nav-stroke-opacity"></div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">SAVE</div>
+				<div id="nav-save"></div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">CLEAR</div>
+				<div id="nav-clear"></div>
+			</div>
+		</div>
+
+		<div class="nav-elm">
+			<div class="nav-panel">
+				<div class="label panelname">BOARD</div>
+				<div></div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">COLOR</div>
+				<div id="nav-background-color"></div>
+			</div>
+			<div class="nav-panel">
+				<div class="label">OPACITY</div>
+				<div id="nav-background-opacity"></div>
+			</div>
+		</div>
+
+	</div>
+	<div id="chalk"></div>
+	<div id="backdrop"></div>
+	<script type="text/javascript">
+			let backdrop = document.getElementById('backdrop');
+			let nav = document.getElementById('nav');
+			window.onload = function () {
+				checkMenu();
+			}
+
+			function checkMenu(){
+				if(window.parent.checkMenu()){
+					nav.style.right = "285px";
+				}else{
+					nav.style.right = "35px";
+				}
+			}
+
+	</script>
+</body>
+</html>

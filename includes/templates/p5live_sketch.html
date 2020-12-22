@@ -28,6 +28,7 @@
 		var p5code = p5p.getElementById('p5-code');
 		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
 		var pmsg = '';
+		var chalkboard;
 
 		function pingReady(scriptName, scriptCode, scriptCallback){
 			window.parent.pongReady(scriptName, scriptCode, scriptCallback);
@@ -77,7 +78,9 @@
 					// only send to window console if unique!
 					if(m != pmsg){
 						window.parent.console.log(m); // also send to parent console!
-						window.parent.syncdataConsoleMsg(m); // also send to syncdata console!
+						if(window.parent.syncdataConsoleMsg !== undefined){
+							window.parent.syncdataConsoleMsg(m); // also send to syncdata console!
+						}
 						pmsg = m;
 					}
 					clearTimeout(p5consoleTimer);
@@ -165,6 +168,23 @@
 
 		function parseData(obj){
 			// placeholder function;
+		}
+
+
+		// chalkboard
+		var p5live = {};
+		p5live.chalkboard = function(chalkboardSketch){
+			if(parent.chalkboardInit){
+				// console.log(JSON.stringify(parent.chalkboardFrame.layer))
+				let chalkboard = parent.chalkboardFrame.chalkboard;
+				let chalkboardSelected = parent.chalkboardFrame.chalkboardSel;
+				if(chalkboardSketch !== undefined){
+					chalkboardSelected = Math.floor(chalkboardSketch)%10;
+				}
+				return chalkboard[chalkboardSelected];
+			}else{
+				return createGraphics(4, 4);
+			}
 		}
 
 	</script>
