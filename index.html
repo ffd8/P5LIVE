@@ -5555,7 +5555,7 @@ function println(msg){
 		}
 
 		function loadHTMLTemplate(){
-			let tempPath = 'includes/templates/p5live_savehtml.html?' + makeid(5);
+			let tempPath = 'includes/templates/p5live_savehtml.html?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', tempPath, true);
 			request.send();
@@ -6149,7 +6149,7 @@ function println(msg){
 				editor.blur();
 				if(!chalkboardInit){
 					let opts = new URLSearchParams(settings.chalkboard).toString();
-					chalkboard.src = "includes/templates/p5live_chalkboard.html?"+opts;
+					chalkboard.src = "includes/templates/p5live_chalkboard.html?"+currentRevision+"&"+opts;
 					chalkboardFrame = chalkboard.contentWindow;
 					setTimeout(function(){ chalkboardInit = true;}, 500);
 				}
