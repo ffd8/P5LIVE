@@ -128,13 +128,6 @@
 	let p5console = p5p.getElementById('p5-console');
 	let chalkboardSettingsTimer;
 
-	// alert(p5p.wi)
-	/* CUSTOM FUNCTIONS FOR P5LIVE */
-	// keep fullscreen if window resized
-	// function windowResized() {
-	// 	resizeCanvas(windowWidth, windowHeight);
-	// }
-
 	// ES5/Safari backup
 	Object.fromEntries = arr => Object.assign({}, ...Array.from(arr, ([k, v]) => ({[k]: v}) ));
 	let settings = Object.fromEntries(new URLSearchParams(location.search));

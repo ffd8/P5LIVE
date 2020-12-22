@@ -1,7 +1,7 @@
 'use strict';
 let online = true; // set online
 let debugStats = true; // report stats
-let developBranch = true; // dev mode (false for production)
+let developBranch = false; // dev mode (false for production)
 
 // custom port
 let tPort = process.env.PORT || 5000;

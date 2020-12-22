@@ -802,7 +802,6 @@ h2{
 button:disabled,
 button[disabled]{
 	opacity:.25;
-	//pointer-events: none;
 }
 
 .write-req, .write-req:hover{
