@@ -29,18 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?37">
-	<style type="text/css">
-		#chalkboard{
-			position:fixed;
-			width:100vw;//calc(100vw - 250px);
-			height:100vh;
-			z-index:99;
-			border:none;
-			outline:none;
-			display:none;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?38">
 </head>
 <body>
 	<iframe id="chalkboard"></iframe>
@@ -433,7 +422,7 @@ function println(msg){
 		/* INIT */
 		let currentVersion = '1.3.4';
 		let currentRevision = 38;
-		let developBranch = true;
+		let developBranch = false;
 
 		// resetP5(); // manual reset
 
@@ -6161,8 +6150,8 @@ function println(msg){
 				if(!chalkboardInit){
 					let opts = new URLSearchParams(settings.chalkboard).toString();
 					chalkboard.src = "includes/templates/p5live_chalkboard.html?"+opts;
-					chalkboardInit = true;
 					chalkboardFrame = chalkboard.contentWindow;
+					setTimeout(function(){ chalkboardInit = true;}, 500);
 				}
 				// chalkboard.style.width = "calc(100vw - 250px)"; // *** add to menu/ref/settings toggle
 			}else{

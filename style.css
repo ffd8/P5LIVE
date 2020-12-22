@@ -155,6 +155,15 @@ hr{
 	height:100vh;
 	border:none;
 }
+#chalkboard{
+	position:fixed;
+	width:100vw;
+	height:100vh;
+	z-index:99;
+	border:none;
+	outline:none;
+	display:none;
+}
 .ace_selection{
 	background:rgba(255, 191, 0, .5) !important ;
 	border-radius:0 !important;
