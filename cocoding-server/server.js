@@ -116,6 +116,7 @@ function hourlyStats(){
 }
 
 function initMaxStats(){
+	ccStats.nsMax = 0;
 	ccStats.max = {cc:0, ns:0, nsMax:0, nsTwo:0, sd:0, sdMax:0};
 }
 
