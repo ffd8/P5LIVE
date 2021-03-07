@@ -420,8 +420,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.3.4';
-		let currentRevision = 39;
+		let currentVersion = '1.3.5';
+		let currentRevision = 40;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -599,15 +599,16 @@ function println(msg){
 		}
 
 		// init variabless
-		let p5editor = document.getElementById('p5-editor'),
+		var p5editor = document.getElementById('p5-editor'),
 		p5code = document.getElementById('p5-code'),
 		p5console = document.getElementById('p5-console'),
 		p5custom = document.getElementById('p5-custom'),
 		p5template = document.getElementById('p5-template').value,
 		p5frame = document.getElementById('p5-frame'),
 		p5frameCover = document.getElementById('p5-frame-cover'),
-		p5f = p5frame.contentWindow,
-		p5script = document.getElementById('holdscript'),
+		p5f = p5frame.contentWindow;
+
+		let p5script = document.getElementById('holdscript'),
 		menuCocode = document.getElementById('menu-section-cocode'),
 		menuSectionP5live = document.getElementById('menu-section-p5live'),
 		menuSectionSketches = document.getElementById('menu-section-sketches'),
@@ -4127,6 +4128,7 @@ function println(msg){
 								localStorage.removeItem(itemName);
 								if(settings.fileName == itemName){
 									settings.fileName = newName;
+									updateSketches();
 									// *** removing below if no prob, no need to refresh??
 									// if(!settings.cocoding.active){
 									// 	setTimeout(function(){ loadSketch(newName); }, 100);
