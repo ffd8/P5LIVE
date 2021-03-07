@@ -1,6 +1,6 @@
 {
   "version": "1.3.4",
-  "revision": 38,
+  "revision": 39,
   "structure": [
     {
       "name": "demos",
@@ -156,9 +156,15 @@
             },
             {
               "name": "_typo_textToPoints-lines",
-              "mod": "1608386940895",
+              "mod": "1615156980832",
               "type": "sketch",
-              "code": "/*\t_typo_textToPoints-lines // cc teddavis.org 2020\t*/\n\nlet font, points;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', height/2);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2, height / 2);\n\n\tbeginShape(LINES);\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet xScl = sin(i * .031 + frameCount * .021) * sin(frameCount * .01) * map(mouseX, 0, width, .01, .5);\n\t\tlet yScl = sin(i * .039 + frameCount * .04) * sin(frameCount * .002) * map(mouseY, 0, height, .01, .5)\n\t\tlet x = map(p.x, width * xScl, width * (1 + xScl), 0, width);\n\t\tlet y = map(p.y, height * yScl, height * (yScl + 1), 0, height);\n\t\tvertex(x, y);\n\t\tvertex(p.x, p.y);\n\t}\n\tendShape();\n}\n\nfunction keyPressed() {\n\tgenType(key, height/2);\n}\n\nfunction genType(txtString, txtSize) {\n\t// grab bounding box of text\n\tlet bounds = font.textBounds(txtString, 0, 0, txtSize);\n\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, -bounds.w / 2, bounds.h / 2, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n}"
+              "code": "/*\t_typo_textToPoints-lines // cc teddavis.org 2020\t*/\n\nlet font, points;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', height / 2);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2, height / 2);\n\n\tbeginShape(LINES);\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet xScl = sin(i * .031 + frameCount * .021) * sin(frameCount * .01) * map(mouseX, 0, width, .01, .5);\n\t\tlet yScl = sin(i * .039 + frameCount * .04) * sin(frameCount * .002) * map(mouseY, 0, height, .01, .5)\n\t\tlet x = map(p.x, width * xScl, width * (1 + xScl), 0, width);\n\t\tlet y = map(p.y, height * yScl, height * (yScl + 1), 0, height);\n\t\tvertex(x, y);\n\t\tvertex(p.x, p.y);\n\t}\n\tendShape();\n}\n\nfunction keyPressed() {\n\tgenType(key, height / 2);\n}\n\nfunction genType(txtString, txtSize) {\n\t// grab bounding box of text\n\tlet bounds = font.textBounds(txtString, 0, 0, txtSize);\n\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, -bounds.w / 2, bounds.h / 2, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n}"
+            },
+            {
+              "name": "_typo_google-fonts",
+              "mod": "1615156997687",
+              "type": "sketch",
+              "code": "/*\t_typo_google-fonts // cc teddavis.org 2021\t*/\n\nlet font = googleFont('Monoton');\nlet txt = 'P5LIVE';\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\ttextFont(font);\n\ttextAlign(CENTER, CENTER);\n\tfill(255);\n}\n\nfunction draw() {\n\tbackground(0, 10);\n\ttextSize(random(1, 100));\n\ttext(txt, random(width), random(height));\n}\n\nfunction keyPressed() {\n\ttxt = key; // overwrite on keypress\n}\n\nfunction googleFont(fontName) {\n\tlet link = document.createElement(\"link\");\n\tlink.href = \"https://fonts.googleapis.com/css?family=\" + encodeURI(fontName) + '&display=swap';\n\tlink.rel = \"stylesheet\";\n\tdocument.head.appendChild(link);\n\treturn fontName;\n}"
             }
           ]
         },
@@ -310,7 +316,7 @@
     }
   ],
   "count": {
-    "sketches": 35,
+    "sketches": 36,
     "folders": 12
   }
 }
