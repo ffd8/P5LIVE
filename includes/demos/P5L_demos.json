@@ -1,6 +1,6 @@
 {
-  "version": "1.3.4",
-  "revision": 39,
+  "version": "1.3.5",
+  "revision": 40,
   "structure": [
     {
       "name": "demos",
@@ -150,21 +150,27 @@
           "contents": [
             {
               "name": "_typo_textToPoints-circle",
-              "mod": "1608386882166",
+              "mod": "1615168758753",
               "type": "sketch",
-              "code": "/*\t_typo_textToPoints-circle // cc teddavis.org 2020\t*/\n\nlet font, points;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', height / 2);\n}\n\nfunction draw() {\n\tbackground(0);\n\ttranslate(width / 2, height / 2);\n\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet s = mouseY / 10 + sin(i * .25 + frameCount * .05) * 20;\n\t\tcircle(p.x, p.y, s);\n\t}\n}\n\nfunction keyPressed() {\n\tgenType(key, height / 2);\n}\n\nfunction genType(txtString, txtSize) {\n\t// grab bounding box of text\n\tlet bounds = font.textBounds(txtString, 0, 0, txtSize);\n\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, -bounds.w / 2, bounds.h / 2, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n}"
+              "code": "/*\t_typo_textToPoints-circle // cc teddavis.org 2020\t*/\n\nlet font, points;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5LIVE', width / 4);\n}\n\nfunction draw() {\n\tbackground(0);\n\ttranslate(width / 2, height / 2);\n\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet s = mouseY / 10 + sin(i * .25 + frameCount * .05) * 20;\n\t\tcircle(p.x, p.y, s);\n\t}\n}\n\nfunction keyPressed() {\n\tgenType(key, height / 2);\n}\n\nfunction genType(txtString, txtSize) {\n\t// grab bounding box of text\n\tlet bounds = font.textBounds(txtString, 0, 0, txtSize);\n\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, -bounds.w / 2, bounds.h / 2, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n}"
             },
             {
               "name": "_typo_textToPoints-lines",
-              "mod": "1615156980832",
+              "mod": "1615168767302",
               "type": "sketch",
-              "code": "/*\t_typo_textToPoints-lines // cc teddavis.org 2020\t*/\n\nlet font, points;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5L', height / 2);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2, height / 2);\n\n\tbeginShape(LINES);\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet xScl = sin(i * .031 + frameCount * .021) * sin(frameCount * .01) * map(mouseX, 0, width, .01, .5);\n\t\tlet yScl = sin(i * .039 + frameCount * .04) * sin(frameCount * .002) * map(mouseY, 0, height, .01, .5)\n\t\tlet x = map(p.x, width * xScl, width * (1 + xScl), 0, width);\n\t\tlet y = map(p.y, height * yScl, height * (yScl + 1), 0, height);\n\t\tvertex(x, y);\n\t\tvertex(p.x, p.y);\n\t}\n\tendShape();\n}\n\nfunction keyPressed() {\n\tgenType(key, height / 2);\n}\n\nfunction genType(txtString, txtSize) {\n\t// grab bounding box of text\n\tlet bounds = font.textBounds(txtString, 0, 0, txtSize);\n\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, -bounds.w / 2, bounds.h / 2, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n}"
+              "code": "/*\t_typo_textToPoints-lines // cc teddavis.org 2020\t*/\n\nlet font, points;\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\");\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\tstroke(255);\n\tstrokeWeight(1);\n\n\tgenType('P5LIVE', width / 4);\n}\n\nfunction draw() {\n\tbackground(0);\n\n\ttranslate(width / 2, height / 2);\n\n\tbeginShape(LINES);\n\tfor(let i = 0; i < points.length; i++) {\n\t\tlet p = points[i];\n\t\tlet xScl = sin(i * .031 + frameCount * .021) * sin(frameCount * .01) * map(mouseX, 0, width, .01, .5);\n\t\tlet yScl = sin(i * .039 + frameCount * .04) * sin(frameCount * .002) * map(mouseY, 0, height, .01, .5)\n\t\tlet x = map(p.x, width * xScl, width * (1 + xScl), 0, width);\n\t\tlet y = map(p.y, height * yScl, height * (yScl + 1), 0, height);\n\t\tvertex(x, y);\n\t\tvertex(p.x, p.y);\n\t}\n\tendShape();\n}\n\nfunction keyPressed() {\n\tgenType(key, height / 2);\n}\n\nfunction genType(txtString, txtSize) {\n\t// grab bounding box of text\n\tlet bounds = font.textBounds(txtString, 0, 0, txtSize);\n\n\t// textToPoints(txt, x, y, size, options)\n\tpoints = font.textToPoints(txtString, -bounds.w / 2, bounds.h / 2, txtSize, {\n\t\tsampleFactor: .07,\n\t\tsimplifyThreshold: 0\n\t});\n}"
+            },
+            {
+              "name": "_typo_opentype",
+              "mod": "1615169020347",
+              "type": "sketch",
+              "code": "/*\t\n\t_typo_opentype // cc teddavis.org 2021\t\n\tisolated glyphs + opentype.js features\n*/\n\nlet libs = ['https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js'];\n\nlet fontPath = 'includes/demos-data/fonts/RobotoMono-Regular.otf';\nlet bounds, path;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\tnoFill();\n\n\tgenOpenType('P5LIVE', width / 4);\n}\n\nfunction draw() {\n\tbackground(0, 5);\n\ttranslate(width / 2, height / 2);\n\n\tlet osc = sin(frameCount * .01) * 15;\n\n\t// cycle path if ready\n\tif(path) {\n\t\tlet c = 0;\n\t\tfor(let cmd of path.commands) {\n\t\t\tif(cmd.type === 'M') {\n\t\t\t\t// start of each glyph\n\t\t\t\tpush();\n\t\t\t\trotate(radians(osc));\n\t\t\t\tbeginShape()\n\t\t\t\tvertex(cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'L') {\n\t\t\t\tvertex(cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'C') {\n\t\t\t\tbezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'Q') {\n\t\t\t\tquadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'Z') {\n\t\t\t\t// end of each glyph\n\t\t\t\tstroke((c * 5 + frameCount) % 255);\n\t\t\t\tendShape(CLOSE)\n\t\t\t\tpop();\n\t\t\t}\n\t\t\tc++;\n\t\t}\n\t}\n}\n\nfunction genOpenType(txtString, txtSize) {\n\topentype.load(fontPath, function(err, f) {\n\t\tif(err) {\n\t\t\tprint('Error loading font: ' + err);\n\t\t} else {\n\t\t\t// grab once for measuring\n\t\t\tpath = f.getPath(txtString, 0, 0, txtSize);\n\t\t\tbounds = path.getBoundingBox();\n\t\t\t\n\t\t\t// reposition to 0, 0 as center (for WEBGL, rotate, etc)\n\t\t\tpath = f.getPath(txtString, -(bounds.x2 - bounds.x1) / 2, (bounds.y2 - bounds.y1) / 2, txtSize);\n\t\t\tbounds = path.getBoundingBox();\n\t\t}\n\t})\n}"
             },
             {
               "name": "_typo_google-fonts",
-              "mod": "1615156997687",
+              "mod": "1615168942840",
               "type": "sketch",
-              "code": "/*\t_typo_google-fonts // cc teddavis.org 2021\t*/\n\nlet font = googleFont('Monoton');\nlet txt = 'P5LIVE';\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\ttextFont(font);\n\ttextAlign(CENTER, CENTER);\n\tfill(255);\n}\n\nfunction draw() {\n\tbackground(0, 10);\n\ttextSize(random(1, 100));\n\ttext(txt, random(width), random(height));\n}\n\nfunction keyPressed() {\n\ttxt = key; // overwrite on keypress\n}\n\nfunction googleFont(fontName) {\n\tlet link = document.createElement(\"link\");\n\tlink.href = \"https://fonts.googleapis.com/css?family=\" + encodeURI(fontName) + '&display=swap';\n\tlink.rel = \"stylesheet\";\n\tdocument.head.appendChild(link);\n\treturn fontName;\n}"
+              "code": "/*\t_typo_google-fonts // cc teddavis.org 2021\t*/\n\nlet font = googleFont('Codystar');\nlet txt = 'P5LIVE';\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\ttextFont(font);\n\ttextAlign(CENTER, CENTER);\n\tfill(255);\n}\n\nfunction draw() {\n\tbackground(0, 10);\n\ttextSize(random(1, 100));\n\ttext(txt, random(width), random(height));\n}\n\nfunction keyPressed() {\n\ttxt = key; // overwrite on keypress\n}\n\nfunction googleFont(fontName) {\n\tlet link = document.createElement(\"link\");\n\tlink.href = \"https://fonts.googleapis.com/css?family=\" + encodeURI(fontName) + '&display=swap';\n\tlink.rel = \"stylesheet\";\n\tdocument.head.appendChild(link);\n\treturn fontName;\n}"
             }
           ]
         },
@@ -316,7 +322,7 @@
     }
   ],
   "count": {
-    "sketches": 36,
+    "sketches": 37,
     "folders": 12
   }
 }
