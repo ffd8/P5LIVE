@@ -3661,8 +3661,11 @@ function println(msg){
 		}
 
 		// load demos
-		function loadDemos(){
+		function loadDemos(force = false){
 			let demosPath = 'includes/demos/P5L_demos.json?' + currentRevision;
+			if(force){
+				demosPath = 'includes/demos/P5L_demos.json?' + currentRevision + timeStamp();
+			}
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, true);
 			request.send();
@@ -3690,7 +3693,7 @@ function println(msg){
 				if(searchSketches('demos', settings.sketches)){
 					removeItemProcess('demos');
 				}
-				window.setTimeout(function(){loadDemos();}, 100);
+				window.setTimeout(function(){loadDemos(true);}, 100);
 			}, 200);
 		}
 
