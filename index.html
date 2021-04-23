@@ -94,6 +94,9 @@
 					<button class="menu-button tippy" onclick="savePNG();this.blur();" data-title="Export Snapshot<br>PNG [+ CODE]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
+					<button class="menu-button tippy" onclick="linkCode(this);this.blur();" data-title="Export Link">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+					</button>
 					<button class="menu-button tippy" onclick="saveHTML();this.blur();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
@@ -570,7 +573,7 @@ function println(msg){
 				}
 			},
 			'editor':{
-				'fontSize':15, 'keybinding':'keybinding', 'linenumbers':false, 'autocomplete': false, 'lockcode':true, 'passEditorKeys':false,
+				'fontSize':15, 'keybinding':'keybinding', 'linenumbers':true, 'autocomplete': false, 'lockcode':true, 'passEditorKeys':false,
 			},
 			'sketches': [],
 			'statscount': 0,
@@ -664,7 +667,7 @@ function println(msg){
 		settings = getSettings(),
 		validCode = true, sketchesFirstTime = true,
 		sketchLoaded = false, forceRecompile = false,
-		pLen = 0, paused = false,
+		paused = false, multitabWarning = false,
 		markerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
 		p5vars = {'frameCount':0, 'mouseX':0, 'mouseY':0}, newBG = '',
@@ -676,7 +679,8 @@ function println(msg){
 		syncdataEditor, syncdataPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
-		p5pop, p5popStream, p5popActive = false
+		p5pop, p5popStream, p5popActive = false,
+		changelog = {show:false, revision:0, version:0}
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
@@ -872,13 +876,18 @@ function println(msg){
 
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/p5.min.js'
 		}, {
 			'local':'includes/p5/addons/p5.sound.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/addons/p5.sound.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/addons/p5.sound.min.js'
 		}];
 
-
+		// includeScripts = [
+		// 	{
+		// 		'local':'includes/p5/q5.min.js',
+		// 		'remote':'https://cdn.jsdelivr.net/npm/q5xjs@0.0.2/q5.min.js'
+		// 	}
+		// ]
 
 		// markers for COCODING
 		// built upon: https://stackoverflow.com/a/24812641/10885535
@@ -1764,8 +1773,8 @@ function println(msg){
 			let pcode = p5editor.getElementsByClassName('ace_line');
 			for(let i=0; i < pcode.length; i++){
 				let pitem = pcode[i];
-				let pcontents = pitem.innerHTML;
-				if(settings.themeBGactive){
+				if(settings.themeBGactive && pitem.getElementsByClassName( 'ace_line_bg' ).length < 1){
+					let pcontents = pitem.innerHTML;
 					pitem.innerHTML = '<span class="ace_line_bg" style="background:' + settings.themeBG + '">' + pcontents + '</span>';
 				}
 			}
@@ -2025,11 +2034,15 @@ function println(msg){
 			});
 			updateSettings();
 
+
 			if(settings.revision == undefined || settings.revision < currentRevision){
+				changelog.show = true;
+				changelog.revision = settings.revision;
+				changelog.version = settings.version;
 				settings.revision = currentRevision;
 				settings.version = initSettings.version;
 				settings.fileName = 'new';
-				settings.welcome = true;
+				// settings.welcome = true;
 				settings.refresh = true;
 				updateSettings();
 			}
@@ -2108,6 +2121,17 @@ function println(msg){
 				}
 			}
 
+			// load code via URL
+			if(getParam('code') != undefined){
+				loadDefault();
+				setTimeout(function(){
+					editor.setValue(b64_to_utf8(getParam('code')), 1);
+					localStorage[settings.fileName] = editor.getValue();
+					window.history.replaceState(null, null, window.location.pathname);
+				}, 100);
+			}
+
+			// load COCODING
 			if(getParam('cc') != undefined){
 				loaderSub.innerHTML = 'cocoding...';
 				if(getParam('cc').length != 5){
@@ -2162,6 +2186,11 @@ function println(msg){
 				settings.welcome = false;
 				updateSettings();
 			}
+
+			if(changelog.show){
+				loadChangelog();
+			}
+
 			resizeSketchesHolder();
 			hideLoader();
 
@@ -2174,16 +2203,20 @@ function println(msg){
 						// Listen if anybody else opening the same page!
 						localStorage.page_available = Date.now();
 					}
-					if(e.key == "page_available"){
-						vex.dialog.alert({
-							unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one to avoid data loss.',
-							afterOpen: function(){
-								vexSmall(this.rootEl);
-							}
-						});
+					if(e.key == "page_available" && !multitabWarning){
+							multitabWarning = true;
+							vex.dialog.alert({
+								unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one to avoid data loss.',
+								afterOpen: function(){
+									vexSmall(this.rootEl);
+								},
+								callback: function(){
+									multitabWarning = false;
+								}
+							});
 					}
 				};
-				window.addEventListener('storage', onLocalStorageEvent, false);
+				setTimeout(function(){window.addEventListener('storage', onLocalStorageEvent, false);}, 0);
 			}
 		}
 
@@ -2265,7 +2298,13 @@ function println(msg){
 			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2)-5 + 'px';
 		}
 
-		window.onresize = resizeSketchesHolder;
+		let checkWindowResize;
+		window.onresize = function(){
+			clearTimeout(checkWindowResize);
+			checkWindowResize = setTimeout(function(){
+				resizeSketchesHolder();
+			}, 100);
+		};
 
 		function resetSettings(){
 			if(settings.cocoding.active){
@@ -2749,7 +2788,6 @@ function println(msg){
 					settings.fileName = sketch;
 					editor.setValue(localStorage[settings.fileName], 1);
 
-					pLen = editor.getValue().length;
 					updateSketches();
 
 					p5varsReset();
@@ -2770,6 +2808,9 @@ function println(msg){
 						editor.getSession().on('change', cloneSketch);
 					}
 
+					if(loader.style.display === 'none'){
+						recompile(true);
+					}
 				}else if(!localStorage.hasOwnProperty(sketch) && searchSketches(sketch, settings.sketches)){
 
 					vex.dialog.confirm({
@@ -2960,12 +3001,9 @@ function println(msg){
 			let element = document.createElement('a');
 			element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr));
 			element.setAttribute('download', filename);
-
 			element.style.display = 'none';
 			document.body.appendChild(element);
-
 			element.click();
-
 			document.body.removeChild(element);
 		}
 
@@ -2978,17 +3016,26 @@ function println(msg){
 			tempSketches.structure = [];
 
 			let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
-			if(localStorage.hasOwnProperty(sketch)){
+			if(settings.cocoding.active && customTimestamp !== undefined){
+				sketchDetails = {};
+				sketchDetails.name = settings.filename;//settings.cocoding.namespace + '_snapshot';
+				sketchDetails.mod = timeDate();
+				sketchDetails.type = 'sketch';
+				sketchDetails.code = editor.getValue();
+			}else if(localStorage.hasOwnProperty(sketch)){
 				sketchDetails.code = localStorage.getItem(sketch);
-				tempSketches.structure.push(sketchDetails);
-				let tempTimestamp = timeStampFile(sketchDetails.mod);
-				if(customTimestamp !== undefined){
-					tempTimestamp = customTimestamp;
-				}
-				exportJSON(tempSketches, 'P5L_' + sketch + tempTimestamp + '.json');
 			}else{
 				alertMsg('Sketch code missing...');
+				return false;
 			}
+
+			tempSketches.structure.push(sketchDetails);
+			let tempTimestamp = timeStampFile(sketchDetails.mod);
+
+			if(customTimestamp !== undefined){
+				tempTimestamp = customTimestamp;
+			}
+			exportJSON(tempSketches, 'P5L_' + sketch + tempTimestamp + '.json');
 		}
 
 		// export all/folder[s] w/ sketches to JSON
@@ -3081,6 +3128,36 @@ function println(msg){
 				}
 			}
 			return list;
+		}
+
+		// share CODE via URL
+		function linkCode(elm){
+			let baseCode = utf8_to_b64(editor.getValue())
+			let dummy = document.createElement('input');
+			document.body.appendChild(dummy);
+			dummy.value = 'https://p5live.org/?code=' + baseCode;
+			dummy.select();
+			document.execCommand('copy');
+			document.body.removeChild(dummy);
+
+			// share info
+			let oldContent = elm._tippy.props.content;
+			elm._tippy.setContent('Copied to clipboard!');
+			elm._tippy.show(200);
+			setTimeout(function(){
+				elm._tippy.hide();
+				elm._tippy.setContent(oldContent);
+			}, 2000);
+
+		}
+
+		// https://developer.mozilla.org/de/docs/Web/API/WindowOrWorkerGlobalScope/btoa
+		function utf8_to_b64(str) {
+			return window.btoa(unescape(encodeURIComponent(str)));
+		}
+
+		function b64_to_utf8(str) {
+			return decodeURIComponent(escape(window.atob(str)));
 		}
 
 
@@ -3825,12 +3902,12 @@ function println(msg){
 								}
 							}
 
-							if(d.name == settings.fileName){
+							if(d.name == settings.fileName && !settings.cocoding.active){
 								selClass = 'sketch-selected';
 								selSelected = true;
 							}
 
-							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;loadSketch(\''+d.name+'\')">'+icon.fileLines + '<div class="item-label">' +d.name+'</div></div></li>';
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;loadSketch(\''+d.name+'\');">'+icon.fileLines + '<div class="item-label">' +d.name+'</div></div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
 							let iconSel = icon.folderExpand;
@@ -3968,7 +4045,7 @@ function println(msg){
 			}else if(elmType == 'sketch'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\', \''+elmType+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
@@ -4245,7 +4322,6 @@ function println(msg){
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
 			map[event.keyCode] = event.type == 'keydown';
-			// pLen = editor.getValue().length; // len of editor
 		}
 
 		p5code.onkeyup = function(event) {
@@ -4540,14 +4616,13 @@ function println(msg){
 				p5vars.mouseY = p5f.mouseY;
 			}
 
-			if(!settings.cocoding.active && pLen != editor.getValue().length){
+			if(!settings.cocoding.active){
 				let sketchElm = document.querySelectorAll('[data-id="'+settings.fileName+'"]')[0];
 				let sketchDetails = searchJSON(settings.sketches, 'name', settings.fileName)[0];
 				if(sketchElm != undefined && sketchDetails != undefined){
 					sketchElm.setAttribute('data-mod', timeDate());
 					sketchDetails.mod = timeDate();
 					updateSettings();
-					pLen = editor.getValue().length;
 				}
 			}
 
@@ -4566,6 +4641,21 @@ function println(msg){
 
 
 				let allLines = codeNoComments.split('\n');
+
+				// hydra sandbox
+				let hydraMatch = editor.getValue().match(/^\/\/\s*hydraSandbox.*?\/\/.*?hydraSandbox.*?\n/ism);
+				if(hydraMatch !== null && p5f.Hydra !== undefined){
+					let currline = editor.getSelectionRange().start.row;
+
+					let currCode = editor.session.getLine(currline);
+					let hydraParts = hydraMatch[0].split('\n');
+					if(hydraParts.indexOf(currCode) > -1){
+						p5f.eval(hydraMatch[0])
+						if(!force){
+							return false;
+						}
+					}
+				}
 
 				// test purging of comments
 				// let offLines = 6;
@@ -4703,7 +4793,7 @@ function println(msg){
 			// console.log(sketchCode);
 			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
 			let codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
-			let fullCode = p5custom.value + codeSetup + 'new p5(); sketchStatus();';
+			let fullCode = p5custom.value + codeSetup + '\nnew p5(); sketchStatus();';
 
 			// *** disabling loadjs route.. failed is missing file.. (needed for remote/local lib loading)
 			// let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },error: function(pathsNotFound) {console.log(pathsNotFound);},async: false});';
@@ -5279,6 +5369,7 @@ function println(msg){
 
 			updateSettings();
 			menuToggleUpdate();
+			resizeSketchesHolder();
 		}
 
 		function hideMenu(){
@@ -5487,6 +5578,22 @@ function println(msg){
 			});
 		}
 
+		function loadChangelog(){
+			// changelog.revision
+			let changeUpdate = `
+				<h1 style="font-size:1.5em;">P5LIVE</h1>
+				Updated: <i>v${changelog.version} r${changelog.revision} → v${settings.version} r${settings.revision}</i><br>
+				See <a onclick="vex.closeAll();loadAbout()" style="cursor:pointer;text-decoration:underline;">About</a> for overview<br>
+				Visit <a href="https://github.com/ffd8/P5LIVE/pulls?q=is%3Apr+is%3Aclosed" target="_blank" style="color:#fff;">Github Repo</a> for details			`
+			vex.dialog.alert({
+				unsafeMessage:changeUpdate,
+				afterOpen: function(){
+					vexSmall(this.rootEl);
+					vexFocus();
+				}
+			});
+		}
+
 
 
 		// Tooltips via tippy
@@ -5574,22 +5681,35 @@ function println(msg){
 		function saveHTML(){
 			let el = p5htmlTemplate.cloneNode(true);
 			el.getElementsByTagName('title')[0].innerHTML = settings.fileName;
-			let iFrameBody = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
+			let iFrameHead = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
+			let iFrameBody = el.getElementsByTagName('body')[0];//el.document.getElementsByTagName('body')[0];
 
-			// check loadScripts;
+			let scriptsCol = [];
+
+			// load p5 remote
+			for(let i=0; i < includeScripts.length; i++){
+				scriptsCol.push(includeScripts[i].remote);
+			}
+
+			// check loadScripts / libs / scripts;
 			let scriptsList = processLibs(removeComments(editor.getValue()));
 			for(let i=0; i < scriptsList.length; i++){
+				scriptsCol.push(scriptsList[i]);
+			}
+
+
+			for(let i=0; i < scriptsCol.length; i++){
 				let s = document.createElement('script');
 				s.type = 'text/javascript';
-				s.src = scriptsList[i];
-				iFrameBody.appendChild(s);
-				iFrameBody.innerHTML += '\n\n';
+				s.src = scriptsCol[i];
+				iFrameHead.appendChild(s);
+				iFrameHead.innerHTML += '\n';
 			}
 
 
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + editor.getValue();
+			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + editor.getValue()+'\n';
 			iFrameBody.appendChild(s);
 			iFrameBody.innerHTML += '\n\n';
 			download('<!DOCTYPE html>\n<html>\n' + el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + timeStampFile() + '.html', 'text/html');
@@ -5942,11 +6062,14 @@ function println(msg){
 						if(ci.example != undefined){
 							let exs = ci.example[0].match(/<code.*>(.|\n)*?<\/code>/g);
 							if(exs == undefined){
-								console.log(ci.name +" : "+ ci.example)
+								// *** temp quieting 1.3.1, until update to data.json
+								//console.log(ci.name +" : "+ ci.example)
+							}else{
+								for(let ex of exs){
+									classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
+								}
 							}
-							for(let ex of exs){
-								classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
-							}
+
 						}
 
 						// if(ci.name == 'createNumberDict'){
@@ -6314,15 +6437,17 @@ function println(msg){
 			for(let is of document.querySelectorAll('.item-sketch:not(.demo)')){
 				let grabName = is.getAttribute('data-id');
 				let grabSketch = localStorage.getItem(grabName);
-				totalChars += grabSketch.replace('\n', '').replace('\t', '').length;
-				totalLines += grabSketch.split('\n').length;
-				if(grabSketch.split('\n').length > sketchStats.long.count){
-					sketchStats.long.count = grabSketch.split('\n').length;
-					sketchStats.long.name = grabName;
-				}
-				if(grabSketch.split('\n').length < sketchStats.short.count){
-					sketchStats.short.count = grabSketch.split('\n').length;
-					sketchStats.short.name = grabName;
+				if(grabSketch !== null){
+					totalChars += grabSketch.replace('\n', '').replace('\t', '').length;
+					totalLines += grabSketch.split('\n').length;
+					if(grabSketch.split('\n').length > sketchStats.long.count){
+						sketchStats.long.count = grabSketch.split('\n').length;
+						sketchStats.long.name = grabName;
+					}
+					if(grabSketch.split('\n').length < sketchStats.short.count){
+						sketchStats.short.count = grabSketch.split('\n').length;
+						sketchStats.short.name = grabName;
+					}
 				}
 			}
 			txtMsg += totalChars.toLocaleString()+'<span class="counters">Characters</span><br>';
