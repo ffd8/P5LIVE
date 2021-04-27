@@ -1,6 +1,6 @@
 {
-  "version": "1.3.5",
-  "revision": 40,
+  "version": "1.3.6",
+  "revision": 41,
   "structure": [
     {
       "name": "demos",
@@ -10,7 +10,7 @@
       "contents": [
         {
           "name": "new",
-          "mod": "1616849473588",
+          "mod": "1619538061025",
           "type": "sketch",
           "code": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\t\n}\n\nfunction draw() {\n\t\n}"
         },
@@ -75,6 +75,20 @@
               "mod": "1608650635149",
               "type": "sketch",
               "code": "/*\n\t_canvas_chalkboard_animation // cc teddavis.org 2020\n\tuse the Chalkboard feature for ~10 frame animations!\n\t\n\t- 'CTRL + B', or open from P5LIVE panel\n\t- set 'Drawing' from 0 - 9, set color, draw!\n\t- grab them with p5live.chalkboard(#), # floors + wraps 0-9!\n\t- enjoy the show!\n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\timageMode(CENTER)\n}\n\nfunction draw() {\n\tbackground(0, 10);\n\n\t// draw from center out (for rotation fun?!)\t\n\ttranslate(width / 2, height / 2);\n\n\t// look at specific chalkboard, 0 - 9\n\t// image(p5live.chalkboard(0), 0, 0)\n\n\t// animate through all 10 frames (uses %10 in the backend!)\n\timage(p5live.chalkboard(frameCount * .25), 0, 0)\n\n\t// animate only first 3 frames\n\t// image(p5live.chalkboard((frameCount * .25) % 3), 0, 0)\n}"
+            }
+          ]
+        },
+        {
+          "name": "_audio",
+          "mod": "1588035882416",
+          "type": "folder",
+          "toggle": "collapse",
+          "contents": [
+            {
+              "name": "_audio_analysis",
+              "mod": "1588358648121",
+              "type": "sketch",
+              "code": "/*\t\n\t_audio_analysis // cc teddavis.org 2019\n\tadd snippet to other sketches: CTRL + SHIFT + A \n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\n\tsetupAudio();\n}\n\nfunction draw() {\n\t/* audio vars: amp, ampEase, fft, waveform */\n\tupdateAudio();\n\n\tbackground(0);\n\tnoFill();\n\tstroke(255);\n\n\t/* average */\n\ttext(\"MIX\", width * .5, height / 4);\n\tellipse(width / 2, height / 4, amp);\n\ttext(\"L\", width * .25, height / 4);\n\tellipse(width * .25, height / 4, ampStereo.l);\n\ttext(\"R\", width * .75, height / 4);\n\tellipse(width * .75, height / 4, ampStereo.r);\n\n\t/* waveform */\n\tbeginShape();\n\tfor(let i = 0; i < waveform.length; i++) {\n\t\tlet freq = waveform[i] * height / 4; // (-1, 1);\n\t\tlet x = map(i, 0, waveform.length, 0, width);\n\t\tcurveVertex(x, height / 2 + freq);\n\t}\n\tendShape();\n\n\n\t/* fft */\n\tfor(let i = 0; i < fft.length; i++) {\n\t\tlet freq = fft[i]; // (0, 255);\n\t\tlet x = map(i, 0, fft.length, 0, width);\n\t\tlet w = width / fft.length;\n\t\trect(x, height, w, -freq);\n\t}\n\n}\n\n/* AUDIO INIT */\nlet mic, fftRaw, fft = [],\n\twaveform = [],\n\tamp = 0.0,\n\tampStereo = {\n\t\tl: 0.0,\n\t\tr: 0.0\n\t},\n\tampEase = 0.0,\n\tnumBins = 512,\n\tbands = 12;\n\nfunction setupAudio() {\n\tuserStartAudio();\n\tmic = new p5.AudioIn();\n\tmic.start();\n\tfftRaw = new p5.FFT(0.75, numBins);\n\tfftRaw.setInput(mic);\n}\n\nfunction updateAudio() {\n\tfftRaw.analyze();\n\tamp = mic.getLevel() * 1000; // average mixed amplitude\n\tampStereo.l = mic.amplitude.getLevel(0) * 500; // average left amplitude\n\tampStereo.r = mic.amplitude.getLevel(1) * 500; // average right amplitude\n\tampEase = ease(amp, ampEase, 0.075); // smooth 'amp'\n\twaveform = fftRaw.waveform(); // array (-1, 1)\n\tfft = fftRaw.logAverages(fftRaw.getOctaveBands(bands)); // array (0, 255)\n}"
             }
           ]
         },
@@ -209,20 +223,6 @@
           ]
         },
         {
-          "name": "_audio",
-          "mod": "1588035882416",
-          "type": "folder",
-          "toggle": "collapse",
-          "contents": [
-            {
-              "name": "_audio_analysis",
-              "mod": "1588358648121",
-              "type": "sketch",
-              "code": "/*\t\n\t_audio_analysis // cc teddavis.org 2019\n\tadd snippet to other sketches: CTRL + SHIFT + A \n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\n\tsetupAudio();\n}\n\nfunction draw() {\n\t/* audio vars: amp, ampEase, fft, waveform */\n\tupdateAudio();\n\n\tbackground(0);\n\tnoFill();\n\tstroke(255);\n\n\t/* average */\n\ttext(\"MIX\", width * .5, height / 4);\n\tellipse(width / 2, height / 4, amp);\n\ttext(\"L\", width * .25, height / 4);\n\tellipse(width * .25, height / 4, ampStereo.l);\n\ttext(\"R\", width * .75, height / 4);\n\tellipse(width * .75, height / 4, ampStereo.r);\n\n\t/* waveform */\n\tbeginShape();\n\tfor(let i = 0; i < waveform.length; i++) {\n\t\tlet freq = waveform[i] * height / 4; // (-1, 1);\n\t\tlet x = map(i, 0, waveform.length, 0, width);\n\t\tcurveVertex(x, height / 2 + freq);\n\t}\n\tendShape();\n\n\n\t/* fft */\n\tfor(let i = 0; i < fft.length; i++) {\n\t\tlet freq = fft[i]; // (0, 255);\n\t\tlet x = map(i, 0, fft.length, 0, width);\n\t\tlet w = width / fft.length;\n\t\trect(x, height, w, -freq);\n\t}\n\n}\n\n/* AUDIO INIT */\nlet mic, fftRaw, fft = [],\n\twaveform = [],\n\tamp = 0.0,\n\tampStereo = {\n\t\tl: 0.0,\n\t\tr: 0.0\n\t},\n\tampEase = 0.0,\n\tnumBins = 512,\n\tbands = 12;\n\nfunction setupAudio() {\n\tuserStartAudio();\n\tmic = new p5.AudioIn();\n\tmic.start();\n\tfftRaw = new p5.FFT(0.75, numBins);\n\tfftRaw.setInput(mic);\n}\n\nfunction updateAudio() {\n\tfftRaw.analyze();\n\tamp = mic.getLevel() * 1000; // average mixed amplitude\n\tampStereo.l = mic.amplitude.getLevel(0) * 500; // average left amplitude\n\tampStereo.r = mic.amplitude.getLevel(1) * 500; // average right amplitude\n\tampEase = ease(amp, ampEase, 0.075); // smooth 'amp'\n\twaveform = fftRaw.waveform(); // array (-1, 1)\n\tfft = fftRaw.logAverages(fftRaw.getOctaveBands(bands)); // array (0, 255)\n}"
-            }
-          ]
-        },
-        {
           "name": "_input",
           "mod": "1588033538041",
           "type": "folder",
@@ -275,6 +275,38 @@
           ]
         },
         {
+          "name": "_hydra",
+          "mod": "1619055853167",
+          "type": "folder",
+          "toggle": "collapse",
+          "contents": [
+            {
+              "name": "_hydra_texture",
+              "mod": "1619537929381",
+              "type": "sketch",
+              "code": "/*\t\n\t_hydra_texture // cc ojack.xyz + teddavis.org 2021\n\tedit hydra code within // hydraSandbox tags for changes w/o recompiling p5!\n\tcheatsheets: https://ojack.xyz/hydra-functions/ + https://hydra-book.naotohieda.com/\n*/\n\nlet libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']\n\n// hydra canvas + init\nlet hc = document.createElement('canvas') // hydra canvas + custom size\nhc.width = 640\nhc.height = 360\nlet hydra = new Hydra({detectAudio: false,canvas: hc})\n\nlet pg // store hydra texture\n\n\n// hydraSandbox- start\nosc(35, .2, .8)\n\t.mask(osc(20, .1).rotate(25))\n\t.repeatY(20)\n\t// .kaleid(36)\n\t.out()\n// hydraSandbox - stop\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL)\n\tbackground(0)\n\tpg = createGraphics(hc.width, hc.height)\n\tnoStroke()\n}\n\n\nfunction draw() {\n\t// grab + apply hydra texture\n\tpg.clear()\n\tpg.drawingContext.drawImage(hc, 0, 0, pg.width, pg.height)\n\ttexture(pg)\n\n\tplane(width, height) // fill screen w/ texture\n\n\trotateX(radians(frameCount / 8))\n\trotateY(radians(frameCount / 4))\n\ttorus(height/4, height/8, 50)\n}"
+            },
+            {
+              "name": "_hydra_scope",
+              "mod": "1619537930977",
+              "type": "sketch",
+              "code": "/*\t\n\t_hydra_scope // cc ojack.xyz + teddavis.org 2021\t\n\tuse scoped for hydra's noise() + other global p5 issues\n*/\n\nlet libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']\n\n// hydra canvas + init\nlet hc = document.createElement('canvas') // hydra canvas + custom size\nhc.width = 640\nhc.height = 360\nlet hydra = new Hydra({\n\tdetectAudio: false, // no mic\n\tcanvas: hc, // use hydra canvas\n\tmakeGlobal: false, // scoped\n\tautoLoop: false // custom tick() below\n})\nlet synth = hydra.synth // scoped hydra\n\nlet pg // store hydra texture\n\n\n// hydraSandbox - start\nsynth.noise(8, .5)\n\t.modulate(synth.noise(5), .3)\n\t.modulate(synth.osc(5, .1, .2), .3)\n\t.out()\n// hydraSandbox - stop\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL)\n\tbackground(0)\n\tpg = createGraphics(hc.width, hc.height)\n\tnoStroke()\n}\n\nfunction draw() {\n\thydra.tick(1.5) // custom hydra animation speed!\n\n\t// grab + apply hydra texture\n\tpg.clear()\n\tpg.drawingContext.drawImage(hc, 0, 0, pg.width, pg.height)\n\ttexture(pg)\n\n\tplane(width, height)\n\n\trotateX(radians(frameCount / 8))\n\trotateZ(radians(-frameCount / 6))\n\tbox(height/3)\n}"
+            },
+            {
+              "name": "_hydra_overlay",
+              "mod": "1619537933083",
+              "type": "sketch",
+              "code": "/*\t\n\t_hydra_scope // cc ojack.xyz + teddavis.org 2021\t\n\tpass p5 canvas into hydra as source sketch surface manipulations \n*/\n\nlet libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']\n\n// hydra canvas + init\nlet hc = document.createElement('canvas')\nhc.width = window.innerWidth\nhc.height = window.innerHeight\ndocument.body.appendChild(hc)\nlet hydra = new Hydra({detectAudio: false,canvas: hc})\n\nlet pg // store hydra texture\n\n// hydraSandbox - start\nsrc(o0)\n\t.layer(src(s0))\n\t.scale(.996)\n\t.modulateScale(src(s0).pixelate(15, 10), .5)\n\t.scrollY(1.003)\n\t// .rotate( ()=>sin(frameCount*.01)*.01 ) // use p5 vars!\n\t// .modulateScale(osc(5, .1), .02)\n\t.out()\n// hydraSandbox - stop\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\")\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\n\t// pass p5 canvas to hydra as s0 source\n\ts0.init({src: drawingContext.canvas})\n\tpg = createGraphics(hc.width, hc.height)\n\n\tbackground(0)\n\ttextFont(font)\n\ttextAlign(CENTER, CENTER)\n}\n\nfunction draw() {\n\tpg.drawingContext.drawImage(hc, 0, 0, pg.width, pg.height) // update texture\n\n\tclear()\n\tfill(0)\n\tstroke(255)\n\tstrokeWeight(2)\n\ttextSize(width / 5)\n\n\tlet offset = 10\n\ttext('P5LIVE', width / 2 + sin(frameCount * .03) * offset, height / 2 + cos(frameCount * .03) * offset)\n}\n\nfunction keyPressed(){\n\tif(key == 'S'){\n\t\tpg.save('P5LIVE_hydra.png') // save hydra texture\n\t}\n}"
+            },
+            {
+              "name": "_hydra_feedback",
+              "mod": "1619538054533",
+              "type": "sketch",
+              "code": "/*\t\n\t_hydra_scope // cc ojack.xyz + teddavis.org 2021\t\n\tgo wild sending p5 into hydra and pulling it back! \n*/\n\nlet libs = ['https://unpkg.com/hydra-synth']\n\nlet hc = document.createElement('canvas')\nhc.width = window.innerWidth\nhc.height = window.innerHeight\ndocument.body.appendChild(hc)\nlet hydra = new Hydra({ detectAudio: false, canvas: hc })\nlet pg // store hydra texture\n\n// hydraSandbox - start\nsrc(o0)\n\t.layer(s0)\n\t.scroll(1.01, 1.01)\n\t.scale(1.01)\n\t.out()\n// hydraSandbox  - stop\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL)\n\tbackground(0)\n\tpg = createGraphics(hc.width, hc.height)\n\ts0.init({src: drawingContext.canvas })\n}\n\nfunction draw() {\n\tclear()\n\tpg.drawingContext.drawImage(hc, 0, 0, pg.width, pg.height)\n\n\trotateX(radians(frameCount*.4))\n\n\tfill(255)\n\tstroke(0)\n\tstrokeWeight(.5)\n\tif(mouseIsPressed){\n\t\tfill(0)\n\t\tstroke(255)\n\t}\n\ttorus(height/6, 20)\n\t\n\trotateY(radians(frameCount*.8))\n\t\n\tnoStroke()\n\ttexture(pg) // haha why no likey\n\ttorus(height/4, height/12)\n}"
+            }
+          ]
+        },
+        {
           "name": "_shaders",
           "mod": "1605978111847",
           "type": "folder",
@@ -322,7 +354,7 @@
     }
   ],
   "count": {
-    "sketches": 37,
-    "folders": 12
+    "sketches": 41,
+    "folders": 13
   }
 }

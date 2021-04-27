@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.3.5  
+v 1.3.6  
 cc [teddavis.org](http://teddavis.org) – 2019 - 2021  
 p5.js collaborative live-coding vj environment!
 
@@ -73,9 +73,8 @@ Details below to run via python webserver or nodejs/npm.
 - <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export single page website (re-link paths to any offline assets).
 
 ### SETTINGS PANEL  
-<img src="includes/images/menu-settings-nav.png" width="220px">
+<img src="includes/images/menu-settings-nav-3.png" width="220px">
 
-- <img class="svg" src="includes/icons/slash.svg" height="12px"> Completely reset P5LIVE (*deletes all sketches + settings!*)
 - <img class="svg" src="includes/icons/refresh-cw.svg" height="12px"> Reset Settings to defaults
 - <img class="svg" src="includes/icons/upload.svg" height="12px"> Import Settings
 - <img class="svg" src="includes/icons/download.svg" height="12px"> Export Settings
@@ -104,10 +103,13 @@ Details below to run via python webserver or nodejs/npm.
 #### Shortcuts
 Customize keyboard shortcuts by clicking on name + press a new key combination.  
 
+#### Reset P5LIVE
+- <img class="svg" src="includes/icons/slash.svg" height="12px"> Completely reset P5LIVE (*deletes all sketches + settings!*) - Don't forget to export sketches first.
+
 ### COCODING PANEL
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
 
-See dedicated [COCODING](#COCODING) section below for details.
+See dedicated COCODING section below for details.
   
 ### SKETCHES PANEL 
 <img src="includes/images/menu-sketches-7.png" width="220px">  
@@ -300,7 +302,8 @@ Additional custom functions are available in P5LIVE sketches:
 - `windowResize()` is set by default to keep your sketch fullscreen. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
 
 
-## COCODING  
+## COCODING 
+#### COCODING PANEL DETAIL
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
 
 - <img class="svg" src="includes/icons/share-2.svg" height="12px"> Press to start a COCODING session and share new URL with friends.  
