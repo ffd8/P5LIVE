@@ -16,7 +16,6 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + B` » chalkboard toggle
 - `CTRL + T` » tidy code
 - `CTRL + SPACE` » autocomplete
-- `CTRL + C` » cursor toggle
 - `CTRL + -` » decrease fontsize
 - `CTRL + +` » increase fontsize
 - `CTRL + S` » save png [ + code ]
@@ -67,10 +66,11 @@ Details below to run via python webserver or nodejs/npm.
 - <img class="svg" src="includes/icons/monitor.svg" height="12px"> Visuals-only Popup, for projecting canvas output without code + interace.  
 - <img class="svg" src="includes/icons/save.svg" height="12px"> Export, click to reveal sub-menu:  
 
-<img src="includes/images/menu-p5live-export-1.png" width="220px">
+<img src="includes/images/menu-p5live-export-2.png" width="220px">
 
 - <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png, `CTRL + S`, exports image [+ code if active in settings].  
-- <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export 1-page website (must re-link paths to custom assets).
+- <img class="svg" src="includes/icons/link.svg" height="12px"> Share code as URL link (refers to online version at p5live.org).
+- <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export single page website (re-link paths to any offline assets).
 
 ### SETTINGS PANEL  
 <img src="includes/images/menu-settings-nav.png" width="220px">
@@ -83,11 +83,10 @@ Details below to run via python webserver or nodejs/npm.
 #### Options
 - [x] Live Coding, [500ms], auto-compile error-free code on keyup, with set delay.  
 - [x] Eco Render, noLoop() if window loses focus (save computer resources).  
-- [x] Cursor, display cursor (when editor is hidden).  
 - [x] Console, display console messages (print / errors / warnings).  
 - [x] Menu Tab, toggle menu tab. (hide if visible while VJ'ing). 
 - [x] Snapshot Code, export current code with each image snapshot. 
-- [ ] Line Numbers, display code line numbers (and gutter features). 
+- [x] Line Numbers, display code line numbers (and gutter features). 
 - [ ] Auto Autocomplete, useful for learning, just use `CTRL + SPACE` as needed. 
 - [x] Lock Code on Drag, locks code editor on mouse drag to prevent displacing code. 
 - [ ] Pass Editor Keys, keypresses from editor to p5 canvas (hide editor otherwise).
@@ -105,78 +104,10 @@ Details below to run via python webserver or nodejs/npm.
 #### Shortcuts
 Customize keyboard shortcuts by clicking on name + press a new key combination.  
 
-### COCODING PANEL  
+### COCODING PANEL
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
 
-- <img class="svg" src="includes/icons/share-2.svg" height="12px"> Press to start a COCODING session and share new URL with friends.  
-
-<img src="includes/images/menu-cocoding-active-9.png" width="220px">  
-
-- COCODING <sup>#</sub> of users - ⇡⇣ syncing up/down-stream.
-- <img class="svg" src="includes/icons/power.svg" height="12px"> Exit, click the green 'power' button.  
-- <img class="svg" src="includes/icons/copy.svg" height="12px"> Clone sketch, saves current co-code to local sketches within session folder.  
-- <img class="svg" src="includes/icons/radio.svg" height="12px"> SyncData, custom code to sync local data (mouse, midi,...) with peers.  
-- <img class="svg" src="includes/icons/unlock-mod.svg" height="12px"> Lockdown (admin), limit editing, toggle write privledges per user.  
-- <img class="svg" src="includes/icons/cast.svg" height="12px"> Broadcast (admin + lockdown), sync mouseX/Y/frameCount/recompile with users.
-
-<img src="includes/images/menu-cocoding-req-pre-8.png" width="220px">  
-
-- Click on your name (very top) to select a new nickname and color.
-- If <img class="svg" src="includes/icons/shield.svg" height="12px"> admin left, you'll have option within this panel to claim it.
-
-#### Lockdown (user)
-<img src="includes/images/menu-cocoding-req-9.png" width="220px">  
-
-- Request write-access, click edit button and wait for admin to allow.
-
-#### Lockdown (admin)
-<img src="includes/images/menu-cocoding-admin-vote-8.png" width="220px">  
-
-- Grant write-access, toggle requested write-access from glowing users.
-
-<img src="includes/images/menu-cocoding-admin-allow-8.png" width="220px">  
-
-- Toggle write-access, admin can always toggle write access per user. 
-
-#### Chat
-<img src="includes/images/menu-cocoding-chat-2.png" width="220px">   
-
-Within chat, links are parsed, ie. share sketch from p5.js editor.  
-Incoming chats displayed as notification (if active) when menu is hidden.
-
-#### SyncData
-<img src="includes/images/menu-cocoding-syncdata-2.png" width="220px">  
-
-<img class="svg" src="includes/icons/radio.svg" height="12px"> launches SyncData window.  
-
-<img src="includes/images/menu-cocoding-syncdata-window-2.png" width="400px">   
-
-Use the SyncData window to send local data (as objects), by entering custom code that's executed locally in parallel to the shared COCODING session. Latest changes to the SyncData editor are stored in your local settings. Selecting a new preset replaces its contents, so use `Save Preset` to store anything long-term.  
-
-**Presets**  
-
-- `template` guide for making your own.  
-- `mouseXY`, `facetracker` + `midi`, shares those signals with others.  
-Be sure to enter unique `userID`'s.
-- `Save Preset` for storing current SyncData editor (pre-existing name replaces it).
-- `Remove Preset` is available after selecting a custom preset.
-
-**Buttons**  
-
-- `► RUN` activates SyncData, injecting code at end of COCODE on each recompile.
-- `► RE-RUN` updates any changes made within SyncData editor.
-- `↓ COCODE` (admin) adds code following `/* 2 - COCODE */` into COCODING session.
-- `◼ STOP` deactivates SyncData (stops adding local code to recompile).
-
-<img src="includes/images/menu-cocoding-syncdata-radio-1.png" width="220px"> 
-
-When active, your own <img class="svg" src="includes/icons/radio.svg" height="12px"> turns green, along with any user who is sending data.  
-<img class="svg" src="includes/icons/lock.svg" height="12px"> Lockdown mode, suspends SyncData for all users, unless given write-access.  
-
-All data sent, uses `parseData()` in COCODING session to access it. Events can be fired immediately, or pass values to global vars for use within `draw()`. Furthermore you can use `getData()` within COCODING session, for unique local processing within your own SyncData window and code. See `midi` preset for use-case, where `midiThru` receives incoming signals and passes them onward to your own gear.
-
-Be kind to your peers, keep data size and intervals within reasonable values.  
-Have fun COCODING with keyboards, EEG-headsets, eye-trackers, ....?! 
+See dedicated [COCODING](#COCODING) section below for details.
   
 ### SKETCHES PANEL 
 <img src="includes/images/menu-sketches-7.png" width="220px">  
@@ -219,7 +150,7 @@ Type in keywords to match names of sketches and folders, filtering only those re
 	- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete folder + contents after confirmation.  
 - Sort, click + hold + drag to desired order.  
   
-## DETAILS
+## FEATURES
 ### COMPILING
 There are two modes of compiling in P5LIVE:  
 
@@ -303,10 +234,20 @@ let libs = [
 ];
 ```
 
+### HYDRA
+[hydra-synth](https://github.com/ojack/hydra-synth) has been added to the P5LIVE libs and extra support has been added for writing hydra code in the global space. After importing the library, any changes made within the following tags:  
+
+```js
+// hydraSandbox
+osc().out() // ... your hydra code here
+// hydraSandbox
+```
+– will only update the hydra-synth engine and won't effect p5 recompiles! Be sure to see DEMOS » _HYDRA for details and various ways of using it in your sketches.
+
 ### ASSETS
-Load custom assets (image/font/obj/audio/...):  
+Loading custom assets (image/font/obj/audio/...):  
  
-- Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server (ie. [imgur](https://imgur.com) for images)  
+- Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server ([imgur](https://imgur.com)/[glitch.com](https://glitch.com) images/videos, [GitHub](https://github.com) raw for ~anything)  
 `loadImage('https://i.imgur.com/ijQzwsx.jpeg');`
 - Locally, if running offline (ie. `/data/images/`)  
 `loadImage('data/images/fish.png');`
@@ -351,12 +292,86 @@ Loads a new sketch.
 *Incase you need a loop to run more than 10000 times ||  1 second,  
 add `// noprotect` anywhere in your code.*
 
-### FUNCTIONS
-Additional custom functions are available in every sketch:  
+### EXTRA FUNCTIONS
+Additional custom functions are available in P5LIVE sketches:  
 
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
 - `windowResize()` is set by default to keep your sketch fullscreen. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
+
+
+## COCODING  
+<img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
+
+- <img class="svg" src="includes/icons/share-2.svg" height="12px"> Press to start a COCODING session and share new URL with friends.  
+
+<img src="includes/images/menu-cocoding-active-9.png" width="220px">  
+
+- COCODING <sup>#</sub> of users - ⇡⇣ syncing up/down-stream.
+- <img class="svg" src="includes/icons/power.svg" height="12px"> Exit, click the green 'power' button.  
+- <img class="svg" src="includes/icons/copy.svg" height="12px"> Clone sketch, saves current co-code to local sketches within session folder.  
+- <img class="svg" src="includes/icons/radio.svg" height="12px"> SyncData, custom code to sync local data (mouse, midi,...) with peers.  
+- <img class="svg" src="includes/icons/unlock-mod.svg" height="12px"> Lockdown (admin), limit editing, toggle write privledges per user.  
+- <img class="svg" src="includes/icons/cast.svg" height="12px"> Broadcast (admin + lockdown), sync mouseX/Y/frameCount/recompile with users.
+
+<img src="includes/images/menu-cocoding-req-pre-8.png" width="220px">  
+
+- Click on your name (very top) to select a new nickname and color.
+- If <img class="svg" src="includes/icons/shield.svg" height="12px"> admin left, you'll have option within this panel to claim it.
+
+#### Lockdown (user)
+<img src="includes/images/menu-cocoding-req-9.png" width="220px">  
+
+- Request write-access, click edit button and wait for admin to allow.
+
+#### Lockdown (admin)
+<img src="includes/images/menu-cocoding-admin-vote-8.png" width="220px">  
+
+- Grant write-access, toggle requested write-access from glowing users.
+
+<img src="includes/images/menu-cocoding-admin-allow-8.png" width="220px">  
+
+- Toggle write-access, admin can always toggle write access per user. 
+
+#### Chat
+<img src="includes/images/menu-cocoding-chat-2.png" width="220px">   
+
+Within chat, links are parsed, ie. share sketch from p5.js editor.  
+Incoming chats displayed as notification (if active) when menu is hidden.
+
+#### SyncData
+<img src="includes/images/menu-cocoding-syncdata-2.png" width="220px">  
+
+<img class="svg" src="includes/icons/radio.svg" height="12px"> launches SyncData window.  
+
+<img src="includes/images/menu-cocoding-syncdata-window-2.png" width="400px">   
+
+Use the SyncData window to send local data (as objects), by entering custom code that's executed locally in parallel to the shared COCODING session. Latest changes to the SyncData editor are stored in your local settings. Selecting a new preset replaces its contents, so use `Save Preset` to store anything long-term.  
+
+**Presets**  
+
+- `template` guide for making your own.  
+- `mouseXY`, `facetracker` + `midi`, shares those signals with others.  
+Be sure to enter unique `userID`'s.
+- `Save Preset` for storing current SyncData editor (pre-existing name replaces it).
+- `Remove Preset` is available after selecting a custom preset.
+
+**Buttons**  
+
+- `► RUN` activates SyncData, injecting code at end of COCODE on each recompile.
+- `► RE-RUN` updates any changes made within SyncData editor.
+- `↓ COCODE` (admin) adds code following `/* 2 - COCODE */` into COCODING session.
+- `◼ STOP` deactivates SyncData (stops adding local code to recompile).
+
+<img src="includes/images/menu-cocoding-syncdata-radio-1.png" width="220px"> 
+
+When active, your own <img class="svg" src="includes/icons/radio.svg" height="12px"> turns green, along with any user who is sending data.  
+<img class="svg" src="includes/icons/lock.svg" height="12px"> Lockdown mode, suspends SyncData for all users, unless given write-access.  
+
+All data sent, uses `parseData()` in COCODING session to access it. Events can be fired immediately, or pass values to global vars for use within `draw()`. Furthermore you can use `getData()` within COCODING session, for unique local processing within your own SyncData window and code. See `midi` preset for use-case, where `midiThru` receives incoming signals and passes them onward to your own gear.
+
+Be kind to your peers, keep data size and intervals within reasonable values.  
+Have fun COCODING with keyboards, EEG-headsets, eye-trackers, ....?! 
 
 
 ## OFFLINE SERVER

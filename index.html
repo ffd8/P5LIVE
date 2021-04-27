@@ -253,10 +253,6 @@
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender">
 						Eco Render
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Display cursor <br>(when editor is hidden)" onclick="cursorToggle();">
-						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor">
-						Cursor
-					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Display console messages" onclick="consoleToggle();">
 						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console">
 						Console
@@ -499,11 +495,6 @@ function println(msg){
 					'name':'Settings Toggle'
 					,'key':'ctrl+,'
 					,'callback':'showSettings(true)'
-				}
-				,'cursor':{
-					'name':'Cursor Toggle'
-					,'key':'ctrl+c'
-					,'callback':'cursorToggle()'
 				}
 				,'references':{
 					'name':'References Toggle'
@@ -1241,7 +1232,7 @@ function println(msg){
 
 							if(cocodingShowMic){
 								userNavIconsCount++;
-								if(1==1){
+								if(1==1){ // *** mic icon logic
 									userNavIcons += '<div class="cocoding-sketch-button">'+icon.micOff+'</div>';
 								}else{
 									userNavIcons += '<div class="cocoding-sketch-button">'+icon.mic+'</div>';
@@ -2054,7 +2045,6 @@ function println(msg){
 			compileTimerUpdate();
 			menuToggleUpdate();
 			ecoRenderUpdate();
-			cursorToggleUpdate();
 			consoleToggleUpdate();
 			menutabToggleUpdate();
 			autocompleteUpdate();
@@ -5089,26 +5079,6 @@ function println(msg){
 		}
 
 
-		//cursor toggle
-		function cursorToggle(){
-			settings.canvasCursor = !settings.canvasCursor;
-			cursorToggleUpdate();
-		}
-
-		function cursorToggleUpdate(){
-			checkToggle('canvasCursor', settings.canvasCursor, settingsCanvasCursor, 'Canvas Cursor');
-			if(sketchLoaded){
-				if(!settings.canvasCursor){
-					p5f.noCursor();
-					p5frameCover.style.cursor = 'none';
-					p5frame.style.cursor = 'none';
-				}else{
-					p5f.cursor();
-					p5frameCover.style.cursor = 'crosshair';
-					p5frame.style.cursor = 'crosshair';
-				}
-			}
-		}
 
 		//console toggle
 		function consoleToggle(){
