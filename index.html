@@ -900,10 +900,11 @@ function println(msg){
 					// compute cursor position on screen
 					// this code is based on ace/layer/marker.js
 					let screenPos = session.documentToScreenPosition(pos.row, pos.column)
+					let aceGutter = document.getElementsByClassName('ace_gutter')[0].offsetWidth
 					let height = config.lineHeight;
 					let width = config.characterWidth;
 					let top = markerLayer.$getTop(screenPos.row, config);
-					let left = markerLayer.$padding + screenPos.column * width;
+					let left = markerLayer.$padding + aceGutter + screenPos.column * width;
 
 					// update if exists + rebuild on textsize change
 					let elm = document.getElementById('cursor_'+pos.id);
