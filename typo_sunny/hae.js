@@ -1,4 +1,3 @@
-/*	_typo_textToPoints-circle // cc teddavis.org 2020	*/
 let points=[];
 let bounds;
 let gap = 5
