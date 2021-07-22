@@ -422,8 +422,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.3.6';
-		let currentRevision = 41;
+		let currentVersion = '1.3.7';
+		let currentRevision = 42;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -691,6 +691,16 @@ function println(msg){
 		let editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
+		editor.session.on('changeMode', function(e, session) {
+		    if('ace/mode/javascript' === session.getMode().$id) {
+		        if(!!session.$worker) {
+		            session.$worker.send('changeOptions', [{
+		                asi: true // disable "Missing semicolon." warning in editor for JavaScript
+		            }])
+		        }
+		    }
+		})
+
 		editor.setOptions({
 			showPrintMargin: false,
 			animatedScroll: false,
@@ -698,6 +708,7 @@ function println(msg){
 			useWorker: true,
 			showLineNumbers: false,
 			showGutter: false,
+			scrollPastEnd:1,
 			tabSize: 4, useSoftTabs: false,
 			enableBasicAutocompletion: true,
 			enableSnippets: true
@@ -870,10 +881,10 @@ function println(msg){
 
 		let includeScripts = [{
 			'local':'includes/p5/p5.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/p5.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js'
 		}, {
 			'local':'includes/p5/addons/p5.sound.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.3.1/addons/p5.sound.min.js'
+			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js'
 		}];
 
 		// includeScripts = [
@@ -3865,7 +3876,6 @@ function println(msg){
 		// initialize sortable
 		function initSortable(){
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
-				let selSelected = false;
 				let htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
 				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
 				initFolders(menuSketches);
@@ -3896,12 +3906,13 @@ function println(msg){
 								}
 							}
 
+							let selSelf = 'loadSketch(\''+d.name+'\');';
 							if(d.name == settings.fileName && !settings.cocoding.active){
 								selClass = 'sketch-selected';
-								selSelected = true;
+								selSelf = `renameItem(\'${d.name}\', \'sketch\')`
 							}
 
-							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;loadSketch(\''+d.name+'\');">'+icon.fileLines + '<div class="item-label">' +d.name+'</div></div></li>';
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;'+selSelf+'">'+icon.fileLines + '<div class="item-label">' +d.name+'</div></div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
 							let iconSel = icon.folderExpand;
@@ -4292,11 +4303,13 @@ function println(msg){
 
 
 		/* EDITOR KEY-CMDS */
-		let map = [];
+		let keyMap = [];
+		keyMap[16] = false;
+		keyMap[17] = false;
 		window.onkeydown = function(event) {
-			map[event.keyCode] = event.type == 'keydown';
+			keyMap[event.keyCode] = event.type == 'keydown';
 
-			if(map[16] && map[17]){
+			if(keyMap[16] && keyMap[17]){
 				addSnippet(event.key);
 				event.preventDefault();
 			}
@@ -4310,16 +4323,16 @@ function println(msg){
 		}
 
 		window.onkeyup = function(event) {
-			map[event.keyCode] = event.type == 'keydown';
+			keyMap[event.keyCode] = event.type == 'keydown';
 		}
 
 		// Editor Interactions
 		p5code.onkeydown = function(event) {
-			map[event.keyCode] = event.type == 'keydown';
+			keyMap[event.keyCode] = event.type == 'keydown';
 		}
 
 		p5code.onkeyup = function(event) {
-			map[event.keyCode] = event.type == 'keydown';
+			keyMap[event.keyCode] = event.type == 'keydown';
 			if(!settings.cocoding.active){
 				localStorage[settings.fileName] = editor.getValue();
 			}
@@ -4781,7 +4794,12 @@ function println(msg){
 
 			// break infinite loops
 			if(!sketchCode.match(/(\/\/).*(no.*protect)/g)){
-				sketchCode = loopBreaker(sketchCode).code;
+				try{
+					sketchCode = loopBreaker(sketchCode).code;
+				} catch (e) {
+					console.log(e.description)
+				  return false;
+				}
 			}
 
 			// console.log(sketchCode);
@@ -4840,7 +4858,13 @@ function println(msg){
 
 			// break infinite loops
 			if(!editor.getValue().match(/(\/\/).*(no.*protect)/g)){
-				curCodeTemp = loopBreaker(curCodeTemp).code;
+				try{
+					curCodeTemp = loopBreaker(curCodeTemp).code;
+				} catch (e) {
+					console.log(e.description)
+				  return false;
+				}
+
 			}
 			s.innerHTML = curCodeTemp;
 			p5f.document.head.appendChild(s);
@@ -5034,8 +5058,8 @@ function println(msg){
 
 		window.onblur = function () {
 			// deactivate modifier keys
-			map[16] = false;
-			map[17] = false;
+			keyMap[16] = false;
+			keyMap[17] = false;
 
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'blur');
@@ -5049,8 +5073,8 @@ function println(msg){
 
 		window.onfocus = function () {
 			// deactivate modifier keys
-			map[16] = false;
-			map[17] = false;
+			keyMap[16] = false;
+			keyMap[17] = false;
 
 			if(settings.cocoding.active){
 				cocode.socket.emit('status', 'focus');
@@ -5059,6 +5083,12 @@ function println(msg){
 			if(sketchLoaded && !paused){
 				p5f.loop();
 			}
+		}
+
+		p5editor.onfocus = function () {
+			// deactivate modifier keys
+			keyMap[16] = false;
+			keyMap[17] = false;
 		}
 
 
@@ -6003,7 +6033,7 @@ function println(msg){
 
 		function loadRef(){
 			refList = [];
-			let refPath = 'includes/p5/data.json?' + currentRevision;
+			let refPath = 'includes/p5/data.js?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
 			request.send();
@@ -6861,7 +6891,12 @@ function println(msg){
 
 				// break infinite loops
 				if(!syncdataCode.match(/(\/\/).*(no.*protect)/g)){
-					syncdataCode = loopBreaker(syncdataCode).code;
+					try{
+						syncdataCode = loopBreaker(syncdataCode).code;
+					} catch (e) {
+						console.log(e.description)
+					  return false;
+					}
 				}
 
 				// **** possible to avoid loadjs for syncdata?
