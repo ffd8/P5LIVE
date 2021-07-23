@@ -3909,7 +3909,9 @@ function println(msg){
 							let selSelf = 'loadSketch(\''+d.name+'\');';
 							if(d.name == settings.fileName && !settings.cocoding.active){
 								selClass = 'sketch-selected';
-								selSelf = `renameItem(\'${d.name}\', \'sketch\')`
+								if(curFolder !== 'demos' && parFolder !== 'demos'){
+									selSelf = `renameItem(\'${d.name}\', \'sketch\')`
+								}
 							}
 
 							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;'+selSelf+'">'+icon.fileLines + '<div class="item-label">' +d.name+'</div></div></li>';
