@@ -1,3 +1,11 @@
+# ADDED LIB
+- libs/matter.js
+	- To embed in your live-code, add following line on top of your code.
+	- `let libs = [ 'https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.0/matter.min.js', 'includes/libs/matter.js']`
+- libs/kinectron.js
+	- `let libs = [ 'https://cdn.jsdelivr.net/gh/kinectron/kinectron@0.3.6/client/dist/kinectron-client.js', 'includes/libs/kinectron.js']`
+
+
 # P5LIVE
 v 1.3.6  
 cc [teddavis.org](http://teddavis.org) – 2019 - 2021  
