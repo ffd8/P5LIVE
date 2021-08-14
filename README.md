@@ -4,7 +4,7 @@
 	- `let libs = [ 'https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.0/matter.min.js', 'includes/libs/matter.js']`
 - libs/kinectron.js
 	- `let libs = [ 'https://cdn.jsdelivr.net/gh/kinectron/kinectron@0.3.6/client/dist/kinectron-client.js', 'includes/libs/kinectron.js']`
-
+- libs/leap-motion
 
 # P5LIVE
 v 1.3.6  
