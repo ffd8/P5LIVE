@@ -380,7 +380,7 @@ Have fun COCODING with keyboards, EEG-headsets, eye-trackers, ....?!
 ## OFFLINE SERVER
 ### Basic - Python  
 Use for quickest setup or to run multiple instances (each with their own sketches storage).  
-NO COCODING + OSC with this technique.  
+*No COCODING / OSC with this technique.*  
 
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
@@ -394,7 +394,7 @@ NO COCODING + OSC with this technique.
 Port `5000` is suggested, for alternative, just type desired one in snippet above and remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
 
 ### Fancy - nodejs/npm  
-Use for all features (COCODING + OSC) + optional HTTPS mode. 
+Use for all features (COCODING / OSC) + optional HTTPS mode (see below). 
   
 - Clone / Download [P5LIVE](https://github.com/ffd8/p5live)  
 - Install Node.js + NPM ([binary installers](https://nodejs.org/en/download/))  
@@ -408,23 +408,25 @@ Use for all features (COCODING + OSC) + optional HTTPS mode.
 Port `5000` is suggested, for alternative, add desired port number to start command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
 
 ### HTTPS
-If using **Fancy** offline server, you may want to COCODE with peers on the same local network. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you are `localhost`, any connected peers are simply `http`, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!
+If using **Fancy** offline server, you may want to COCODE with peers on the same local network or even remotely around the world. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you access via `localhost`, all connected peers are simply `http` by default, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!
 
 #### Local (same network, works offline):    
 - Start P5LIVE with `npm start https`, or custom port `npm start #### https`  
 - HTTPS port is automatically 1 digit higher than P5LIVE (5000 » 5001).  
 - Share https address displayed in Terminal, ie: `https://xxxxx.local:5001`  
 - Connected peers must accept 'unsecure' (self-gen) certificate with `Advanced` button upon loading URL. Certificates are generative + cached, renewing after 60 days.  
-- Enjoy Offline Server COCODING!  
+- Enjoy offline local peers COCODING!  
 
 #### Remote (anyone across internet w/ [ngrok](https://ngrok.com/docs#getting-started)!):  
+*Especially useful for COCODING with your own assets within `/data`*  
+
 - Start P5LIVE offline server (see above)  
 - [Download ngrok](https://ngrok.com/download)  
 - Open another tab in Terminal, `cd` to the folder containing **ngrok**  
-- Type `ngrok http 5000` and press `ENTER` (tunnels to localhost:5000)  
-- Check output for forwarding URL to share with remote peers:  
-`https://########.ngrok.io`  
-- Enjoy Online [Self-hosted] Server COCODING!
+- Type `./ngrok http 5000` and press `ENTER` (tunnels to localhost:5000)  
+- Check output forwarding URL to share with remote peers (add COCODING channel):  
+`https://**********.ngrok.io/?cc=*****`   
+- Enjoy offline remote peers COCODING!
 
 
 ## TOOLS USED
