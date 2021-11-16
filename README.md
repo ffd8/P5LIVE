@@ -23,7 +23,7 @@ p5.js collaborative live-coding vj environment!
 - `CTRL + 1, 2, 3...0` » jump between first 10 sketches
 
 Beta shortcuts
-- `CTRL + SHIFT + ⇡⇣` » jump to previous/next sketch
+- `CTRL + SHIFT + ⇡⇣` » jump to previous/next sketch  
 - `CTRL + SHIFT + DELETE` » delete current sketch
 
 
@@ -423,7 +423,7 @@ Dynamically load RECODING files via URL params for automated playback!
 - &menu=false
 - &editor=true
 
-ie. [https://p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=true&gapsmax=.1]([https://p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=true&gapsmax=.1)
+ie. [`https://p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=true&gapsmax=0.1`](https://www.p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=true&gapsmax=0.1)  
 
 
 
