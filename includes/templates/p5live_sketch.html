@@ -42,6 +42,7 @@
 
 		// pass errors to parent
 		window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
+			p5console.style.display = 'block'
 			p5console.value = errorMsg; // lineNumber +" / "+
 			p5console.style.background = "#000";
 			markLine(lineNumber);
@@ -84,7 +85,7 @@
 						pmsg = m;
 					}
 					clearTimeout(p5consoleTimer);
-					p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
+					// p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
 				}
 			}
 		};
@@ -92,7 +93,7 @@
 		function clearConsole(){
 			p5console.value = '';
 			p5console.style.display = 'none';
-			window.parent.resizeEditor();
+			// window.parent.resizeEditor();
 		}
 
 		function consoleMessage(msg, timeDelay){
@@ -102,7 +103,7 @@
 			p5console.value = msg;
 			if(consoleVisible == false){
 				p5console.style.display = 'block';
-				window.parent.resizeEditor();
+				// window.parent.resizeEditor();
 				consoleVisible = true;
 			}
 			if(timeDelay != undefined && timeDelay != 0){
@@ -121,7 +122,7 @@
 			}
 			p5console.value = '';
 			p5console.style.display = 'none';
-			window.parent.resizeEditor();
+			// window.parent.resizeEditor();
 			consoleVisible = false;
 		}
 

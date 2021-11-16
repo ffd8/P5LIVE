@@ -64,7 +64,7 @@
 		<div id="menu-switch" onclick="menuToggle();">X</div>
 		<div id="panel-menu" class="menu-sections">
 
-			<div class="menu-section" id="menu-section-p5live">
+			<div class="menu-section menu-section-top" id="menu-section-p5live">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span></div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
@@ -85,7 +85,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
 					</button>
 
-					<button id="button-export" class="menu-button menu-button-extend tippy" onclick="toggleButtonsExtended('export');this.blur();" data-title="Export">
+					<button id="button-export" class="menu-button menu-button-extend tippy" onclick="toggleButtonsExtended('export', 'flex');this.blur();" data-title="Export">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
 					</button>
 				</div>
@@ -103,7 +103,7 @@
 				</div>
 			</div>
 
-			<div class="menu-section" id="menu-section-cocode">
+			<div class="menu-section menu-section-top" id="menu-section-cocode">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header" id="menu-cocode-header">COCODING<span id="menu-cocode-counter" class="counters"></span><span id="menu-cocode-sync" class="counters" style="display:none;"> – <span id="menu-cocode-sync-up" class="sync">⇡</span><span id="menu-cocode-sync-down" class="sync">⇣</span></span></div>
 				<div class="menu-sketches-buttons" id="cocoding-buttons-active" style="display:none;">
@@ -140,7 +140,57 @@
 				</div>
 			</div>
 
-			<div class="menu-section" id="menu-section-sketches">
+			<div class="menu-section menu-section-top" id="menu-section-recode" style="">
+				<div class="menu-section-bg"></div>
+				<div class="menu-header" id="menu-recode-header">RECODING<span id="menu-recoding-steps" class="counters"></span></div>
+
+				<div id="menu-section-recoding-inactive">
+					<div class="menu-sketches-buttons">
+						<button class="menu-button tippy" onclick="recodingStart();this.blur();" data-title="Record">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-target"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4" fill="white"></circle></svg>
+						</button>
+					</div>
+				</div>
+
+				<div id="menu-section-recoding-active" style="display:none;">
+					<div class="menu-sketches-buttons">
+						<button id="recoding-record" class="menu-button tippy" onclick="recodingStart();this.blur();" data-title="Record">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-target"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4" fill="white"></circle></svg>
+						</button>
+						<button id="recoding-play" class="menu-button tippy hide-cocoding" onclick="recodingPlay();this.blur();" data-title="Play">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+						</button>
+						<button id="button-recoding-settings" class="menu-button tippy hide-cocoding" style="" onclick="toggleButtonsExtended('recoding-settings', 'block');this.blur();" data-title="Playback Settings">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sliders"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+						</button>
+						<button class="menu-button tippy" onclick="recodingExport(this);this.blur();" data-title="Export">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+						</button>
+						<button class="menu-button tippy" onclick="recodingReset();this.blur();" data-title="Reset">
+							<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-slash"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+						</button>
+					</div>
+					<div class="menu-sketches-buttons hide-cocoding"  style="margin-top:0px;border-bottom:0;">
+						<div id="recoding-range-holder" class="menu-button" style="flex: 4;min-width: 80%;background:#555;box-sizing: border-box;"> <!-- border-left:1px solid #888; -->
+							<input class="tippy" data-title="Scrub" id="recoding-range" type="range" disabled="disabled" min=0 max=1 value=0 name="" style="width: 96%;height:20px;" onmousedown="recodingStop()" oninput="recodingScrub(this.value)">
+						</div>
+					</div>
+					<div id="p5live-buttons-recoding-settings" class="menu-settings menu-contents" style="display:none;">
+						<div class="tippy-left" style="cursor:help;" data-title="Loop playback" onclick="">
+							<input id="recoding-settings-loop" type="checkbox" name="recoding-loop" onchange="recoding.loop = this.checked;"> Loop
+						</div>
+						<div class="tippy-left" style="cursor:help;" data-title="Max delay in playback">
+							<input id="recoding-settings-gaps" type="checkbox" name="recoding-gap" onchange="recoding.gaps = this.checked;recodingSettings();"> Max Gap:  <input  id="recoding-settings-gapsmax" type="" name="" class="menu-settings-input-text" value="5" onkeyup="recoding.gapsMax = this.value;recodingSettings();"> sec
+						</div>
+						<div class="tippy-left" style="cursor:help;" data-title="Adjust playback speed <br>(smaller = slower)">
+							Speed:  <input id="recoding-settings-speed" type="" name="" class="menu-settings-input-text" value="1.0" onkeyup="recoding.setSpeed(this.value);">
+						</div>
+
+					</div>
+				</div>
+			</div>
+
+			<div class="menu-section" id="menu-section-sketches" style="margin-bottom:0;">
 				<div class="menu-section-bg"></div>
 				<div id="menu-sketches-header" onclick="sketchesCounter();" class="menu-header">SKETCHES<span id="menu-sketches-counter" class="counters"></span></div>
 				<div class="menu-sketches-buttons">
@@ -305,7 +355,7 @@
 						<input type="text" id="settings-libs" name="settings-libs" placeholder="CSV, of, libs">
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Editor font-size">
-						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" value="15" onkeyup="fontSizeSet(this.value);"> pt
+						Code Size:  <input type="" name="menu-settings-fontsize" id="menu-settings-fontsize" class="menu-settings-input-text" value="15" onkeyup="fontSizeSet(this.value);"> pt
 					</div>
 
 					<div class="tippy-left" style="cursor:help;" data-title="Color behind lines of code">
@@ -399,6 +449,7 @@ function println(msg){
 	<!-- Scripts -->
 	<script src="includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/ace/ace.recoding.js"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.min.js"></script>
 	<script src="includes/js/pickr/pickr.min.js"></script>
@@ -422,8 +473,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.3.7';
-		let currentRevision = 42;
+		let currentVersion = '1.4.0';
+		let currentRevision = 43;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -619,6 +670,9 @@ function println(msg){
 		menuCocodeChatHolder = document.getElementById('menu-cocode-chat-holder'),
 		menuCocodeChatInput = document.getElementById('chat-input'),
 		menuCocodeChatDialog = document.getElementById('menu-cocode-chat-dialog'),
+		menuRecodingHolder = document.getElementById('menu-section-recode'),
+		menuRecodingActive = document.getElementById('menu-section-recoding-active'),
+		menuRecodingInActive = document.getElementById('menu-section-recoding-inactive'),
 		sketchesHolder = document.getElementById('menu-sketches-holder'),
 		menuSketches = document.getElementById('menu-sketches'),
 		menuSketchesFilter = document.getElementById('menu-sketches-filter'),
@@ -674,7 +728,8 @@ function println(msg){
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
 		p5pop, p5popStream, p5popActive = false,
-		changelog = {show:false, revision:0, version:0}
+		changelog = {show:false, revision:0, version:0},
+		recoding
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
@@ -687,6 +742,7 @@ function println(msg){
 
 		// init editor
 		let Range = ace.require('ace/range').Range;
+		let Document = ace.require("ace/document").Document
 		let langTools = ace.require('ace/ext/language_tools');
 		let editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
@@ -769,6 +825,181 @@ function println(msg){
 
 		p5editor.style.visibility = 'visible';
 
+
+		// RECODING
+		recoding = new Recoding(editor, editor)
+		recoding.elms = {
+			steps: document.getElementById('menu-recoding-steps'),
+			range: document.getElementById('recoding-range'),
+			btns : {
+				record: document.getElementById('recoding-record'),
+				play: document.getElementById('recoding-play')
+			}
+		}
+		recoding.loadSession()
+		// recoding.debug = true
+
+		function recodingCheck(){
+			let check = false
+			if(menuRecodingActive.style.display != 'none' && recoding.playing){
+				check = true
+			}
+			return check
+		}
+
+		function recodingToggle(hide){
+			if(hide){
+				menuRecodingInActive.style.display = 'block'
+				menuRecodingActive.style.display = 'none'
+				resizeSketchesHolder();
+			}else{
+				if(menuRecodingInActive.style.display != 'none'){
+					menuRecodingInActive.style.display = 'none'
+					menuRecodingActive.style.display = 'block'
+					resizeSketchesHolder();
+				}
+			}
+		}
+
+		function recodingImport(file){
+			let reader = new FileReader()
+			reader.onload = function(data) {
+				let jsonObj = JSON.parse(data.target.result)
+				recodingImportParse(jsonObj)
+			}
+			reader.readAsText(file)
+		}
+
+		function recodingImportParse(jsonObj){
+			if(jsonObj.hasOwnProperty('type') && jsonObj.type === 'RECODING'){
+				if(recoding.elms.range){
+					recoding.elms.range.value = 0
+				}
+				// recoding.reset()
+				recoding.session.history = jsonObj.data
+				recoding.scrubSet()
+				recoding.init()
+				recodingToggle()
+				recodingPlay()
+				return true
+			}else{
+				return false
+			}
+		}
+
+		function recodingStart(){
+			if(!recoding.recording){
+				recodingToggle()
+				recoding.session.fileName = settings.fileName
+				recoding.record()
+				recoding.elms.btns.record.innerHTML = icon.pauseCircle
+				recoding.elms.btns.play.innerHTML = icon.play
+				editor.focus()
+			}else{
+				recoding.stop()
+				recoding.elms.btns.record.innerHTML = icon.record
+			}
+		}
+
+		function recodingPlay(){
+			if(recoding.recording){
+				recoding.stop()
+			}
+
+			if(recoding.session.history.length > 0){
+				if(settings.fileName != 'recoding'){
+					loadSketch('recoding')
+				}
+				setTimeout(function(){sketchScrollIntoView(true)}, 100)
+				if(!recoding.playing){
+					recoding.play()
+					recoding.elms.btns.play.innerHTML = icon.pause
+				}else{
+					recoding.stop()
+					recoding.elms.btns.play.innerHTML = icon.play
+				}
+			}
+		}
+
+		function recodingStop(){
+			recoding.stop()
+			recoding.elms.btns.record.innerHTML = icon.record
+			recoding.elms.btns.play.innerHTML = icon.play
+		}
+
+		function recodingSettings(){
+			if(recoding.playing){
+				recoding.stop();
+				recoding.play();
+			}
+		}
+
+		function recodingScrub(val){
+			if(settings.fileName != 'recoding'){
+				loadSketch('recoding')
+			}
+			setTimeout(function(){sketchScrollIntoView(true)}, 100)
+			recoding.scrub(val)
+		}
+
+		function recodingExport(elm){
+			let recodingVex = vex.dialog.prompt({
+				message: 'RECODING filename:',
+				value: recoding.session.fileName, // placeholder filename
+				callback: function (value) {
+					if(value){
+						let newName = value.replace(/["']/g, '');
+						if(newName == ''){
+							newName = 'recoding'
+						}
+
+						recoding.session.fileName = newName
+						recoding.export()
+
+						// share info
+						let oldContent = elm._tippy.props.content
+						elm._tippy.setContent('Saved!')
+						elm._tippy.show(200)
+						setTimeout(function(){
+							elm._tippy.hide()
+							elm._tippy.setContent(oldContent)
+						}, 2000)
+					}
+				},
+				afterOpen: function(){
+					document.getElementsByClassName('vex-dialog-prompt-input')[0].select()
+					setTimeout(function(){recodingVex.form[1].innerHTML = 'Export'}, 0) // vex rename button!
+					vexSmall(this.rootEl)
+				}
+			})
+		}
+
+		function recodingReset(force){
+			if(force){
+				recoding.stop()
+				recoding.reset()
+				recodingToggle(true)
+				clearParam()
+				return false
+			}else{
+				vex.dialog.confirm({
+					message: 'Reset RECODING history?',
+					callback: function (value) {
+						if (value) {
+							recoding.reset()
+							recodingToggle(true)
+							clearParam()
+						}
+					},
+					afterOpen: function(){
+						vexSmall(this.rootEl);
+					}
+				})
+			}
+		}
+
+
+
 		// ICONS!
 		var icon = {};
 		icon.alignLeft = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-align-left"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>';
@@ -809,6 +1040,14 @@ function println(msg){
 		icon.unlock = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-unlock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V5a4 5 1 0 1 6.9-1"></path></svg>';
 		icon.x = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>';
 		icon.xCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-circle"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>';
+		icon.record = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-target"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="4" fill="white"></circle></svg>';
+		icon.play = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-play"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>';
+		icon.sliders = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-sliders"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>';
+		icon.trash = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>';
+		icon.repeat = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-repeat"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>';
+		icon.clock = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
+		icon.pause = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pause"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
+		icon.pauseCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pause-circle"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>';
 
 
 		// code-line color picker
@@ -887,6 +1126,7 @@ function println(msg){
 			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js'
 		}];
 
+		// testing q5xjs
 		// includeScripts = [
 		// 	{
 		// 		'local':'includes/p5/q5.min.js',
@@ -1748,10 +1988,14 @@ function println(msg){
 			for(let i=0; i < annot.length; i++){
 				if(annot[i].type === 'error'){
 					addMarker(annot[i].row);
+					if(!braketError)
+					consoleMessage('Error line ~ '+ (annot[i].row+1) )
 					validCode = false;
 				}
 			}
 			if(validCode){
+				if(!braketError)
+				consoleHide()
 				removeMarkers();
 			}
 		});
@@ -1966,6 +2210,11 @@ function println(msg){
 				sketchLoaded = true;
 				popStream();
 				syncdataParse(); // promise for syncdata if active
+
+				if(recoding.recording){
+					recoding.compile()
+				}
+
 				if(sketchLoaded && cocodingRecompile && settings.cocoding.level == 'admin'){
 					cocode.recompile(true);
 					cocodingRecompile = false;
@@ -2104,7 +2353,7 @@ function println(msg){
 			}
 
 			settings.editMode = true;
-			if(getParam('edit') != undefined && getParam('edit') == 0){
+			if(getParam('edit') && getParam('edit') == 0){
 				settings.editMode = false;
 				editor.setReadOnly(true);
 				p5editor.style.display = 'none';
@@ -2117,7 +2366,7 @@ function println(msg){
 			}
 
 			// load sketch by param
-			if(getParam('sketch') != undefined){
+			if(getParam('sketch')){
 				let urlSketch = decodeURI(getParam('sketch'));
 				if(searchSketches(urlSketch, settings.sketches)){
 					settings.fileName = urlSketch;
@@ -2126,18 +2375,75 @@ function println(msg){
 				}
 			}
 
+			// load RECODING by param
+			if(getParam('recoding')){
+				setTimeout(loadDefault, 500);
+				let urlSketch = decodeURI(getParam('recoding'));
+				setTimeout(function(){
+					fetch(urlSketch)
+					  .then(response => response.json())
+					  .then(jsonResponse => {
+					  	if(recodingImportParse(jsonResponse)){
+					  		if(getParam('loop')){
+					  			recoding.loop = getParam('loop')
+					  			document.getElementById('recoding-settings-loop').checked = getParam('loop')
+					  		}
+
+					  		if(getParam('gaps')){
+					  			recoding.gaps = getParam('gaps')
+					  			document.getElementById('recoding-settings-gaps').checked = getParam('gaps')
+					  			recodingSettings()
+					  		}
+
+					  		if(getParam('gapsmax')){
+					  			recoding.gapsMax = getParam('gapsmax')
+					  			document.getElementById('recoding-settings-gapsmax').value = getParam('gapsmax')
+					  			recodingSettings()
+					  		}
+
+					  		if(getParam('speed')){
+					  			recoding.setSpeed(getParam('speed'))
+					  			document.getElementById('recoding-settings-speed').value = getParam('speed')
+					  		}
+					  	}
+					  	if(getParam('loop') || getParam('gaps') || getParam('gapsmax') || getParam('speed')){
+					  		setTimeout(function(){toggleButtonsExtended('recoding-settings', 'block')}, 0)
+					  	}
+					  })
+					  .catch((error) => {
+					  	alertMsg('RECODING load error – Check URL path.');
+					  });
+				}, 1000)
+			}
+
+			// toggle visibility by param
+			if(getParam('menu') !== undefined){
+				if(getParam('menu') !== 'true'){
+					hideMenu()
+				}else{
+					menuToggle(true);
+				}
+			}
+
+			if(getParam('editor') !== undefined){
+				if(getParam('editor') !== 'true'){
+					editorToggle(false)
+				}
+			}
+
+
 			// load code via URL
 			if(getParam('code') != undefined){
 				loadDefault();
 				setTimeout(function(){
 					editor.setValue(b64_to_utf8(getParam('code')), 1);
 					localStorage[settings.fileName] = editor.getValue();
-					window.history.replaceState(null, null, window.location.pathname);
+					clearParam();
 				}, 100);
 			}
 
 			// load COCODING
-			if(getParam('cc') != undefined){
+			if(getParam('cc')){
 				loaderSub.innerHTML = 'cocoding...';
 				if(getParam('cc').length != 5){
 					cocodingExit(loadLatest());
@@ -2179,7 +2485,7 @@ function println(msg){
 				}
 			}else{
 				cocodingReset();
-				loadSketch(settings.fileName);
+				setTimeout(function(){loadSketch(settings.fileName);}, 1000); // ** replace w/ fetch
 			}
 
 			if(settings.welcome){
@@ -2235,30 +2541,23 @@ function println(msg){
 			}
 		}
 
+		function clearParam(){
+			window.history.replaceState(null, null, window.location.pathname);
+		}
+
 		// toggle extended P5LIVE nav buttons
-		function toggleButtonsExtended(elm){
+		function toggleButtonsExtended(elm, display){
 			let ebNav = document.getElementById('p5live-buttons-' + elm);
 			let ebButton = document.getElementById('button-' + elm);
 
-			let toggleOn = false;
-			if(ebNav.style.display !== "flex"){
-				toggleOn = true;
-			}
-
-			let ebButtons = document.getElementsByClassName('menu-button-extend');
-			for(let eb of ebButtons){
-				eb.style.background = "#666";
-			}
-
-			let ebList = document.getElementsByClassName('menu-sketches-buttons-extended');
-			for(let eb of ebList){
-				eb.style.display = "none";
-			}
-
-			if(toggleOn){
-				ebNav.style.display = "flex";
+			if(ebNav.style.display !== display){
+				ebNav.style.display = display;
 				ebButton.style.background='#444';
+			}else{
+				ebNav.style.display = 'none';
+				ebButton.style.background='#666';
 			}
+
 			resizeSketchesHolder();
 		}
 
@@ -2299,8 +2598,13 @@ function println(msg){
 
 		function resizeSketchesHolder(){
 			let sectionHeader = menuSectionSketches.offsetHeight - sketchesHolder.offsetHeight;
-			let sectionHeight = menuSectionP5live.offsetHeight + menuCocode.offsetHeight;
-			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight - sectionHeader*2)-5 + 'px';
+			let offsetHeight = 0;
+			let offsetItems = document.getElementsByClassName('menu-section-top');
+			for(let oi of offsetItems){
+				offsetHeight += oi.offsetHeight + 75; // add gap between panels
+			}
+			let sectionHeight = offsetHeight - 30; //remove last gap
+			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight) + 'px';
 		}
 
 		let checkWindowResize;
@@ -2328,6 +2632,9 @@ function println(msg){
 						updateSettings();
 						loadSettings();
 					}
+				},
+				afterOpen: function(){
+					vexSmall(this.rootEl);
 				}
 			})
 		}
@@ -2503,6 +2810,7 @@ function println(msg){
 			let keySketch = kc - 1;
 			if(keySketch == -1){keySketch = 9;}
 			loadSketch(listSketches(settings.sketches)[keySketch]);
+			sketchScrollIntoView(true);
 		}
 
 		// bug
@@ -2675,7 +2983,7 @@ function println(msg){
 				cloneSketchCOCODING();
 				return false;
 			}
-			let cloneName = settings.fileName;
+
 			let forkName = versionCheck(settings.fileName);
 			let tc = timeDate();
 
@@ -2692,7 +3000,7 @@ function println(msg){
 				useDir.toggle = 'expand';
 			}else{
 				// cloning above sketch!
-				let cloneLocation = jsonIndex('name', cloneName, settings.sketches);
+				let cloneLocation = jsonIndex('name', settings.fileName, settings.sketches);
 				settings.sketches.splice(cloneLocation, 0, {'type':'sketch', 'name':settings.fileName, 'mod':tc});
 			}
 
@@ -2749,6 +3057,7 @@ function println(msg){
 					}
 				})
 
+
 				// *** launch once better RGA solution for complete text replace is found
 				/*
 				if(settings.cocoding.level == 'admin'){
@@ -2786,6 +3095,12 @@ function println(msg){
 				*/
 
 			}else {
+				// catch RECODING
+				if(recodingCheck() && settings.fileName === 'recoding' && sketch !== settings.fileName){
+					recodingStop()
+					recodingReset(true)
+				}
+
 				if(localStorage.hasOwnProperty(sketch)){
 					editor.getSession().off('change', cloneSketch);
 					// auto expand folder (incase of short-cut selection)
@@ -2799,7 +3114,9 @@ function println(msg){
 
 					// restart undo to prevent overwrite selected sketch
 					editor.getSession().setUndoManager(new ace.UndoManager());
-					editor.focus();
+					if(!recodingCheck()){
+						editor.focus();
+					}
 					let lineCount = editor.session.getLines(0, editor.session.getLength()).length;
 					if(lineNum != undefined && lineCount >= lineNum){
 						editor.gotoLine(lineNum, 1, false);
@@ -2810,7 +3127,9 @@ function println(msg){
 						// if(settings.fileName == 'new'){
 							// window.location.hash = '#'; // *** removed for conflict w/ #bug + refs...
 						// }
-						editor.getSession().on('change', cloneSketch);
+						if(settings.fileName !== 'recoding'){
+							editor.getSession().on('change', cloneSketch);
+						}
 					}
 
 					if(loader.style.display === 'none'){
@@ -3023,7 +3342,7 @@ function println(msg){
 			let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
 			if(settings.cocoding.active && customTimestamp !== undefined){
 				sketchDetails = {};
-				sketchDetails.name = settings.filename;//settings.cocoding.namespace + '_snapshot';
+				sketchDetails.name = settings.fileName;//settings.cocoding.namespace + '_snapshot';
 				sketchDetails.mod = timeDate();
 				sketchDetails.type = 'sketch';
 				sketchDetails.code = editor.getValue();
@@ -3175,7 +3494,10 @@ function println(msg){
 			clickable:false,
 			init: function() {
 				this.on('addedfile', function(file, responseText) {
-					importSketches(myDropzone.files);
+					// let loadedRecoding = recodingImport(file)
+					// if(!loadedRecoding){
+						importSketches(myDropzone.files);
+					// }
 					divDrop.style.display = 'none';
 					myDropzone.files = []; // clear list
 				});
@@ -3251,6 +3573,20 @@ function println(msg){
 							isBackup = true;
 						}
 
+					}
+
+					if(jsonObj.hasOwnProperty('type') && jsonObj.type === 'RECODING'){
+						if(recoding.elms.range !== undefined){
+							recoding.elms.range.value = 0
+						}
+						recodingToggle()
+						recoding.reset()
+						recoding.init()
+						recoding.session.history = jsonObj.data
+						recoding.scrubSet()
+						recoding.init()
+						recodingPlay()
+						return false
 					}
 
 					if(jsonObj.hasOwnProperty('structure')){
@@ -4117,6 +4453,7 @@ function println(msg){
 				let tempHTML = menuSketches.querySelectorAll('[data-id="'+subFolder+'"]')[0];
 				tempHTML.innerHTML = newFolder + tempHTML.innerHTML;
 			}else{
+				// *** try to add folder above current sketch
 				let tempHTML = menuSketches.innerHTML;
 				menuSketches.innerHTML = newFolder + tempHTML;
 			}
@@ -4263,6 +4600,8 @@ function println(msg){
 		}
 
 		function removeItemProcess(dataID){
+			let nextLoad = nextSketch(1)
+
 			let selElm = document.querySelectorAll('[data-id="'+dataID+'"]');
 			selElm[0].querySelectorAll('[data-id]').forEach(function(k){
 				localStorage.removeItem(k.dataset.id);
@@ -4297,11 +4636,34 @@ function println(msg){
 				sketchIsGone = true;
 			}
 
-			if((dataID === settings.fileName || sketchIsGone)&& !settings.cocoding.active){
-				loadSketch(loadLatest());
+			if((dataID === settings.fileName || sketchIsGone) && !settings.cocoding.active){
+				if(nextLoad === undefined){
+					loadSketch(loadLatest());
+				}else{
+					loadSketch(nextLoad);
+				}
 			}
 		}
 
+		function nextSketch(dir){
+			let sketchesOverview = listSketches(settings.sketches);
+			let curIndex = sketchesOverview.indexOf(settings.fileName);
+			if(curIndex !== undefined){
+				if(dir === -1){
+					curIndex--;
+				}else{
+					curIndex++;
+				}
+
+				return sketchesOverview[curIndex];
+				// if(sketchesOverview[curIndex] !== undefined){
+				// 	loadSketch(sketchesOverview[curIndex]);
+				// 	setTimeout(function(){sketchScrollIntoView(true)}, 100)
+				// }
+			}else{
+				return false
+			}
+		}
 
 
 		/* EDITOR KEY-CMDS */
@@ -4312,7 +4674,22 @@ function println(msg){
 			keyMap[event.keyCode] = event.type == 'keydown';
 
 			if(keyMap[16] && keyMap[17]){
-				addSnippet(event.key);
+				if(event.keyCode == 8){
+					removeItem(settings.fileName, 'sketch'); // quick delete sketch
+				}else if(event.keyCode === 38 || event.keyCode === 40){
+					let otherSketch = nextSketch(1)
+					if(event.keyCode === 38){
+						otherSketch = nextSketch(-1);
+					}
+
+					if(otherSketch !== undefined){
+						loadSketch(otherSketch);
+						setTimeout(function(){sketchScrollIntoView(true)}, 0)
+					}
+
+				}else{
+					addSnippet(event.key);
+				}
 				event.preventDefault();
 			}
 
@@ -4417,7 +4794,7 @@ function println(msg){
 			}else{
 				clearTimeout(errorTimer);
 				validCode = true;
-				if(settings.autoCompile){
+				if(settings.autoCompile && !recoding.playing){
 					recompile();
 				}
 			}
@@ -4468,7 +4845,7 @@ function println(msg){
 			p5console.value = msg;
 			if(consoleVisible == false){
 				p5console.style.display = 'block';
-				resizeEditor();
+				// resizeEditor();
 				consoleVisible = true;
 			}
 			if(timeDelay != undefined && timeDelay != 0){
@@ -4539,12 +4916,25 @@ function println(msg){
 				l : (codeNoComments.match(/\{/g) || []).length,
 				r : (codeNoComments.match(/\}/g) || []).length
 			}
+
+			let pCount = {
+				l : (codeNoComments.match(/\(/g) || []).length,
+				r : (codeNoComments.match(/\)/g) || []).length
+			}
 			if(cbCount.l == 0 || cbCount.l != cbCount.r){
 				let missingBracket = "'}'";
 				if(cbCount.l < cbCount.r){
 					missingBracket = "'{'";
 				}
-				consoleMessage('Missing ' + missingBracket + '. Find mistake then recompile.', 0);
+				consoleMessage('Missing ' + missingBracket + '. Check code then recompile.', 0);
+				braketError = true;
+				return false;
+			}else if(pCount.l == 0 || pCount.l != pCount.r){ // *** causing issues?
+				let missingBracket = "')'";
+				if(pCount.l < pCount.r){
+					missingBracket = "(";
+				}
+				consoleMessage('Missing ' + missingBracket + '. Check code then recompile.', 0);
 				braketError = true;
 				return false;
 			}else{
@@ -4749,6 +5139,11 @@ function println(msg){
 				if(softClass || softFunction){
 					softCompile(drawPos[drawPosSel].type, drawPos[drawPosSel].name, drawPos[drawPosSel].start, drawPos[drawPosSel].end);
 					curPositions = [];
+
+					if(recoding.recording){
+						recoding.compile()
+					}
+
 					return false; // prevent complete rebuild
 				}
 			}
@@ -5314,8 +5709,8 @@ function println(msg){
 		/* TOGGLE EDITOR + [canvas] + MENU */
 
 		// hide/show editor
-		function editorToggle(){
-			if(p5editor.style.visibility != 'visible'){
+		function editorToggle(force){
+			if(p5editor.style.visibility != 'visible' && !force){
 				p5editor.style.visibility = 'visible';
 			}else{
 				p5editor.style.visibility = 'hidden';
@@ -6530,6 +6925,9 @@ function println(msg){
 					cocode.rename();
 				}, 500);
 			}
+
+			// hide recoding playback
+			document.querySelectorAll('.hide-cocoding').forEach(function(elm){elm.style.display='none';})
 		}
 
 		// reset all cocoding except nick + color
