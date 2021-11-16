@@ -43,6 +43,9 @@ body {
 	background:#000;
 	overflow:hidden;
 }
+.hide{
+	display: none;
+}
 hr{
 	width:80%;
 	border:0px;
@@ -192,7 +195,7 @@ hr{
 	position:fixed;
 	width:100%;
 	z-index:9999;
-	height:auto;
+	height:2em;
 	min-height:10px;
 	bottom:0px;
 	font-size:9pt;
@@ -202,8 +205,8 @@ hr{
 	outline:none;
 	background:#000;
 	border:none;
-	border-top:1px solid #444;
-	display:none;
+	border-top:1px solid #111;
+	/*display:none;*/
 }
 .myMarker {
 	position:fixed;
@@ -426,7 +429,7 @@ h2{
 	flex: 1;
 	outline:none;
 }
-#p5live-buttons .menu-button{
+#p5live-buttons .menu-button, #cocoding-buttons-inactive .menu-button, #menu-section-recoding-inactive .menu-button, #recoding-range-holder{
 	border-bottom:none;
 }
 .menu-button:last-child{
@@ -860,7 +863,7 @@ button[disabled]{
 	border:1px solid #888;
 	color: transparent !important;
 }
-#menu-settings-fontsize{
+.menu-settings-input-text{
 	width:4em;
 	font-size:10pt;
 	text-align:center;
