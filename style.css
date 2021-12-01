@@ -707,7 +707,7 @@ h2{
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
-#menu-sketches-header:hover{
+#menu-sketches-header:hover, #menu-p5live-version:hover{
 	cursor:help;
 }
 #menu-sketches-header .counters, #menu-section-p5live .counters{
