@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.4.0  
+v 1.4.1  
 cc [teddavis.org](http://teddavis.org) – 2019 - 2021  
 p5.js collaborative live-coding vj environment!
 
@@ -98,6 +98,7 @@ Details below to run via python webserver or nodejs/npm.
 - [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
 - [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
 - [x] Backup COCODING, Autosave session code if server connection lost.  
+- [x] Check Updates, ping Github for updates to OFFLINE mode (only visible offline).  
 - Code Size, `15pt` adjust font size of editor.  
 - Code Background, [x] toggle + set color behind lines of code.  
 - Code Theme, [Green on Black], select custom styling of editor.
@@ -245,15 +246,24 @@ let libs = [
 ];
 ```
 
-### HYDRA
-[hydra-synth](https://github.com/ojack/hydra-synth) has been added to the P5LIVE libs and extra support has been added for writing hydra code in the global space. After importing the library, any changes made within the following tags:  
+#### <span style="text-decoration:line-through">p5.sound</span>
+To exclude `p5.sound` library (ie. for Tone.js), add `// no p5sound` anywhere in your code.  
+See `_audio_gen_tonejs` demo for an example.
+
+### SANDBOX
+Sometimes you want to adjust global JS code that won't cause p5.js to recompile, ie. [hydra-synth](https://github.com/ojack/hydra-synth). To do so, write such code within 2x `// sandbox` comments. Any changes within that space are processed using `eval()`, however won't trigger a P5LIVE hardCompile.
+
+#### HYDRA
+The main use case for this, is [hydra-synth](https://github.com/ojack/hydra-synth), which is included within the P5LIVE libs.  
+After importing the library, any changes made within the following tags:  
 
 ```js
-// hydraSandbox
+// sandbox
 osc().out() // ... your hydra code here
-// hydraSandbox
+// sandbox
 ```
-– will only update the hydra-synth engine and won't effect p5 recompiles! Be sure to see DEMOS » _HYDRA for details and various ways of using it in your sketches.
+– will only update the hydra-synth engine and won't effect p5.js recompiles!  
+See `DEMOS » _HYDRA` for additional examples.
 
 ### ASSETS
 Loading custom assets (image/font/obj/audio/...):  

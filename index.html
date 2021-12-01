@@ -236,7 +236,7 @@
 					<button class="menu-button tippy" onclick="hideSettings();" data-title="Hide Settings">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-settings"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
 					</button>
-					<button class="menu-button tippy invisible"  onclick="hideSettings();" data-title="p5.js Referenc">
+					<button class="menu-button tippy invisible"  onclick="hideSettings();" data-title="p5.js References">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-book-open"><path class="st0" d="M2,3h6c2.2,0,4,1.8,4,4v14c0-1.7-1.3-3-3-3H2V3z"/><path class="st0" d="M22,3h-6c-2.2,0-4,1.8-4,4v14c0-1.7,1.3-3,3-3h7V3z"/><path class="st0" d="M12,23.5"/><path class="st0" d="M8.6,10.8H5"/><path class="st0" d="M8.6,14.6H5"/><path class="st0" d="M8.6,7.1H5"/><path class="st0" d="M18.8,10.8h-3.6"/><path class="st0" d="M18.8,14.6h-3.6"/><path class="st0" d="M18.8,7.1h-3.6"/></svg>
 					</button>
 
@@ -348,6 +348,10 @@
 
 					<div class="tippy-left" style="cursor:help;" data-title="Autosave session code <br>if server connection lost?" onclick="cocodingAutosaveToggle();">
 						<input type="checkbox" id="settings-cocodingautosavetoggle" name="settings-cocodingautosavetoggle" value="settings-cocodingautosavetoggle"> Backup COCODING
+					</div>
+
+					<div id="settings-checkupdatestoggle-holder" class="tippy-left" style="cursor:help;" data-title="Ping Github for updates to OFFLINE mode" onclick="checkupdatesToggle();">
+						<input type="checkbox" id="settings-checkupdatestoggle" name="settings-checkupdatestoggle" value="settings-checkupdatestoggle"> Check for Updates
 					</div>
 
 					<div class="tippy-left" style="display:none;cursor:help;" data-title="Add extra libs to your sketches, will be added on each compile">
@@ -465,7 +469,6 @@ function println(msg){
 	<script src="includes/js/highlight/highlight.pack.js"></script>
 	<script src="includes/js/name_generator.js"></script>
 	<script src="includes/js/loopBreaker.min.js"></script>
-
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
 
@@ -473,8 +476,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.4.0';
-		let currentRevision = 43;
+		let currentVersion = '1.4.1';
+		let currentRevision = 44;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -521,6 +524,7 @@ function println(msg){
 			'multitabToggle':true,
 			'timestampToggle':true,
 			'cocodingAutosaveToggle':true,
+			'checkupdates':true,
 			'debugMode': false,
 			'editMode':true,
 			'safeMode': false,
@@ -693,6 +697,8 @@ function println(msg){
 		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
 		settingsTimestamp = document.getElementById('settings-timestamptoggle'),
 		settingsCocodingAutosave = document.getElementById('settings-cocodingautosavetoggle'),
+		settingsCheckupdates = document.getElementById('settings-checkupdatestoggle'),
+		settingsCheckupdatesHolder = document.getElementById('settings-checkupdatestoggle-holder'),
 		settingsTheme = document.getElementById('menu-settings-theme'),
 		settingsBGactive = document.getElementById('settings-usebg'),
 		settingsKeybindings = document.getElementById('menu-settings-keybindings'),
@@ -770,57 +776,50 @@ function println(msg){
 			enableSnippets: true
 		});
 
-		function loadAutoComplete(){
+		function loadAutoComplete(acOBJ){
 			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
-			let tempPath = 'includes/p5/P5L_autocomplete.json?' + currentRevision;
-			let request = new XMLHttpRequest();
-			request.open('GET', tempPath, true);
-			request.send();
-			request.addEventListener('load', function(){
-				let acOBJ = JSON.parse(request.responseText);
-				let acList = [];
-				let curFunction = '';
+			let acList = [];
+			let curFunction = '';
 
-				// cycle through auto complete list
-				acOBJ.code.forEach(function (ac){
+			// cycle through auto complete list
+			acOBJ.code.forEach(function (ac){
 
-					// if method/function
-					if(ac.t == 'm'){
-						// add once without params for easy adding
-						if(ac.n != curFunction){
-							acList.push({'cap':ac.n + '()', 'snip':ac.n + '()'});
-							curFunction = ac.n;
-						}
-
-						// add w/ params using tab feature
-						let acParamsTab = []
-						for(let i=0; i < ac.p.length; i++){
-							acParamsTab.push('${'+(i+1)+':'+ac.p[i]+'}');
-						}
-						let acParamsListTab = ac.n + '(' +acParamsTab.join(', ')+ ')';
-						let acParamsList = ac.n + '(' +ac.p.join(', ')+ ')';
-						acList.push({'cap':acParamsList, 'snip':acParamsListTab});
-					}else{
-						// add constants/misc
-						acList.push({'cap':ac.n, 'snip':ac.n});
+				// if method/function
+				if(ac.t == 'm'){
+					// add once without params for easy adding
+					if(ac.n != curFunction){
+						acList.push({'cap':ac.n + '()', 'snip':ac.n + '()'});
+						curFunction = ac.n;
 					}
-				});
 
-				// create custom completer
-				var completer = {
-					getCompletions: function(editor, session, pos, prefix, callback) {
-						var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return }
-						var completions = [];
-						for(let wl of acList){
-							completions.push({caption: wl.cap, snippet: wl.snip, meta: 'p5', score:1});
-						}
-						callback(null, completions);
+					// add w/ params using tab feature
+					let acParamsTab = []
+					for(let i=0; i < ac.p.length; i++){
+						acParamsTab.push('${'+(i+1)+':'+ac.p[i]+'}');
 					}
+					let acParamsListTab = ac.n + '(' +acParamsTab.join(', ')+ ')';
+					let acParamsList = ac.n + '(' +ac.p.join(', ')+ ')';
+					acList.push({'cap':acParamsList, 'snip':acParamsListTab});
+				}else{
+					// add constants/misc
+					acList.push({'cap':ac.n, 'snip':ac.n});
 				}
-
-				// add list to auto completer
-				langTools.addCompleter(completer);
 			});
+
+			// create custom completer
+			var completer = {
+				getCompletions: function(editor, session, pos, prefix, callback) {
+					var text = editor.getValue(); if (prefix.length === 0) { callback(null, []); return }
+					var completions = [];
+					for(let wl of acList){
+						completions.push({caption: wl.cap, snippet: wl.snip, meta: 'p5', score:1});
+					}
+					callback(null, completions);
+				}
+			}
+
+			// add list to auto completer
+			langTools.addCompleter(completer);
 		}
 
 		p5editor.style.visibility = 'visible';
@@ -1118,13 +1117,16 @@ function println(msg){
 			// }
 		}
 
-		let includeScripts = [{
-			'local':'includes/p5/p5.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js'
-		}, {
-			'local':'includes/p5/addons/p5.sound.min.js',
-			'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js'
-		}];
+		let includeScripts = {
+			p5:{
+				'local':'includes/p5/p5.min.js',
+				'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js'
+			},
+			p5sound:{
+				'local':'includes/p5/addons/p5.sound.min.js',
+				'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.sound.min.js'
+			}
+		};
 
 		// testing q5xjs
 		// includeScripts = [
@@ -2227,11 +2229,105 @@ function println(msg){
 
 
 
+		/* ASSETS */
+		preloadAssets() // waterfall assets » settings
+
+		function preloadAssets(){
+			checkOffline();
+
+			// p5live sketch template
+			loaderSub.innerHTML = 'loading templates...';
+			let sketchPath = 'includes/templates/p5live_sketch.html?' + currentRevision;
+			fetch(sketchPath)
+			.then(res => res.text())
+			.then(html => {
+				let el = document.createElement('html');
+				el.innerHTML = html;
+				p5frameTemplate = el;
+			})
+
+			// p5 savehtml template
+			.then(() => {
+				let htmlPath = 'includes/templates/p5live_savehtml.html?' + currentRevision;
+				return fetch(htmlPath)
+			})
+			.then(res => res.text())
+			.then(html => {
+				let el = document.createElement('html');
+				el.innerHTML = html;
+				p5htmlTemplate = el;
+			})
+
+			// load snippets
+			.then(() => {
+				loaderSub.innerHTML = 'loading snippets...';
+				loadKeybindings();
+				setEditorCommands();
+				let snippetsPath = 'includes/demos/P5L_snippets.json?' + currentRevision;
+				return fetch(snippetsPath)
+			})
+			.then(res => res.json())
+			.then(jsonObj => loadSnippets(jsonObj))
+
+			// load autocomplete
+			.then(() => {
+				let acPath = 'includes/p5/P5L_autocomplete.json?' + currentRevision;
+				return fetch(acPath)
+			})
+			.then(res => res.json())
+			.then(acOBJ => loadAutoComplete(acOBJ))
+
+			// load syncdataPresets
+			.then(() => {
+				let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + currentRevision;
+				return fetch(syncdataPresetsPath)
+			})
+			.then(res => res.json())
+			.then(sdpOBJ => syncDataPresetLoad(sdpOBJ))
+
+			// everything else
+			.then(() => {
+				loaderSub.innerHTML = 'loading settings...';
+				loadSettings()
+				// *** future tour
+			})
+		}
+
+
+
+		function checkOffline(){
+			// check online or offline
+			if(window.location.hostname.includes('teddavis.org') || window.location.hostname.includes('dev.p5live.org')){
+				p5l.remote = true;
+				settingsCheckupdatesHolder.style.display = 'none';
+				if(developBranch){
+					document.title = 'P5LIVE – DEVELOP';
+				}
+			}else{
+				p5l.remote = false;
+				document.title = 'P5LIVE – OFFLINE';
+			}
+
+			// OFFLINE mode
+			if(!p5l.remote){
+				// check fancy
+				fetch('./fancy')
+				.then(function(response){
+					if(response.status == 200){
+						p5l.fancy = true;
+						console.log("P5LIVE - OFFLINE: Fancy Mode!");
+					}else{
+						console.log("P5LIVE - OFFLINE: Simple Mode");
+						return false;
+					}
+				})
+			}
+
+		}
+
+
+
 		/* SETTINGS */
-
-		// init settings
-		loadSettings();
-
 
 		// get settings from localstorage
 		function getSettings(){
@@ -2244,30 +2340,6 @@ function println(msg){
 
 		// react to settings once gathered
 		function loadSettings(){
-			// check online or offline
-			if(window.location.hostname.includes('teddavis.org') || window.location.hostname.includes('dev.p5live.org')){
-				p5l.remote = true;
-				if(developBranch){
-					document.title = 'P5LIVE – DEVELOP';
-				}
-			}else{
-				p5l.remote = false;
-				document.title = 'P5LIVE – OFFLINE';
-
-				// check fancy
-				let request = new XMLHttpRequest();
-				request.open('GET', './fancy', true);
-				request.send();
-				request.addEventListener('load', function(){
-					if(request.status !== 404){
-							p5l.fancy = true;
-							console.log("P5LIVE is running Offline Server – Fancy!");
-					}else{
-						console.log("P5LIVE is running Offline Server – Simple");
-						return false;
-					}
-				});
-			}
 
 			// make sure all settings are there
 			let settingsChanged = false;
@@ -2302,8 +2374,37 @@ function println(msg){
 				updateSettings();
 			}
 
-			document.getElementById('menu-p5live-version').innerHTML = settings.version;
-			loaderSub.innerHTML = 'settings...';
+			// check version
+			let versionHTML = `
+			<span class="tippy" data-title="Latest version">${settings.version}</span>
+			`
+			document.getElementById('menu-p5live-version').innerHTML = versionHTML;
+
+			// *** add pref toggle for auto-check
+			let remoteVersionPath = 'https://raw.githubusercontent.com/ffd8/P5LIVE/main/package.json';
+			let localVersionPath = './package.json';
+			let rVersion = 0;
+			if(!p5l.remote && settings.checkupdatesToggle){
+				fetch(remoteVersionPath)
+				.then(res => res.json())
+				.then(dataR => {
+					rVersion = dataR.version;
+					return fetch(localVersionPath)
+				})
+				.then(res => res.json())
+				.then(dataL => {
+					if(dataL.version < rVersion){
+						document.getElementById('menu-p5live-version').style.display = 'inline'
+						let updateHTML = `
+						<a href="https://github.com/ffd8/P5LIVE#https" target="_blank" class="tippy" data-title="v ${dataL.version} » <span class='pulse'>${rVersion}</span>" style="color:white;text-decoration:none;">» UPDATE</a>
+						`
+						document.getElementById('menu-p5live-version').innerHTML = updateHTML;
+						loadTippy();
+					}
+				})
+				.catch(function(err){})
+			}
+
 			fontSizeUpdate();
 			autoCompileUpdate();
 			compileTimerUpdate();
@@ -2319,22 +2420,12 @@ function println(msg){
 			tippyToggleUpdate();
 			multitabToggleUpdate();
 			timestampToggleUpdate();
+			checkupdatesToggleUpdate();
 			cocodingAutosaveToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
-			themeBGactiveToggleUpdate();
-			loaderSub.innerHTML = 'templates...';
-			loadSketchTemplate();
-			loadHTMLTemplate();
-			loaderSub.innerHTML = 'snippets...';
-			loadKeybindings();
-			setEditorCommands();
 			loadBackup();
-			loadSnippets();
-			loaderSub.innerHTML = 'SyncData presets...';
-			syncDataPresetLoad();
-			loaderSub.innerHTML = 'autocomplete...';
-			loadAutoComplete();
+			themeBGactiveToggleUpdate();
 			loadColorPicker();
 			vex.defaultOptions.className = 'vex-theme-plain'
 			legacySettings(); // update sketches from 1.0.2
@@ -2352,6 +2443,8 @@ function println(msg){
 				updateSettings();
 			}
 
+
+			// *** move params to own function
 			settings.editMode = true;
 			if(getParam('edit') && getParam('edit') == 0){
 				settings.editMode = false;
@@ -2377,43 +2470,41 @@ function println(msg){
 
 			// load RECODING by param
 			if(getParam('recoding')){
-				setTimeout(loadDefault, 500);
-				let urlSketch = decodeURI(getParam('recoding'));
-				setTimeout(function(){
-					fetch(urlSketch)
-					  .then(response => response.json())
-					  .then(jsonResponse => {
-					  	if(recodingImportParse(jsonResponse)){
-					  		if(getParam('loop')){
-					  			recoding.loop = getParam('loop')
-					  			document.getElementById('recoding-settings-loop').checked = getParam('loop')
-					  		}
+				loadDefault()
+				let urlSketch = decodeURI(getParam('recoding'))
+				fetch(urlSketch)
+				.then(res => res.json())
+				.then(jsonResponse => {
+				  	if(recodingImportParse(jsonResponse)){
+				  		if(getParam('loop')){
+				  			recoding.loop = getParam('loop')
+				  			document.getElementById('recoding-settings-loop').checked = getParam('loop')
+				  		}
 
-					  		if(getParam('gaps')){
-					  			recoding.gaps = getParam('gaps')
-					  			document.getElementById('recoding-settings-gaps').checked = getParam('gaps')
-					  			recodingSettings()
-					  		}
+				  		if(getParam('gaps')){
+				  			recoding.gaps = getParam('gaps')
+				  			document.getElementById('recoding-settings-gaps').checked = getParam('gaps')
+				  			recodingSettings()
+				  		}
 
-					  		if(getParam('gapsmax')){
-					  			recoding.gapsMax = getParam('gapsmax')
-					  			document.getElementById('recoding-settings-gapsmax').value = getParam('gapsmax')
-					  			recodingSettings()
-					  		}
+				  		if(getParam('gapsmax')){
+				  			recoding.gapsMax = getParam('gapsmax')
+				  			document.getElementById('recoding-settings-gapsmax').value = getParam('gapsmax')
+				  			recodingSettings()
+				  		}
 
-					  		if(getParam('speed')){
-					  			recoding.setSpeed(getParam('speed'))
-					  			document.getElementById('recoding-settings-speed').value = getParam('speed')
-					  		}
-					  	}
-					  	if(getParam('loop') || getParam('gaps') || getParam('gapsmax') || getParam('speed')){
-					  		setTimeout(function(){toggleButtonsExtended('recoding-settings', 'block')}, 0)
-					  	}
-					  })
-					  .catch((error) => {
-					  	alertMsg('RECODING load error – Check URL path.');
-					  });
-				}, 1000)
+				  		if(getParam('speed')){
+				  			recoding.setSpeed(getParam('speed'))
+				  			document.getElementById('recoding-settings-speed').value = getParam('speed')
+				  		}
+				  	}
+					if(getParam('loop') || getParam('gaps') || getParam('gapsmax') || getParam('speed')){
+				  		setTimeout(function(){toggleButtonsExtended('recoding-settings', 'block')}, 0)
+				  	}
+				})
+				.catch((error) => {
+					alertMsg('RECODING load error – Check URL path.')
+				})
 			}
 
 			// toggle visibility by param
@@ -2485,7 +2576,8 @@ function println(msg){
 				}
 			}else{
 				cocodingReset();
-				setTimeout(function(){loadSketch(settings.fileName);}, 1000); // ** replace w/ fetch
+				// setTimeout(function(){loadSketch(settings.fileName);}, 1000); // ** replace w/ fetch
+				loadSketch(settings.fileName); // *** double check working
 			}
 
 			if(settings.welcome){
@@ -2528,6 +2620,28 @@ function println(msg){
 					}
 				};
 				setTimeout(function(){window.addEventListener('storage', onLocalStorageEvent, false);}, 0);
+			}
+		}
+
+		function legacySettings(){
+			//console.log(settings);
+			if(settings.sketches != null && typeof settings.sketches[0] != 'object'){
+				let tc = timeDate();
+				let order = settings.sketches;
+				let newOrder = [];
+				let oldDemos = ["aboutsketch", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_sphereBox", "textToPoints", "basel.codes", "this is a really long name"];
+				order.forEach(function(o){
+					if(!oldDemos.includes(o)){
+						newOrder.push({'name':o, 'type':'sketch', 'mod':tc});
+					}
+				});
+				settings.sketches = newOrder;
+				updateSettings();
+			}
+
+			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){
+				//settings.refresh = false; // *** check this.. if needed?
+				loadDemos();
 			}
 		}
 
@@ -3209,18 +3323,6 @@ function println(msg){
 
 			settings.backup.last = new Date().getTime();
 			updateSettings();
-		}
-
-		function loadSketchTemplate(){
-			let tempPath = 'includes/templates/p5live_sketch.html?' + currentRevision;
-			let request = new XMLHttpRequest();
-			request.open('GET', tempPath, true);
-			request.send();
-			request.addEventListener('load', function(){
-				let el = document.createElement('html');
-				el.innerHTML = request.responseText;
-				p5frameTemplate = el;
-			});
 		}
 
 		// load top sketch
@@ -4143,28 +4245,6 @@ function println(msg){
 
 		/* MENU » SKETCHES */
 
-		function legacySettings(){
-			//console.log(settings);
-			if(settings.sketches != null && typeof settings.sketches[0] != 'object'){
-				let tc = timeDate();
-				let order = settings.sketches;
-				let newOrder = [];
-				let oldDemos = ["aboutsketch", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_sphereBox", "textToPoints", "basel.codes", "this is a really long name"];
-				order.forEach(function(o){
-					if(!oldDemos.includes(o)){
-						newOrder.push({'name':o, 'type':'sketch', 'mod':tc});
-					}
-				});
-				settings.sketches = newOrder;
-				updateSettings();
-			}
-
-			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){
-				//settings.refresh = false; // *** check this.. if needed?
-				loadDemos();
-			}
-		}
-
 		function getOrder() {
 			if(menuSketches.childNodes.length >0){
 				const traverse = function(dir, result = []) {
@@ -4986,7 +5066,7 @@ function println(msg){
 		}
 
 		function removeComments(code){
-			return code.replace(/\/\*[\s\S]*?\*\/|([^:]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'))
+			return code.replace(/\/\*[\s\S]*?\*\/|([^:\}\)]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'))
 		}
 
 		function processLibs(code){
@@ -5041,15 +5121,15 @@ function println(msg){
 
 				let allLines = codeNoComments.split('\n');
 
-				// hydra sandbox
-				let hydraMatch = editor.getValue().match(/^\/\/\s*hydraSandbox.*?\/\/.*?hydraSandbox.*?\n/ism);
-				if(hydraMatch !== null && p5f.Hydra !== undefined){
+				// sandbox
+				let sandboxMatch = editor.getValue().match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n/ism);
+				if(sandboxMatch !== null){
 					let currline = editor.getSelectionRange().start.row;
 
 					let currCode = editor.session.getLine(currline);
-					let hydraParts = hydraMatch[0].split('\n');
-					if(hydraParts.indexOf(currCode) > -1){
-						p5f.eval(hydraMatch[0])
+					let sandboxParts = sandboxMatch[0].split('\n');
+					if(sandboxParts.indexOf(currCode) > -1){
+						p5f.eval(sandboxMatch[0])
 						if(!force){
 							return false;
 						}
@@ -5159,13 +5239,25 @@ function println(msg){
 			let scriptsCol = [];
 
 			// load scripts remote vs local
-			for(let i=0; i < includeScripts.length; i++){
+			for (const iScript in includeScripts) {
+				// no p5.sound
+				if(editor.getValue().match(/(\/\/).*(no.*p5.*sound)/g)){
+					if(iScript == 'p5sound') continue;
+				}
+
 				if(p5l.remote){
-					scriptsCol.push(includeScripts[i].remote);
+					scriptsCol.push(includeScripts[iScript].remote);
 				}else{
-					scriptsCol.push(includeScripts[i].local);
+					scriptsCol.push(includeScripts[iScript].local);
 				}
 			}
+			// for(let i=0; i < includeScripts.length; i++){
+			// 	if(p5l.remote){
+			// 		scriptsCol.push(includeScripts[i].remote);
+			// 	}else{
+			// 		scriptsCol.push(includeScripts[i].local);
+			// 	}
+			// }
 
 			// check loadScripts / libs / scripts;
 			let scriptsList = processLibs(codeNoComments);
@@ -5321,26 +5413,18 @@ function println(msg){
 
 
 		/* SNIPPETS */
-		function loadSnippets(){
-			let snippetsPath = 'includes/demos/P5L_snippets.json?' + currentRevision;
-			let request = new XMLHttpRequest();
-			request.open('GET', snippetsPath, true);
-			request.send();
-			request.addEventListener('load', function(){
-				let jsonObj = JSON.parse(request.responseText);
-				snippets = jsonObj.snippets;
-				let dropCommands = [];
-				let cmds = editor.commands;
-				for(let i=0; i < snippets.length; i++){
-					let snippetKey = snippets[i].key+'';
-					let findCommand = cmds.commandKeyBinding['ctrl-shift-'+snippetKey.toLowerCase()];
-					if(findCommand != undefined){
-						dropCommands.push(findCommand.name);
-					}
+		function loadSnippets(jsonObj){
+			snippets = jsonObj.snippets;
+			let dropCommands = [];
+			let cmds = editor.commands;
+			for(let i=0; i < snippets.length; i++){
+				let snippetKey = snippets[i].key+'';
+				let findCommand = cmds.commandKeyBinding['ctrl-shift-'+snippetKey.toLowerCase()];
+				if(findCommand != undefined){
+					dropCommands.push(findCommand.name);
 				}
-				editor.commands.removeCommands(dropCommands);
-			});
-
+			}
+			editor.commands.removeCommands(dropCommands);
 		}
 
 		function addSnippet(loadSnippet){
@@ -5650,6 +5734,16 @@ function println(msg){
 
 		function cocodingAutosaveToggleUpdate(){
 			checkToggle('cocodingautosavetoggle', settings.cocodingAutosaveToggle, settingsCocodingAutosave, 'COCODING Autosave');
+		}
+
+		// timestamp exports toggle
+		function checkupdatesToggle(){
+			settings.checkupdatesToggle = !settings.checkupdatesToggle;
+			checkupdatesToggleUpdate();
+		}
+
+		function checkupdatesToggleUpdate(){
+			checkToggle('checkupdatestoggle', settings.checkupdatesToggle, settingsCheckupdates, 'Check Updates');
 		}
 
 		//exportcode toggle
@@ -6067,18 +6161,6 @@ function println(msg){
 			}
 		}
 
-		function loadHTMLTemplate(){
-			let tempPath = 'includes/templates/p5live_savehtml.html?' + currentRevision;
-			let request = new XMLHttpRequest();
-			request.open('GET', tempPath, true);
-			request.send();
-			request.addEventListener('load', function(){
-				let el = document.createElement('html');
-				el.innerHTML = request.responseText;
-				p5htmlTemplate = el;
-			});
-		}
-
 		function saveHTML(){
 			let el = p5htmlTemplate.cloneNode(true);
 			el.getElementsByTagName('title')[0].innerHTML = settings.fileName;
@@ -6088,8 +6170,12 @@ function println(msg){
 			let scriptsCol = [];
 
 			// load p5 remote
-			for(let i=0; i < includeScripts.length; i++){
-				scriptsCol.push(includeScripts[i].remote);
+			for (const iScript in includeScripts) {
+				// no p5.sound
+				if(editor.getValue().match(/(\/\/).*(no.*p5.*sound)/g)){
+					if(iScript == 'p5sound') continue;
+				}
+				scriptsCol.push(includeScripts[iScript].remote);
 			}
 
 			// check loadScripts / libs / scripts;
@@ -6944,25 +7030,18 @@ function println(msg){
 		/*	SyncData */
 
 		// load presets
-		function syncDataPresetLoad(){
+		function syncDataPresetLoad(jsonObj){
 			syncdataPresets = [];
-			let syncdataPresetsPath = 'includes/demos/P5L_syncdata-presets.json?' + currentRevision;
-			let request = new XMLHttpRequest();
-			request.open('GET', syncdataPresetsPath, true);
-			request.send();
-			request.addEventListener('load', function(){
-				let jsonObj = JSON.parse(request.responseText);
-				for(let p of jsonObj.structure[0].contents){
-					let presetName = p.name.replace('syncdata-', '');
-					let presetSketch = {code:p.code, name:presetName, protected:true};
-					syncdataPresets.push(presetSketch);
-				}
+			for(let p of jsonObj.structure[0].contents){
+				let presetName = p.name.replace('syncdata-', '');
+				let presetSketch = {code:p.code, name:presetName, protected:true};
+				syncdataPresets.push(presetSketch);
+			}
 
-				// load localSyncdataPresets
-				for(let sdp of settings.syncdata.sketches){
-					syncdataPresets.push(sdp);
-				}
-			});
+			// load localSyncdataPresets
+			for(let sdp of settings.syncdata.sketches){
+				syncdataPresets.push(sdp);
+			}
 		}
 
 		function syncdataWindow(){
@@ -7436,7 +7515,6 @@ function println(msg){
 				elm.classList.remove('cocoding-active');
 			}
 		}
-
 	</script>
 </body>
 </html>

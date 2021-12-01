@@ -1,6 +1,6 @@
 {
   "name": "cocoding-server",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Collaborative live-coding websocket server for P5LIVE",
   "main": "server.js",
   "scripts": {
