@@ -128,7 +128,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-share-2"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
 					</button>
 				</div>
-				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;" onmouseenter="showUsers();" onmouseleave="hideUsers();">
+				<div id="menu-cocode-sketches-holder" class="menu-sketches-holder" style="display:none;">
 					<div id="menu-cocode-sketches" class="menu-sketches"></div>
 				</div>
 				<div id="menu-cocode-chat-holder" class="" style="display:none;" onmouseleave="chatBlur();">
@@ -300,6 +300,10 @@
 					<div class="tippy-left" style="cursor:help;" data-title="noLoop() if window loses focus<br>(save computer resources)" onclick="ecoRenderToggle();">
 						<input type="checkbox" id="settings-ecorender" name="settings-ecorender" value="settings-ecorender">
 						Eco Render
+					</div>
+					<div class="tippy-left" style="cursor:help;" data-title="Display cocoding users’ cursors" onclick="canvasCursorToggle();">
+						<input type="checkbox" id="settings-canvascursor" name="settings-canvascursor" value="settings-canvascursor">
+						COCODING cursors
 					</div>
 					<div class="tippy-left" style="cursor:help;" data-title="Display console messages" onclick="consoleToggle();">
 						<input type="checkbox" id="settings-console" name="settings-console" value="settings-console">
@@ -571,6 +575,11 @@ function println(msg){
 					,'key':'ctrl+a'
 					,'callback':'autoCompileToggle()'
 				}
+				,'canvascursor':{
+					'name':'Cursor toggle'
+					,'key':'ctrl+;'
+					,'callback':'canvasCursorToggle()'
+				}
 				,'newsketch':{
 					'name':'New Sketch'
 					,'key':'ctrl+n'
@@ -583,7 +592,6 @@ function println(msg){
 				}
 				,'codecomment':{
 					'name':'Comment Code'
-					,'key':'meta+/'
 					,'init': 'editor.commands.bindKey(settings.shortcuts["codecomment"].key, "togglecomment")'
 				}
 				,'fontbigger':{
@@ -2413,6 +2421,7 @@ function println(msg){
 			menuToggleUpdate();
 			ecoRenderUpdate();
 			consoleToggleUpdate();
+			canvasCursorToggleUpdate();
 			menutabToggleUpdate();
 			autocompleteUpdate();
 			linenumbersUpdate();
@@ -5624,6 +5633,21 @@ function println(msg){
 				menuSwitch.style.display = 'none';
 			}else{
 				menuSwitch.style.display = 'block';
+			}
+		}
+
+		//user cursor toggle
+		function canvasCursorToggle(){
+			settings.canvascursor = !settings.canvascursor;
+			canvasCursorToggleUpdate();
+		}
+
+		function canvasCursorToggleUpdate(){
+			checkToggle('canvascursor', settings.canvascursor, settingsCanvasCursor, 'Cocoding cursors');
+			if(!settings.canvascursor){
+				hideUsers();
+			}else{
+				showUsers();
 			}
 		}
 
