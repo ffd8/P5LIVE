@@ -938,6 +938,37 @@ button[disabled]{
 	}
 }
 
+ /* TOOLTIPS */
+.tooltip {
+	position: fixed;
+	z-index: 99;
+	font-size: 12px;
+	line-height: 12px;
+	padding: 5px;
+	background: #222;
+	color: #fff;
+	border: 1px solid #aaa;
+	border-radius: 5px;
+	visibility: hidden;
+	opacity: 0;
+	box-sizing: border-box;
+	box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+	transition: opacity 0.3s, visibility 0s;
+}
+
+.tooltip-arrow{
+	position: absolute;
+	top: -4px;
+	width: 7px;
+	height: 7px;
+	background: inherit;
+	transform: rotate(45deg);
+	border-top: 1px solid #aaa;
+	border-left: 1px solid #aaa;
+}
+
+
+/* *** to remove */
 .tippy-tooltip{
 	font-size:8pt;
 	border:1px solid #ddd;
@@ -1212,10 +1243,10 @@ li{
 .ref-sticky{
 	position: fixed;
 	width:230px;
-  	top:0px;
-  	padding-top:5px;
-  	z-index:1;
-  	background:#000 !important;
+	top:0px;
+	padding-top:5px;
+	z-index:1;
+	background:#000 !important;
 }
 .ref-search-holder{
 }
@@ -1312,6 +1343,11 @@ li{
 }
 .param-code{
 	font-style:italic;
+	padding: 4px;
+	border-bottom: 1px solid #aaa;
+}
+.param-code:hover{
+	background: #444;
 }
 .module{
 	margin:0 0px 25px 0;
@@ -1456,8 +1492,8 @@ li{
 }
 #about-alert ul{
 	list-style-type: none;
-  	margin-left: 15px;
-  	padding-left: 0px;
+	margin-left: 15px;
+	padding-left: 0px;
 }
 #about-alert li:before {
 	content:"– ";

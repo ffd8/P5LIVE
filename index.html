@@ -2283,7 +2283,11 @@ function println(msg){
 				return fetch(syncdataPresetsPath)
 			})
 			.then(res => res.json())
-			.then(sdpOBJ => syncDataPresetLoad(sdpOBJ))
+			.then(sdpOBJ => {
+				if(settings.hasOwnProperty('syncdata')){
+					syncDataPresetLoad(sdpOBJ)
+				}
+			})
 
 			// everything else
 			.then(() => {
@@ -2891,17 +2895,19 @@ function println(msg){
 				let shortcut = settings.shortcuts[sc];
 				shortcutRecording = true;
 				Mousetrap.record(function(sequence) {
-					let repeatShortcut = false;
-					Object.keys(settings.shortcuts).forEach(function(ssc){
-						let sshortcut = settings.shortcuts[ssc];
-						if(sequence.join(' ') == sshortcut.key){
-							repeatShortcut = true;
-						}else if(sequence.join(' ') == shortcut.key){
-							repeatShortcut = false;
+					if(sequence.length == 1){ // only single combo
+						let repeatShortcut = false;
+						Object.keys(settings.shortcuts).forEach(function(ssc){
+							let sshortcut = settings.shortcuts[ssc];
+							if(sequence[0] == sshortcut.key || sequence[0] == shortcut.key){
+								repeatShortcut = true;
+							}
+						});
+						if(!repeatShortcut && shortcutRecording){
+							console.log(shortcut.key)
+							Mousetrap.unbind(shortcut.key)
+							shortcut.key = sequence[0];
 						}
-					});
-					if(!repeatShortcut && shortcutRecording){
-						shortcut.key = sequence.join(' ');
 					}
 					updateShortcuts();
 				});
@@ -5286,7 +5292,8 @@ function println(msg){
 				try{
 					sketchCode = loopBreaker(sketchCode).code;
 				} catch (e) {
-					console.log(e.description)
+					console.log(`👀 error found near line ~ ${e.lineNumber}`)
+					// console.log(e.description)
 				  return false;
 				}
 			}
@@ -5926,7 +5933,7 @@ function println(msg){
 		function loadKeybindings(){
 			for(let i=0; i < settingsKeybindings.options.length; i++){
 				let opt = settingsKeybindings.options[i];
-				if(settings.editor.keybinding == opt.value){
+				if(settings.hasOwnProperty('editor') && settings.editor.keybinding == opt.value){
 					setKeybinding(opt.value);
 					settingsKeybindings.selectedIndex = i;
 				}
@@ -6287,8 +6294,12 @@ function println(msg){
 					let ex = refList[snippetIndex];
 					let paramsCollect = [];
 					let paramsDesc = [];
+					let methodCheck = ''
+					if(ex.itemtype == 'method'){
+						methodCheck = '()'
+					}
 					if(ex.overloads != undefined || ex.params != undefined){
-						ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + '</div></a><br>';
+						ref.innerHTML += '<a href="#'+ex.module+'"><div class="param-title">← ' + ex.name + methodCheck + '</div></a><br>';
 
 						if(ex.overloads != undefined){
 							ex.overloads.forEach(function(ol){
@@ -6311,9 +6322,10 @@ function println(msg){
 								if(params.length > 0){
 									paramsJoin = '(' + params.join(', ') + ')';
 								}
-								ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
+								ref.innerHTML += '<div class="param-code">' + ex.name + methodCheck + paramsJoin + '</div>';
 							})
 						}else{
+							// console.log(ex)
 							let params = [];
 							ex.params.forEach(function(param){
 								if(paramsCollect.indexOf(param.name) === -1){
@@ -6335,7 +6347,15 @@ function println(msg){
 								if(params.length > 0){
 									paramsJoin = '(' + params.join(', ') + ')';
 								}
-								ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
+								if(ex.code.length >0){
+									ex.code.forEach(function(c){
+										ref.innerHTML += '<div class="param-code">' + c + '</div>';
+									})
+								}else{
+									ref.innerHTML += '<div class="param-code">' + ex.name+ methodCheck + '</div>';
+								}
+								// ref.innerHTML += '<div class="param-code">' + ex.name + paramsJoin + '</div>';
+								// ref.innerHTML += '<div class="param-code">' + ex.code.join('<hr>') + '</div>';
 							}
 						}
 					}else{
@@ -6351,8 +6371,8 @@ function println(msg){
 					ref.innerHTML += '<br><div class="params"' + paramsDesc.join('') + '</div><br>' + desc;
 					if(ex.examples.length > 0){
 						for(let example of ex.examples){
-							let exampleParse = 	example.replace(/\n/g, '<br> ');
-							ref.innerHTML += '<br><div class="ref-example js" type="js">'+exampleParse+'</div><br>';
+							let exampleParse = 	example.replaceAll('  ', '  ').replace(/\n/g, '<br> ');
+							ref.innerHTML += '<br><div class="ref-example js" type="js" style="overflow:auto; white-space: nowrap;"><div style="width:auto;">'+exampleParse+'</div></div><br>';
 						}
 
 					}
@@ -6481,15 +6501,20 @@ function println(msg){
 							desc = ci.description;
 						}
 
+						let methodCheck = ''
+						if(ci.itemtype == 'method'){
+							methodCheck = '()'
+						}
+
 						let dataName = 'data-name="' + ci.name + '"';
 						if(!noDesc){
 							if(noParams){
-								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(ci.description).trim() + '</div>">' + htmlEntities(ci.name) + '<br></a>');
+								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(ci.description).trim() + '</div>">' + htmlEntities(ci.name)+methodCheck + '<br></a>');
 							}else{
-								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(title).trim() + '</div>">' + htmlEntities(ci.name) + '<br></a>');
+								modAll.push('<a class="all-ref ref-link tippy-left" href="#/p5/' + htmlEntities(ci.name) + '" onclick="refScroll=refHolder.scrollTop;refHolder.scrollTop=0;" '+dataName+' data-title="<div style=\'text-align:left;\'>' + htmlEntities(title).trim() + '</div>">' + htmlEntities(ci.name)+methodCheck + '<br></a>');
 							}
 						}else{
-							modAll.push('<span class="all-ref ref-nolink tippy-left" '+dataName+' data-title="'+htmlEntities(ci.name)+'">' + htmlEntities(ci.name) + '<br></span>');
+							modAll.push('<span class="all-ref ref-nolink tippy-left" '+dataName+' data-title="'+htmlEntities(ci.name)+'">' + htmlEntities(ci.name)+methodCheck + '<br></span>');
 						}
 					}
 				});
@@ -6541,6 +6566,11 @@ function println(msg){
 						}else{
 							classItem.description = '';
 						}
+						if(ci.itemtype != undefined){
+							classItem.itemtype = ci.itemtype;
+						}else{
+							classItem.itemtype = '';
+						}
 						let classCode = [];
 						let classParams = [];
 						let classExamples = [];
@@ -6569,6 +6599,7 @@ function println(msg){
 
 						if(ci.overloads != undefined || ci.params != undefined){
 							if(ci.overloads != undefined){
+								// *** fix multiple params/overloads per function to list out
 								ci.overloads.forEach(function(ol){
 									let params = [];
 									let acParams = [];
