@@ -442,7 +442,7 @@ ie. [`https://p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=t
 Use for quickest setup or to run multiple port instances (each with  own sketches storage).  
 *No COCODING / OSC with this technique.*  
 
-- [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone in Github Desktop](x-github-client://openRepo/https://github.com/ffd8/P5LIVE)*  
+- [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone Github Repo](https://github.com/ffd8/P5LIVE)*  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER` 
 - check Python version, type `python --version`, press `ENTER` 
@@ -456,7 +456,7 @@ Port `5000` is suggested. For alternative, just type desired one in snippet abov
 ### Fancy - nodejs/npm  
 Use for all features (COCODING / OSC) + optional HTTPS mode (see below). 
 
-- [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone in Github Desktop](x-github-client://openRepo/https://github.com/ffd8/P5LIVE)*  
+- [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone Github Repo](https://github.com/ffd8/P5LIVE)*  
 - Install Node.js + NPM ([binary installers](https://nodejs.org/en/download/))  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER`  
