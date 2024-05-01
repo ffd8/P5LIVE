@@ -12,9 +12,15 @@
 			cursor:crosshair;
 		}
 		canvas{
+			position:absolute;
 			width:100vw;
 			height:100vh;
 			margin:0;
+		}
+		.p5Canvas{
+			position:fixed;
+			top:0;
+			z-index:-1
 		}
 		input{
 			cursor:crosshair;
@@ -36,13 +42,17 @@
 
 		// clear console if all good
 		if(p5console != null){
-			clearConsole();
+			if(parent.p5l.console && parent.p5l.consoleMode == 'auto'){
+				clearConsole();
+			}
 		}
 		markLine();
 
 		// pass errors to parent
 		window.onerror = function myErrorHandler(errorMsg, url, lineNumber) {
-			p5console.style.display = 'block'
+			if(parent.p5l.console){
+				p5console.style.display = 'block'
+			}
 			p5console.value = errorMsg; // lineNumber +" / "+
 			p5console.style.background = "#000";
 			markLine(lineNumber);
@@ -71,9 +81,9 @@
 		}
 
 		// pass console.log's to parent
-		var console = {
-			log: function(m){
-				if(m != "p5.RendererGL: enabled webgl context"){
+		// https://stackoverflow.com/questions/7042611/override-console-log-for-production#comment121220200_7042634
+		var console = console || {}; console.log = function(m){
+			if(m != "p5.RendererGL: enabled webgl context"){
 					consoleMessage(m, .1);
 
 					// only send to window console if unique!
@@ -84,11 +94,12 @@
 						}
 						pmsg = m;
 					}
+					
 					clearTimeout(p5consoleTimer);
 					// p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
 				}
-			}
 		};
+
 
 		function clearConsole(){
 			p5console.value = '';
@@ -101,7 +112,7 @@
 				msg = JSON.stringify(msg);
 			}
 			p5console.value = msg;
-			if(consoleVisible == false){
+			if(consoleVisible == false && parent.p5l.console){
 				p5console.style.display = 'block';
 				// window.parent.resizeEditor();
 				consoleVisible = true;
@@ -110,7 +121,9 @@
 				if(consoleTimer != undefined){
 					clearTimeout(consoleTimer);
 				}
-				consoleTimer = setTimeout(consoleHide, timeDelay*1000);
+				if(parent.p5l.console && parent.p5l.consoleMode == 'auto'){
+					consoleTimer = setTimeout(consoleHide, timeDelay*1000);
+				}
 			}
 		}
 
@@ -139,7 +152,9 @@
 		// test if focus lost
 		window.onfocus = function() {
 		  // console.log('stole lost!');
-		  loop();
+			if(window.p5 !== undefined){
+				loop();
+			}
 		};
 
 		// forward mouse/key events to parent
@@ -192,6 +207,12 @@
 </head>
 <body>
 
+<!-- <script type="module">
+		import {initStrudel} from 'https://cdn.skypack.dev/@strudel/web@0.8.2';
+		initStrudel();
 
+		
+	// 	
+	</script> -->
 </body>
 </html>

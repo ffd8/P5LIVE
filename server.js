@@ -4,7 +4,7 @@ let debugStats = false; // report stats
 let developBranch = false; // dev mode (false for production)
 
 // custom port
-let tPort = process.env.PORT || 5000;
+let tPort = process.env.PORT || 5001;
 for(let arg of process.argv){
 	if(!isNaN(arg)){
 		tPort = arg;
@@ -28,6 +28,7 @@ const express = require('express')
 , fs = require('fs')
 , pem = require('pem')
 , httpProxy = require('http-proxy')
+, cp = require('child_process')
 
 
 // HTTPS
@@ -55,6 +56,20 @@ if(useHTTPS){
 	});
 }
 
+function checkPort(port) {
+  const output = cp.spawnSync(
+    `lsof -i tcp:${port} | awk '{print $2}' |grep --invert PID`,
+    { shell: true }
+  )
+  if (output.error) {
+    // console.error(output.error)
+    // return
+  }
+  const pid = Buffer.from(output.stdout.buffer).toString().split('\n')[0]
+  // console.log({ pid })
+  return pid
+}
+
 function startServer(keys){
 	httpProxy.createServer({
 		target: {
@@ -74,10 +89,17 @@ function startServer(keys){
 }
 
 // OSC
-let iop, osc, oscServer, oscClient, isConnected;
+let iop, osc, oscServer, oscClient, isConnected, oscRunning;
 if(!online){
-	iop = require('socket.io', {transports: ['WebSocket'] }).listen(8082);
-	osc = require('node-osc');
+	oscRunning = checkPort(8082) 
+	if (oscRunning) {
+	  console.log(`P5LIVE x Multiple! OSC already running on port 8082`)
+	}
+
+	if(!oscRunning){
+		iop = require('socket.io', {transports: ['WebSocket'] }).listen(8082);
+		osc = require('node-osc');
+	}
 }
 
 const maxSpaces = 500; // check memory for number of namespaces...
@@ -259,7 +281,7 @@ io.origins((origin, callback) => {
 
 // OSC
 // let oscConnected = 0, oscDisconnected = 0; // debugger... fixed now??
-if(!online){
+if(!online && !oscRunning){
 	iop.sockets.on('connection', function (socket) {
 		socket.on('config', function (obj) {
 			if(isConnected){
