@@ -53,7 +53,7 @@ See forms for details and many thanks in advance! Deadlines: May 20, 2024*
 
 ## INSTALL
 Online »  [p5live.org](https://p5live.org)  
-Offline » [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-server) *(or see below for instructions)*
+Offline » [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-mode) *(or see below for instructions)*
 
 ## SAVING
 Sketches are **_ONLY_** saved in your browser's localStorage(!).  
@@ -65,7 +65,7 @@ so export/import all sketches to migrate between online / offline / browsers.
 Simply use `Settings Panel`» `Backup` » `Now` to export all settings + sketches.
 
 #### Automatic Backups
-See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals. If using [Offline Server](https://github.com/ffd8/P5LIVE#offline-server), it will save these backups to your `P5LIVE/_backups` folder rather than downloads.
+See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals. If using [Offline Server](https://github.com/ffd8/P5LIVE#offline-mode), it will save these backups to your `P5LIVE/_backups` folder rather than downloads.
 
 ## MENU
 ### P5LIVE PANEL 
@@ -506,7 +506,7 @@ ie. [`https://p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=t
 
 
 
-## OFFLINE SERVER
+## OFFLINE MODE
 
 - [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone in Github Desktop](x-github-client://openRepo/https://github.com/ffd8/P5LIVE)*  
 - Install node.js + npm package ([binary installers](https://nodejs.org/en/download/))  
