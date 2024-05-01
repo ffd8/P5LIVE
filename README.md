@@ -507,6 +507,7 @@ ie. [`https://p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=t
 
 
 ## OFFLINE MODE
+Install offline-mode to live-code without internet, load local assets,  and communicate with software using OSC. Once installing offline-mode, you'll likely never need online-mode unless COCODING with remote peers (you can use offline COCODING with peers on local network!). If updating, just replace all contents within your existing folder (only store assets in your own `/data` folder or similar).
 
 - [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone in Github Desktop](x-github-client://openRepo/https://github.com/ffd8/P5LIVE)*  
 - Install node.js + npm package ([binary installers](https://nodejs.org/en/download/))  
