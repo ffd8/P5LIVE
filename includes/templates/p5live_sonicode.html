@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>P5LIVE - SoniCode</title>
+	<script src="../p5/p5.min.js"></script>
+	<script src="../p5/addons/p5.sound.min.js"></script>
+	<script src="../js/webmidi.min.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+		var settings = {}
+		var p5livePolySynth, p5livePolySynthLoader, p5livePolySynthLoaded = false
+		var midiInput, midiOutput, midiMsg = {}
+
+		function setup(){
+			noCanvas();
+		}
+		
+		function sonicodeSetup(sonicodeSettings){
+			settings = sonicodeSettings
+			p5livePolySynth = new p5.PolySynth();
+			p5livePolySynth.polyvalue = settings.poly
+			if(!p5livePolySynthLoaded){
+				p5livePolySynthLoaded = true
+				console.log('P5LIVE SoniCode - Loaded!')
+			}
+			
+
+			if(settings.mode == 'midi'){
+				// do midithings
+				setupMidi(0, 0)
+			}else{
+				for(let av of p5livePolySynth.audiovoices){
+					av.oscillator.oscillator.type = settings.mode
+				}
+			}
+		}
+
+		function sonicodeParse(delta){
+			console.log(delta.lines[0].charCodeAt(0))
+			var freq = delta.lines[0].charCodeAt(0) + parseInt(settings.base)
+			if(isNaN(freq)){
+				return
+			}
+			
+			if(delta.lines[0] == '\t'){
+				freq = 440 + parseInt(settings.base)
+			}
+
+			// necessary for post bug in code
+			try {
+				if(settings.mode === 'midi'){
+					sendNote(1, delta.lines[0].charCodeAt(0), 5550, 127); // channel, note, octave, duration, velocity
+				}else{
+					p5livePolySynth.play((constrain(freq, 5, 10000)), .5, 0, .1)
+				}
+			} catch (error) {
+				sonicodeSetup(settings)
+			}
+		}
+
+		function midiToFreq(noteNumber) {
+			return 440 * Math.pow(2, (noteNumber - 69) / 12)
+		}
+
+		function freqToMidi(f) {
+		  var mathlog2 = Math.log(f / 440) / Math.log(2);
+		  var m = Math.round(12 * mathlog2) + 69;
+		  return m;
+		}
+
+		function sendNote(channel, note, duration, velocity) {
+			midiOutput.playNote(note, channel, {
+				duration: duration,
+				velocity: parseFloat(velocity) / 127.0
+			})
+		}
+
+		function setupMidi(idIn, idOut) {
+			WebMidi.enable(function(err) {
+				if(err) {
+					console.log("WebMidi could not be enabled.", err);
+				}
+
+				// Print to console available MIDI in/out id/names
+				WebMidi.inputs.forEach(function(element, c) {
+					print("in  \[" + c + "\] " + element.name)
+				});
+				WebMidi.outputs.forEach(function(element, c) {
+					print("out \[" + c + "\] " + element.name)
+				});
+
+				// assign in channel:
+				if(typeof idIn === 'number') {
+					midiInput = WebMidi.inputs[idIn]
+				} else {
+					midiInput = WebMidi.getInputByName(idIn)
+				}
+
+				if(typeof idOut === 'number') {
+					midiOutput = WebMidi.outputs[idOut]
+				} else {
+					midiOutput - WebMidi.getOutputByName(idOut)
+				}
+
+				// midiInput.addListener('midimessage', 'all', function(e) {
+				// 	if(midiThru) {
+				// 		if(e.data.length == 3) {
+				// 			midiOutput.send(e.data[0], [e.data[1], e.data[2]])
+				// 		} else {
+				// 			midiOutput.send(e.data[0])
+				// 		}
+				// 	}
+				// 	midiMsg = {}
+				// 	midiMsg.data = e.data
+				// 	midiMsg.timestamp = e.timestamp
+				// 	// parseMidi(midiMsg) // optionally send raw only
+				// })
+
+				// // noteOn
+				// midiInput.addListener('noteon', "all", function(e) {
+				// 	let note = {
+				// 		type: 'noteon'
+				// 	}
+				// 	note.channel = e.channel
+				// 	note.number = e.note.number
+				// 	note.name = e.note.name
+				// 	note.octave = e.note.octave
+				// 	note.velocity = floor(127 * e.velocity)
+
+				// 	midiMsg.note = note
+				// 	parseMidi(midiMsg)
+				// })
+
+				// // noteOff
+				// midiInput.addListener('noteoff', "all", function(e) {
+				// 	let note = {
+				// 		type: 'noteoff'
+				// 	}
+				// 	note.channel = e.channel
+				// 	note.number = e.note.number
+				// 	note.name = e.note.name
+				// 	note.octave = e.note.octave
+				// 	note.velocity = 0
+
+				// 	midiMsg.note = note
+				// 	parseMidi(midiMsg)
+				// })
+
+				// // pitchBend
+				// midiInput.addListener('pitchbend', "all", function(e) {
+				// 	let pitch = {
+				// 		type: 'pitchbend'
+				// 	}
+				// 	pitch.channel = e.channel
+				// 	pitch.value = floor(127 * e.value)
+
+				// 	midiMsg.pitch = pitch
+				// 	parseMidi(midiMsg)
+				// })
+
+				// // controlChange
+				// midiInput.addListener('controlchange', "all", function(e) {
+				// 	let control = {
+				// 		type: 'controlchange'
+				// 	}
+				// 	control.channel = e.channel
+				// 	control.controllerNumber = e.controller.number
+				// 	control.controllerName = e.controller.name
+				// 	control.value = e.value
+
+				// 	midiMsg.control = control
+				// 	parseMidi(midiMsg)
+				// })
+
+			})
+		}
+
+	</script>
+</body>
+</html>

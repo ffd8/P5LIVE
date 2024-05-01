@@ -1,55 +1,47 @@
 # P5LIVE
-v 1.4.1  
-cc [teddavis.org](http://teddavis.org) – 2019 - 2021  
+v 1.5.0  
+cc [teddavis.org](http://teddavis.org) – 2019 - 2024  
 p5.js collaborative live-coding vj environment!
 
+## NEWS
+*Dear P5LIVE community, I'd love to showcase your documentation in an upcoming exhibition, Swiss Design Awards (May 25 – June 16), and therefore need documentation (videos + images) from performances / workshops / installations / streams / etc. that used this tool.  
+See forms for details and many thanks in advance! Deadlines: May 20, 2024*
 
-## SHORTCUTS (default)
-- `CTRL + N` » new sketch
-- `CTRL + ENTER` » softCompile
-- `CTRL + SHIFT + ENTER` » hardCompile
-- `CTRL + E` » editor toggle
-- `CTRL + M` » menu toggle
-- `CTRL + A` » autocompile toggle
-- `CTRL + ,` » settings toggle
-- `CTRL + R` » references toggle
-- `CTRL + B` » chalkboard toggle
-- `CTRL + T` » tidy code
-- `CTRL + SPACE` » autocomplete
-- `CTRL + -` » decrease fontsize
-- `CTRL + +` » increase fontsize
-- `CTRL + S` » save png [ + code ]
-- `CTRL + I` » 720*720px popup for screen-recording
-- `CTRL + 1, 2, 3...0` » jump between first 10 sketches
+- 📋 [#P5LIVE in the #WILD](https://docs.google.com/forms/d/e/1FAIpQLScjC8VWb5W8eIpjv1hiQYFMKMG6IFnYMj1fyf43eg4fZjm7uQ/viewform?usp=sf_link), *share your videos/images documentation*
+- 📋 [#COCODING JAM](https://docs.google.com/forms/d/e/1FAIpQLSdywtibV6AEekbn14DHHhYZaH7Q7eotmf-ecVPcoAl1PVrVUA/viewform?usp=sf_link), *participate in the exhibition via COCODING!*
 
-Beta shortcuts
-- `CTRL + SHIFT + ⇡⇣` » jump to previous/next sketch  
-- `CTRL + SHIFT + DELETE` » delete current sketch
+## SHORTCUTS
+### P5LIVE (default)
+|  |  |
+|--:|:--|
+|`CTRL` + `ENTER`|softCompile|
+|`CTRL` + `SHIFT` + `ENTER`|  hardCompile |
+|  `CTRL` + `E` |  editor toggle |
+| `CTRL` + `N` | new sketch |
+| `CTRL` + `SHIFT` + `C` | clone sketch |
+| `CTRL` + `A` | autocompile toggle |
+| `CTRL` + `,` | settings toggle |
+| `CTRL` + `R` | references toggle |
+| `CTRL` + `B` | chalkboard toggle |
+| `CTRL` + `T` | tidy code |
+| `CTRL` + `SPACE` | autocomplete |
+| `CTRL` + `+` | increase fontsize |
+| `CTRL` + `-` | decrease fontsize |
+| `CTRL` + `S` | save png [ + code ] |
+| `CTRL` + `1, 2, 3...0` | jump to first 10 sketches |
+| `CTRL` + `SHIFT` + `⇡⇣` | jump to previous/next sketch |  
+| `CTRL` + `SHIFT` + `DELETE` | delete current sketch |
 
+*Customize shortcut keys within the `Settings` panel*
 
-## SAVING
-Sketches are **_ONLY_** saved in your browser's localStorage..!  
-Export all (<img class="svg" src="includes/icons/download.svg" height="12px">) sketches + settings regularly.  
-Clearing browser history/data will likely erase all sketches + settings.
+### Ace Editor
+|  |  |
+|--:|:--|
+|`ALT` + `UP/DOWN`|shift lines up/down|
+|`META` + `ALT` + `UP/DOWN`|duplicate lines up/down|
+|`META` + `D`|delete line|
 
-localStorage is unique and isolated per http[s] / domain / port,  
-so export/import all sketches to migrate between online / offline / browsers.  
-You can now use `Settings Panel`» `Backup` » `Now` to export all settings + sketches.
-
-*The file structure changed in v1.3, so make sure all copies of P5LIVE are up to date.  
-You can import old sketches, but newly saved ones won't open in versions < 1.3.*
-
-#### Automatic Backups
-See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals.  
-If using [Fancy (nodejs) Offline Server](https://github.com/ffd8/P5LIVE#offline-server), it will save these backups to your P5LIVE folder rather than downloads.
-
-
-## INSTALL
-Online: [p5live.org](https://p5live.org)
-
-Offline: [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-server)   
-Details below to run via python webserver or nodejs/npm.
-
+*(META = CMD on MacOS, CTRL on Windows/Linux)*
 
 ## GETTING STARTED
 ### LIVE-CODE IN 3... 2... 1...  
@@ -58,7 +50,23 @@ Details below to run via python webserver or nodejs/npm.
 - <img class="svg" src="includes/icons/file-plus.svg" height="12px"> Create New Sketch or `CTRL + N` and start coding!  
 - Live-coding active by default, `CTRL + ENTER` to force recompile.  
 - Sketches are auto-saved to localStorage on every keystroke.  
-  
+
+## INSTALL
+Online »  [p5live.org](https://p5live.org)  
+Offline » [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-mode) *(or see below for instructions)*
+
+## SAVING
+Sketches are **_ONLY_** saved in your browser's localStorage(!).  
+Export all (<img class="svg" src="includes/icons/download.svg" height="12px">) sketches + settings regularly.  
+Clearing browser history/data will likely erase all sketches + settings.
+
+localStorage is unique and isolated per http[s] / domain / port,  
+so export/import all sketches to migrate between online / offline / browsers.  
+Simply use `Settings Panel`» `Backup` » `Now` to export all settings + sketches.
+
+#### Automatic Backups
+See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals. If using [Offline Server](https://github.com/ffd8/P5LIVE#offline-mode), it will save these backups to your `P5LIVE/_backups` folder rather than downloads.
+
 ## MENU
 ### P5LIVE PANEL 
 <img src="includes/images/menu-p5live-10.png" width="220px">  
@@ -85,31 +93,39 @@ Details below to run via python webserver or nodejs/npm.
   
 #### Options
 - [x] Live Coding, [500ms], auto-compile error-free code on keyup, with set delay.  
+- [x] Console, display console messages, [auto/show] to hide or keep visible.  
 - [x] Eco Render, noLoop() if window loses focus (save computer resources).  
-- [x] Console, display console messages (print / errors / warnings).  
 - [x] Menu Tab, toggle menu tab. (hide if visible while VJ'ing). 
 - [x] Snapshot Code, export current code with each image snapshot. 
 - [x] Line Numbers, display code line numbers (and gutter features). 
-- [ ] Auto Autocomplete, useful for learning, just use `CTRL + SPACE` as needed. 
+- [ ] Auto Autocomplete, useful for learning, or use `CTRL + SPACE` on demand. 
 - [x] Lock Code on Drag, locks code editor on mouse drag to prevent displacing code. 
 - [ ] Pass Editor Keys, keypresses from editor to p5 canvas (hide editor otherwise).
 - [x] Notifications, display notifications (shortcut settings + chat). 
 - [x] Tooltips, displays extra info on hover. 
-- [x] Multi-P5LIVE Warning, if P5LIVE opened multiple times (otherwise sync issues). 
+- [x] Multi-P5LIVE Warning, if opened multiple times can lose sync of sketches. 
 - [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
-- [x] Backup COCODING, Autosave session code if server connection lost.  
-- [x] Check Updates, ping Github for updates to OFFLINE mode (only visible offline).  
+- [x] Backup COCODING, autosave session code if server/internet lost.  
+- [x] Check Updates, check Github for updates (offline-mode only).  
+- Backup, [off], saves/downloads P5LIVE (sketches + settings) at intervals. `Now` - on demand. *Set `Daily` in offline-mode*.  
 - Code Size, `15pt` adjust font size of editor.  
-- Code Background, [x] toggle + set color behind lines of code.  
-- Code Theme, [Green on Black], select custom styling of editor.
-- Code Keybinding, [ace], select alternative keybindings of editor.
-- Backup, [off], saves/downloads P5LIVE (sketches + settings) at intervals. `Now` - on demand.  
+- Theme, [Green on Black], select custom styling of editor.
+- [x] Background, toggle + set color behind lines of code.  
+- [x] Text, toggle + override unstyled text in code.  
+- [x] Active-line, toggle + set active-line color.  
+- Keybinding, [ace], select alternative keybindings of editor.
+- Snippets, `Launch Editor`, to open snippets editor.
+- [ ] SoniCode, plays oscillator/midi on every keystroke. 
+
+#### SoniCode
+Want to sonify your coding process?! Activate this toggle to generate sounds based on every keystroke (mapping keyCode to sample note). There are built in oscillators, however one can also select `midi` to send midi notes (channel 1) out to a DAW of choice for more complex samples.
 
 #### Shortcuts
 Customize keyboard shortcuts by clicking on name + press a new key combination.  
 
 #### Reset P5LIVE
-- <img class="svg" src="includes/icons/slash.svg" height="12px"> Completely reset P5LIVE (*deletes all sketches + settings!*) - Don't forget to export sketches first.
+- <img class="svg" src="includes/icons/slash.svg" height="12px"> Completely reset P5LIVE = *deletes all sketches + settings!*  
+Don't forget to export sketches first.
 
 ### COCODING PANEL
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
@@ -131,17 +147,20 @@ See dedicated RECODING section below for details.
 - <img class="svg" src="includes/icons/download.svg" height="12px"> Export, exports entire sketches list for import/backup.  
   
 #### Filter
-<img src="includes/images/menu-sketch-filter-blank.png" width="220px">  
-<img src="includes/images/menu-sketch-filter.png" width="220px">  
+<img src="includes/images/menu-sketch-filter-blank-2.png" width="220px">  
+<img src="includes/images/menu-sketch-filter-2.png" width="220px">  
 
 Lost the overview of your sketches?  
 Type in keywords to match names of sketches and folders, filtering only those results. Use separate words for an *and* search, ie. `3d webgl text`. To organize, add a new folder containing that word, and drag + drop items into it. 
+
+Optionally, toggle `<>` to search through source code of all sketches.
 
 #### Sketch  
 <img src="includes/images/menu-sketch-nav-9.png" width="209px">  
 <img src="includes/images/menu-sketch-nav-expanded-9.png" width="209px">  
 
 - Load Sketch, click on name.
+- Click on loaded sketch (green) to rename.
 - <img class="svg" src="includes/icons/more-horizontal.svg" height="12px"> Hover to view contextual options  
 	- <img class="svg" src="includes/icons/align-left.svg" height="12px"> Inspect,  view/edit code as popup.  
 	- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give sketch new name.  
@@ -209,15 +228,16 @@ Beyond params and descriptions, the example's code is now embedded with js highl
 Teaching a class with P5LIVE and need to explain a mathematical concept or highlight code?  
 Toggle a <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboard from the P5LIVE Panel or shortcut `CTRL + B`.
 
-<img src="includes/images/chalkboard-1.png" width="500px">
+<img src="includes/images/chalkboard-2.png" width="500px">
 
-Use `DRAWINGS` pulldown to activate 1 of 10 isolated layers to draw on. All drawings remain until either pressing the `🗑️` clear button, DELETE key or refreshing the page. Adjust `COLOR`, `WEIGHT`, `OPACITY` of the *CHALK*, separately adjust the `COLOR` and `OPACITY` of the board (background). This enables you to completely cover up the editor/visuals below for explaining concepts. Dim the *BOARD* if annotating or highlighting code (dim opacity of *CHALK*).
+Use `DRAWINGS` pulldown to activate 1 of 10 isolated layers to draw on. All drawings remain until either pressing the `🗑️` clear button, DELETE key or refreshing the page. Toggle between `✏️ DRAW` / `🔤 TEXT` / `🧽 ERASE` to do exactly that. In `Text` mode, DELETE removes one character at a time, allowing you to rubber-stamp text. Adjust `COLOR`, `WEIGHT`, `OPACITY` of the *CHALK*, separately adjust the `COLOR` and `OPACITY` of the board (background). This enables you to completely cover up the editor/visuals below for explaining concepts. Dim the *BOARD* if annotating or highlighting code (dim opacity of *CHALK*).
 
 You can even access the drawings within your p5 sketch!  
 
 ```
 p5live.chalkboard() // grabs active drawing
 p5live.chalkboard(#) // grab specific drawing (0 – 9)
+p5live.chalkboard(frameCount * .25) // cycle all ten (% in backend!)
 ```
 This drawing can then be displayed and played with as a manual drawing layer within your sketch:
 
@@ -228,14 +248,57 @@ For examples, see `DEMOS` » `_CANVAS` » `_canvas_chalkboard` + `..._animation`
 
 
 ### SNIPPETS  
-Add custom snippets to '/includes/demos/P5L_snippets.json'.  
-Load snippet via custom shortcut, `CTRL + SHIFT + key`  
+Snippets allow automatically adding chunks of code to your sketch within specific areas: global space, setup, draw – so you can quickly incorporate the necessary code for repeated workflows. Previously it was manually added to a .JSON file, but now there's a snippet editor built it!
 
-- `CTRL + SHIFT + A`, adds audio-reactive code.  
-- `CTRL + SHIFT + O`, adds OSC communication code.
+#### Shortcuts
+- `ALT + SHIFT + S`, toggle Snippets Editor, *create, modify*.  
+- `CTRL + SHIFT + S`, toggle Snippets Selector, *apply*.
+- Use arrow keys, tab, enter to apply snippets by keyboard only.
+
+*Default shortcut keys can be customized within `Settings`*
+
+#### Snippet Editor
+<img src="includes/images/snippets-editor.png" height="50px">  
+
+- `Select` snippet to edit or 'new' to create a new one
+- <img src="includes/icons/check-square.svg" height="12px"> Apply selected snippet.
+- <img src="includes/icons/copy.svg" height="12px"> Clone snippet, ie, 'Save As...'.
+- <img src="includes/icons/upload.svg" height="12px"> Import an exported snippet.
+- <img src="includes/icons/save.svg" height="12px"> Save changes to a custom shortcut.
+- <img src="includes/icons/edit-3.svg" height="12px"> Rename a custom shortcut.
+- <img src="includes/icons/download.svg" height="12px"> Export a custom shortcut.
+- <img src="includes/icons/trash.svg" height="12px"> Delete a custom shortcut.
+
+#### New Snippet
+- Toggle `Snippets Editor`.
+- Select 'new' to create a new snippet.
+- Add code within the global top, setup bottom, draw top, draw bottom, global bottom
+- <img src="includes/icons/copy.svg" height="12px"> `Clone Snippet` and give a custom name to save snippet.
+
+#### Snippet Selector
+<img src="includes/images/snippets-selector.png" height="50px">  
+
+- `Select` snippet to apply.
+- <img src="includes/icons/check-square.svg" height="12px"> Apply selected snippet.
+- <img src="includes/icons/file-text.svg" height="12px"> Edit selected snippet.
+
+When performing, this can be down entirely with the keyboard, `CTRL + SHIFT + S` to toggle the Snippet Selector, `down/up arrowkey` to select a preferred snippet, `tab` to move focus to the 'Apply Snippet' button, `Enter` to activate that button.
+
+#### Ace Snippets
+Ace Editor also has the ability to have autocomplete snippets of code blocks. To activate, type one out (can also use auto-complete to help you), then press `tab`. The following have been implemented (eventually this may also be easily customizable):
+
+- `libs`, inserts code for loading external libraries.
+- `p5`, adds p5 template incase removed
+- `hydraonly`, replace all code with this to only use hydra-synth
+- `sandbox`, adds //sandbox start/stop for eval hydra code
+- `hy5`, load HY5 library and sandbox for hydra code
+- `hy5-p5-hydra`, template for sending p5 into hydra
+- `hy5-hydra-p5`, template for sending hydra into p5
+- `hy5-hydra-p5-x4`, template for sending 4x hydra tex to p5
+- `hy5-hydra-p5-x4-demo`, demo for sending 4x hydra tex to p5
 
 ### LIBRARIES
-P5LIVE loads p5.js/p5.sound libraries by default. For additional libraries, load them remotely via [CDN host](https://www.jsdelivr.com/) or locally if running offline (ie. `/data/libs/`). Can also be used within `SyncData`!  
+P5LIVE loads p5.js + p5.sound libraries by default. For additional libraries, load them remotely via [CDN host](https://www.jsdelivr.com/) or locally if running offline (ie. create `/data/libs/`). Can also be used within `SyncData`!  
 
 Add this snippet to the top of your sketch, placing one path per array item:  
 
@@ -246,8 +309,8 @@ let libs = [
 ];
 ```
 
-#### <span style="text-decoration:line-through">p5.sound</span>
-To exclude `p5.sound` library (ie. for Tone.js), add `// no p5sound` anywhere in your code.  
+#### <span style="text-decoration:line-through">p5 or p5.sound</span>
+To exclude libraries `p5.js` (ie. testing other versions) or `p5.sound` (ie. for Tone.js), add `//no p5` or `// no p5sound` anywhere in your code.  
 See `_audio_gen_tonejs` demo for an example.
 
 ### SANDBOX
@@ -258,20 +321,20 @@ The main use case for this, is [hydra-synth](https://github.com/ojack/hydra-synt
 After importing the library, any changes made within the following tags:  
 
 ```js
-// sandbox
+// sandbox - start
 osc().out() // ... your hydra code here
-// sandbox
+// sandbox - stop
 ```
 – will only update the hydra-synth engine and won't effect p5.js recompiles!  
-See `DEMOS » _HYDRA` for additional examples.
+See `DEMOS » HY5` + `DEMOS » _HYDRA` for additional examples.
 
 ### ASSETS
 Loading custom assets (image/font/obj/audio/...):  
 
-- Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server ([imgur](https://imgur.com)/[glitch.com](https://glitch.com) images/videos, [GitHub](https://github.com) raw for ~anything)  
+- Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server ([imgbb](https://imgbb.com/)/[glitch.com](https://glitch.com) images/videos, [GitHub](https://github.com) raw for ~anything)  
 `loadImage('https://i.imgur.com/ijQzwsx.jpeg');`
-- Locally, if running offline (ie. `/data/images/`)  
-`loadImage('data/images/fish.png');`
+- Locally, if running offline-mode create a `/data` folder  
+`loadImage('data/images/fish.png');` (don't add anything to `/includes`!)
 
 ### VIEW ONLY MODE
 By special request (P5LIVE for remote meditation sessions?!), there's a `view only mode`, meaning everything is hidden (code + menu) and you'll only see the sketch running. Intended for COCODING sessions, where the admin can live-code while attendees enjoy and optionally interact with the visuals using their own mic or mouse. Anytime code is recompiled, the same happens here too. Add `edit=0` to your URL:  
@@ -282,21 +345,21 @@ You can also load a sketch by URL (for media installation), just add `sketch=nam
 Example: [\_meta\_P5LIVE](https://p5live.org/?sketch=_meta_P5LIVE)
 
 ### VISUALS-ONLY POPUP
-Incase you want to project or stream the visuals-only (no code + interface) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch a popup with a video feed of your P5LIVE canvas. 
+Incase you want to project or stream the visuals-only (no code + interface) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch a popup with a video feed of your P5LIVE canvas. Also great for PIP if running multiple instances of offline-mode.
 
 ### EXPORT / IMPORT
-Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.json` into the browser.
+Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.js`/`P5L_*****.json` into the browser. Single sketches are now imported and exported as plain .js for embedding anywhere. 
 
 See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals.  
 
 ### PERFORMANCE
 Lagging or retina display creates too large of a canvas?  
-Use `pixelDensity(1);` in `setup()`.
+Use `pixelDensity(1);` in `setup()` to prevent retina scaling.
 
 ### MIDI/OSC
 - MIDI works online/offline and is implemented with webmidi.js  
 For example, *demos/_input/_input_midi*
-- OSC works offline when using node.js/npm.  
+- OSC works offline.  
 For example,  *demos/_input/_input_osc* and run Processing sketch, [p5live\_osc\_setup](https://gist.github.com/ffd8/f9f33cc7461f8467f62d5a792dde53ca)  
 or use the OSC snippet (`CTRL + SHIFT + O`) and set host/in/out ports.  
 
@@ -307,11 +370,12 @@ Infinite loop? Broken code? P5LIVE now includes an infinite loop breaker, thus r
 Stops compiler, loads a new sketch and opens inspector to fix issue and save.
 - Add `#new` to URL and press `ENTER`.  
 Loads a new sketch.
-- If the browser has completely hung, (rare issue between MBP/Chrome/libraries)  
+- If the browser has completely hung, (rare [old] issue between MBP/Chrome/libraries)  
 `sudo killall coreaudiod` (first take off headphones + turndown stereo!)
 
 *Incase you need a loop to run more than 10000 times ||  1 second,  
-add `// noprotect` anywhere in your code.*
+add `// noprotect` anywhere in your code.  
+(except during COCODING sessions to protect peers)*
 
 ### EXTRA FUNCTIONS
 Additional custom functions are available in P5LIVE sketches:  
@@ -322,6 +386,8 @@ Additional custom functions are available in P5LIVE sketches:
 
 
 ## COCODING 
+Use COCODING to code together friends locally and remotely! The code is synced while the visuals are rendered locally. *If the remote server isn't working, please make an issue on Github!*
+
 #### COCODING PANEL DETAIL
 <img src="includes/images/menu-cocoding-inactive-7.png" width="220px">  
 
@@ -402,10 +468,10 @@ Have fun COCODING with keyboards, EEG-headsets, eye-trackers, ....?!
 
 - <img class="svg" src="includes/icons/record.svg" height="12px"> Press to start a RECODING session and record your live coding process.  
 
-<img src="includes/images/menu-recoding-extended-1.png" width="220px">  
+<img src="includes/images/menu-recoding-extended-2.png" width="220px">  
 
-**RECODING PANEL**
-- RECODING <sup>#/#</sub> step of steps in recording.
+**RECODING PANEL**  
+- RECODING <sup>#/#</sub> step of steps in recording.  
 - <img class="svg" src="includes/icons/pause-circle.svg" height="12px"> / <img class="svg" src="includes/icons/record.svg" height="12px"> Pause/Continue recording.  
 - <img class="svg" src="includes/icons/play.svg" height="12px"> / <img class="svg" src="includes/icons/pause.svg" height="12px"> Play/Pause playback.  
 - <img class="svg" src="includes/icons/sliders.svg" height="12px"> Playback settings toggle.  
@@ -413,62 +479,50 @@ Have fun COCODING with keyboards, EEG-headsets, eye-trackers, ....?!
 - <img class="svg" src="includes/icons/slash.svg" height="12px"> Reset RECODING.
 - Slider to scrub between recorded steps.
 
-**PLAYBACK SETTINGS**
-- [ ] Loop playback.  
-- [ ] Maximum time gap between keystrokes and time in seconds.  
-- Speed of playback
+**PLAYBACK SETTINGS**  
+- [ ] Loop, repeat playback.  
+- [ ] Max Gap, max time between keystrokes in seconds.  
+- [ ] CatMode, any key presses next keystroke  
+- Speed, overall playback speed  
 
 
 #### RECODING EXPLAINED
 RECODING allows you to record, playback, scrub and share your live coding process! Simply press record and all changes to the editor are saved with timestamps as a temporary history. Pausing the recording, enables playback, which switches to the  `recoding` sandbox within demos to prevent  data loss on the active sketch. To save changes midway from a RECODING step, use the <img class="svg" src="includes/icons/copy.svg" height="12px"> `Clone Sketch` button. Export your RECODING to share or playing back later. So long as the browser window is open, your history remains available until you press the Reset button, allowing you to start a new RECODING.
 
 #### RECODING API
-Dynamically load RECODING files via URL params for automated playback!
+Dynamically load RECODING files via URL params for automated playback!  
+Booleans accept `true/false` or `1/0`
 
-- ?recoding=path_to_recoding_file.json  
+- ?recoding=recoding_filepath.json  
 - &loop=true
 - &gaps=true
 - &gapsmax=5
 - &speed=1
 - &menu=false
 - &editor=true
+- &catmode=false
 
 ie. [`https://p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=true&gapsmax=0.1`](https://www.p5live.org/?recoding=includes/demos-data/recoding/demo.json&gaps=true&gapsmax=0.1)  
 
 
 
-## OFFLINE SERVER
-### Basic - Python  
-Use for quickest setup or to run multiple port instances (each with  own sketches storage).  
-*No COCODING / OSC with this technique.*  
+## OFFLINE MODE
 
-- [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone Github Repo](https://github.com/ffd8/P5LIVE)*  
-- MacOS – open `Terminal` // Windows – open `command prompt`  
-- type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER` 
-- check Python version, type `python --version`, press `ENTER` 
-	- `Python 2.0+`, type `python -m SimpleHTTPServer 5000`, press `ENTER`    
-	- `Python 3.0+`, type `python -m http.server 5000`, press `ENTER`    
-- P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
-- To quit, `CTRL + C` in Terminal (or command prompt)
-
-Port `5000` is suggested. For alternative, just type desired one in snippet above and remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
-
-### Fancy - nodejs/npm  
-Use for all features (COCODING / OSC) + optional HTTPS mode (see below). 
-
-- [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone Github Repo](https://github.com/ffd8/P5LIVE)*  
-- Install Node.js + NPM ([binary installers](https://nodejs.org/en/download/))  
+- [Download P5LIVE](https://github.com/ffd8/P5LIVE/archive/refs/heads/main.zip) *or [Clone in Github Desktop](x-github-client://openRepo/https://github.com/ffd8/P5LIVE)*  
+- Install node.js + npm package ([binary installers](https://nodejs.org/en/download/))  
 - MacOS – open `Terminal` // Windows – open `command prompt`  
 - type `cd` + `SPACEBAR` + drag/drop P5LIVE folder into window, press `ENTER`  
 - type `npm install`, press `ENTER`  
 - type `npm start`, press `ENTER`  (for custom port: `npm start ####`)
-- P5LIVE is live! visit » [http://localhost:5000](http://localhost:5000)
-- To quit, `CTRL + C` in Terminal (or command prompt)
+- P5LIVE is live! visit » [http://localhost:5001](http://localhost:5001)
+- type `CTRL + C`, to stop server.
 
-Port `5000` is suggested. For alternative, add desired port number to start command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localstorage which is unique per `domain:port`
+**Port `5001` is now default** since MacOS activated `5000` for AirPlay in 2021. If you've used P5LIVE offline in the past, start in a custom port, ie `npm start 5000`, do a complete backup from the Settings panel, then startup again with `npm start` and reimport that file for sketches and settings. 
+
+Alternatively, you can run multiple instances of P5LIVE offline (strange experiments galore!?) by adding any other port number to `npm start` command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localStorage which is unique and isolated per `domain:port`.
 
 ### HTTPS
-If using **Fancy** offline server, you may want to COCODE with peers on the same local network or even remotely around the world. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you access via `localhost`, all connected peers are simply `http` by default, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!
+If using offline server, you may want to COCODE with peers on the same local network or even remotely around the world. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you access via `localhost`, all connected peers are simply `http` by default, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!
 
 #### Local (same network, works offline):    
 - Start P5LIVE with `npm start https`, or custom port `npm start #### https`  
@@ -493,7 +547,7 @@ If using **Fancy** offline server, you may want to COCODE with peers on the same
 P5LIVE is possible thanks to these amazing open-source projects.  
 Listed in order of adoption:  
 
-- [p5.js](https://p5js.org), magic – v1.1.9
+- [p5.js](https://p5js.org), magic
 - [ace editor](https://ace.c9.io), code editor on top
 - [peeredit / rga.js](https://github.com/jorendorff/peeredit), syncing text for cocoding
 - [socket.io](https://socket.io/), websockets for cocoding

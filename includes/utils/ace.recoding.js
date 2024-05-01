@@ -27,6 +27,7 @@ class Recoding{
 		this.playing = false
 		this.recording = false
 		this.recordingLock = false
+		this.catMode = false
 		this.elms = {
 			steps: undefined,
 			range: undefined,
@@ -146,11 +147,7 @@ class Recoding{
 			}
 			let startTime = this.session.history[this.session.eventsCur].t
 
-			if (this.session.events.length > 0) {
-				for (let i = 0; i < this.session.events.length; i++) {
-					clearTimeout(this.session.events[i])
-				}
-			}
+			this.clearEvents()
 
 			// only reset if first event
 			if(this.session.eventsCur == 0){
@@ -159,14 +156,42 @@ class Recoding{
 			this.editorOut.setReadOnly(true)
 			this.editorOut.clearSelection()
 
-			for (let i = this.session.eventsCur; i < this.session.history.length; i++) {
-				this.createEvent(startTime, i)
+			if(!this.catMode){
+				for (let i = this.session.eventsCur; i < this.session.history.length; i++) {
+					this.createEvent(startTime, i)
+				}
 			}
 
 			this.recordLock(true)
 		}else{
-			this.init()
+			if(!this.catMode){
+				this.init()
+			}
 		}
+	}
+
+	playCat(){
+		if(this.session.eventsCur < this.session.history.length-1){
+			this.clearEvents()
+			this.createEvent(Date.now(), this.session.eventsCur)
+			// this.session.eventsCur++
+		}else{
+			if(this.loop){
+				this.session.eventsCur = 0
+			}
+		}
+	}
+
+	toggleCat(checked){
+		this.catMode = checked;
+		if(this.catMode){
+			this.clearEvents();	
+		}else{
+			if(this.playing){
+				this.play()
+			}
+		}
+		
 	}
 
 	createEvent(starttime, i) {
@@ -189,6 +214,10 @@ class Recoding{
 		}
 
 		let delayTimer = ((this.session.history[i].t-this.gapsVal) - starttime)
+
+		if(this.catMode){
+			// delayTimer = 0
+		}
 
 		let self = this
 		let evt = setTimeout(function(){
@@ -215,7 +244,7 @@ class Recoding{
 					self.elms.steps.innerHTML = (parseInt(rangeIndex) + 1) +'/'+ self.session.compiles.length
 				}
 			}
-			if(self.session.eventsCur >= self.session.history.length){
+			if(self.session.eventsCur >= self.session.history.length && !self.catMode){
 				self.playing = false
 				self.recordLock(false)
 				self.session.eventsCur = 0
@@ -229,13 +258,21 @@ class Recoding{
 				}
 			}
 
-			if (i == self.session.history.length - 1) {
+			if (i == self.session.history.length - 1 && !self.catMode) {
 				self.editorOut.setReadOnly(false)
 			}
 
 		}, delayTimer / parseFloat(self.speed))
 
 		this.session.events.push(evt)
+	}
+
+	clearEvents(){
+		if (this.session.events.length > 0) {
+			for (let i = 0; i < this.session.events.length; i++) {
+				clearTimeout(this.session.events[i])
+			}
+		}
 	}
 
 	scrubSet(){

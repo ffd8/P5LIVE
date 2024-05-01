@@ -47,6 +47,11 @@
 			z-index:-1;
 			margin:0;
 			opacity:100%;
+			
+		}
+		#chalk-type{
+			outline:none;
+			font-size:9pt;
 		}
 		#chalk-slate{
 			outline:none;
@@ -54,12 +59,15 @@
 		#nav{
 			position:fixed;
 			right:285px;
-			top:15px;
+			top:10px;
 			width:auto;
 			height:50px;
 			background:#111;
 			border:1px solid #eee;
 			color:#fff;
+			-webkit-user-select: none; /* Safari */
+			-ms-user-select: none; /* IE 10 and IE 11 */
+			user-select: none; /* Standard syntax */
 		}
 		#nav button{
 			height:30px;
@@ -134,8 +142,9 @@
 
 	let colBG, colPen;
 	let slider, butClear;
-	var chalkboard = [];
+	var chalkboard = [], chalkType = 'draw';
 	var chalkboardSel = 0;
+	var txt = ''
 
 	function setup() {
 		let cvn = createCanvas(windowWidth, windowHeight);
@@ -180,7 +189,7 @@
 			}, 500);
 		});
 
-		sliderSW = createSlider(1, 30, int(settings.strokeWeight));
+		sliderSW = createSlider(1, height/2, int(settings.strokeWeight));
 		sliderSW.parent('nav-stroke-weight');
 		sliderSW.addClass('sliders');
 		sliderSW.input(function(){
@@ -223,20 +232,70 @@
 	function draw() {
 		clear();
 		noCursor();
+		let adjustingBrush = false
 
 		chalkboard[chalkboardSel].stroke(colPen.color());
 		chalkboard[chalkboardSel].strokeWeight(sliderSW.value());
-		if(mouseIsPressed && (mouseY > nav.getBoundingClientRect().bottom || mouseX < nav.getBoundingClientRect().left)){
-			chalkboard[chalkboardSel].line(mouseX, mouseY, pmouseX, pmouseY)
+		if((mouseY > nav.getBoundingClientRect().bottom || mouseX < nav.getBoundingClientRect().left)){
+			if(mouseIsPressed){
+				if(chalkType == 'text'){
+					chalkboard[chalkboardSel].push()
+					chalkboard[chalkboardSel].noStroke()
+					chalkboard[chalkboardSel].fill(colPen.color())
+					chalkboard[chalkboardSel].textSize(sliderSW.value()*1.4)
+					chalkboard[chalkboardSel].text(txt, mouseX, mouseY)
+					chalkboard[chalkboardSel].pop()
+					// txt = ''
+				}else if(chalkType == 'erase'){
+					chalkboard[chalkboardSel].erase()
+					chalkboard[chalkboardSel].line(mouseX, mouseY, pmouseX, pmouseY)
+					chalkboard[chalkboardSel].noErase()
+				}else{
+					chalkboard[chalkboardSel].line(mouseX, mouseY, pmouseX, pmouseY)
+				}
+			}
+		}else{
+			adjustingBrush = true
 		}
 
 		image(chalkboard[chalkboardSel], 0, 0)
 
 		push();
 		fill(colPen.color())
-		stroke(150) // b or w or g??
-		strokeWeight(1)
-		ellipse(mouseX, mouseY, sliderSW.value())
+		
+		let mx = adjustingBrush ? width/2 : mouseX
+		let my = adjustingBrush ? height/2 : mouseY
+
+		if(chalkType == 'text'){
+			noStroke()
+			fill(colPen.color())
+			textSize(sliderSW.value()*1.4)
+			text(txt, mx, my)
+
+			if(txt == ''){
+				stroke(colPen.color())
+				strokeWeight(1 + frameCount*.05%2)
+				let cursorX = mx //+ textWidth(txt) + 1
+				line(cursorX, my, cursorX, my - sliderSW.value()*1)
+			}else{
+				stroke(150) // b or w or g??
+				strokeWeight(2)
+				line(mx-5, my, mx+5, my)
+				line(mx, my-5, mx, my+5)
+			}
+			
+		}else if(chalkType == 'erase'){
+			fill(150) // b or w or g??
+			strokeWeight(1)
+			ellipse(mx, my, sliderSW.value())
+		}else{
+			stroke(150) // b or w or g??
+			strokeWeight(1)
+			ellipse(mx, my, sliderSW.value())
+		}
+
+		
+		
 		pop();
 	}
 
@@ -257,6 +316,11 @@
 		return "#" + ((1 << 24) + (col[0] << 16) + (col[1] << 8) + col[2]).toString(16).slice(1);
 	}
 
+	function setChalk(val){
+		chalkType = val;
+		loop();
+	}
+
 	function setChalkboard(val){
 		chalkboardSel = val;
 		loop();
@@ -266,24 +330,44 @@
 	document.onkeydown = function(event){
 		// DELETE to clear drawing
 		if(event.keyCode == 8){
-			clearDrawing();
+			if(chalkType == 'text'){
+				txt = txt.slice(0, txt.length-1)
+			}else{
+				clearDrawing();
+			}
 		}
 
-		// hotswap drawings by #keys (1 = 0... both weird and normal)
 		if(event.keyCode >= 48 && event.keyCode <= 57){
+		// hotswap drawings by #keys (1 = 0... both weird and normal)
 			let cbSel = document.getElementById('chalk-slate');
 			let cbKey = event.keyCode - 49;
 			if(cbKey < 0){
 				cbKey = 9;
 			}
-			cbSel.value = cbKey;
-			chalkboardSel = cbKey;
+
+			if(chalkType != 'text'){
+				cbSel.value = cbKey;
+				chalkboardSel = cbKey;
+			}
 		}
 
-		// on CONTROL, return focus and activate CONTROL
 		if(event.keyCode == 17){
+		// on CONTROL, return focus and activate CONTROL
 			window.parent.focus();
 			window.setTimeout(function(){window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));}, 100);
+		}
+
+		loop();
+	}
+
+	function keyPressed(){
+		let excludedKeys = [57, 16, 8, 17, 18, 91, 27, 13, 37, 38, 39, 40, 93, 9, 20, ];
+		if(chalkType == 'text'){
+			if(!excludedKeys.includes(keyCode)){
+				txt += key
+			}else if(keyCode == 13){
+				txt += '\n'
+			}
 		}
 	}
 
@@ -313,7 +397,14 @@
 		<div class="nav-elm" style="border-right:1px solid #eee;">
 			<div class="nav-panel">
 				<div class="label panelname">CHALK</div>
-				<div></div>
+				<div>
+					<select id="chalk-type" onchange="setChalk(this.value); this.blur();">
+						<option value="draw">✏️ DRAW</option>
+						<option value="text">🔤 TEXT</option>
+						<option value="erase">🧽 ERASE</option>
+					</select>
+				</div>
+				<!-- <div><input type="checkbox" name="text"> TEXT</div> -->
 			</div>
 			<div class="nav-panel">
 				<div class="label">DRAWING</div>
