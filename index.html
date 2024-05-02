@@ -325,6 +325,10 @@
 						<input type="checkbox" id="settings-linenumbers" name="settings-linenumbers" value="settings-linenumbers"> Line Numbers
 					</div>
 
+					<div class="tippy-left" style="cursor:help;" data-title="Pulse on recompiles" onclick="pulseToggle();">
+						<input type="checkbox" id="settings-recompilepulse" name="settings-recompilepulse" value="settings-recompilepulse"> Recompile Pulse
+					</div>
+
 					<div class="tippy-left" style="cursor:help;" data-title="Automatic Autocomplete<br>If disabled (suggested), trigger with <div class='shortcut'>ALT + SPACE</div>" onclick="autocompleteToggle();">
 						<input type="checkbox" id="settings-autocomplete" name="settings-autocomplete" value="settings-autocomplete"> Auto Autocomplete
 					</div>
@@ -715,7 +719,7 @@ function println(msg){
 
 		/* INIT */
 		let currentVersion = '1.5.0';
-		let currentRevision = 46;
+		let currentRevision = 47;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -879,7 +883,7 @@ function println(msg){
 				}
 			},
 			'editor':{
-				'fontSize':15, 'keybinding':'keybinding', 'linenumbers':true, 'autocomplete': false, 'lockcode':true, 'passEditorKeys':false,
+				'fontSize':15, 'keybinding':'keybinding', 'linenumbers':true, 'autocomplete': false, 'lockcode':true, 'passEditorKeys':false, 'recompilepulse':true,
 			},
 			'snippets': {
 				'demo':{
@@ -966,6 +970,7 @@ function println(msg){
 		settingsConsoleMode = document.getElementById('settings-console-mode'),
 		settingsMenutab = document.getElementById('settings-menutab'),
 		settingsLinenumbers = document.getElementById('settings-linenumbers'),
+		settingsRecompilepulse = document.getElementById('settings-recompilepulse'),
 		settingsAutocomplete = document.getElementById('settings-autocomplete'),
 		settingsExportcode = document.getElementById('settings-exportcode'),
 		settingsLockDrag = document.getElementById('settings-lockdrag'),
@@ -1007,7 +1012,7 @@ function println(msg){
 		settings = getSettings(),
 		validCode = true, sketchesFirstTime = true,
 		sketchLoaded = false, forceRecompile = false, loadingInit = false,
-		paused = false, multitabWarning = false,
+		paused = false, multitabWarning = false, useRecompilePulse = true,
 		markerID = [], pulsemarkerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
 		p5vars = {frameCount:0, pframeCount:0, mouseX:0, mouseY:0}, newBG = '',
@@ -2297,8 +2302,10 @@ function println(msg){
 
 		
 		function recompilePulse(s = 0, e = editor.session.getLength()){
-			pulsemarkerID.push({id:editor.session.addMarker(new Range(s, 0, e, 9000), "ace_marker", "text")})
-			setTimeout(removePulseMarkers, 300)
+			if(useRecompilePulse){
+				pulsemarkerID.push({id:editor.session.addMarker(new Range(s, 0, e, 9000), "ace_marker", "text")})
+				setTimeout(removePulseMarkers, 300)
+			}
 		}
 
 		function addMarker(n){
@@ -2769,6 +2776,7 @@ function println(msg){
 			menutabToggleUpdate();
 			autocompleteUpdate();
 			linenumbersUpdate();
+			pulseUpdate();
 			lockDragUpdate();
 			exportcodeUpdate();
 			notifyToggleUpdate();
@@ -6796,6 +6804,21 @@ function println(msg){
 					showLineNumbers: true, // false
 					showGutter: true, // false
 				});
+			}
+		}
+
+		//linenumbers toggle
+		function pulseToggle(){
+			settings.editor.recompilepulse = !settings.editor.recompilepulse;
+			pulseUpdate();
+		}
+
+		function pulseUpdate(){
+			checkToggle('recompilepulse', settings.editor.recompilepulse, settingsRecompilepulse, 'Recompile Pulse');
+			if(!settings.editor.recompilepulse){
+				useRecompilePulse = false
+			}else{
+				useRecompilePulse = true
 			}
 		}
 

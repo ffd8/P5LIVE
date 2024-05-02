@@ -98,6 +98,7 @@ See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at
 - [x] Menu Tab, toggle menu tab. (hide if visible while VJ'ing). 
 - [x] Snapshot Code, export current code with each image snapshot. 
 - [x] Line Numbers, display code line numbers (and gutter features). 
+- [x] Recompile Pulse, flash compiled section of code. 
 - [ ] Auto Autocomplete, useful for learning, or use `CTRL + SPACE` on demand. 
 - [x] Lock Code on Drag, locks code editor on mouse drag to prevent displacing code. 
 - [ ] Pass Editor Keys, keypresses from editor to p5 canvas (hide editor otherwise).
