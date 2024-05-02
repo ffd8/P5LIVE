@@ -892,6 +892,7 @@ button[disabled]{
 	border:1px solid #888;
 	outline:none;
 	background:none;
+	background:#222;
 	color:#fff;
 }
 .menu-settings-dropdown option{
@@ -937,7 +938,6 @@ button[disabled]{
 	display:none;
 	outline:none;
 	border:1px solid #888;
-	background:none;
 	color:#fff;
 	cursor:help;
 }
