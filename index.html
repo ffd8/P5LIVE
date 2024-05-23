@@ -173,7 +173,7 @@
 					</div>
 					<div class="menu-sketches-buttons hide-cocoding"  style="margin-top:0px;border-bottom:0;">
 						<div id="recoding-range-holder" class="menu-button" style="flex: 4;min-width: 80%;background:#555;box-sizing: border-box;"> <!-- border-left:1px solid #888; -->
-							<input class="tippy" data-title="Scrub" id="recoding-range" type="range" disabled="disabled" min=0 max=1 value=0 name="" style="width: 96%;height:20px;" onmousedown="recodingStop()" oninput="recodingScrub(this.value)">
+							<input class="tippy" data-title="Scrub" id="recoding-range" type="range" disabled="disabled" min=0 max=1 value=0 name="" style="width: 96%;height:20px;" onmousedown="recodingStop()" onmouseup="recoding.scrubStop()" oninput="recodingScrub(this.value)">
 						</div>
 					</div>
 					<div id="p5live-buttons-recoding-settings" class="menu-settings-recoding menu-contents" style="display:none;">
@@ -333,7 +333,7 @@
 						<input type="checkbox" id="settings-autocomplete" name="settings-autocomplete" value="settings-autocomplete"> Auto Autocomplete
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Editor locked onmousedragged, <br>prevents errors in displaced code" onclick="lockDragToggle();">
+					<div class="tippy-left" style="cursor:help; display:none;" data-title="Editor locked onmousedragged, <br>prevents errors in displaced code" onclick="lockDragToggle();">
 						<input type="checkbox" id="settings-lockdrag" name="settings-lockdrag" value="settings-lockdrag"> Lock Code on Drag
 					</div>
 
@@ -357,8 +357,12 @@
 						<input type="checkbox" id="settings-timestamptoggle" name="settings-timestamptoggle" value="settings-timestamptoggle"> Timestamp Exports
 					</div>
 
-					<div class="tippy-left" style="cursor:help;" data-title="Autosave session code <br>if server connection lost?" onclick="cocodingAutosaveToggle();">
-						<input type="checkbox" id="settings-cocodingautosavetoggle" name="settings-cocodingautosavetoggle" value="settings-cocodingautosavetoggle"> Backup COCODING
+					<div class="tippy-left" style="cursor:help;" data-title="Always show cursor flags or<br>only with mouseover userlist" onclick="cocodingFlagsToggle();">
+						<input type="checkbox" id="settings-cocodingflagstoggle" name="settings-cocodingflagstoggle" value="settings-cocodingflagstoggle"> COCODING Flags
+					</div>
+
+					<div class="tippy-left" style="cursor:help;" data-title="Autosaves session code <br>if server connection lost" onclick="cocodingAutosaveToggle();">
+						<input type="checkbox" id="settings-cocodingautosavetoggle" name="settings-cocodingautosavetoggle" value="settings-cocodingautosavetoggle"> COCODING Autosave
 					</div>
 
 					<div id="settings-checkupdatestoggle-holder" class="tippy-left" style="cursor:help;" data-title="Ping Github for updates to OFFLINE mode" onclick="checkupdatesToggle();">
@@ -694,7 +698,7 @@ function println(msg){
 	<!-- Scripts -->
 	<script src="includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"></script>
-	<script src="includes/utils/ace.recoding.js?8"></script>
+	<script src="includes/utils/ace.recoding.js?9"></script>
 	<script src="includes/utils/ace-snippets.js?8"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.min.js"></script>
@@ -718,8 +722,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.5.0';
-		let currentRevision = 47;
+		let currentVersion = '1.5.1';
+		let currentRevision = 48;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -741,7 +745,7 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -767,6 +771,7 @@ function println(msg){
 			'multitabToggle':true,
 			'timestampToggle':true,
 			'cocodingAutosaveToggle':true,
+			'cocodingFlagsToggle':false,
 			'checkupdates':true,
 			'debugMode': false,
 			'editMode':true,
@@ -980,6 +985,7 @@ function println(msg){
 		settingsMultitab = document.getElementById('settings-mutitabtoggle'),
 		settingsTimestamp = document.getElementById('settings-timestamptoggle'),
 		settingsCocodingAutosave = document.getElementById('settings-cocodingautosavetoggle'),
+		settingsCocodingFlags = document.getElementById('settings-cocodingflagstoggle'),
 		settingsCheckupdates = document.getElementById('settings-checkupdatestoggle'),
 		settingsCheckupdatesHolder = document.getElementById('settings-checkupdatestoggle-holder'),
 		settingsTheme = document.getElementById('menu-settings-theme'),
@@ -1026,7 +1032,7 @@ function println(msg){
 		cocodingRecompile = false,
 		p5pop, p5popStream, p5popActive = false,
 		changelog = {show:false, revision:0, version:0},
-		recoding
+		recoding, exhibitMode = false
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
@@ -1057,7 +1063,7 @@ function println(msg){
 
 		editor.setOptions({
 			showPrintMargin: false,
-			animatedScroll: false,
+			animatedScroll: true,
 			displayIndentGuides: false,
 			useWorker: true,
 			showLineNumbers: false,
@@ -1264,7 +1270,7 @@ function println(msg){
 				afterOpen: function(){
 					document.getElementsByClassName('vex-dialog-prompt-input')[0].select()
 					setTimeout(function(){recodingVex.form[1].innerHTML = 'Export'}, 0) // vex rename button!
-					vexSmall(this.rootEl)
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -1287,7 +1293,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 			}
@@ -1407,14 +1413,8 @@ function println(msg){
 			}
 		}
 
-		function vexSmall(elm){
-			elm.classList.add('vex-small');
-			// let elements = document.getElementsByClassName('vex');
-			// for (let i in elements) {
-			// 	if (elements.hasOwnProperty(i)) {
-			// 		elements[i].classList.add('vex-small')// += ' vex-small';
-			// 	}
-			// }
+		function vexClass(elm, className){
+			elm.classList.add(className);
 		}
 
 		let includeScripts = {
@@ -1454,9 +1454,9 @@ function println(msg){
 					// this code is based on ace/layer/marker.js
 					let screenPos = session.documentToScreenPosition(pos.row, pos.column)
 					let aceGutter = document.getElementsByClassName('ace_gutter')[0].offsetWidth
-					let height = config.lineHeight;
+					let height = config.lineHeight*1.4;
 					let width = config.characterWidth;
-					let top = markerLayer.$getTop(screenPos.row, config);
+					let top = markerLayer.$getTop(screenPos.row, config) - height*.3;
 					let left = markerLayer.$padding + aceGutter + screenPos.column * width;
 
 					// update if exists + rebuild on textsize change
@@ -1475,19 +1475,19 @@ function println(msg){
 					el.style.top = top + 'px';
 					el.style.left = left + 'px';
 					if(pos.id != settings.cocoding.nick){
-						el.style.borderLeft = '3px solid ' + pos.color;
+						el.style.borderLeft = '3px solid ' + pos.color + 'aa';
 					}else{
 						let cursorSelf = document.getElementsByClassName('ace_cursor')[0];
-						cursorSelf.style.borderColor = pos.color;
+						cursorSelf.style.borderColor = pos.color + 'aa';
 						el.style.left = (left+3) + 'px';
 					}
 					el.style.zIndex = 9999999;
 					el.style.color = '#000';
 					el.style.cursor = 'help';
-					if(!showCursors){
+					if(!showCursors && !settings.cocodingFlagsToggle){ // *** showcursors
 						el.style.display = 'none';
 					}
-					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+';top:-8pt;white-space: nowrap;">'+pos.id+'</div>';
+					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+'aa;left:0px;white-space: nowrap;line-height:1em;">'+pos.id+'</div>';
 					p5editor.appendChild(el);
 				}
 			}
@@ -1504,7 +1504,7 @@ function println(msg){
 				this.initialized = false;
 				this.socket = '';
 				this.namespace = namespace;
-				if(!p5l.remote){
+				if(!p5l.remote){ //   && !developBranch
 					this.socket = io('/' + this.namespace, { transports: ['websocket'],secure: true, query : {nick : settings.cocoding.nick}}); // io('http://localhost:5000/' + this.namespace);
 				}else{
 					if(developBranch){
@@ -1900,13 +1900,12 @@ function println(msg){
 					vex.dialog.alert({
 						unsafeMessage: 'COCODING – Connection lost...<br>Session code cloned, just to be safe!',
 						afterOpen: function(){
-							vexSmall(this.rootEl);
+							vexClass(this.rootEl, 'vex-small')
 						}
 					})
-
-					settings.cocoding.error = true;
-					updateSettings();
 				}
+				settings.cocoding.error = true;
+				updateSettings();
 				// console.log('WSx error: '+settings.cocoding.error);
 			}
 
@@ -1915,10 +1914,15 @@ function println(msg){
 					cloneSketchCOCODING();
 					settings.cocoding.error = true;
 					updateSettings();
+				}else if(exhibitMode){
+					console.log('reconnected quietly')
+					settings.cocoding.error = false
+					updateSettings()
+					return false
 				}
 
 				vex.dialog.alert({
-					unsafeMessage: 'COCODING – Server Rebooted<br><br>Session code auto-saved! Manually inspect, copy + paste it into the session.<br>',
+					unsafeMessage: 'COCODING – Server Reconnected<br><br>Session code auto-saved! Manually inspect, copy + paste it into the session.<br>',
 					callback: function (value) {
 						if (value) {
 							settings.cocoding.error = false;
@@ -1927,7 +1931,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 
@@ -1986,7 +1990,7 @@ function println(msg){
 					},
 					afterOpen: function(){
 						loadTippy();
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 						document.getElementById('cocodingcolor').style.background = settings.cocoding.color;
 						let defaultColor = '#00aa00';
 
@@ -2225,6 +2229,9 @@ function println(msg){
 		}
 
 		function hideUsers(){
+			if(settings.cocodingFlagsToggle){
+				return false
+			}
 			let cursorSel = document.getElementsByClassName('cursor');
 			for(let i=0; i < cursorSel.length; i++){
 				cursorSel[i].style.display = 'none';
@@ -2785,6 +2792,7 @@ function println(msg){
 			timestampToggleUpdate();
 			checkupdatesToggleUpdate();
 			cocodingAutosaveToggleUpdate();
+			cocodingFlagsToggleUpdate();
 			passEditorKeysUpdate();
 			loadTheme();
 			loadBackup();
@@ -2825,6 +2833,10 @@ function println(msg){
 			}else{
 				loaderSub.innerHTML = 'shortcuts...';
 				updateShortcuts();
+			}
+
+			if(checkParam('exhibit') && boolParam('exhibit')){
+				exhibitMode = true
 			}
 
 			// load sketch by param
@@ -3000,7 +3012,7 @@ function println(msg){
 							vex.dialog.alert({
 								unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one to avoid data loss.',
 								afterOpen: function(){
-									vexSmall(this.rootEl);
+									vexClass(this.rootEl, 'vex-small')
 								},
 								callback: function(){
 									multitabWarning = false;
@@ -3010,6 +3022,20 @@ function println(msg){
 				};
 				setTimeout(function(){window.addEventListener('storage', onLocalStorageEvent, false);}, 0);
 			}
+
+			// prevent external links exhibitmode
+			if(exhibitMode){
+				preventLinks()
+			}
+
+		}
+
+		function preventLinks(){
+		    var anchors = document.getElementsByTagName("a");
+		    console.log(anchors)
+		    for (var i = 0; i < anchors.length; i++) {
+		        anchors[i].onclick = function() {return false;};
+		    }
 		}
 
 		function legacySettings(){
@@ -3154,7 +3180,7 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -3163,7 +3189,7 @@ function println(msg){
 			vex.dialog.alert({
 				unsafeMessage:'Exit COCODING to change settings.',
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				}
 			});
 		}
@@ -3710,7 +3736,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 
@@ -4528,7 +4554,7 @@ function println(msg){
 				}
 			},
 			afterOpen: function(){
-				vexSmall(this.rootEl);
+				vexClass(this.rootEl, 'vex-small')
 			}
 		})
 		}
@@ -5233,6 +5259,9 @@ function println(msg){
 				focusFirstInput : false,
 				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="popup-editor vex-long">'+inspectCode+'</div>',
 				callback: function (value) {},
+				afterOpen: function(){
+					vexClass(this.rootEl, 'vex-padding')
+				},
 				buttons: [
 				!itemLocked ? {
 					type: 'submit',
@@ -5303,7 +5332,7 @@ function println(msg){
 										unsafeMessage:'"'+newName +'" already exists. <br>Pick a new name',
 										callback: function(){renameItem(newName, itemType)},
 										afterOpen: function(){
-											vexSmall(this.rootEl);
+											vexClass(this.rootEl, 'vex-small')
 										}
 									})
 									return false;
@@ -5359,7 +5388,7 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -5680,7 +5709,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 			}
@@ -6282,6 +6311,10 @@ function println(msg){
 				tidyCode(editor);
 				editor.focus()
 
+				if(!settings.cocoding.active){
+					localStorage[settings.fileName] = editor.getValue();
+				}
+
 				// return cursor to previous position (** fix if blank line)
 				let curLines = editor.getValue().split('\n')
 				if(curLineText != ''){
@@ -6496,7 +6529,7 @@ function println(msg){
 										unsafeMessage:'"'+newName +'" already exists. <br>Pick a new name',
 										callback: function(){snippetsUpdate(mode, newName)},
 										afterOpen: function(){
-											vexSmall(this.rootEl);
+											vexClass(this.rootEl, 'vex-small')
 										}
 									})
 								}
@@ -6527,7 +6560,7 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -6550,39 +6583,40 @@ function println(msg){
 			// editor.commands.removeCommands(dropCommands);
 		}
 
-		function addSnippet(loadSnippet){
-			let snippetIndex = snippets.map(function(d) { return d['key']; }).indexOf(loadSnippet);
-			if(snippetIndex == -1){
-				return false;
-			}
-			let snippetCode = snippets[snippetIndex].code;
-			let addGlobalTop = snippetCode.global.top;
-			let addGlobalBottom = snippetCode.global.bottom;
-			let addSetup = snippetCode.setup;
-			let addDrawTop = snippetCode.draw.top;
-			let addDrawBottom = snippetCode.draw.bottom;
+		// ** replaced with applySnippet()
+		// function addSnippet(loadSnippet){
+		// 	let snippetIndex = snippets.map(function(d) { return d['key']; }).indexOf(loadSnippet);
+		// 	if(snippetIndex == -1){
+		// 		return false;
+		// 	}
+		// 	let snippetCode = snippets[snippetIndex].code;
+		// 	let addGlobalTop = snippetCode.global.top;
+		// 	let addGlobalBottom = snippetCode.global.bottom;
+		// 	let addSetup = snippetCode.setup;
+		// 	let addDrawTop = snippetCode.draw.top;
+		// 	let addDrawBottom = snippetCode.draw.bottom;
 
-			let curCode = editor.getValue();
-			let curPos = editor.getCursorPosition()
-			let curLineText = editor.session.getLine(curPos.row);
+		// 	let curCode = editor.getValue();
+		// 	let curPos = editor.getCursorPosition()
+		// 	let curLineText = editor.session.getLine(curPos.row);
 
-			let codeGlobalTop = addGlobalTop + '\n' + curCode;
-			let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
-			let codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
-			let codeDrawBottom = addCode(codeDrawTop, addDrawBottom, 'draw', 'bottom');
-			let codeGlobalBottom = codeDrawBottom + '\n\n' + addGlobalBottom;
+		// 	let codeGlobalTop = addGlobalTop + '\n' + curCode;
+		// 	let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
+		// 	let codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
+		// 	let codeDrawBottom = addCode(codeDrawTop, addDrawBottom, 'draw', 'bottom');
+		// 	let codeGlobalBottom = codeDrawBottom + '\n\n' + addGlobalBottom;
 
-			editor.setValue(codeGlobalBottom, 1);
-			tidyCode(editor);
+		// 	editor.setValue(codeGlobalBottom, 1);
+		// 	tidyCode(editor);
 
-			// return cursor to previous position (** fix if blank line)
-			let curLines = editor.getValue().split('\n')
-			if(curLineText != ''){
-				let curRow = curLines.indexOf(curLineText)
-				editor.moveCursorTo(curRow, curPos.column);
-				editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
-			}
-		}
+		// 	// return cursor to previous position (** fix if blank line)
+		// 	let curLines = editor.getValue().split('\n')
+		// 	if(curLineText != ''){
+		// 		let curRow = curLines.indexOf(curLineText)
+		// 		editor.moveCursorTo(curRow, curPos.column);
+		// 		editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
+		// 	}
+		// }
 
 		function addCode(codeBase, codeInsert, funName, codePos){
 			let tempCode, tempPos = addPosition(codeBase, funName);
@@ -6902,7 +6936,7 @@ function println(msg){
 			checkToggle('timestamptoggle', settings.timestampToggle, settingsTimestamp, 'Timestamp Exports');
 		}
 
-		// timestamp exports toggle
+		// autosave if server connection lost
 		function cocodingAutosaveToggle(){
 			settings.cocodingAutosaveToggle = !settings.cocodingAutosaveToggle;
 			cocodingAutosaveToggleUpdate();
@@ -6912,7 +6946,17 @@ function println(msg){
 			checkToggle('cocodingautosavetoggle', settings.cocodingAutosaveToggle, settingsCocodingAutosave, 'COCODING Autosave');
 		}
 
-		// timestamp exports toggle
+		// always show user flags
+		function cocodingFlagsToggle(){
+			settings.cocodingFlagsToggle = !settings.cocodingFlagsToggle;
+			cocodingFlagsToggleUpdate();
+		}
+
+		function cocodingFlagsToggleUpdate(){
+			checkToggle('cocodingflagstoggle', settings.cocodingFlagsToggle, settingsCocodingFlags, 'COCODING Flags');
+		}
+
+		// check P5LIVE version updates
 		function checkupdatesToggle(){
 			settings.checkupdatesToggle = !settings.checkupdatesToggle;
 			checkupdatesToggleUpdate();
@@ -7347,7 +7391,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 			}
@@ -7368,12 +7412,15 @@ function println(msg){
 				let markedReadme = marked(request.responseText, markedOptions);
 				let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
 				markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
-				let p5liveabout = '<div id="about-alert" class="vex-long">'+markedReadme+'</div>';
+				let p5liveabout = '<div class="vex-about vex-long">'+markedReadme+'</div>';
 
 				vex.dialog.alert({
 					unsafeMessage:p5liveabout,
 					afterOpen: function(){
 						vexFocus();
+						if(exhibitMode){
+							preventLinks()
+						}
 					}
 				})
 			});
@@ -7383,7 +7430,7 @@ function println(msg){
 			// changelog.revision
 			let portWarning = ''
 			if(!p5l.remote){
-				portWarning = `<br><br><b>v1.5.0 now uses port :5001 by default! Restart offline-mode \`npm start 5000\` for sketches and/or backup everything then switch to :5001.</b>`
+				portWarning = `<br><br><b>v1.5.0+ now uses port :5001 by default! Restart offline-mode \`npm start 5000\` for sketches and/or backup everything then switch to :5001.</b>`
 			}
 			let changeUpdate = `
 				<h1 style="font-size:1.5em;">P5LIVE</h1>
@@ -7393,7 +7440,7 @@ function println(msg){
 			vex.dialog.alert({
 				unsafeMessage:changeUpdate,
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 					vexFocus();
 				}
 			});
@@ -7685,8 +7732,10 @@ function println(msg){
 
 					}
 
-					let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">p5.js website reference →</a>';
+					if(!exhibitMode){
+						let refLink = '<br><a href="https://p5js.org/reference/#/p5/'+grabRef+'" target="_blank">p5.js website reference →</a>';
 						ref.innerHTML += refLink;
+					}
 
 					hljs.configure({useBR: true});
 					document.querySelectorAll('.ref-example').forEach((block) => {
@@ -8051,14 +8100,17 @@ function println(msg){
 				}
 			}
 
+			
+			// *** disabling, too many cases that need readonly set
+
 			// prevent drag+drop+shift of code, while mouseDragging visuals
-			if(event.type == 'mousedown' && settings.editor.lockcode){
-				editor.setReadOnly(true);
-			}else if(event.type == 'mouseup'){
-				if(!settings.cocoding.active || (settings.cocoding.active && !settings.cocoding.error && (settings.cocoding.level == 'admin' || settings.cocoding.writemode || !settings.cocoding.lockdown))){
-					editor.setReadOnly(false);
-				}
-			}
+			// if(event.type == 'mousedown' && settings.editor.lockcode){
+			// 	editor.setReadOnly(true);
+			// }else if(event.type == 'mouseup'){
+			// 	if(!settings.cocoding.active || (settings.cocoding.active && !settings.cocoding.error && (settings.cocoding.level == 'admin' || settings.cocoding.writemode || !settings.cocoding.lockdown))){
+			// 		editor.setReadOnly(false);
+			// 	}
+			// }
 
 		}
 
@@ -8136,6 +8188,10 @@ function println(msg){
 
 		/* Stream Visuals only to another window */
 		function popStream(force){
+			if(exhibitMode){
+				return false
+			}
+
 			if(force){
 				p5popActive = true;
 			}
@@ -8217,7 +8273,7 @@ function println(msg){
 			vex.dialog.alert({
 				unsafeMessage:txt,
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -8303,7 +8359,7 @@ function println(msg){
 						}
 					},
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 			}else{
@@ -8455,6 +8511,7 @@ function println(msg){
 					e.preventDefault();
 				},
 				afterOpen: function(){
+					vexClass(this.rootEl, 'vex-padding')
 					syncdataEditor = ace.edit("syncdata");
 					syncdataEditor.setTheme(settings.theme);
 					syncdataEditor.session.setMode('ace/mode/javascript');
@@ -8493,6 +8550,7 @@ function println(msg){
 					editorInit = false;
 				},
 				afterClose: function(){
+
 					if(reloadVex){
 						vex.close(reloadAlert);
 						syncdataWindow();
@@ -8533,7 +8591,7 @@ function println(msg){
 					let thisVex = vex.dialog.alert({
 						unsafeMessage:'Can\'t remove P5LIVE preset...',
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 					},
 					afterClose: function(){
 						syncdataWindow();
@@ -8562,7 +8620,7 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				},
 				afterClose: function(){
 					syncdataWindow();
@@ -8627,7 +8685,7 @@ function println(msg){
 						}
 					}],
 					afterOpen: function(){
-						vexSmall(this.rootEl);
+						vexClass(this.rootEl, 'vex-small')
 						setTimeout(function(){document.getElementById('presetname-input').focus();}, 100);
 					},
 					afterClose: function(){
@@ -8748,7 +8806,7 @@ function println(msg){
 				let thisVex = vex.dialog.alert({
 					unsafeMessage:'No COCODING snippet found. <br>Check it\'s preceded by:<br><pre>'+cocodeBreak+'</pre>',
 				afterOpen: function(){
-					vexSmall(this.rootEl);
+					vexClass(this.rootEl, 'vex-small')
 				}
 				})
 				return false;

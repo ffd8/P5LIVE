@@ -1,14 +1,7 @@
 # P5LIVE
-v 1.5.0  
+v 1.5.1  
 cc [teddavis.org](http://teddavis.org) – 2019 - 2024  
 p5.js collaborative live-coding vj environment!
-
-## NEWS
-*Dear P5LIVE community, I'd love to showcase your documentation in an upcoming exhibition, Swiss Design Awards (May 25 – June 16), and therefore need documentation (videos + images) from performances / workshops / installations / streams / etc. that used this tool.  
-See forms for details and many thanks in advance! Deadlines: May 20, 2024*
-
-- 📋 [#P5LIVE in the #WILD](https://docs.google.com/forms/d/e/1FAIpQLScjC8VWb5W8eIpjv1hiQYFMKMG6IFnYMj1fyf43eg4fZjm7uQ/viewform?usp=sf_link), *share your videos/images documentation*
-- 📋 [#COCODING JAM](https://docs.google.com/forms/d/e/1FAIpQLSdywtibV6AEekbn14DHHhYZaH7Q7eotmf-ecVPcoAl1PVrVUA/viewform?usp=sf_link), *participate in the exhibition via COCODING!*
 
 ## SHORTCUTS
 ### P5LIVE (default)
@@ -100,13 +93,14 @@ See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at
 - [x] Line Numbers, display code line numbers (and gutter features). 
 - [x] Recompile Pulse, flash compiled section of code. 
 - [ ] Auto Autocomplete, useful for learning, or use `CTRL + SPACE` on demand. 
-- [x] Lock Code on Drag, locks code editor on mouse drag to prevent displacing code. 
+<!--- [x] Lock Code on Drag, locks code editor on mouse drag to prevent displacing code. (temp remove)-->
 - [ ] Pass Editor Keys, keypresses from editor to p5 canvas (hide editor otherwise).
 - [x] Notifications, display notifications (shortcut settings + chat). 
 - [x] Tooltips, displays extra info on hover. 
 - [x] Multi-P5LIVE Warning, if opened multiple times can lose sync of sketches. 
 - [x] Timestamp Exports, adds _YYYYMMDD_HHMMSS to filenames.  
-- [x] Backup COCODING, autosave session code if server/internet lost.  
+- [ ] COCODING Flags, show cursor flags or only with mouseover userlist.  
+- [x] COCODING Autosave, autosave session code if server/internet lost.  
 - [x] Check Updates, check Github for updates (offline-mode only).  
 - Backup, [off], saves/downloads P5LIVE (sketches + settings) at intervals. `Now` - on demand. *Set `Daily` in offline-mode*.  
 - Code Size, `15pt` adjust font size of editor.  
@@ -341,6 +335,9 @@ Loading custom assets (image/font/obj/audio/...):
 By special request (P5LIVE for remote meditation sessions?!), there's a `view only mode`, meaning everything is hidden (code + menu) and you'll only see the sketch running. Intended for COCODING sessions, where the admin can live-code while attendees enjoy and optionally interact with the visuals using their own mic or mouse. Anytime code is recompiled, the same happens here too. Add `edit=0` to your URL:  
 - COCODING, `/?cc=*****&edit=0`  
 - Solo, `/?edit=0`
+
+Similarly you can also use `?readonly=1`, for a readonly editor.  
+Incase of exhibit, use `?exhibit=1`, to disable links.  
 
 You can also load a sketch by URL (for media installation), just add `sketch=name_of_sketch` !  
 Example: [\_meta\_P5LIVE](https://p5live.org/?sketch=_meta_P5LIVE)

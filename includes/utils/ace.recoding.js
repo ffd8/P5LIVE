@@ -171,7 +171,7 @@ class Recoding{
 	}
 
 	playCat(){
-		if(this.session.eventsCur < this.session.history.length-1){
+		if(this.session.eventsCur < this.session.history.length){
 			this.clearEvents()
 			this.createEvent(Date.now(), this.session.eventsCur)
 			// this.session.eventsCur++
@@ -231,9 +231,13 @@ class Recoding{
 	            self.editorOut.session.doc.applyDelta(k.d)
             }else{
 				self.editorOut.session.doc.applyDelta(k.d)
+				self.editorOut.moveCursorTo(k.d.start.row, k.d.start.column)
+				
+				self.editorOut.renderer.scrollCursorIntoView({row: k.d.end.row, column: k.d.end.column}, 0.5) // in view
+				// self.editorOut.renderer.scrollToLine(k.d.end.row, true, true); // constant follow
 			}
+			
 
-			self.session.eventsCur++
 			if(self.session.compiles.indexOf(self.session.eventsCur) != -1){
 				let rangeIndex = self.session.compiles.indexOf(self.session.eventsCur)
 				if(self.elms.range){
@@ -244,6 +248,9 @@ class Recoding{
 					self.elms.steps.innerHTML = (parseInt(rangeIndex) + 1) +'/'+ self.session.compiles.length
 				}
 			}
+
+			self.session.eventsCur++
+
 			if(self.session.eventsCur >= self.session.history.length && !self.catMode){
 				self.playing = false
 				self.recordLock(false)
@@ -258,9 +265,10 @@ class Recoding{
 				}
 			}
 
-			if (i == self.session.history.length - 1 && !self.catMode) {
-				self.editorOut.setReadOnly(false)
+			if (i == self.session.history.length - 1 && !self.catMode && !self.loop) {
+				// self.editorOut.setReadOnly(false)
 			}
+
 
 		}, delayTimer / parseFloat(self.speed))
 
@@ -341,6 +349,10 @@ class Recoding{
 		if(tempDeltas.length > 0){
 			this.editorOut.setValue(tempdoc.getValue(), 1)
 			this.editorOut.moveCursorTo(curPos.row, curPos.column)
+			// console.log(curPos.row)
+			// this.editorOut.scrollToLine(curPos.row);
+			this.editorOut.renderer.scrollCursorIntoView({row: curPos.row, column: curPos.column}, 0.5)
+			// this.editorOut.renderer.scrollToLine(curPos.row, true, true);
 		}
 
 		this.recordLock(true)
