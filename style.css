@@ -411,7 +411,7 @@ h2{
 	position:relative;
 	width:100%;
 	height:25px;
-	background:#222;
+	background:rgba(34, 34, 34, .5);
 	color:#fff;
 	border:none;
 	outline:none;
@@ -1071,7 +1071,7 @@ button[disabled]{
 	height:auto;
 	overflow:hidden;
 	display:block;
-	background:#333;
+	background:rgba(51, 51, 51, .75);
 	margin:0px;
 	padding:0px;
 	min-height:35px;
@@ -1242,24 +1242,24 @@ li{
 
 /* custom scrollbar for sketches */
 /* width */
-*::-webkit-scrollbar, .menu-sketches-holder::-webkit-scrollbar, .menu-settings::-webkit-scrollbar {
+*::-webkit-scrollbar, .menu-sketches-holder::-webkit-scrollbar, .menu-settings::-webkit-scrollbar, #refholder::-webkit-scrollbar {
   width: 8px;
   height: 10px;
 }
 
 /* Track */
-*::-webkit-scrollbar-track, .menu-sketches-holder::-webkit-scrollbar-track, .menu-settings::-webkit-scrollbar-track {
-  background: #333;
+*::-webkit-scrollbar-track, .menu-sketches-holder::-webkit-scrollbar-track, .menu-settings::-webkit-scrollbar-track, #refholder::-webkit-scrollbar-track {
+  background: #222;
 }
 
 /* Handle */
-*::-webkit-scrollbar-thumb, .menu-sketches-holder::-webkit-scrollbar-thumb, .menu-settings::-webkit-scrollbar-thumb {
-  background: #aaa;
+*::-webkit-scrollbar-thumb, .menu-sketches-holder::-webkit-scrollbar-thumb, .menu-settings::-webkit-scrollbar-thumb, #refholder::-webkit-scrollbar-thumb {
+  background: #555;
 }
 
 /* Handle on hover */
-*::-webkit-scrollbar-thumb:hover, .menu-sketches-holder::-webkit-scrollbar-thumb:hover, .menu-settings::-webkit-scrollbar-thumb:hover {
-  background: #aaa;
+*::-webkit-scrollbar-thumb:hover, .menu-sketches-holder::-webkit-scrollbar-thumb:hover, .menu-settings::-webkit-scrollbar-thumb:hover, #refholder::-webkit-scrollbar-thumb:hover {
+  background: #666;
 }
 
 /* hide main editor scrollbars */
@@ -1309,7 +1309,7 @@ li{
 	right:0;
 	color:#fff;
 	overflow:auto;
-	width:250px;
+	width:245px;
 	height:100vh;
 	font-size:8pt;
 	float:right;
@@ -1320,9 +1320,9 @@ li{
 	position:fixed;
 	width:100%;
 	height:100%;
-	background:#000 !important;
+	background:rgba(0, 0, 0, .3) !important;
 	opacity:.8;
-	z-index:-1;
+	z-index:-2;
 }
 #ref-search{
 	font-family: 'roboto_mono', 'Monaco', monospace;
@@ -1533,7 +1533,7 @@ li{
 	height:16pt;
 	stroke:#ff0000;
 }
-.vex-long{
+.vex-long, .vex-about{
 	width:100%;
 	height:50vh;
 	border-bottom:1px solid #aaa;
@@ -1543,12 +1543,19 @@ li{
 	font-size:10pt;
 	background:none;
 	color:#fff;
-	padding:5px;
+	padding:10px;
 	box-sizing: border-box;
 	outline:none;
 }
 .vex-content{
-
+	padding:0px !important;
+}
+.vex-dialog-buttons{
+	padding:10px;
+	padding-top:0;
+}
+.vex-dialog-message{
+/*	padding:10px;*/
 }
 .vex.vex-theme-plain{
 	padding-top:8vh !important;
@@ -1559,6 +1566,12 @@ li{
 .vex-small{
 	width:450px;
 	margin: 0 auto;
+}
+.vex-small .vex-content{
+	padding:10px !important;
+}
+.vex-padding .vex-dialog-message{
+	padding:10px !important;
 }
 .vex .svg{
 	filter:invert();
@@ -1595,51 +1608,51 @@ li{
 	margin-top:5px;
 	background:#ff000088;
 }
-#about-alert{
+.vex-about{
 	height:70vh;
 	font-size:10pt;
 	line-height:13pt;
 }
-#about-alert pre, #about-alert code{
+.vex-about pre, .vex-about code{
 	font-family: 'roboto_mono', 'Monaco', monospace;
 	font-weight: 200;
 }
-#about-alert a{
+.vex-about a{
 	color:#fff;
 }
-#about-alert ul{
+.vex-about ul{
 	list-style-type: none;
 	margin-left: 15px;
 	padding-left: 0px;
 }
-#about-alert li:before {
+.vex-about li:before {
 	content:"– ";
 	margin-left:-15px;
 }
-#about-alert h2{
+.vex-about h2{
 	font-size:16pt;
 	margin-top:15px;
 	border-top:1px solid #aaa;
 	padding-top:15px;
 }
-#about-alert h3{
+.vex-about h3{
 	margin-top:25px;
 	font-size:14pt;
 }
-#about-alert h4{
+.vex-about h4{
 	font-size:12pt;
 }
-#about-alert img{
+.vex-about img{
 
 }
-#about-alert tr:hover{
+.vex-about tr:hover{
 	border:none;
 	background:#555;
 }
-#about-alert td{
+.vex-about td{
 	padding:0 10px 0 10px;
 }
-#about-alert code{
+.vex-about code{
 	padding:0 3px 0 3px;
 }
 #notify{
