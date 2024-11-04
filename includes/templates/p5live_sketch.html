@@ -10,6 +10,7 @@
 			height:100vh;
 			overflow:hidden;
 			cursor:crosshair;
+/*			cursor:none;*/
 		}
 		canvas{
 			position:absolute;
@@ -75,9 +76,21 @@
 				var myCustomData = {'status': true};
 				var event = new CustomEvent('p5Status', { detail: myCustomData });
 				window.parent.document.dispatchEvent(event);
+				// console.log('ready')
+				appendToFunction('noCursor', ()=>{document.body.style.cursor = 'none'})
+				appendToFunction('cursor', ()=>{document.body.style.cursor = 'crosshair'})
 			}else{
 				statusTimer = setTimeout(function(){sketchStatus();}, 50);
 			}
+		}
+
+		function appendToFunction(fn, callback) {
+		  window[fn] = (function(fn){
+		    return function() {
+		      fn();
+		      callback();
+		    }
+		 }(window[fn]));
 		}
 
 		// pass console.log's to parent
@@ -154,6 +167,9 @@
 		  // console.log('stole lost!');
 			if(window.p5 !== undefined){
 				loop();
+				// noCursor = function(){
+				// 	document.body.style.cursor = 'none'
+				// }
 			}
 		};
 
@@ -186,6 +202,7 @@
 			// placeholder function;
 		}
 
+		
 
 		// chalkboard
 		var p5live = {};
@@ -201,6 +218,14 @@
 			}else{
 				return createGraphics(4, 4);
 			}
+		}
+
+		p5live.code = function(){
+			return parent.getEditor()
+		}
+
+		p5live.recompile = function(){
+			return parent.recompile(true)
 		}
 
 	</script>

@@ -137,6 +137,18 @@ noize = noise
 
 // s0.initP5()
 // sandbox`
+},
+{
+	"tabTrigger": "hy5offline",
+	"name": "hy5offline",
+	"content": 
+	`let libs = ['includes/libs/hydra-synth.js', 'includes/libs/hy5.js']
+
+// sandbox
+\${1}
+
+// s0.initP5()
+// sandbox`
 },{
 	"tabTrigger": "hy5-p5-hydra",
 	"name": "hy5-p5-hydra",
@@ -251,5 +263,24 @@ function draw() {
 	translate(50, 50, 50)
 	plane(width/2, height/2)
 }`
+},{
+	"tabTrigger": "h2",
+	"name": "h2",
+	"content": 
+`var H2 = HY5.hydra('hydra2', 'synth')
+synth.s0.initP5()
+// H2.z(2) // bring to front
+
+H2.pixelDensity(2)
+
+//synth.src(synth.s0).out(synth.o0)`
+},{
+	"tabTrigger": "push",
+	"name": "push",
+	"content": 
+	`push()
+\${1}
+pop()
+`
 },
 ]

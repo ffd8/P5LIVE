@@ -722,8 +722,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.5.1';
-		let currentRevision = 48;
+		let currentVersion = '1.5.2';
+		let currentRevision = 49;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -1077,6 +1077,10 @@ function println(msg){
 		// function loadSnippetsManager(acOBJ){
 		snippetManager.register(aceSnippets)
 		// }
+
+		function getEditor(){
+			return editor.getValue()
+		}
 
 		function loadAutoComplete(acOBJ, compName, compScore){
 			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
@@ -1484,7 +1488,7 @@ function println(msg){
 					el.style.zIndex = 9999999;
 					el.style.color = '#000';
 					el.style.cursor = 'help';
-					if(!showCursors && !settings.cocodingFlagsToggle){ // *** showcursors
+					if(!showCursors && !settings.cocodingFlagsToggle && !exhibitMode){ // *** showcursors
 						el.style.display = 'none';
 					}
 					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+'aa;left:0px;white-space: nowrap;line-height:1em;">'+pos.id+'</div>';
@@ -2363,7 +2367,9 @@ function println(msg){
 					activeLine.style.backgroundColor = settings.themeACTIVE
 				}
 			}else{
-				document.querySelector('.ace_marker-layer .ace_active-line').style.backgroundColor = 'inherit'
+				if(document.querySelector('.ace_marker-layer .ace_active-line') !== null){
+					document.querySelector('.ace_marker-layer .ace_active-line').style.backgroundColor = 'inherit'
+				}
 			}
 
 		}
@@ -5358,6 +5364,7 @@ function println(msg){
 				},
 				afterOpen: function(){
 					document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -6116,6 +6123,7 @@ function println(msg){
 			}
 
 			// updated route, load html, then script once ready
+			// console.log(el.innerHTML)
 			p5frame.srcdoc = el.innerHTML;
 			p5frame.onload = function(){
 				if(!settings.safeMode){
@@ -6283,7 +6291,7 @@ function println(msg){
 		}
 		function snippetsApply(){
 			let snippet = snip.current
-			console.log(snippet)
+			// console.log(snippet)
 			let snippetBase = 'user'
 			if(snippet.substring(0, 5) == 'demo-'){
 				snippetBase = 'demo'
@@ -8210,6 +8218,7 @@ function println(msg){
 					URL.revokeObjectURL(popup_url);
 					p5pop.onload = function() {
 						p5pop.vid.srcObject = p5popStream;
+						//popCode()
 						// let ctrls = p5pop.document.getElementById("controldiv");
 						// ctrls.disabled="true";
 					}
@@ -8222,6 +8231,41 @@ function println(msg){
 				    }, 500);
 				}
 			}
+		}
+
+		var p5popCode
+		function popCode(force){
+			let popCode_html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>P5LIVE CODE</title><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" type="text/javascript" charset="utf-8"><\/script><style type="text/css">body{margin:0;}#editor{width:100vw;height:100vh;font-size:${settings.editor.fontSize}pt;}</style></head><body><div id="editor" style=""></div><script>var editor = ace.edit("editor");editor.setTheme('${settings.theme}');editor.session.setMode("ace/mode/javascript");editor.setOptions({showPrintMargin: false,animatedScroll: true,displayIndentGuides: false,useWorker: true,showLineNumbers: false,showGutter: false,scrollPastEnd:1,tabSize: 4, useSoftTabs: false});editor.setReadOnly(false);window.addEventListener("message", function(event) {editor.setValue(event.data, -1);});<\/script></body></html>`;
+
+			// editor.setTheme(settings.theme);
+		// editor.session.setMode('ace/mode/javascript');
+		
+
+		
+
+			let popCode_url = URL.createObjectURL(new Blob([popCode_html], {
+					  type: 'text/html'
+					}));
+			p5popCode = window.open(popCode_url, "P5LIVE - CODE STREAM", 'left=0,top=0,width=0,height=0');
+			URL.revokeObjectURL(popCode_url);
+
+			p5popCode.onload = function() {
+						p5popCode.postMessage(editor.getValue(), "*");
+						// p5pop.vid.srcObject = p5popStream;
+						// let ctrls = p5pop.document.getElementById("controldiv");
+						// ctrls.disabled="true";
+						editor.session.on('change', function(delta) {
+				            if (p5popCode) {
+				                p5popCode.postMessage(editor.getValue(), "*");
+				            }
+			        	});
+
+			        	window.addEventListener("beforeunload", function() {
+				            if (p5popCode) {
+				                p5popCode.close();
+				            }
+				        });
+					}
 		}
 
 		function showLoader(){

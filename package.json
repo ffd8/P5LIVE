@@ -1,6 +1,6 @@
 {
   "name": "p5live",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "p5.js collaborative live-coding vj environment!",
   "main": "server.js",
   "scripts": {
