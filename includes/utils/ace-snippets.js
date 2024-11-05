@@ -139,6 +139,18 @@ noize = noise
 // sandbox`
 },
 {
+	"tabTrigger": "HY5",
+	"name": "HY5",
+	"content": 
+	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
+
+// sandbox
+\${1}
+
+// s0.initP5()
+// sandbox`
+},
+{
 	"tabTrigger": "hy5offline",
 	"name": "hy5offline",
 	"content": 

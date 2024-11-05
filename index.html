@@ -3247,12 +3247,17 @@ function println(msg){
 						if(value){
 							Object.keys(tSettings.settings).forEach(function(k){
 								if(settings.hasOwnProperty(k)){
-									settings[k] = tSettings.settings[k];
+									if(k != 'version' && k != 'revision'){
+										settings[k] = tSettings.settings[k];
+									}
 								}
 							});
 							updateSettings();
 							loadSettings();
 						}
+					},
+					afterOpen: function(){
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 			}else{
@@ -3275,7 +3280,7 @@ function println(msg){
 				// console.log(sc +" / "+ initSettings.shortcuts[sc])
 
 				let shortcutKey = shortcutOG.key;
-				if(shortcut.key !== undefined && shortcut.key !== shortcutOG.key && !reset){
+				if(shortcut !== undefined && shortcut.hasOwnProperty('key') && shortcut.key !== shortcutOG.key && !reset){
 					shortcutKey = shortcut.key;
 				}
 
@@ -3892,6 +3897,12 @@ function println(msg){
 			tempSketches.timestamp = timeStampFile();
 
 			if(!p5l.remote && p5l.fancy){
+				let whichBrowser = getBrowser()
+				if(whichBrowser != undefined && whichBrowser.hasOwnProperty('type')){
+					tempSketches.browser = whichBrowser.type
+				}else{
+					tempSketches.browser = ''
+				}
 				let tempPath = '/backup';
 				let request = new XMLHttpRequest();
 				request.open('POST', tempPath, true);
@@ -3903,6 +3914,74 @@ function println(msg){
 
 			settings.backup.last = new Date().getTime();
 			updateSettings();
+		}
+
+		// https://gist.github.com/lyquix-owner/34a3ed98b990c3c61151d30de2f42702
+		function getBrowser(){
+			var ua = navigator.userAgent, browser;
+
+			// helper functions to deal with common regex
+			function getFirstMatch(regex) {
+				var match = ua.match(regex);
+				return (match && match.length > 1 && match[1]) || '';
+			}
+
+			function getSecondMatch(regex) {
+				var match = ua.match(regex);
+				return (match && match.length > 1 && match[2]) || '';
+			}
+
+			// start detecting
+			if (/opera|opr/i.test(ua)) {
+				browser = {
+					name: 'Opera',
+					type: 'opera',
+					version: getFirstMatch(/version\/(\d+(\.\d+)?)/i) || getFirstMatch(/(?:opera|opr)[\s\/](\d+(\.\d+)?)/i)
+				}
+			}  else if (/msie|trident/i.test(ua)) {
+				browser = {
+					name: 'Internet Explorer',
+					type: 'msie',
+					version: getFirstMatch(/(?:msie |rv:)(\d+(\.\d+)?)/i)
+				}
+			} else if (/chrome.+? edge/i.test(ua)) {
+				browser = {
+					name: 'Microsft Edge',
+					type: 'msedge',
+					version: getFirstMatch(/edge\/(\d+(\.\d+)?)/i)
+				}
+			} else if (/chrome|crios|crmo/i.test(ua)) {
+				browser = {
+					name: 'Google Chrome',
+					type: 'chrome',
+					version: getFirstMatch(/(?:chrome|crios|crmo)\/(\d+(\.\d+)?)/i)
+				}
+			} else if (/firefox/i.test(ua)) {
+				browser = {
+					name: 'Firefox',
+					type: 'firefox',
+					version: getFirstMatch(/(?:firefox)[ \/](\d+(\.\d+)?)/i)
+				}
+			} else if (!(/like android/i.test(ua)) && /android/i.test(ua)) {
+				browser = {
+					name: 'Android',
+					type: 'android',
+					version: getFirstMatch(/version\/(\d+(\.\d+)?)/i)
+				}
+			} else if (/safari/i.test(ua)) {
+				browser = {
+					name: 'Safari',
+					type: 'safari',
+					version: getFirstMatch(/version\/(\d+(\.\d+)?)/i)
+				}
+			} else {
+				browser = {
+					name: getFirstMatch(/^(.*)\/(.*) /),
+					version: getSecondMatch(/^(.*)\/(.*) /)
+				}
+				browser.type = browser.name.toLowerCase().replace(/\s/g, '');
+			}
+			return browser;
 		}
 
 		// load top sketch
@@ -4080,7 +4159,7 @@ function println(msg){
 			tempSketches.structure = [];
 
 			let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
-			if(settings.cocoding.active && customTimestamp !== undefined){
+			if(sketch == 'editor' || (settings.cocoding.active && customTimestamp !== undefined)){
 				sketchDetails = {};
 				sketchDetails.name = settings.fileName;//settings.cocoding.namespace + '_snapshot';
 				sketchDetails.mod = timeDate();
@@ -4100,7 +4179,7 @@ function println(msg){
 				tempTimestamp = customTimestamp;
 			}
 
-			exportJS(tempSketches, 'P5L_' + sketch + tempTimestamp + '.js');
+			exportJS(tempSketches, 'P5L_' + sketchDetails.name + tempTimestamp + '.js');
 		}
 
 		// export all/folder[s] w/ sketches to JSON
@@ -5669,7 +5748,10 @@ function println(msg){
 		function consoleHide(){
 			// console.log([settings.console, settings.consoleMode])
 			if(settings.console && settings.consoleMode == 'show'){
-				console.log('show console')
+				// console.log('clear console')
+				consoleTimer = setTimeout(()=>{
+					p5console.value = '';
+				}, 2000)
 				return false
 			}
 
@@ -5801,6 +5883,18 @@ function println(msg){
 
 		function removeComments(code){
 			return code.replace(/\/\*[\s\S]*?\*\/|([^:\}\)]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'))
+			// const regex = /\/\*[\s\S]*?\*\/|([^:\}\)\w]|^)(\/\/.*)|(["'`])(?:(?!\3)[^\\]|\\.)*\3/gm;
+
+			// return code.replace(regex, (match, p1, p2, p3) => {
+			//   if (p3) return match; // If inside quotes, return the match as is
+			  
+			//   if (p2) {
+			//     const newlineCount = p2.split('\n').length;
+			//     return p1 + Array(newlineCount).join('\n'); // Replace with newlines if outside quotes
+			//   }
+			  
+			//   return match; // For other matches (block comments), return as is
+			// });
 		}
 
 		function processLibs(code){
@@ -7518,7 +7612,7 @@ function println(msg){
 				let tempTimestamp = timeStampFile();
 				p5f.save('P5L_' + settings.fileName + tempTimestamp + '.png');
 				if(settings.exportCode){
-					exportSketch(settings.fileName, tempTimestamp);
+					exportSketch('editor', tempTimestamp);
 					if(showNotify){
 						notifyMsg('Snapshot Saved');
 					}
