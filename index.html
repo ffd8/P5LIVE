@@ -1020,7 +1020,7 @@ function println(msg){
 		sketchLoaded = false, forceRecompile = false, loadingInit = false,
 		paused = false, multitabWarning = false, useRecompilePulse = true,
 		markerID = [], pulsemarkerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
-		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
+		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate, p5liveUtils = {},
 		p5vars = {frameCount:0, pframeCount:0, mouseX:0, mouseY:0}, newBG = '',
 		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -1030,13 +1030,13 @@ function println(msg){
 		syncdataEditor, syncdataPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
-		p5pop, p5popStream, p5popActive = false,
 		changelog = {show:false, revision:0, version:0},
 		recoding, exhibitMode = false
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
+		p5pop, p5popStream, p5popActive = false, p5lCans,
 		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto'}
 		;
 
@@ -1353,6 +1353,7 @@ function println(msg){
 		icon.clock = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
 		icon.pause = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pause"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
 		icon.pauseCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pause-circle"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>';
+		icon.newFile = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>';
 
 
 		// code-line color picker
@@ -1424,7 +1425,7 @@ function println(msg){
 		let includeScripts = {
 			p5:{
 				'local':'includes/p5/p5.min.js',
-				'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/p5.min.js'
+				'remote':'https://cdn.jsdelivr.net/npm/p5@latest/lib/p5.min.js'
 			},
 			p5sound:{
 				'local':'includes/p5/addons/p5.sound.min.js',
@@ -2602,6 +2603,16 @@ function println(msg){
 				p5htmlTemplate = el;
 			})
 
+			// p5 audio utils
+			.then(() => {
+				let fetchPath = 'includes/utils/p5live-audio.js?' + currentRevision;
+				return fetch(fetchPath)
+			})
+			.then(res => res.text())
+			.then(js => {
+				p5liveUtils.audio = js
+			})
+
 			// load snippets
 			.then(() => {
 				loaderSub.innerHTML = 'loading snippets...';
@@ -3687,7 +3698,7 @@ function println(msg){
 			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos' && !checkDemo || !demosLocked){
 				let useDir = searchJSON(settings.sketches, 'name', checkDir.parent)[0];
 				cloneLocation = jsonIndex('name', settings.fileName, useDir.contents);
-				console.log(cloneLocation)
+				// console.log('clonelocation: '+cloneLocation)
 				useDir.contents.splice(cloneLocation, 0, {'type':'sketch', 'name':forkName, 'mod':tc});
 				// useDir.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 				useDir.toggle = 'expand';
@@ -3703,6 +3714,22 @@ function println(msg){
 			editor.focus();
 			editor.session.off('change', cloneSketch);
 			sketchScrollIntoView(true);
+		}
+
+		function subSketch(dirName){
+			let useDir = searchJSON(settings.sketches, 'name', dirName)[0];
+			let forkName = versionCheck('new');
+			let tc = timeDate();
+			let cloneLocation = 0
+			useDir.contents.splice(cloneLocation, 0, {'type':'sketch', 'name':forkName, 'mod':tc});
+			useDir.toggle = 'expand';
+			settings.fileName = forkName;
+			editor.setValue(p5template, 1)
+			localStorage[settings.fileName] = editor.getValue();
+			updateSettings();
+			updateSketches();
+			editor.focus();
+			editor.session.off('change', cloneSketch);
 		}
 
 		function jsonIndex(key, name, obj){
@@ -4106,7 +4133,7 @@ function println(msg){
 			let fileHeader = {P5LIVE: {name:sketchDetails.name, mod:sketchDetails.mod}}
 
 			let fileText = `// ${JSON.stringify(fileHeader)} \n\n${sketchDetails.code}`
-			console.log(fileText)
+			// console.log(fileText)
 			const data = new Blob([fileText], {type: 'text/plain'});
 			const a = document.createElement('a')
 			a.style.display = 'none'
@@ -4172,6 +4199,11 @@ function println(msg){
 				return false;
 			}
 
+			// check for audio snippet
+			if(checkCodeAudio(sketchDetails.code)){
+				sketchDetails.code += `\n\n ${p5liveUtils.audio}`
+			}
+			
 			tempSketches.structure.push(sketchDetails);
 			let tempTimestamp = timeStampFile(sketchDetails.mod);
 
@@ -4180,6 +4212,12 @@ function println(msg){
 			}
 
 			exportJS(tempSketches, 'P5L_' + sketchDetails.name + tempTimestamp + '.js');
+		}
+
+		function checkCodeAudio(code){
+			let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			let sketchScriptsString = sketchTest.match(/(?=setupAudio|updateAudio).*/gm);
+			return sketchScriptsString != null ? true : false
 		}
 
 		// export all/folder[s] w/ sketches to JSON
@@ -5247,7 +5285,7 @@ function println(msg){
 			if(elmType == 'folder'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+icon.folderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="subSketch(\''+elmID+'\', true)" data-title="Sub-Sketch">'+icon.newFile+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+icon.folderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
@@ -7626,6 +7664,7 @@ function println(msg){
 			let iFrameHead = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 			let iFrameBody = el.getElementsByTagName('body')[0];//el.document.getElementsByTagName('body')[0];
 
+			let curCode = editor.getValue()
 			let curBG = getBackground();
 			iFrameBody.style.background = curBG ? curBG : '#000';
 
@@ -7634,14 +7673,14 @@ function println(msg){
 			// load p5 remote
 			for (const iScript in includeScripts) {
 				// no p5.sound
-				if(editor.getValue().match(/(\/\/).*(no.*p5.*sound)/g)){
+				if(curCode.match(/(\/\/).*(no.*p5.*sound)/g)){
 					if(iScript == 'p5sound') continue;
 				}
 				scriptsCol.push(includeScripts[iScript].remote);
 			}
 
 			// check loadScripts / libs / scripts;
-			let scriptsList = processLibs(removeComments(editor.getValue()));
+			let scriptsList = processLibs(removeComments(curCode));
 			for(let i=0; i < scriptsList.length; i++){
 				scriptsCol.push(scriptsList[i]);
 			}
@@ -7655,10 +7694,14 @@ function println(msg){
 				iFrameHead.innerHTML += '\n';
 			}
 
+			// check for audio snippet
+			if(checkCodeAudio(curCode)){
+				curCode += `\n\n ${p5liveUtils.audio}`
+			}
 
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + editor.getValue()+'\n';
+			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + curCode+'\n';
 			iFrameBody.appendChild(s);
 			iFrameBody.innerHTML += '\n\n';
 			download('<!DOCTYPE html>\n<html>\n' + el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + timeStampFile() + '.html', 'text/html');
@@ -8298,13 +8341,80 @@ function println(msg){
 				p5popActive = true;
 			}
 			if(sketchLoaded && p5popActive){
-				p5popStream = p5f.document.querySelector('canvas').captureStream()
+				p5lCans = p5f.document.querySelectorAll('canvas')
+				var p5lCansOptions = []
+				var c = 0
+				Array.from(p5lCans).forEach(can =>{
+					// if(can.width > 100 && can.height > 100){
+						// p5lCansOptions.push({index:0, width:can.width, height:can.height})
+						p5lCansOptions.push(`<option value="${c}">${c} - ${can.width} x ${can.height}</option>`)
+					// }
+					c++
+				})
+				p5popStream = p5lCans[0].captureStream()
 
 				if(p5pop && !p5pop.closed){
 					p5pop.vid.srcObject = p5popStream;
 				}else{
 					// technique built upon : http://plnkr.co/edit/jDzbtPYrYItQ4peplOAN
-					let popup_html = '<!DOCTYPE html><html><head><title>P5LIVE - VISUALS STREAM</title></head><body><div id="but" style="position:fixed;right:5px;top:5px;z-index:10;border:none;color:#fff;padding:5px;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">'+icon.maximize+'</div><br><video id="vid" playsinline autoplay muted style="position:fixed;left:0;top:0;width:100vw;height:100vh;background-color:#000;"></video><script>var vid=document.getElementById("vid");document.body.style.margin="0";document.body.style.background="'+newBG+'";function openFullscreen(){if(vid.requestFullscreen) {vid.requestFullscreen(); } else if (vid.mozRequestFullScreen) { /* Firefox */ vid.mozRequestFullScreen();}else if(vid.webkitRequestFullscreen) {/* Chrome, Safari & Opera */ vid.webkitRequestFullscreen();}else if(vid.msRequestFullscreen){/* IE/Edge */ vid.msRequestFullscreen();}}<\/script><style>::-webkit-media-controls {display:none !important;}<\/style></body></html>';
+					let popup_html = `
+					<!DOCTYPE html>
+					<html>
+					<head>
+						<title>P5LIVE - VISUALS STREAM</title>
+						<style>
+							body{margin:0;background:${newBG};}
+							*{outline:none;}
+							::-webkit-media-controls {display:none !important;}
+							#nav{opacity:0;transition:opacity .5s;}
+						</style>
+					</head>
+					<body>
+						<div id="nav" style="position:fixed;z-index:99;left:0px;top:0px;width:100vw;height:25px;padding:5px;">
+							<div style="position:absolute;left:5px;">
+								<select onchange="changeCan(this.value)">${p5lCansOptions.join('')}</select>
+							</div>
+							<div id="but" style="position:absolute;right:15px;border:none;color:#fff;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">
+								${icon.maximize}
+							</div>
+						</div>
+						<br>
+						<video id="vid" playsinline autoplay muted style="position:fixed;left:0;top:0;width:100vw;height:100vh;background-color:#000;"></video>
+
+						<script>
+							var opener = window.opener;
+							var nav = document.getElementById('nav')
+							var navTimer
+							var vid=document.getElementById("vid");
+
+							function openFullscreen(){
+								if(vid.requestFullscreen){
+									vid.requestFullscreen();
+								}else if(vid.mozRequestFullScreen){ 
+									/* Firefox */ vid.mozRequestFullScreen();
+								}else if(vid.webkitRequestFullscreen){
+									/* Chrome, Safari & Opera */ 
+									vid.webkitRequestFullscreen();
+								}else if(vid.msRequestFullscreen){
+								/* IE/Edge */ vid.msRequestFullscreen();
+								}
+							}
+
+							function changeCan(val){
+								console.log(opener.document.p5lCans)
+								// vid.srcObject = cans[val].captureStream()
+								var p5popStream = opener.p5lCans[val].captureStream()
+								vid.srcObject = p5popStream
+							}
+						
+							document.addEventListener('mousemove', ()=>{
+								nav.style.opacity = 1.0
+								clearTimeout(navTimer)
+								navTimer = setTimeout(()=>{nav.style.opacity = 0.0}, 2000)
+							})
+						<\/script>
+					</body>
+					</html>`;
 					let popup_url = URL.createObjectURL(new Blob([popup_html], {
 					  type: 'text/html'
 					}));
