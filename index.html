@@ -82,16 +82,16 @@
 					<button class="menu-button tippy" onclick="toggleChalkboard();this.blur();" data-title="Toggle Chalkboard">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
 					</button>
-					<button class="menu-button tippy" onclick="popStream(true);this.blur();" data-title="Visuals-only Popup">
+					<button id="button-stream" class="menu-button" onmouseenter="showButtonsExtended('stream', 'flex');this.blur();" onmouseleave="hideButtonsExtended('stream');this.blur();">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
 					</button>
 
-					<button id="button-export" class="menu-button menu-button-extend tippy" onclick="toggleButtonsExtended('export', 'flex');this.blur();" data-title="Export">
+					<button id="button-export" class="menu-button menu-button-extend" onmouseenter="showButtonsExtended('export', 'flex');this.blur();" onmouseleave="hideButtonsExtended('export');">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
 					</button>
 				</div>
 
-				<div class="menu-sketches-buttons-extended" id="p5live-buttons-export" style="">
+				<div class="menu-sketches-buttons-extended" id="p5live-buttons-export" style="" onmouseenter="showButtonsExtended('export', 'flex');" onmouseleave="hideButtonsExtended('export');">
 					<button class="menu-button tippy" onclick="savePNG();this.blur();" data-title="Export Snapshot<br>PNG [+ CODE]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
@@ -99,6 +99,16 @@
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
 					</button>
 					<button class="menu-button tippy" onclick="saveHTML();this.blur();" data-title="Export HTML">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+					</button>
+				</div>
+
+				<div class="menu-sketches-buttons-extended" id="p5live-buttons-stream" style="" onmouseenter="showButtonsExtended('stream', 'flex');" onmouseleave="hideButtonsExtended('stream');">
+					<button class="menu-button tippy" onclick="popStream(true);this.blur();"  data-title="Visuals-only Popup">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cast"><path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path><line x1="2" y1="20" x2="2" y2="20"></line></svg>
+					</button>
+					
+					<button class="menu-button tippy" onclick="popCode();this.blur();"  data-title="Code-only Popup">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
 					</button>
 				</div>
@@ -1048,7 +1058,7 @@ function println(msg){
 		let Document = ace.require("ace/document").Document
 		let langTools = ace.require('ace/ext/language_tools');
 		let snippetManager = ace.require("ace/snippets").snippetManager
-		let editor = ace.edit('p5-code');
+		var editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
 		editor.session.on('changeMode', function(e, session) {
@@ -3119,6 +3129,24 @@ function println(msg){
 				ebButton.style.background='#666';
 			}
 
+			resizeSketchesHolder();
+		}
+
+		function showButtonsExtended(elm, display){
+			let ebNav = document.getElementById('p5live-buttons-' + elm);
+			let ebButton = document.getElementById('button-' + elm);
+
+			ebNav.style.display = display;
+			ebButton.style.background='#444';
+			resizeSketchesHolder();
+		}
+
+		function hideButtonsExtended(elm, display){
+			let ebNav = document.getElementById('p5live-buttons-' + elm);
+			let ebButton = document.getElementById('button-' + elm);
+
+			ebNav.style.display = 'none';
+			ebButton.style.background='#666';
 			resizeSketchesHolder();
 		}
 
@@ -6054,6 +6082,10 @@ function println(msg){
 
 						p5f.eval(hb.block)
 						recompilePulse(hb.start, hb.end)
+						
+						if(p5popCode){
+							p5popCode.recompilePulse(hb.start, hb.end)
+						}
 
 						// p5f.eval(sandboxMatch[0])
 						if(!force){
@@ -6261,6 +6293,10 @@ function println(msg){
 				if(!settings.safeMode){
 					p5f.document.body.appendChild(s);
 					recompilePulse()
+
+					if(p5popCode){
+						p5popCode.recompilePulse()
+					}
 				}
 			}
 
@@ -6308,6 +6344,10 @@ function println(msg){
 			s.innerHTML = curCodeTemp;
 			p5f.document.head.appendChild(s);
 			recompilePulse(codeStart, codeEnd)
+
+			if(p5popCode){
+				p5popCode.recompilePulse(codeStart, codeEnd)
+			}
 		}
 
 		function getBackground(){
@@ -8340,14 +8380,18 @@ function println(msg){
 			if(force){
 				p5popActive = true;
 			}
+
+			
+
 			if(sketchLoaded && p5popActive){
+				// popCode()
 				p5lCans = p5f.document.querySelectorAll('canvas')
 				var p5lCansOptions = []
 				var c = 0
 				Array.from(p5lCans).forEach(can =>{
 					// if(can.width > 100 && can.height > 100){
 						// p5lCansOptions.push({index:0, width:can.width, height:can.height})
-						p5lCansOptions.push(`<option value="${c}">${c} - ${can.width} x ${can.height}</option>`)
+						p5lCansOptions.push(`<option value="${c}">${c} - ${can.width} x ${can.height} px</option>`)
 					// }
 					c++
 				})
@@ -8355,6 +8399,7 @@ function println(msg){
 
 				if(p5pop && !p5pop.closed){
 					p5pop.vid.srcObject = p5popStream;
+					p5pop.document.getElementById('select-cans').innerHTML = p5lCansOptions.join('')
 				}else{
 					// technique built upon : http://plnkr.co/edit/jDzbtPYrYItQ4peplOAN
 					let popup_html = `
@@ -8372,7 +8417,7 @@ function println(msg){
 					<body>
 						<div id="nav" style="position:fixed;z-index:99;left:0px;top:0px;width:100vw;height:25px;padding:5px;">
 							<div style="position:absolute;left:5px;">
-								<select onchange="changeCan(this.value)">${p5lCansOptions.join('')}</select>
+								<select id="select-cans" onchange="changeCan(this.value)">${p5lCansOptions.join('')}</select>
 							</div>
 							<div id="but" style="position:absolute;right:15px;border:none;color:#fff;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">
 								${icon.maximize}
@@ -8422,7 +8467,7 @@ function println(msg){
 					URL.revokeObjectURL(popup_url);
 					p5pop.onload = function() {
 						p5pop.vid.srcObject = p5popStream;
-						//popCode()
+						
 						// let ctrls = p5pop.document.getElementById("controldiv");
 						// ctrls.disabled="true";
 					}
@@ -8439,38 +8484,174 @@ function println(msg){
 
 		var p5popCode
 		function popCode(force){
-			let popCode_html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>P5LIVE CODE</title><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js" type="text/javascript" charset="utf-8"><\/script><style type="text/css">body{margin:0;}#editor{width:100vw;height:100vh;font-size:${settings.editor.fontSize}pt;}</style></head><body><div id="editor" style=""></div><script>var editor = ace.edit("editor");editor.setTheme('${settings.theme}');editor.session.setMode("ace/mode/javascript");editor.setOptions({showPrintMargin: false,animatedScroll: true,displayIndentGuides: false,useWorker: true,showLineNumbers: false,showGutter: false,scrollPastEnd:1,tabSize: 4, useSoftTabs: false});editor.setReadOnly(false);window.addEventListener("message", function(event) {editor.setValue(event.data, -1);});<\/script></body></html>`;
 
-			// editor.setTheme(settings.theme);
-		// editor.session.setMode('ace/mode/javascript');
-		
+			const url = new URL(window.location.href);
+			console.log(url.origin); // 'https://mozilla.org'
 
-		
+			if(settings.themeCOLORactive){
+					p5code.style.color = settings.themeCOLOR
+			}else{
+				p5code.style.color = 'inherit'
+			}
+			let popCode_html = `
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<meta charset="UTF-8">
+				<title>P5LIVE - CODE</title>
+				<script src="${url.origin}/includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"><\/script>
+				<script src="${url.origin}/includes/js/ace/src-min-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"><\/script>
+
+				<style type="text/css">
+					body{margin:0;}
+					#editor{
+						width:100vw;height:100vh;
+						font-size:${settings.editor.fontSize}pt;
+						color:${settings.themeCOLORactive? settings.themeCOLOR : 'inherit'}
+					}
+					.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line{
+						color:#fff;	
+						background:rgba(150, 191, 0, .4) !important;
+					}
+					.ace_marker{
+						position:fixed;
+						background:rgba(0, 255, 255, .4);
+					}
+					.ace_marker-layer{
+						z-index:9999!important;
+					}
+				</style>
+			</head>
+			<body>
+				<div id="p5-editor">
+					<div id="editor" style=""></div>
+				</div>
+				
+				<script>
+					// const url = new URL(window.location.href);
+					// console.log(url.origin); // 'https://mozilla.org'
+					let Range = ace.require('ace/range').Range;
+					var opener = window.opener;
+					var p5editor = document.getElementById('p5-editor')
+					var editor = ace.edit("editor");
+					editor.setTheme('${settings.theme}');
+					editor.session.setMode("ace/mode/javascript");
+					editor.setOptions({showPrintMargin: false,animatedScroll: true,displayIndentGuides: false,useWorker: true,showLineNumbers: false,showGutter: false,scrollPastEnd:1,tabSize: 4, useSoftTabs: false});
+					editor.setReadOnly(false);
+					var msgEditor = false
+					
+					window.addEventListener("message", function(event){
+						// console.log(event.data)
+						msgEditor = true
+						if(event.data.type == 'replace'){
+							editor.setValue(event.data.msg, -1);
+						}else if(event.data.type == 'delta'){
+							let delta = event.data.msg
+							editor.session.doc.applyDelta(delta);
+							editor.gotoLine(delta.start.row, delta.start.column, true);
+						}
+						msgEditor = false
+					});
+
+					var pulsemarkerID = []
+					function recompilePulse(s = 0, e = editor.session.getLength()){
+						if(${useRecompilePulse}){
+							pulsemarkerID.push({id:editor.session.addMarker(new Range(s, 0, e, 9000), "ace_marker", "text")})
+							setTimeout(removePulseMarkers, 300)
+						}
+					}
+
+					function removePulseMarkers(){
+						for(let i=0; i < pulsemarkerID.length; i++){
+							editor.session.removeMarker(pulsemarkerID[i].id);
+						}
+						pulsemarkerID = [];
+					}
+
+					editor.renderer.on('afterRender', function(){
+						adjustLines();
+					});
+					
+					function adjustLines(){
+						let pcode = p5editor.getElementsByClassName('ace_line');
+						for(let i=0; i < pcode.length; i++){
+							let pitem = pcode[i];
+							if(${settings.themeBGactive} && pitem.getElementsByClassName( 'ace_line_bg' ).length < 1){
+								let pcontents = pitem.innerHTML;
+								pitem.innerHTML = '<span class="ace_line_bg" style="background:${settings.themeBG}">' + pcontents + '</span>';
+							}
+						}
+						
+						if(${settings.themeCOLORactive}){
+							p5editor.style.color = "${settings.themeCOLOR}"
+						}else{
+							p5editor.style.color = 'inherit'
+						}
+
+						if(${settings.themeACTIVEactive}){
+							let activeLine = document.querySelector('.ace_marker-layer .ace_active-line')
+							if(activeLine != null){
+								activeLine.style.backgroundColor = "${settings.themeACTIVE}"
+							}
+						}else{
+							if(document.querySelector('.ace_marker-layer .ace_active-line') !== null){
+								document.querySelector('.ace_marker-layer .ace_active-line').style.backgroundColor = 'inherit'
+							}
+						}
+					}
+
+					editor.on('change', function(delta) {
+						if(msgEditor){
+							return false
+						}
+			    		opener.postMessage({type:'delta', msg:delta}, "*");
+						
+					})
+				<\/script>
+			</body>
+			</html>`;
 
 			let popCode_url = URL.createObjectURL(new Blob([popCode_html], {
 					  type: 'text/html'
 					}));
-			p5popCode = window.open(popCode_url, "P5LIVE - CODE STREAM", 'left=0,top=0,width=0,height=0');
-			URL.revokeObjectURL(popCode_url);
+			if(!p5popCode){
+				p5popCode = window.open(popCode_url, "P5LIVE - CODE STREAM", 'left=0,top=0,width=0,height=0');
+				URL.revokeObjectURL(popCode_url);
 
-			p5popCode.onload = function() {
-						p5popCode.postMessage(editor.getValue(), "*");
-						// p5pop.vid.srcObject = p5popStream;
-						// let ctrls = p5pop.document.getElementById("controldiv");
-						// ctrls.disabled="true";
-						editor.session.on('change', function(delta) {
-				            if (p5popCode) {
-				                p5popCode.postMessage(editor.getValue(), "*");
-				            }
-			        	});
+				p5popCode.onload = function() {
+					p5popCode.postMessage({type:'replace',msg:editor.getValue()}, "*");
+					
+		        	editor.on('change', function(delta) {
+		        		 if (p5popCode && !msgEditor) {
+					    	p5popCode.postMessage({type:'delta', msg:delta}, "*");
+						}
+					})
 
-			        	window.addEventListener("beforeunload", function() {
-				            if (p5popCode) {
-				                p5popCode.close();
-				            }
-				        });
-					}
+		        	window.addEventListener("beforeunload", function() {
+			            if (p5popCode) {
+			                p5popCode.close();
+			            }
+			        });
+				}
+
+				var p5popCodeTick = setInterval(function() {
+			      if (p5popCode.closed) {
+			        p5popCode = false;
+			        clearInterval(p5popCodeTick);
+			      }
+			    }, 500);
+			}
 		}
+
+		var msgEditor = false
+		window.addEventListener("message", function(event){
+			if(event.data.type == 'delta'){
+				msgEditor = true
+				// console.log(event.data)
+				editor.session.doc.applyDelta(event.data.msg);
+				msgEditor = false
+			}
+		})
 
 		function showLoader(){
 			loader.style.display = 'flex';
