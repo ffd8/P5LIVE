@@ -68,14 +68,21 @@ See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at
 - <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts.  
 - <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle embeded p5.js reference.  
 - <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboard, `CTRL + B`, toggle chalkboard over for annotations.  
-- <img class="svg" src="includes/icons/monitor.svg" height="12px"> Popup Stream, for projecting visuals/code as separate outputs.  
-- <img class="svg" src="includes/icons/save.svg" height="12px"> Export, click to reveal sub-menu:  
+- <img class="svg" src="includes/icons/monitor.svg" height="12px"> Popup Stream, hover for visuals/code as separate outputs:  
 
-<img src="includes/images/menu-p5live-export-2.png" width="220px">
+&nbsp;&nbsp;<img src="includes/images/menu-popup-options.png" width="220px">  
 
-- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png, `CTRL + S`, exports image [+ code if active in settings].  
-- <img class="svg" src="includes/icons/link.svg" height="12px"> Share code as URL (links to online version at p5live.org).
-- <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, export single page website (re-link paths to any offline assets).
+&nbsp;&nbsp;- <img class="svg" src="includes/icons/cast.svg" height="12px"> Visuals-only popup.  
+&nbsp;&nbsp;- <img class="svg" src="includes/icons/align-left.svg" height="12px"> Code-only popup.  
+
+
+- <img class="svg" src="includes/icons/save.svg" height="12px"> Export, hover for submenu options:  
+
+&nbsp;&nbsp;<img src="includes/images/menu-p5live-export-3.png" width="220px">  
+
+&nbsp;&nbsp;- <img class="svg" src="includes/icons/camera.svg" height="12px"> Save .png, `CTRL + S`, image (+ code if active in settings).  
+&nbsp;&nbsp;- <img class="svg" src="includes/icons/link.svg" height="12px"> Share code as URL (links to online version at p5live.org).  
+&nbsp;&nbsp;- <img class="svg" src="includes/icons/file-text.svg" height="12px"> Save .html, single page website (re-link asset paths).
 
 ### SETTINGS PANEL  
 <img src="includes/images/menu-settings-nav-3.png" width="220px">
@@ -102,7 +109,7 @@ See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at
 - [ ] COCODING Flags, show cursor flags or only with mouseover userlist.  
 - [x] COCODING Autosave, autosave session code if server/internet lost.  
 - [x] Check Updates, check Github for updates (offline-mode only).  
-- Backup, [off], saves/downloads P5LIVE (sketches + settings) at intervals. `Now` - on demand. *Set `Daily` in offline-mode*.  
+- Backup, [off], saves/downloads P5LIVE (sketches + settings) at intervals. `Now` - on demand. *Set to `Daily` in offline-mode*.  
 - Code Size, `15pt` adjust font size of editor.  
 - Theme, [Green on Black], select custom styling of editor.
 - [x] Background, toggle + set color behind lines of code.  
@@ -166,12 +173,12 @@ Optionally, toggle `<>` to search through source code of all sketches.
 
 #### Folder  
 <img src="includes/images/menu-folder-nav-9.png" width="209px">  
-<img src="includes/images/menu-folder-nav-expanded-9.png" width="209px">  
+<img src="includes/images/menu-folder-nav-expanded-10.png" width="209px">  
 
 - Expand/collapse Folder, click on name.  
 - <img class="svg" src="includes/icons/more-horizontal.svg" height="12px"> Hover to view contextual options  
 	- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give folder new name.  
-	- <img class="svg" src="includes/icons/folder-plus.svg" height="12px"> Sub-folder, create a new folder within existing one.
+	- <img class="svg" src="includes/icons/file-plus.svg" height="12px"> Sub-sketch, create a new sketch within existing folder.	- <img class="svg" src="includes/icons/folder-plus.svg" height="12px"> Sub-folder, create a new folder within existing one.
 	- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export folder + contents as JSON file.  
 	- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete folder + contents after confirmation.  
 - Sort, click + hold + drag to desired order.  
@@ -374,19 +381,20 @@ Infinite loop? Broken code? P5LIVE now includes an infinite loop breaker, thus r
 Stops compiler, loads a new sketch and opens inspector to fix issue and save.
 - Add `#new` to URL and press `ENTER`.  
 Loads a new sketch.
-- If the browser has completely hung, (rare [old] issue between MBP/Chrome/libraries)  
+- If the browser has completely hung, (rare [old ~2020] issue between MBP/Chrome/libraries)  
 `sudo killall coreaudiod` (first take off headphones + turndown stereo!)
 
 *Incase you need a loop to run more than 10000 times ||  1 second,  
-add `// noprotect` anywhere in your code.  
-(except during COCODING sessions to protect peers)*
+add `// noprotect` anywhere in your code to override 'loopBreaker'.  
+(not possible during COCODING sessions to protect peers)*
 
 ### EXTRA FUNCTIONS
 Additional custom functions are available in P5LIVE sketches:  
 
 - `ease(inValue, outVariable, easeValue)`  smooth values.  
 - `println(foo)` Compatibility with Processing.  
-- `windowResize()` is set by default to keep your sketch fullscreen. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
+- `windowResize()` keeps your sketch fullscreen by default. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
+- `p5live.code` returns string of current code editor for meta usage.
 
 
 ## COCODING 

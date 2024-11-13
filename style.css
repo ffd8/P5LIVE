@@ -752,7 +752,8 @@ h2{
 	cursor:help;
 }
 #menu-p5live-resize{
-	float:right;
+	position:absolute;
+	right:0;
 	opacity:0;
 	transition:opacity 1s;
 }

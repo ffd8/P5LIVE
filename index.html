@@ -1036,7 +1036,7 @@ function println(msg){
 		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		showNotify = false, navMouseOver = false,
-		curPos, curPositions = [], updateCursor, showCursors = false, notifyTimer,
+		curPos, curPositions = [], updateCursor, showCursors = false, notifyTimer, hideButtonsTimer,
 		demosLocked = true, autoCompleteExport = false,
 		syncdataEditor, syncdataPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
@@ -3134,6 +3134,11 @@ function println(msg){
 		}
 
 		function showButtonsExtended(elm, display){
+			clearTimeout(hideButtonsTimer)
+			Array.from(document.querySelectorAll(`.menu-sketches-buttons-extended`)).forEach((element,index) => {
+				element.style.display = 'none';
+			});
+			
 			let ebNav = document.getElementById('p5live-buttons-' + elm);
 			let ebButton = document.getElementById('button-' + elm);
 
@@ -3143,12 +3148,15 @@ function println(msg){
 		}
 
 		function hideButtonsExtended(elm, display){
+			clearTimeout(hideButtonsTimer)
 			let ebNav = document.getElementById('p5live-buttons-' + elm);
 			let ebButton = document.getElementById('button-' + elm);
 
-			ebNav.style.display = 'none';
-			ebButton.style.background='#666';
-			resizeSketchesHolder();
+			hideButtonsTimer = setTimeout(()=>{
+				ebNav.style.display = 'none';
+				ebButton.style.background='#666';
+				resizeSketchesHolder();
+			}, 1000)	
 		}
 
 
