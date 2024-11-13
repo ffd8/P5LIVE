@@ -68,7 +68,7 @@ See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at
 - <img class="svg" src="includes/icons/settings.svg" height="12px"> Settings, adjust editor settings + shortcuts.  
 - <img class="svg" src="includes/icons/book-open-references.svg" height="12px"> Reference, `CTRL + R`, toggle embeded p5.js reference.  
 - <img class="svg" src="includes/icons/edit.svg" height="12px"> Chalkboard, `CTRL + B`, toggle chalkboard over for annotations.  
-- <img class="svg" src="includes/icons/monitor.svg" height="12px"> Visuals-only Popup, for projecting canvas output without code + interace.  
+- <img class="svg" src="includes/icons/monitor.svg" height="12px"> Popup Stream, for projecting visuals/code as separate outputs.  
 - <img class="svg" src="includes/icons/save.svg" height="12px"> Export, click to reveal sub-menu:  
 
 <img src="includes/images/menu-p5live-export-2.png" width="220px">
@@ -342,8 +342,14 @@ Incase of exhibit, use `?exhibit=1`, to disable links.
 You can also load a sketch by URL (for media installation), just add `sketch=name_of_sketch` !  
 Example: [\_meta\_P5LIVE](https://p5live.org/?sketch=_meta_P5LIVE)
 
-### VISUALS-ONLY POPUP
-Incase you want to project or stream the visuals-only (no code + interface) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch a popup with a video feed of your P5LIVE canvas. Also great for PIP if running multiple instances of offline-mode.
+### STREAM POPUP
+Incase you want to project or stream the visuals or code only (as separate windows) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch popups with a video feed of your P5LIVE canvas or a separate text-editor of code. 
+
+##### Visuals-Only Stream
+This is also great for PIP if running multiple instances of offline-mode. You can also select which canvas to stream (if multiple are present, ie, HY5) and set the object-fit mode for some scaling/stretching issues.
+
+##### Code-Only Stream
+The popup editor is read/write, so be careful while typing, as all keypresses are saved. It lacks fancy P5LIVE shortcuts/snippets etc – as it's more intended as a separate projection of what you are doing in main window (same editor style, theme, position, pulse of main code).
 
 ### EXPORT / IMPORT
 Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.js`/`P5L_*****.json` into the browser. Single sketches are now imported and exported as plain .js for embedding anywhere. 

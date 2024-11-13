@@ -257,7 +257,7 @@ hr{
 	font-size:10pt;
 }
 #panel-menu{
-
+overflow-y: hidden;
 }
 #panel-settings{
 	display:none;
@@ -750,6 +750,11 @@ h2{
 }
 #menu-sketches-header:hover, #menu-p5live-version:hover{
 	cursor:help;
+}
+#menu-p5live-resize{
+	float:right;
+	opacity:0;
+	transition:opacity 1s;
 }
 #menu-sketches-header .counters, #menu-section-p5live .counters{
 	display:none;

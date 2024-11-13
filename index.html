@@ -67,7 +67,7 @@
 
 			<div class="menu-section menu-section-top" id="menu-section-p5live">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span></div>
+				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span><span id="menu-p5live-resize">1920x1080</span></div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
 					<button class="menu-button tippy" onclick="loadAbout();this.blur();" data-title="About">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
@@ -957,6 +957,7 @@ function println(msg){
 		p5f = p5frame.contentWindow;
 
 		let p5script = document.getElementById('holdscript'),
+		menuResize = document.getElementById('menu-p5live-resize'),
 		menuCocode = document.getElementById('menu-section-cocode'),
 		menuSectionP5live = document.getElementById('menu-section-p5live'),
 		menuSectionSketches = document.getElementById('menu-section-sketches'),
@@ -1046,7 +1047,7 @@ function println(msg){
 
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
-		p5pop, p5popStream, p5popActive = false, p5lCans,
+		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
 		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto'}
 		;
 
@@ -3198,12 +3199,20 @@ function println(msg){
 			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight) + 'px';
 		}
 
-		let checkWindowResize;
+		let checkWindowResize, checkCans;
 		window.onresize = function(){
 			clearTimeout(checkWindowResize);
+			menuResize.style.opacity = 1
+			menuResize.innerHTML = `${window.innerWidth}x${window.innerHeight}`
 			checkWindowResize = setTimeout(function(){
 				resizeSketchesHolder();
-			}, 100);
+				if(p5pop){
+					setTimeout(collectCans, 500)		
+				}
+				menuResize.style.opacity = 0
+			}, 500);
+
+			
 		};
 
 		function resetSettings(){
@@ -8384,22 +8393,13 @@ function println(msg){
 			
 
 			if(sketchLoaded && p5popActive){
-				// popCode()
-				p5lCans = p5f.document.querySelectorAll('canvas')
-				var p5lCansOptions = []
-				var c = 0
-				Array.from(p5lCans).forEach(can =>{
-					// if(can.width > 100 && can.height > 100){
-						// p5lCansOptions.push({index:0, width:can.width, height:can.height})
-						p5lCansOptions.push(`<option value="${c}">${c} - ${can.width} x ${can.height} px</option>`)
-					// }
-					c++
-				})
-				p5popStream = p5lCans[0].captureStream()
+				collectCans()
+				p5popStream = p5lCans[p5lCanSel%p5lCans.length].captureStream()
 
 				if(p5pop && !p5pop.closed){
 					p5pop.vid.srcObject = p5popStream;
 					p5pop.document.getElementById('select-cans').innerHTML = p5lCansOptions.join('')
+					setTimeout(collectCans, 500)
 				}else{
 					// technique built upon : http://plnkr.co/edit/jDzbtPYrYItQ4peplOAN
 					let popup_html = `
@@ -8408,18 +8408,29 @@ function println(msg){
 					<head>
 						<title>P5LIVE - VISUALS STREAM</title>
 						<style>
-							body{margin:0;background:${newBG};}
+							body{margin:0;background:#000;background:${newBG};}
 							*{outline:none;}
+							input, select{background:#000;color:#fff;border:1px solid #fff;border-radius:3px;padding:2px;}
 							::-webkit-media-controls {display:none !important;}
 							#nav{opacity:0;transition:opacity .5s;}
+							video {
+							  object-fit: contain;
+							}
 						</style>
 					</head>
 					<body>
 						<div id="nav" style="position:fixed;z-index:99;left:0px;top:0px;width:100vw;height:25px;padding:5px;">
 							<div style="position:absolute;left:5px;">
 								<select id="select-cans" onchange="changeCan(this.value)">${p5lCansOptions.join('')}</select>
+								<select id="select-vidSize" onchange="setVidFit(this.value)">
+									<option>Contain</option>
+									<option>Cover</option>
+									<option>Fill</option>
+									<option>None</option>
+								</select>
 							</div>
-							<div id="but" style="position:absolute;right:15px;border:none;color:#fff;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">
+							
+							<div id="but" style="position:absolute;right:15px;border:none;color:#fff;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.75;" onclick="openFullscreen();" title="Fullscreen">
 								${icon.maximize}
 							</div>
 						</div>
@@ -8446,10 +8457,15 @@ function println(msg){
 							}
 
 							function changeCan(val){
-								console.log(opener.document.p5lCans)
+								//console.log(opener.document.p5lCans)
 								// vid.srcObject = cans[val].captureStream()
 								var p5popStream = opener.p5lCans[val].captureStream()
 								vid.srcObject = p5popStream
+								opener.p5lCanSel = val
+							}
+
+							function setVidFit(val){
+								document.querySelector('video').style.objectFit = val
 							}
 						
 							document.addEventListener('mousemove', ()=>{
@@ -8482,6 +8498,23 @@ function println(msg){
 			}
 		}
 
+		function collectCans(){
+			p5lCans = p5f.document.querySelectorAll('canvas')
+			p5lCansOptions = []
+			var c = 0
+			Array.from(p5lCans).forEach(can =>{
+				// if(can.width > 100 && can.height > 100){
+					let canSel = c == p5lCanSel ? 'selected' : ''
+					p5lCansOptions.push(`<option value="${c}" ${canSel}>${c} - ${can.width} x ${can.height} px</option>`)
+				// }
+				c++
+			})
+
+			if(p5pop){
+				p5pop.document.getElementById('select-cans').innerHTML = p5lCansOptions.join('')
+			}
+		}
+
 		var p5popCode
 		function popCode(force){
 			let url = window.location.href.split('/').slice(0, -1).join('/')
@@ -8499,6 +8532,7 @@ function println(msg){
 				<meta charset="UTF-8">
 				<title>P5LIVE - CODE</title>
 				<script src="${url}/includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"><\/script>
+				<link rel="stylesheet" type="text/css" media="all" href="${url}/style.css?45">
 				<style type="text/css">
 					body{margin:0;}
 					#editor{
@@ -8544,8 +8578,8 @@ function println(msg){
 							editor.setValue(event.data.msg, -1);
 						}else if(event.data.type == 'delta'){
 							let delta = event.data.msg
+							editor.gotoLine(delta.start.row + 1, delta.start.column, true);
 							editor.session.doc.applyDelta(delta);
-							editor.gotoLine(delta.start.row, delta.start.column, true);
 						}
 						msgEditor = false
 					});
@@ -8604,6 +8638,29 @@ function println(msg){
 			    		opener.postMessage({type:'delta', msg:delta}, "*");
 						
 					})
+
+					let keyMap = [];
+					keyMap[16] = false;
+					keyMap[17] = false;
+					editor.onkeydown = function(event) {
+						keyMap[event.keyCode] = event.type == 'keydown';
+
+
+						if(keyMap[16] && keyMap[17] && event.keyCode == 13){
+							event.preventDefault();
+							opener.postMessage({type:'hardCompile', msg:''}, "*");
+						}
+
+						if(keyMap[17] && event.keyCode == 13){
+							event.preventDefault();
+							opener.postMessage({type:'softCompile', msg:''}, "*");
+						}
+					}
+
+					editor.onkeyup = function(event) {
+						keyMap[event.keyCode] = event.type == 'keydown';
+					}
+
 				<\/script>
 			</body>
 			</html>`;
@@ -8640,13 +8697,20 @@ function println(msg){
 			}
 		}
 
+		// receive messages from popupCode editor
 		var msgEditor = false
 		window.addEventListener("message", function(event){
 			if(event.data.type == 'delta'){
 				msgEditor = true
-				// console.log(event.data)
-				editor.session.doc.applyDelta(event.data.msg);
+				let delta = event.data.msg
+				editor.gotoLine(delta.start.row + 1, delta.start.column);
+				editor.session.doc.applyDelta(delta);
+				localStorage[settings.fileName] = editor.getValue()
 				msgEditor = false
+			}else if(event.data.type == 'softCompile'){
+				recompile();
+			}else if(event.data.type == 'hardCompile'){
+				recompile(true);
 			}
 		})
 
