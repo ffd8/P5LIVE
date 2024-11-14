@@ -8838,6 +8838,26 @@ function println(msg){
 			alertMsg(txtMsg);
 		}
 
+		// *** add to stats with GUI for cleanup, list sketches with export/trash option
+		function sketchesStats(){
+			let totalStats = {count:0, size:0}
+			let sketchesList = []
+			for(let is of document.querySelectorAll('.item-sketch:not(.demo)')){
+				let grabName = is.getAttribute('data-id');
+				let grabSketch = localStorage.getItem(grabName);
+				if(grabSketch !== null){
+					let totalChars = grabSketch.replace('\n', '').replace('\t', '').length;
+					// totalLines += grabSketch.split('\n').length;
+					sketchesList.push({name:grabName, size:totalChars})
+					totalStats.count++
+					totalStats.size += totalChars
+				}
+			}
+			sketchesList.sort((a, b) => b.size - a.size)
+			console.log(sketchesList)
+			console.log(`count: ${totalStats.count}, size: ${totalStats.size/1000000}`)
+		}
+
 
 		/*	COCODING */
 		function makeid(charCount){
