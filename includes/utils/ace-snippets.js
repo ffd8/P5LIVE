@@ -25,7 +25,7 @@ function draw() {
 	"tabTrigger": "w/2",
 	"name": "w/2",
 	"content": 
-	`width/2`
+	`width / 2`
 },{
 	"tabTrigger": "h",
 	"name": "h",
@@ -35,7 +35,7 @@ function draw() {
 	"tabTrigger": "h/2",
 	"name": "h/2",
 	"content": 
-	`height/2`
+	`height / 2`
 },{
 	"tabTrigger": "fc",
 	"name": "fc",
@@ -71,6 +71,11 @@ function draw() {
 	"name": "am",
 	"content": 
 	`angleMode(DEGREES)`
+},{
+	"tabTrigger": "rm",
+	"name": "rm",
+	"content": 
+	`rectMode(CENTER)`
 },{
 	"tabTrigger": "im",
 	"name": "im",

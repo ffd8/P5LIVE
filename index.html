@@ -732,7 +732,7 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.5.2';
+		let currentVersion = '1.6.0';
 		let currentRevision = 49;
 		let developBranch = false;
 
@@ -2622,6 +2622,16 @@ function println(msg){
 			.then(res => res.text())
 			.then(js => {
 				p5liveUtils.audio = js
+			})
+
+			// p5 midi utils
+			.then(() => {
+				let fetchPath = 'includes/utils/p5live-midi.js?' + currentRevision;
+				return fetch(fetchPath)
+			})
+			.then(res => res.text())
+			.then(js => {
+				p5liveUtils.midi = js
 			})
 
 			// load snippets
