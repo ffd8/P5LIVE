@@ -35,7 +35,6 @@
 		var p5p = parent.document;
 		var p5console = p5p.getElementById('p5-console');
 		var p5code = p5p.getElementById('p5-code');
-		var p5consoleTimer, p5consoleDelay = 2000, consoleTimer, consoleVisible = false;
 		var pmsg = '';
 		var chalkboard;
 
@@ -43,12 +42,6 @@
 			window.parent.pongReady(scriptName, scriptCode, scriptCallback);
 		}
 
-		// clear console if all good
-		if(p5console != null){
-			if(parent.p5l.console && parent.p5l.consoleMode == 'auto'){
-				clearConsole();
-			}
-		}
 		markLine();
 
 		// pass errors to parent
@@ -108,50 +101,12 @@
 							window.parent.syncdataConsoleMsg(m); // also send to syncdata console!
 						}
 						pmsg = m;
-					}
-					
-					clearTimeout(p5consoleTimer);
-					// p5consoleTimer = setTimeout(function(){clearConsole();}, p5consoleDelay);
+					}					
 				}
 		};
 
-
-		function clearConsole(){
-			p5console.value = '';
-			p5console.style.display = 'none';
-			// window.parent.resizeEditor();
-		}
-
 		function consoleMessage(msg, timeDelay){
-			if(typeof msg === 'object'){
-				msg = JSON.stringify(msg);
-			}
-			p5console.value = msg;
-			if(consoleVisible == false && parent.p5l.console){
-				p5console.style.display = 'block';
-				// window.parent.resizeEditor();
-				consoleVisible = true;
-			}
-			if(timeDelay != undefined && timeDelay != 0){
-				if(consoleTimer != undefined){
-					clearTimeout(consoleTimer);
-				}
-				if(parent.p5l.console ){
-					consoleTimer = setTimeout(consoleHide, timeDelay*1000);
-				}
-			}
-		}
-
-
-
-		function consoleHide(){
-			if(consoleTimer != undefined){
-				clearTimeout(consoleTimer);
-			}
-			p5console.value = '';
-			p5console.style.display = 'none';
-			// window.parent.resizeEditor();
-			consoleVisible = false;
+			parent.consoleMessage(msg, timeDelay)
 		}
 
 

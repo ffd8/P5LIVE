@@ -206,23 +206,28 @@ hr{
 	position:fixed;
 	background:rgba(0, 255, 255, .4);
 }
+
 #p5-console{
 	position:fixed;
 	width:100%;
 	z-index:9999;
-	height:3em;
-	min-height:10px;
+	max-height:4em;
+	min-height:1em;
 	bottom:0px;
 	font-size:9pt;
-	padding:2px 5px 10px 5px;
+	padding:2px 5px 5px 10px;
 	resize:none;
-	color:#aaa;
+	color:#fff;
+	mix-blend-mode: difference !important;
 	outline:none;
-	background:#000;
+	background:none;
 	border:none;
-	border-top:1px solid #111;
 	overflow:hidden;
-	/*display:none;*/
+	line-height:1.1em;
+/*	height:auto !important;*/
+}
+#p5-console::before {
+  content: "» ";
 }
 .myMarker {
 	position:fixed;
@@ -1660,6 +1665,16 @@ li{
 }
 .vex-about code{
 	padding:0 3px 0 3px;
+}
+#about-toc-select{
+	background:#444;
+	border:none;
+	color:#fff;
+	width:100%;
+	outline:none;
+	border-bottom:1px solid #fff;
+	padding-bottom:5px;
+	padding-left:0px;
 }
 #notify{
 	position:fixed;

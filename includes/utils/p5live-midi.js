@@ -2,6 +2,9 @@
 	midi utils for P5LIVE
 */
 
+// array of channel, then notes/cc?
+// - notes/ccs + channels » notes/ccs?
+
 class MidiP5 {
 	constructor(midiDeviceIn = 0, midiDeviceOut = 0, makeGlobal = false) {
 		this.midiDeviceIn = midiDeviceIn
@@ -14,35 +17,28 @@ class MidiP5 {
 		this.ease = .05
 		this.velocityFade = 4
 
-		this.notes = []
-		this.controlchanges = []
-		for(let i = 0; i < 17; i++) {
-			this.notes.push({
-				id: i + 1,
-				channel: 0,
-				chan: 0,
-				number: 0,
-				num: 0,
-				velocity: 0,
-				velocityEase: 0,
-				vel: 0,
-				velEase: 0,
-				sum: 0,
-				sumEase: 0,
-				on: 0
-			})
+		this.note = this.setupNote()
+		this.cc = this.setupCC()
+		this.pitchbend = {}
 
-			this.controlchanges.push({
-				id: i + 1,
-				channel: 0,
-				chan: 0,
-				name: '',
-				number: 0,
-				value: 0,
-				valueEase: 0,
-				val: 0,
-				valEase: 0,
-			})
+		this.channels = []
+		this.notes = []
+		this.ccs = []
+
+		// per channel
+		for(let i = 0; i < 16; i++) {
+			this.channels.push({id:i, channel:i+1, note:this.setupNote(), cc:this.setupCC(), notes:[], ccs:[]})
+			
+			// per note/cc 128 vals
+			for(let j = 0; j < 128; j++){
+				if(i == 0){
+					this.notes.push(this.setupNote(j))
+					this.ccs.push(this.setupNote(j))
+				}
+
+				this.channels[i].notes.push(this.setupNote(j))
+				this.channels[i].ccs.push(this.setupCC(j))
+			}
 		}
 
 		this.setupMidi()
@@ -51,9 +47,38 @@ class MidiP5 {
 		// 	var script = document.createElement('script');
 		// script.src = 'includes/js/webmidi.min.js';
 		// script.onload = ()=>{this.setupMidi()}
-		// // document.body.appendChild(script);
 		// document.head.appendChild(script);
+	}
 
+	setupNote(id = 0){
+		return {
+			id: id,
+			channel: 0,
+			chan: 0,
+			number: 0,
+			num: 0,
+			velocity: 0,
+			velocityEase: 0,
+			vel: 0,
+			velEase: 0,
+			sum: 0,
+			sumEase: 0,
+			on: 0
+		}
+	}
+
+	setupCC(id = 0){
+		return {
+			id: id,
+			channel: 0,
+			chan: 0,
+			name: '',
+			number: 0,
+			value: 0,
+			valueEase: 0,
+			val: 0,
+			valEase: 0,
+		}
 	}
 
 	setupMidi() {
@@ -179,45 +204,53 @@ class MidiP5 {
 	noteOn(note) {
 		// use note.type, .channel, .name, .number, .octave, .velocity
 
-		var curChannel = constrain(note.channel, 1, 16)
-		this.notes[curChannel].on = 1
-		this.notes[curChannel].channel = note.channel
-		this.notes[curChannel].number = note.number
-		this.notes[curChannel].velocity = note.velocity
-		this.notes[curChannel].sum += note.velocity
+		let curNumber = note.number
+		this.notes[curNumber].on = 1
+		this.notes[curNumber].channel = note.channel
+		this.notes[curNumber].number = note.number
+		this.notes[curNumber].velocity = note.velocity
+		this.notes[curNumber].sum += note.velocity
 
-		this.notes[0] = this.notes[curChannel]
+		this.channels[note.channel-1].note = this.cloneObj(this.notes[curNumber])
+		this.channels[note.channel-1].notes[curNumber] = this.cloneObj(this.notes[curNumber])
+
+		this.note = this.cloneObj(this.notes[curNumber])
 	}
 
 	noteOff(note) {
 		// use note.type, .channel, .name, .number, .octave, .velocity
-		var curChannel = constrain(note.channel, 1, 16)
-		this.notes[curChannel].on = 0
-		this.notes[curChannel].channel = note.channel
-		this.notes[curChannel].number = note.number
 
-		this.notes[0] = this.notes[curChannel]
+		let curNumber = note.number
+		this.notes[curNumber].on = 0
+		this.notes[curNumber].channel = note.channel
+		this.notes[curNumber].number = note.number
+		// this.notes[curNumber].velocity = note.velocity // fade below
 
-		// notes[note.channel].vel  = 0 // fading below
+		this.channels[note.channel-1].note = this.cloneObj(this.notes[curNumber])
+		this.channels[note.channel-1].notes[curNumber] = this.cloneObj(this.notes[curNumber])
+
+		this.note = this.cloneObj(this.notes[curNumber])
 	}
 
 	pitchBend(pitch) {
 		// use pitch.type, .channel, .value
-
-		print(pitch) // debug
+		this.pitchbend = pitch
+		// print(pitch) // debug
 	}
 
 	controlChange(controlchange) {
 		// use controlchange.type, .channel, .number, .name, .value
-		var curChannel = constrain(controlchange.channel, 1, 16)
-		this.controlchanges[curChannel].channel = controlchange.channel
-		this.controlchanges[curChannel].chan = controlchange.channel
-		this.controlchanges[curChannel].name = controlchange.name
-		this.controlchanges[curChannel].number = controlchange.number
-		this.controlchanges[curChannel].num = controlchange.number
-		this.controlchanges[curChannel].value = controlchange.value
-		this.controlchanges[curChannel].val = controlchange.value
-		this.controlchanges[0] = this.controlchanges[curChannel]
+
+		let curNumber = controlchange.number
+		this.ccs[curNumber].channel = controlchange.channel
+		this.ccs[curNumber].name = controlchange.name
+		this.ccs[curNumber].number = controlchange.number
+		this.ccs[curNumber].value = controlchange.value
+
+		this.channels[controlchange.channel-1].cc = this.cloneObj(this.ccs[curNumber])
+		this.channels[controlchange.channel-1].ccs[curNumber] = this.cloneObj(this.ccs[curNumber])
+
+		this.cc = this.cloneObj(this.ccs[curNumber])
 	}
 
 	sendNote(channel, note, octave, duration, velocity) {
@@ -227,18 +260,56 @@ class MidiP5 {
 		})
 	}
 
+	updateNotes(n){
+		n.chan = n.channel
+		n.num = n.number
+		n.vel = n.velocity
+		n.velocityEase = ease(n.velocity, n.velocityEase, this.ease)
+		n.velEase = n.velocityEase
+		n.sumEase = ease(n.sum, n.sumEase, this.ease)
+		if(n.velocity >= this.velocityFade) { // !n.on &&
+			n.velocity -= this.velocityFade
+		}
+	}
+
+	updateCC(cc){
+		cc.chan = cc.channel
+		cc.num = cc.number
+		cc.val = cc.value
+	}
+
 	updateMidi() {
-		for(let n of this.notes) {
-			n.chan = n.channel
-			n.num = n.number
-			n.vel = n.velocity
-			n.velocityEase = ease(n.velocity, n.velocityEase, this.ease)
-			n.velEase = n.velocityEase
-			n.sumEase = ease(n.sum, n.sumEase, this.ease)
-			if(n.velocity >= this.velocityFade) { // !n.on &&
-				n.velocity -= this.velocityFade
+
+		this.updateNotes(this.note)
+		this.updateCC(this.cc)
+
+		// per channel
+		for(let i = 0; i < 16; i++) {	
+			this.updateNotes(this.channels[i].note)
+				this.updateCC(this.channels[i].cc)
+
+			// per note/cc 128 vals
+			for(let j = 0; j < 128; j++){
+				if(i == 0){
+					this.updateNotes(this.notes[j])
+					this.updateCC(this.ccs[j])					
+				}
+				this.updateNotes(this.channels[i].notes[j])
+				this.updateCC(this.channels[i].ccs[j])
 			}
 		}
+
+		// for(let n of this.notes) {
+		// 	n.chan = n.channel
+		// 	n.num = n.number
+		// 	n.vel = n.velocity
+		// 	n.velocityEase = ease(n.velocity, n.velocityEase, this.ease)
+		// 	n.velEase = n.velocityEase
+		// 	n.sumEase = ease(n.sum, n.sumEase, this.ease)
+		// 	if(n.velocity >= this.velocityFade) { // !n.on &&
+		// 		n.velocity -= this.velocityFade
+		// 	}
+		// }
 
 		if(this.makeGlobal) {
 			for(const key in this) {
@@ -249,6 +320,11 @@ class MidiP5 {
 			}
 		}
 
+	}
+
+	// UTILS
+	cloneObj(obj){
+		return JSON.parse(JSON.stringify(obj))
 	}
 
 }

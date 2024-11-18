@@ -46,8 +46,8 @@
 
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
-		<textarea id="p5-console"></textarea>
 	</div>
+	<textarea id="p5-console"></textarea>
 
 	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts allow-downloads allow-pointer-lock" srcdoc="" ></iframe>
 	<div id="p5-frame-cover"></div>
@@ -733,7 +733,7 @@ function println(msg){
 
 		/* INIT */
 		let currentVersion = '1.6.0';
-		let currentRevision = 49;
+		let currentRevision = 50;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -3769,6 +3769,7 @@ function println(msg){
 			editor.focus();
 			editor.session.off('change', cloneSketch);
 			sketchScrollIntoView(true);
+			notifyMsg('Cloned Sketch!')
 		}
 
 		function subSketch(dirName){
@@ -4254,9 +4255,13 @@ function println(msg){
 				return false;
 			}
 
-			// check for audio snippet
-			if(checkCodeAudio(sketchDetails.code)){
+			// check for audio/midi snippet
+			if(checkCodeMatch(sketchDetails.code, ['setupAudio', 'updateAudio'])){
 				sketchDetails.code += `\n\n ${p5liveUtils.audio}`
+			}
+
+			if(checkCodeMatch(sketchDetails.code, ['setupMidi', 'updateMidi'])){
+				sketchDetails.code += `\n\n ${p5liveUtils.midi}`
 			}
 			
 			tempSketches.structure.push(sketchDetails);
@@ -4269,9 +4274,10 @@ function println(msg){
 			exportJS(tempSketches, 'P5L_' + sketchDetails.name + tempTimestamp + '.js');
 		}
 
-		function checkCodeAudio(code){
+		function checkCodeMatch(code, words){
 			let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
-			let sketchScriptsString = sketchTest.match(/(?=setupAudio|updateAudio).*/gm);
+			let regex = new RegExp(`(?=${words.join("|")}).*`, "gm");
+			let sketchScriptsString = sketchTest.match(regex);
 			return sketchScriptsString != null ? true : false
 		}
 
@@ -5824,8 +5830,11 @@ function println(msg){
 		}
 
 		function consoleMessage(msg, timeDelay){
-			p5console.value = msg;
-			if(consoleVisible == false){
+			if(typeof msg === 'object'){
+				msg = JSON.stringify(msg);
+			}
+			p5console.value = `» ${msg}`;
+			if(p5editor.style.visibility == 'visible'){
 				p5console.style.display = 'block';
 				// resizeEditor();
 				consoleVisible = true;
@@ -5836,6 +5845,8 @@ function println(msg){
 				}
 				consoleTimer = setTimeout(consoleHide, timeDelay*1000);
 			}
+			p5console.style.height = "1px";
+  			p5console.style.height = (p5console.scrollHeight)+"px";
 		}
 
 		function consoleHide(){
@@ -7356,8 +7367,12 @@ function println(msg){
 		function editorToggle(force){
 			if(p5editor.style.visibility != 'visible' && !force){
 				p5editor.style.visibility = 'visible';
+				p5console.style.display = 'block'
 			}else{
 				p5editor.style.visibility = 'hidden';
+				if(settings.consoleMode == 'auto'){
+					p5console.style.display = 'none'
+				}
 			}
 			editorToggleUpdate();
 		}
@@ -7573,6 +7588,7 @@ function println(msg){
 				settingsFontsize.value = settings.editor.fontSize;
 			}
 			p5code.style.fontSize = settings.editor.fontSize + 'pt';
+			p5console.style.fontSize = settings.editor.fontSize + 'pt';
 		}
 
 
@@ -7619,18 +7635,59 @@ function println(msg){
 				let markedReadme = marked(request.responseText, markedOptions);
 				let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
 				markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
-				let p5liveabout = '<div class="vex-about vex-long">'+markedReadme+'</div>';
+				let p5liveabout = `<div id="about-toc"><select id="about-toc-select" onchange="scrollVex(this.value)"><option value="marked-p5live">[≡] README – TABLE OF CONTENTS</option></select></div><div id="p5liveabout" class="vex-about vex-long">${markedReadme}</div>`;
 
 				vex.dialog.alert({
 					unsafeMessage:p5liveabout,
 					afterOpen: function(){
 						vexFocus();
+		
+						var voxmsg = document.getElementById('p5liveabout')
+
+						// check scroll
+						voxmsg.addEventListener('scroll', (e)=>{
+							var toc = document.getElementById('about-toc-select')
+							var opClosest = {min:1000, id:'', prev: toc.value}
+							hs.forEach(op => {
+								var opTop = document.getElementById(op.id).offsetTop
+								var opOffset = Math.abs(voxmsg.scrollTop - opTop)
+								if(opOffset <= 20){ // opOffset <= opClosest.min
+									opClosest.min = opOffset
+									opClosest.id = op.id
+								}
+							})
+
+							if(opClosest.id != '' && opClosest.id != opClosest.prev){
+								toc.value = opClosest.id
+							}
+						})
+
+						// build TOC
+						var hs = voxmsg.querySelectorAll("h1, h2, h3, h4")
+						var toc = document.getElementById('about-toc-select')
+						hs.forEach(op => {
+							op.spacing = ('').padStart(op.tagName.substring(1, 2)*3, ' ')
+							if(op.id !== "marked-p5live"){
+								toc.innerHTML += `<option value="${op.id}">${op.spacing + op.innerHTML}</option>`
+							}
+						})
+
+						// disable about links in exhibitmode
 						if(exhibitMode){
 							preventLinks()
 						}
 					}
 				})
 			});
+		}
+
+		function scrollVex(elm){
+			var voxmsg = document.getElementById('p5liveabout')
+			var el = document.getElementById(elm).offsetTop
+			if(elm == 'marked-p5live'){
+				el = 0
+			}
+			voxmsg.scroll({top: el, behavior: 'smooth'})
 		}
 
 		function loadChangelog(){
@@ -7761,9 +7818,13 @@ function println(msg){
 				iFrameHead.innerHTML += '\n';
 			}
 
-			// check for audio snippet
-			if(checkCodeAudio(curCode)){
+			// check for audio/midi snippet
+			if(checkCodeMatch(curCode, ['setupAudio', 'updateAudio'])){
 				curCode += `\n\n ${p5liveUtils.audio}`
+			}
+
+			if(checkCodeMatch(curCode, ['setupMidi', 'updateMidi'])){
+				curCode += `\n\n ${p5liveUtils.midi}`
 			}
 
 			let s = document.createElement('script');
