@@ -19,6 +19,7 @@ if(process.argv.indexOf('https') > -1){
 
 
 const express = require('express')
+, bodyParser = require('body-parser')
 , app = express()
 , server = require('http').createServer(app)
 , io = require('socket.io')(server)
@@ -231,6 +232,10 @@ app.use(function (req, res, next) {
 	}
 })
 
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
+
 app.get('/', function (req, res) {
 	if(online && !developBranch){
 		res.redirect('https://teddavis.org/p5live');
@@ -261,7 +266,7 @@ if(!online){
 	  let dir = './_backups';
 	  !fs.existsSync(dir) && fs.mkdirSync(dir);
 
-	  fs.writeFile(dir + '/P5L_BACKUP_'+tPort+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
+	  fs.writeFile(dir + '/P5L_BACKUP_'+tPort+'_'+req.body.browser+req.body.timestamp+'.json', JSON.stringify(req.body.sketches, undefined, 2), { flag: '' }, err => {})
 	  res.send('OK');
 	});
 

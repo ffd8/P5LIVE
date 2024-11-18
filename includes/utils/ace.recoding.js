@@ -231,7 +231,7 @@ class Recoding{
 	            self.editorOut.session.doc.applyDelta(k.d)
             }else{
 				self.editorOut.session.doc.applyDelta(k.d)
-				self.editorOut.moveCursorTo(k.d.start.row, k.d.start.column)
+				self.editorOut.moveCursorTo(k.d.start.row, k.d.start.column+1)
 				
 				self.editorOut.renderer.scrollCursorIntoView({row: k.d.end.row, column: k.d.end.column}, 0.5) // in view
 				// self.editorOut.renderer.scrollToLine(k.d.end.row, true, true); // constant follow
@@ -348,7 +348,7 @@ class Recoding{
 
 		if(tempDeltas.length > 0){
 			this.editorOut.setValue(tempdoc.getValue(), 1)
-			this.editorOut.moveCursorTo(curPos.row, curPos.column)
+			this.editorOut.moveCursorTo(curPos.row, curPos.column+1)
 			// console.log(curPos.row)
 			// this.editorOut.scrollToLine(curPos.row);
 			this.editorOut.renderer.scrollCursorIntoView({row: curPos.row, column: curPos.column}, 0.5)

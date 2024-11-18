@@ -46,8 +46,8 @@
 
 	<div id="p5-editor">
 		<pre id="p5-code" autofocus class="p5-ta"></pre>
-		<textarea id="p5-console"></textarea>
 	</div>
+	<textarea id="p5-console"></textarea>
 
 	<iframe id="p5-frame" sandbox="allow-same-origin allow-scripts allow-downloads allow-pointer-lock" srcdoc="" ></iframe>
 	<div id="p5-frame-cover"></div>
@@ -67,7 +67,7 @@
 
 			<div class="menu-section menu-section-top" id="menu-section-p5live">
 				<div class="menu-section-bg"></div>
-				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span></div>
+				<div class="menu-header">P5LIVE<span id="menu-p5live-version" class="counters"></span><span id="menu-p5live-resize">1920x1080</span></div>
 				<div class="menu-sketches-buttons" id="p5live-buttons">
 					<button class="menu-button tippy" onclick="loadAbout();this.blur();" data-title="About">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-help-circle"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
@@ -82,16 +82,16 @@
 					<button class="menu-button tippy" onclick="toggleChalkboard();this.blur();" data-title="Toggle Chalkboard">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
 					</button>
-					<button class="menu-button tippy" onclick="popStream(true);this.blur();" data-title="Visuals-only Popup">
+					<button id="button-stream" class="menu-button" onmouseenter="showButtonsExtended('stream', 'flex');this.blur();" onmouseleave="hideButtonsExtended('stream');this.blur();">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-monitor"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
 					</button>
 
-					<button id="button-export" class="menu-button menu-button-extend tippy" onclick="toggleButtonsExtended('export', 'flex');this.blur();" data-title="Export">
+					<button id="button-export" class="menu-button menu-button-extend" onmouseenter="showButtonsExtended('export', 'flex');this.blur();" onmouseleave="hideButtonsExtended('export');">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
 					</button>
 				</div>
 
-				<div class="menu-sketches-buttons-extended" id="p5live-buttons-export" style="">
+				<div class="menu-sketches-buttons-extended" id="p5live-buttons-export" style="" onmouseenter="showButtonsExtended('export', 'flex');" onmouseleave="hideButtonsExtended('export');">
 					<button class="menu-button tippy" onclick="savePNG();this.blur();" data-title="Export Snapshot<br>PNG [+ CODE]">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
 					</button>
@@ -100,6 +100,16 @@
 					</button>
 					<button class="menu-button tippy" onclick="saveHTML();this.blur();" data-title="Export HTML">
 						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+					</button>
+				</div>
+
+				<div class="menu-sketches-buttons-extended" id="p5live-buttons-stream" style="" onmouseenter="showButtonsExtended('stream', 'flex');" onmouseleave="hideButtonsExtended('stream');">
+					<button class="menu-button tippy" onclick="popStream(true);this.blur();"  data-title="Visuals-only Popup">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-cast"><path d="M2 16.1A5 5 0 0 1 5.9 20M2 12.05A9 9 0 0 1 9.95 20M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"></path><line x1="2" y1="20" x2="2" y2="20"></line></svg>
+					</button>
+					
+					<button class="menu-button tippy" onclick="popCode();this.blur();"  data-title="Code-only Popup">
+						<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-align-left"><line x1="17" y1="10" x2="3" y2="10"></line><line x1="21" y1="6" x2="3" y2="6"></line><line x1="21" y1="14" x2="3" y2="14"></line><line x1="17" y1="18" x2="3" y2="18"></line></svg>
 					</button>
 				</div>
 			</div>
@@ -722,8 +732,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.5.1';
-		let currentRevision = 48;
+		let currentVersion = '1.6.0';
+		let currentRevision = 50;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -947,6 +957,7 @@ function println(msg){
 		p5f = p5frame.contentWindow;
 
 		let p5script = document.getElementById('holdscript'),
+		menuResize = document.getElementById('menu-p5live-resize'),
 		menuCocode = document.getElementById('menu-section-cocode'),
 		menuSectionP5live = document.getElementById('menu-section-p5live'),
 		menuSectionSketches = document.getElementById('menu-section-sketches'),
@@ -1020,23 +1031,23 @@ function println(msg){
 		sketchLoaded = false, forceRecompile = false, loadingInit = false,
 		paused = false, multitabWarning = false, useRecompilePulse = true,
 		markerID = [], pulsemarkerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
-		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate,
+		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate, p5liveUtils = {},
 		p5vars = {frameCount:0, pframeCount:0, mouseX:0, mouseY:0}, newBG = '',
 		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		showNotify = false, navMouseOver = false,
-		curPos, curPositions = [], updateCursor, showCursors = false, notifyTimer,
+		curPos, curPositions = [], updateCursor, showCursors = false, notifyTimer, hideButtonsTimer,
 		demosLocked = true, autoCompleteExport = false,
 		syncdataEditor, syncdataPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
-		p5pop, p5popStream, p5popActive = false,
 		changelog = {show:false, revision:0, version:0},
 		recoding, exhibitMode = false
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
+		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
 		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto'}
 		;
 
@@ -1048,7 +1059,7 @@ function println(msg){
 		let Document = ace.require("ace/document").Document
 		let langTools = ace.require('ace/ext/language_tools');
 		let snippetManager = ace.require("ace/snippets").snippetManager
-		let editor = ace.edit('p5-code');
+		var editor = ace.edit('p5-code');
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
 		editor.session.on('changeMode', function(e, session) {
@@ -1077,6 +1088,10 @@ function println(msg){
 		// function loadSnippetsManager(acOBJ){
 		snippetManager.register(aceSnippets)
 		// }
+
+		function getEditor(){
+			return editor.getValue()
+		}
 
 		function loadAutoComplete(acOBJ, compName, compScore){
 			// propose trimmed list/script to https://github.com/processing/p5.js/issues/3666
@@ -1349,6 +1364,7 @@ function println(msg){
 		icon.clock = '<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>';
 		icon.pause = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pause"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>';
 		icon.pauseCircle = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pause-circle"><circle cx="12" cy="12" r="10"></circle><line x1="10" y1="15" x2="10" y2="9"></line><line x1="14" y1="15" x2="14" y2="9"></line></svg>';
+		icon.newFile = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-plus"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="12" y1="18" x2="12" y2="12"></line><line x1="9" y1="15" x2="15" y2="15"></line></svg>';
 
 
 		// code-line color picker
@@ -1420,7 +1436,7 @@ function println(msg){
 		let includeScripts = {
 			p5:{
 				'local':'includes/p5/p5.min.js',
-				'remote':'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.2/p5.min.js'
+				'remote':'https://cdn.jsdelivr.net/npm/p5@latest/lib/p5.min.js'
 			},
 			p5sound:{
 				'local':'includes/p5/addons/p5.sound.min.js',
@@ -1484,7 +1500,7 @@ function println(msg){
 					el.style.zIndex = 9999999;
 					el.style.color = '#000';
 					el.style.cursor = 'help';
-					if(!showCursors && !settings.cocodingFlagsToggle){ // *** showcursors
+					if(!showCursors && !settings.cocodingFlagsToggle && !exhibitMode){ // *** showcursors
 						el.style.display = 'none';
 					}
 					el.innerHTML = '<div class="cursor-label" style="background:'+pos.color+'aa;left:0px;white-space: nowrap;line-height:1em;">'+pos.id+'</div>';
@@ -2363,7 +2379,9 @@ function println(msg){
 					activeLine.style.backgroundColor = settings.themeACTIVE
 				}
 			}else{
-				document.querySelector('.ace_marker-layer .ace_active-line').style.backgroundColor = 'inherit'
+				if(document.querySelector('.ace_marker-layer .ace_active-line') !== null){
+					document.querySelector('.ace_marker-layer .ace_active-line').style.backgroundColor = 'inherit'
+				}
 			}
 
 		}
@@ -2594,6 +2612,26 @@ function println(msg){
 				let el = document.createElement('html');
 				el.innerHTML = html;
 				p5htmlTemplate = el;
+			})
+
+			// p5 audio utils
+			.then(() => {
+				let fetchPath = 'includes/utils/p5live-audio.js?' + currentRevision;
+				return fetch(fetchPath)
+			})
+			.then(res => res.text())
+			.then(js => {
+				p5liveUtils.audio = js
+			})
+
+			// p5 midi utils
+			.then(() => {
+				let fetchPath = 'includes/utils/p5live-midi.js?' + currentRevision;
+				return fetch(fetchPath)
+			})
+			.then(res => res.text())
+			.then(js => {
+				p5liveUtils.midi = js
 			})
 
 			// load snippets
@@ -3105,6 +3143,32 @@ function println(msg){
 			resizeSketchesHolder();
 		}
 
+		function showButtonsExtended(elm, display){
+			clearTimeout(hideButtonsTimer)
+			Array.from(document.querySelectorAll(`.menu-sketches-buttons-extended`)).forEach((element,index) => {
+				element.style.display = 'none';
+			});
+			
+			let ebNav = document.getElementById('p5live-buttons-' + elm);
+			let ebButton = document.getElementById('button-' + elm);
+
+			ebNav.style.display = display;
+			ebButton.style.background='#444';
+			resizeSketchesHolder();
+		}
+
+		function hideButtonsExtended(elm, display){
+			clearTimeout(hideButtonsTimer)
+			let ebNav = document.getElementById('p5live-buttons-' + elm);
+			let ebButton = document.getElementById('button-' + elm);
+
+			hideButtonsTimer = setTimeout(()=>{
+				ebNav.style.display = 'none';
+				ebButton.style.background='#666';
+				resizeSketchesHolder();
+			}, 1000)	
+		}
+
 
 
 		/*	SKETCHES TASKS	*/
@@ -3153,12 +3217,20 @@ function println(msg){
 			sketchesHolder.style.height = Math.floor(window.innerHeight - sectionHeight) + 'px';
 		}
 
-		let checkWindowResize;
+		let checkWindowResize, checkCans;
 		window.onresize = function(){
 			clearTimeout(checkWindowResize);
+			menuResize.style.opacity = 1
+			menuResize.innerHTML = `${window.innerWidth}x${window.innerHeight}`
 			checkWindowResize = setTimeout(function(){
 				resizeSketchesHolder();
-			}, 100);
+				if(p5pop){
+					setTimeout(collectCans, 500)		
+				}
+				menuResize.style.opacity = 0
+			}, 500);
+
+			
 		};
 
 		function resetSettings(){
@@ -3241,12 +3313,17 @@ function println(msg){
 						if(value){
 							Object.keys(tSettings.settings).forEach(function(k){
 								if(settings.hasOwnProperty(k)){
-									settings[k] = tSettings.settings[k];
+									if(k != 'version' && k != 'revision'){
+										settings[k] = tSettings.settings[k];
+									}
 								}
 							});
 							updateSettings();
 							loadSettings();
 						}
+					},
+					afterOpen: function(){
+						vexClass(this.rootEl, 'vex-small')
 					}
 				})
 			}else{
@@ -3269,7 +3346,7 @@ function println(msg){
 				// console.log(sc +" / "+ initSettings.shortcuts[sc])
 
 				let shortcutKey = shortcutOG.key;
-				if(shortcut.key !== undefined && shortcut.key !== shortcutOG.key && !reset){
+				if(shortcut !== undefined && shortcut.hasOwnProperty('key') && shortcut.key !== shortcutOG.key && !reset){
 					shortcutKey = shortcut.key;
 				}
 
@@ -3676,7 +3753,7 @@ function println(msg){
 			if(checkDir != undefined && checkDir.parent != undefined && checkDir.parent != 'demos' && !checkDemo || !demosLocked){
 				let useDir = searchJSON(settings.sketches, 'name', checkDir.parent)[0];
 				cloneLocation = jsonIndex('name', settings.fileName, useDir.contents);
-				console.log(cloneLocation)
+				// console.log('clonelocation: '+cloneLocation)
 				useDir.contents.splice(cloneLocation, 0, {'type':'sketch', 'name':forkName, 'mod':tc});
 				// useDir.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 				useDir.toggle = 'expand';
@@ -3692,6 +3769,23 @@ function println(msg){
 			editor.focus();
 			editor.session.off('change', cloneSketch);
 			sketchScrollIntoView(true);
+			notifyMsg('Cloned Sketch!')
+		}
+
+		function subSketch(dirName){
+			let useDir = searchJSON(settings.sketches, 'name', dirName)[0];
+			let forkName = versionCheck('new');
+			let tc = timeDate();
+			let cloneLocation = 0
+			useDir.contents.splice(cloneLocation, 0, {'type':'sketch', 'name':forkName, 'mod':tc});
+			useDir.toggle = 'expand';
+			settings.fileName = forkName;
+			editor.setValue(p5template, 1)
+			localStorage[settings.fileName] = editor.getValue();
+			updateSettings();
+			updateSketches();
+			editor.focus();
+			editor.session.off('change', cloneSketch);
 		}
 
 		function jsonIndex(key, name, obj){
@@ -3886,6 +3980,12 @@ function println(msg){
 			tempSketches.timestamp = timeStampFile();
 
 			if(!p5l.remote && p5l.fancy){
+				let whichBrowser = getBrowser()
+				if(whichBrowser != undefined && whichBrowser.hasOwnProperty('type')){
+					tempSketches.browser = whichBrowser.type
+				}else{
+					tempSketches.browser = ''
+				}
 				let tempPath = '/backup';
 				let request = new XMLHttpRequest();
 				request.open('POST', tempPath, true);
@@ -3897,6 +3997,74 @@ function println(msg){
 
 			settings.backup.last = new Date().getTime();
 			updateSettings();
+		}
+
+		// https://gist.github.com/lyquix-owner/34a3ed98b990c3c61151d30de2f42702
+		function getBrowser(){
+			var ua = navigator.userAgent, browser;
+
+			// helper functions to deal with common regex
+			function getFirstMatch(regex) {
+				var match = ua.match(regex);
+				return (match && match.length > 1 && match[1]) || '';
+			}
+
+			function getSecondMatch(regex) {
+				var match = ua.match(regex);
+				return (match && match.length > 1 && match[2]) || '';
+			}
+
+			// start detecting
+			if (/opera|opr/i.test(ua)) {
+				browser = {
+					name: 'Opera',
+					type: 'opera',
+					version: getFirstMatch(/version\/(\d+(\.\d+)?)/i) || getFirstMatch(/(?:opera|opr)[\s\/](\d+(\.\d+)?)/i)
+				}
+			}  else if (/msie|trident/i.test(ua)) {
+				browser = {
+					name: 'Internet Explorer',
+					type: 'msie',
+					version: getFirstMatch(/(?:msie |rv:)(\d+(\.\d+)?)/i)
+				}
+			} else if (/chrome.+? edge/i.test(ua)) {
+				browser = {
+					name: 'Microsft Edge',
+					type: 'msedge',
+					version: getFirstMatch(/edge\/(\d+(\.\d+)?)/i)
+				}
+			} else if (/chrome|crios|crmo/i.test(ua)) {
+				browser = {
+					name: 'Google Chrome',
+					type: 'chrome',
+					version: getFirstMatch(/(?:chrome|crios|crmo)\/(\d+(\.\d+)?)/i)
+				}
+			} else if (/firefox/i.test(ua)) {
+				browser = {
+					name: 'Firefox',
+					type: 'firefox',
+					version: getFirstMatch(/(?:firefox)[ \/](\d+(\.\d+)?)/i)
+				}
+			} else if (!(/like android/i.test(ua)) && /android/i.test(ua)) {
+				browser = {
+					name: 'Android',
+					type: 'android',
+					version: getFirstMatch(/version\/(\d+(\.\d+)?)/i)
+				}
+			} else if (/safari/i.test(ua)) {
+				browser = {
+					name: 'Safari',
+					type: 'safari',
+					version: getFirstMatch(/version\/(\d+(\.\d+)?)/i)
+				}
+			} else {
+				browser = {
+					name: getFirstMatch(/^(.*)\/(.*) /),
+					version: getSecondMatch(/^(.*)\/(.*) /)
+				}
+				browser.type = browser.name.toLowerCase().replace(/\s/g, '');
+			}
+			return browser;
 		}
 
 		// load top sketch
@@ -4021,7 +4189,7 @@ function println(msg){
 			let fileHeader = {P5LIVE: {name:sketchDetails.name, mod:sketchDetails.mod}}
 
 			let fileText = `// ${JSON.stringify(fileHeader)} \n\n${sketchDetails.code}`
-			console.log(fileText)
+			// console.log(fileText)
 			const data = new Blob([fileText], {type: 'text/plain'});
 			const a = document.createElement('a')
 			a.style.display = 'none'
@@ -4074,7 +4242,7 @@ function println(msg){
 			tempSketches.structure = [];
 
 			let sketchDetails = searchJSON(settings.sketches, 'name', sketch)[0];
-			if(settings.cocoding.active && customTimestamp !== undefined){
+			if(sketch == 'editor' || (settings.cocoding.active && customTimestamp !== undefined)){
 				sketchDetails = {};
 				sketchDetails.name = settings.fileName;//settings.cocoding.namespace + '_snapshot';
 				sketchDetails.mod = timeDate();
@@ -4087,6 +4255,15 @@ function println(msg){
 				return false;
 			}
 
+			// check for audio/midi snippet
+			if(checkCodeMatch(sketchDetails.code, ['setupAudio', 'updateAudio'])){
+				sketchDetails.code += `\n\n ${p5liveUtils.audio}`
+			}
+
+			if(checkCodeMatch(sketchDetails.code, ['setupMidi', 'updateMidi'])){
+				sketchDetails.code += `\n\n ${p5liveUtils.midi}`
+			}
+			
 			tempSketches.structure.push(sketchDetails);
 			let tempTimestamp = timeStampFile(sketchDetails.mod);
 
@@ -4094,7 +4271,14 @@ function println(msg){
 				tempTimestamp = customTimestamp;
 			}
 
-			exportJS(tempSketches, 'P5L_' + sketch + tempTimestamp + '.js');
+			exportJS(tempSketches, 'P5L_' + sketchDetails.name + tempTimestamp + '.js');
+		}
+
+		function checkCodeMatch(code, words){
+			let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			let regex = new RegExp(`(?=${words.join("|")}).*`, "gm");
+			let sketchScriptsString = sketchTest.match(regex);
+			return sketchScriptsString != null ? true : false
 		}
 
 		// export all/folder[s] w/ sketches to JSON
@@ -5162,7 +5346,7 @@ function println(msg){
 			if(elmType == 'folder'){
 				if(elmLevel === 1){
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+icon.folderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="subSketch(\''+elmID+'\', true)" data-title="Sub-Sketch">'+icon.newFile+'</a><a class="menu-sketch-button tippy" onclick="addFolder(\''+elmID+'\', true)" data-title="Sub-folder">'+icon.folderExpand+'</a><a class="menu-sketch-button tippy" onclick="exportSketches(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Folder" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more">'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
@@ -5358,6 +5542,7 @@ function println(msg){
 				},
 				afterOpen: function(){
 					document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+					vexClass(this.rootEl, 'vex-small')
 				}
 			})
 		}
@@ -5645,8 +5830,11 @@ function println(msg){
 		}
 
 		function consoleMessage(msg, timeDelay){
-			p5console.value = msg;
-			if(consoleVisible == false){
+			if(typeof msg === 'object'){
+				msg = JSON.stringify(msg);
+			}
+			p5console.value = `» ${msg}`;
+			if(p5editor.style.visibility == 'visible'){
 				p5console.style.display = 'block';
 				// resizeEditor();
 				consoleVisible = true;
@@ -5657,12 +5845,17 @@ function println(msg){
 				}
 				consoleTimer = setTimeout(consoleHide, timeDelay*1000);
 			}
+			p5console.style.height = "1px";
+  			p5console.style.height = (p5console.scrollHeight)+"px";
 		}
 
 		function consoleHide(){
 			// console.log([settings.console, settings.consoleMode])
 			if(settings.console && settings.consoleMode == 'show'){
-				console.log('show console')
+				// console.log('clear console')
+				consoleTimer = setTimeout(()=>{
+					p5console.value = '';
+				}, 2000)
 				return false
 			}
 
@@ -5794,6 +5987,18 @@ function println(msg){
 
 		function removeComments(code){
 			return code.replace(/\/\*[\s\S]*?\*\/|([^:\}\)]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'))
+			// const regex = /\/\*[\s\S]*?\*\/|([^:\}\)\w]|^)(\/\/.*)|(["'`])(?:(?!\3)[^\\]|\\.)*\3/gm;
+
+			// return code.replace(regex, (match, p1, p2, p3) => {
+			//   if (p3) return match; // If inside quotes, return the match as is
+			  
+			//   if (p2) {
+			//     const newlineCount = p2.split('\n').length;
+			//     return p1 + Array(newlineCount).join('\n'); // Replace with newlines if outside quotes
+			//   }
+			  
+			//   return match; // For other matches (block comments), return as is
+			// });
 		}
 
 		function processLibs(code){
@@ -5915,6 +6120,10 @@ function println(msg){
 
 						p5f.eval(hb.block)
 						recompilePulse(hb.start, hb.end)
+						
+						if(p5popCode){
+							p5popCode.recompilePulse(hb.start, hb.end)
+						}
 
 						// p5f.eval(sandboxMatch[0])
 						if(!force){
@@ -6116,11 +6325,16 @@ function println(msg){
 			}
 
 			// updated route, load html, then script once ready
+			// console.log(el.innerHTML)
 			p5frame.srcdoc = el.innerHTML;
 			p5frame.onload = function(){
 				if(!settings.safeMode){
 					p5f.document.body.appendChild(s);
 					recompilePulse()
+
+					if(p5popCode){
+						p5popCode.recompilePulse()
+					}
 				}
 			}
 
@@ -6168,6 +6382,10 @@ function println(msg){
 			s.innerHTML = curCodeTemp;
 			p5f.document.head.appendChild(s);
 			recompilePulse(codeStart, codeEnd)
+
+			if(p5popCode){
+				p5popCode.recompilePulse(codeStart, codeEnd)
+			}
 		}
 
 		function getBackground(){
@@ -6283,7 +6501,7 @@ function println(msg){
 		}
 		function snippetsApply(){
 			let snippet = snip.current
-			console.log(snippet)
+			// console.log(snippet)
 			let snippetBase = 'user'
 			if(snippet.substring(0, 5) == 'demo-'){
 				snippetBase = 'demo'
@@ -7149,8 +7367,12 @@ function println(msg){
 		function editorToggle(force){
 			if(p5editor.style.visibility != 'visible' && !force){
 				p5editor.style.visibility = 'visible';
+				p5console.style.display = 'block'
 			}else{
 				p5editor.style.visibility = 'hidden';
+				if(settings.consoleMode == 'auto'){
+					p5console.style.display = 'none'
+				}
 			}
 			editorToggleUpdate();
 		}
@@ -7366,6 +7588,7 @@ function println(msg){
 				settingsFontsize.value = settings.editor.fontSize;
 			}
 			p5code.style.fontSize = settings.editor.fontSize + 'pt';
+			p5console.style.fontSize = settings.editor.fontSize + 'pt';
 		}
 
 
@@ -7412,18 +7635,59 @@ function println(msg){
 				let markedReadme = marked(request.responseText, markedOptions);
 				let verrev = '<p>v '+ settings.version + ' - r' + settings.revision+'<br>';
 				markedReadme = markedReadme.replace(/(<p>).+?(<br>)/, verrev); // <p[^>]*> // [v-\d].*<br>cc
-				let p5liveabout = '<div class="vex-about vex-long">'+markedReadme+'</div>';
+				let p5liveabout = `<div id="about-toc"><select id="about-toc-select" onchange="scrollVex(this.value)"><option value="marked-p5live">[≡] README – TABLE OF CONTENTS</option></select></div><div id="p5liveabout" class="vex-about vex-long">${markedReadme}</div>`;
 
 				vex.dialog.alert({
 					unsafeMessage:p5liveabout,
 					afterOpen: function(){
 						vexFocus();
+		
+						var voxmsg = document.getElementById('p5liveabout')
+
+						// check scroll
+						voxmsg.addEventListener('scroll', (e)=>{
+							var toc = document.getElementById('about-toc-select')
+							var opClosest = {min:1000, id:'', prev: toc.value}
+							hs.forEach(op => {
+								var opTop = document.getElementById(op.id).offsetTop
+								var opOffset = Math.abs(voxmsg.scrollTop - opTop)
+								if(opOffset <= 20){ // opOffset <= opClosest.min
+									opClosest.min = opOffset
+									opClosest.id = op.id
+								}
+							})
+
+							if(opClosest.id != '' && opClosest.id != opClosest.prev){
+								toc.value = opClosest.id
+							}
+						})
+
+						// build TOC
+						var hs = voxmsg.querySelectorAll("h1, h2, h3, h4")
+						var toc = document.getElementById('about-toc-select')
+						hs.forEach(op => {
+							op.spacing = ('').padStart(op.tagName.substring(1, 2)*3, ' ')
+							if(op.id !== "marked-p5live"){
+								toc.innerHTML += `<option value="${op.id}">${op.spacing + op.innerHTML}</option>`
+							}
+						})
+
+						// disable about links in exhibitmode
 						if(exhibitMode){
 							preventLinks()
 						}
 					}
 				})
 			});
+		}
+
+		function scrollVex(elm){
+			var voxmsg = document.getElementById('p5liveabout')
+			var el = document.getElementById(elm).offsetTop
+			if(elm == 'marked-p5live'){
+				el = 0
+			}
+			voxmsg.scroll({top: el, behavior: 'smooth'})
 		}
 
 		function loadChangelog(){
@@ -7510,7 +7774,7 @@ function println(msg){
 				let tempTimestamp = timeStampFile();
 				p5f.save('P5L_' + settings.fileName + tempTimestamp + '.png');
 				if(settings.exportCode){
-					exportSketch(settings.fileName, tempTimestamp);
+					exportSketch('editor', tempTimestamp);
 					if(showNotify){
 						notifyMsg('Snapshot Saved');
 					}
@@ -7524,6 +7788,7 @@ function println(msg){
 			let iFrameHead = el.getElementsByTagName('head')[0];//el.document.getElementsByTagName('body')[0];
 			let iFrameBody = el.getElementsByTagName('body')[0];//el.document.getElementsByTagName('body')[0];
 
+			let curCode = editor.getValue()
 			let curBG = getBackground();
 			iFrameBody.style.background = curBG ? curBG : '#000';
 
@@ -7532,14 +7797,14 @@ function println(msg){
 			// load p5 remote
 			for (const iScript in includeScripts) {
 				// no p5.sound
-				if(editor.getValue().match(/(\/\/).*(no.*p5.*sound)/g)){
+				if(curCode.match(/(\/\/).*(no.*p5.*sound)/g)){
 					if(iScript == 'p5sound') continue;
 				}
 				scriptsCol.push(includeScripts[iScript].remote);
 			}
 
 			// check loadScripts / libs / scripts;
-			let scriptsList = processLibs(removeComments(editor.getValue()));
+			let scriptsList = processLibs(removeComments(curCode));
 			for(let i=0; i < scriptsList.length; i++){
 				scriptsCol.push(scriptsList[i]);
 			}
@@ -7553,10 +7818,18 @@ function println(msg){
 				iFrameHead.innerHTML += '\n';
 			}
 
+			// check for audio/midi snippet
+			if(checkCodeMatch(curCode, ['setupAudio', 'updateAudio'])){
+				curCode += `\n\n ${p5liveUtils.audio}`
+			}
+
+			if(checkCodeMatch(curCode, ['setupMidi', 'updateMidi'])){
+				curCode += `\n\n ${p5liveUtils.midi}`
+			}
 
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + editor.getValue()+'\n';
+			s.innerHTML = '\n//' + settings.fileName+ '\n\n' + p5custom.value +'\n\n' + curCode+'\n';
 			iFrameBody.appendChild(s);
 			iFrameBody.innerHTML += '\n\n';
 			download('<!DOCTYPE html>\n<html>\n' + el.innerHTML+'\n</html>', 'P5L_' + settings.fileName + timeStampFile() + '.html', 'text/html');
@@ -8195,14 +8468,93 @@ function println(msg){
 			if(force){
 				p5popActive = true;
 			}
+
+			
+
 			if(sketchLoaded && p5popActive){
-				p5popStream = p5f.document.querySelector('canvas').captureStream()
+				collectCans()
+				p5popStream = p5lCans[p5lCanSel%p5lCans.length].captureStream()
 
 				if(p5pop && !p5pop.closed){
 					p5pop.vid.srcObject = p5popStream;
+					p5pop.document.getElementById('select-cans').innerHTML = p5lCansOptions.join('')
+					setTimeout(collectCans, 500)
 				}else{
 					// technique built upon : http://plnkr.co/edit/jDzbtPYrYItQ4peplOAN
-					let popup_html = '<!DOCTYPE html><html><head><title>P5LIVE - VISUALS STREAM</title></head><body><div id="but" style="position:fixed;right:5px;top:5px;z-index:10;border:none;color:#fff;padding:5px;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.5;" onclick="openFullscreen();" title="Fullscreen">'+icon.maximize+'</div><br><video id="vid" playsinline autoplay muted style="position:fixed;left:0;top:0;width:100vw;height:100vh;background-color:#000;"></video><script>var vid=document.getElementById("vid");document.body.style.margin="0";document.body.style.background="'+newBG+'";function openFullscreen(){if(vid.requestFullscreen) {vid.requestFullscreen(); } else if (vid.mozRequestFullScreen) { /* Firefox */ vid.mozRequestFullScreen();}else if(vid.webkitRequestFullscreen) {/* Chrome, Safari & Opera */ vid.webkitRequestFullscreen();}else if(vid.msRequestFullscreen){/* IE/Edge */ vid.msRequestFullscreen();}}<\/script><style>::-webkit-media-controls {display:none !important;}<\/style></body></html>';
+					let popup_html = `
+					<!DOCTYPE html>
+					<html>
+					<head>
+						<title>P5LIVE - VISUALS STREAM</title>
+						<style>
+							body{margin:0;background:#000;background:${newBG};}
+							*{outline:none;}
+							input, select{background:#000;color:#fff;border:1px solid #fff;border-radius:3px;padding:2px;}
+							::-webkit-media-controls {display:none !important;}
+							#nav{opacity:0;transition:opacity .5s;}
+							video {
+							  object-fit: contain;
+							}
+						</style>
+					</head>
+					<body>
+						<div id="nav" style="position:fixed;z-index:99;left:0px;top:0px;width:100vw;height:25px;padding:5px;">
+							<div style="position:absolute;left:5px;">
+								<select id="select-cans" onchange="changeCan(this.value)">${p5lCansOptions.join('')}</select>
+								<select id="select-vidSize" onchange="setVidFit(this.value)">
+									<option>Contain</option>
+									<option>Cover</option>
+									<option>Fill</option>
+									<option>None</option>
+								</select>
+							</div>
+							
+							<div id="but" style="position:absolute;right:15px;border:none;color:#fff;font-size:16pt;cursor:pointer;opacity:.5;" onmouseenter="this.style.opacity=1;" onmouseleave="this.style.opacity=.75;" onclick="openFullscreen();" title="Fullscreen">
+								${icon.maximize}
+							</div>
+						</div>
+						<br>
+						<video id="vid" playsinline autoplay muted style="position:fixed;left:0;top:0;width:100vw;height:100vh;background-color:#000;"></video>
+
+						<script>
+							var opener = window.opener;
+							var nav = document.getElementById('nav')
+							var navTimer
+							var vid=document.getElementById("vid");
+
+							function openFullscreen(){
+								if(vid.requestFullscreen){
+									vid.requestFullscreen();
+								}else if(vid.mozRequestFullScreen){ 
+									/* Firefox */ vid.mozRequestFullScreen();
+								}else if(vid.webkitRequestFullscreen){
+									/* Chrome, Safari & Opera */ 
+									vid.webkitRequestFullscreen();
+								}else if(vid.msRequestFullscreen){
+								/* IE/Edge */ vid.msRequestFullscreen();
+								}
+							}
+
+							function changeCan(val){
+								//console.log(opener.document.p5lCans)
+								// vid.srcObject = cans[val].captureStream()
+								var p5popStream = opener.p5lCans[val].captureStream()
+								vid.srcObject = p5popStream
+								opener.p5lCanSel = val
+							}
+
+							function setVidFit(val){
+								document.querySelector('video').style.objectFit = val
+							}
+						
+							document.addEventListener('mousemove', ()=>{
+								nav.style.opacity = 1.0
+								clearTimeout(navTimer)
+								navTimer = setTimeout(()=>{nav.style.opacity = 0.0}, 2000)
+							})
+						<\/script>
+					</body>
+					</html>`;
 					let popup_url = URL.createObjectURL(new Blob([popup_html], {
 					  type: 'text/html'
 					}));
@@ -8210,6 +8562,7 @@ function println(msg){
 					URL.revokeObjectURL(popup_url);
 					p5pop.onload = function() {
 						p5pop.vid.srcObject = p5popStream;
+						
 						// let ctrls = p5pop.document.getElementById("controldiv");
 						// ctrls.disabled="true";
 					}
@@ -8223,6 +8576,222 @@ function println(msg){
 				}
 			}
 		}
+
+		function collectCans(){
+			p5lCans = p5f.document.querySelectorAll('canvas')
+			p5lCansOptions = []
+			var c = 0
+			Array.from(p5lCans).forEach(can =>{
+				// if(can.width > 100 && can.height > 100){
+					let canSel = c == p5lCanSel ? 'selected' : ''
+					p5lCansOptions.push(`<option value="${c}" ${canSel}>${c} - ${can.width} x ${can.height} px</option>`)
+				// }
+				c++
+			})
+
+			if(p5pop){
+				p5pop.document.getElementById('select-cans').innerHTML = p5lCansOptions.join('')
+			}
+		}
+
+		var p5popCode
+		function popCode(force){
+			let url = window.location.href.split('/').slice(0, -1).join('/')
+			// console.log(url);
+
+			if(settings.themeCOLORactive){
+					p5code.style.color = settings.themeCOLOR
+			}else{
+				p5code.style.color = 'inherit'
+			}
+			let popCode_html = `
+			<!DOCTYPE html>
+			<html>
+			<head>
+				<meta charset="UTF-8">
+				<title>P5LIVE - CODE</title>
+				<script src="${url}/includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"><\/script>
+				<link rel="stylesheet" type="text/css" media="all" href="${url}/style.css?45">
+				<style type="text/css">
+					body{margin:0;}
+					#editor{
+						width:100vw;height:100vh;
+						font-size:${settings.editor.fontSize}pt;
+						color:${settings.themeCOLORactive? settings.themeCOLOR : 'inherit'}
+					}
+					.ace_dark.ace_editor.ace_autocomplete .ace_marker-layer .ace_active-line{
+						color:#fff;	
+						background:rgba(150, 191, 0, .4) !important;
+					}
+					.ace_marker{
+						position:fixed;
+						background:rgba(0, 255, 255, .4);
+					}
+					.ace_marker-layer{
+						z-index:9999!important;
+					}
+				</style>
+			</head>
+			<body>
+				<div id="p5-editor">
+					<div id="editor" style=""></div>
+				</div>
+				
+				<script>
+					// const url = new URL(window.location.href);
+					// console.log(url.origin); // 'https://mozilla.org'
+					let Range = ace.require('ace/range').Range;
+					var opener = window.opener;
+					var p5editor = document.getElementById('p5-editor')
+					var editor = ace.edit("editor");
+					editor.setTheme('${settings.theme}');
+					editor.session.setMode("ace/mode/javascript");
+					editor.setOptions({showPrintMargin: false,animatedScroll: true,displayIndentGuides: false,useWorker: true,showLineNumbers: false,showGutter: false,scrollPastEnd:1,tabSize: 4, useSoftTabs: false});
+					editor.setReadOnly(false);
+					var msgEditor = false
+					
+					window.addEventListener("message", function(event){
+						// console.log(event.data)
+						msgEditor = true
+						if(event.data.type == 'replace'){
+							editor.setValue(event.data.msg, -1);
+						}else if(event.data.type == 'delta'){
+							let delta = event.data.msg
+							editor.gotoLine(delta.start.row + 1, delta.start.column, true);
+							editor.session.doc.applyDelta(delta);
+						}
+						msgEditor = false
+					});
+
+					var pulsemarkerID = []
+					function recompilePulse(s = 0, e = editor.session.getLength()){
+						if(${useRecompilePulse}){
+							pulsemarkerID.push({id:editor.session.addMarker(new Range(s, 0, e, 9000), "ace_marker", "text")})
+							setTimeout(removePulseMarkers, 300)
+						}
+					}
+
+					function removePulseMarkers(){
+						for(let i=0; i < pulsemarkerID.length; i++){
+							editor.session.removeMarker(pulsemarkerID[i].id);
+						}
+						pulsemarkerID = [];
+					}
+
+					editor.renderer.on('afterRender', function(){
+						adjustLines();
+					});
+					
+					function adjustLines(){
+						let pcode = p5editor.getElementsByClassName('ace_line');
+						for(let i=0; i < pcode.length; i++){
+							let pitem = pcode[i];
+							if(${settings.themeBGactive} && pitem.getElementsByClassName( 'ace_line_bg' ).length < 1){
+								let pcontents = pitem.innerHTML;
+								pitem.innerHTML = '<span class="ace_line_bg" style="background:${settings.themeBG}">' + pcontents + '</span>';
+							}
+						}
+						
+						if(${settings.themeCOLORactive}){
+							p5editor.style.color = "${settings.themeCOLOR}"
+						}else{
+							p5editor.style.color = 'inherit'
+						}
+
+						if(${settings.themeACTIVEactive}){
+							let activeLine = document.querySelector('.ace_marker-layer .ace_active-line')
+							if(activeLine != null){
+								activeLine.style.backgroundColor = "${settings.themeACTIVE}"
+							}
+						}else{
+							if(document.querySelector('.ace_marker-layer .ace_active-line') !== null){
+								document.querySelector('.ace_marker-layer .ace_active-line').style.backgroundColor = 'inherit'
+							}
+						}
+					}
+
+					editor.on('change', function(delta) {
+						if(msgEditor){
+							return false
+						}
+			    		opener.postMessage({type:'delta', msg:delta}, "*");
+						
+					})
+
+					let keyMap = [];
+					keyMap[16] = false;
+					keyMap[17] = false;
+					editor.onkeydown = function(event) {
+						keyMap[event.keyCode] = event.type == 'keydown';
+
+
+						if(keyMap[16] && keyMap[17] && event.keyCode == 13){
+							event.preventDefault();
+							opener.postMessage({type:'hardCompile', msg:''}, "*");
+						}
+
+						if(keyMap[17] && event.keyCode == 13){
+							event.preventDefault();
+							opener.postMessage({type:'softCompile', msg:''}, "*");
+						}
+					}
+
+					editor.onkeyup = function(event) {
+						keyMap[event.keyCode] = event.type == 'keydown';
+					}
+
+				<\/script>
+			</body>
+			</html>`;
+
+			let popCode_url = URL.createObjectURL(new Blob([popCode_html], {
+					  type: 'text/html'
+					}));
+			if(!p5popCode){
+				p5popCode = window.open(popCode_url, "P5LIVE - CODE STREAM", 'left=0,top=0,width=0,height=0');
+				URL.revokeObjectURL(popCode_url);
+
+				p5popCode.onload = function() {
+					p5popCode.postMessage({type:'replace',msg:editor.getValue()}, "*");
+					
+		        	editor.on('change', function(delta) {
+		        		 if (p5popCode && !msgEditor) {
+					    	p5popCode.postMessage({type:'delta', msg:delta}, "*");
+						}
+					})
+
+		        	window.addEventListener("beforeunload", function() {
+			            if (p5popCode) {
+			                p5popCode.close();
+			            }
+			        });
+				}
+
+				var p5popCodeTick = setInterval(function() {
+			      if (p5popCode.closed) {
+			        p5popCode = false;
+			        clearInterval(p5popCodeTick);
+			      }
+			    }, 500);
+			}
+		}
+
+		// receive messages from popupCode editor
+		var msgEditor = false
+		window.addEventListener("message", function(event){
+			if(event.data.type == 'delta'){
+				msgEditor = true
+				let delta = event.data.msg
+				editor.gotoLine(delta.start.row + 1, delta.start.column);
+				editor.session.doc.applyDelta(delta);
+				localStorage[settings.fileName] = editor.getValue()
+				msgEditor = false
+			}else if(event.data.type == 'softCompile'){
+				recompile();
+			}else if(event.data.type == 'hardCompile'){
+				recompile(true);
+			}
+		})
 
 		function showLoader(){
 			loader.style.display = 'flex';
@@ -8338,6 +8907,26 @@ function println(msg){
 			txtMsg += sketchStats.long.count.toLocaleString()+'<span class="counters">Longest ('+sketchStats.long.name+')</span><br>';
 			txtMsg += settings.statscount.toLocaleString()+'<span class="counters">Viewed Stats...</span><br>';
 			alertMsg(txtMsg);
+		}
+
+		// *** add to stats with GUI for cleanup, list sketches with export/trash option
+		function sketchesStats(){
+			let totalStats = {count:0, size:0}
+			let sketchesList = []
+			for(let is of document.querySelectorAll('.item-sketch:not(.demo)')){
+				let grabName = is.getAttribute('data-id');
+				let grabSketch = localStorage.getItem(grabName);
+				if(grabSketch !== null){
+					let totalChars = grabSketch.replace('\n', '').replace('\t', '').length;
+					// totalLines += grabSketch.split('\n').length;
+					sketchesList.push({name:grabName, size:totalChars})
+					totalStats.count++
+					totalStats.size += totalChars
+				}
+			}
+			sketchesList.sort((a, b) => b.size - a.size)
+			console.log(sketchesList)
+			console.log(`count: ${totalStats.count}, size: ${totalStats.size/1000000}`)
 		}
 
 

@@ -22,10 +22,20 @@ function draw() {
 	"content": 
 	`width`
 },{
+	"tabTrigger": "w/2",
+	"name": "w/2",
+	"content": 
+	`width / 2`
+},{
 	"tabTrigger": "h",
 	"name": "h",
 	"content": 
 	`height`
+},{
+	"tabTrigger": "h/2",
+	"name": "h/2",
+	"content": 
+	`height / 2`
 },{
 	"tabTrigger": "fc",
 	"name": "fc",
@@ -61,6 +71,11 @@ function draw() {
 	"name": "am",
 	"content": 
 	`angleMode(DEGREES)`
+},{
+	"tabTrigger": "rm",
+	"name": "rm",
+	"content": 
+	`rectMode(CENTER)`
 },{
 	"tabTrigger": "im",
 	"name": "im",
@@ -131,6 +146,30 @@ noize = noise
 	"name": "hy5",
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
+
+// sandbox
+\${1}
+
+// s0.initP5()
+// sandbox`
+},
+{
+	"tabTrigger": "HY5",
+	"name": "HY5",
+	"content": 
+	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
+
+// sandbox
+\${1}
+
+// s0.initP5()
+// sandbox`
+},
+{
+	"tabTrigger": "hy5offline",
+	"name": "hy5offline",
+	"content": 
+	`let libs = ['includes/libs/hydra-synth.js', 'includes/libs/hy5.js']
 
 // sandbox
 \${1}
@@ -251,5 +290,24 @@ function draw() {
 	translate(50, 50, 50)
 	plane(width/2, height/2)
 }`
+},{
+	"tabTrigger": "h2",
+	"name": "h2",
+	"content": 
+`var H2 = HY5.hydra('hydra2', 'synth')
+synth.s0.initP5()
+// H2.z(2) // bring to front
+
+H2.pixelDensity(2)
+
+//synth.src(synth.s0).out(synth.o0)`
+},{
+	"tabTrigger": "push",
+	"name": "push",
+	"content": 
+	`push()
+\${1}
+pop()
+`
 },
 ]
