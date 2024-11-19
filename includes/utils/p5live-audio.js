@@ -2,7 +2,7 @@
 	audio utils for P5LIVE
 */
 
-class AudioP5{
+class P5LIVEaudio{
 	constructor(makeGlobal = false){
 		this.fft = [],
 		this.fftEase = [],
@@ -65,7 +65,7 @@ class AudioP5{
 }
 
 function setupAudio(makeGlobal = false){
-	a5 = new AudioP5(makeGlobal)
+	a5 = new P5LIVEaudio(makeGlobal)
 	a5.setup()
 }
 
