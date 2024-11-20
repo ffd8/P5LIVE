@@ -732,8 +732,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.6.1';
-		let currentRevision = 51;
+		let currentVersion = '1.6.2';
+		let currentRevision = 52;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -3777,15 +3777,16 @@ function println(msg){
 			let forkName = versionCheck('new');
 			let tc = timeDate();
 			let cloneLocation = 0
+
 			useDir.contents.splice(cloneLocation, 0, {'type':'sketch', 'name':forkName, 'mod':tc});
 			useDir.toggle = 'expand';
+			
 			settings.fileName = forkName;
-			editor.setValue(p5template, 1)
-			localStorage[settings.fileName] = editor.getValue();
+			localStorage[settings.fileName] = p5template;
 			updateSettings();
 			updateSketches();
 			editor.focus();
-			editor.session.off('change', cloneSketch);
+			loadSketch(settings.fileName)
 		}
 
 		function jsonIndex(key, name, obj){
