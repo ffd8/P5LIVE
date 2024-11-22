@@ -4256,13 +4256,15 @@ function println(msg){
 				return false;
 			}
 
-			// check for audio/midi snippet
+			// check for audio/midi snippet (only html export!)
 			if(checkCodeMatch(sketchDetails.code, ['setupAudio', 'updateAudio'])){
-				sketchDetails.code += `\n\n ${p5liveUtils.audio}`
+				// sketchDetails.code += `\n\n ${p5liveUtils.audio}`
+				sketchDetails.code += `\n\n/* \nP5LIVE - Audio\nIf using outside P5LIVE, include p5live-audio.js \nhttps://cdn.jsdelivr.net/gh/ffd8/P5LIVE/includes/utils/p5live-audio.js\n*/`
 			}
 
 			if(checkCodeMatch(sketchDetails.code, ['setupMidi', 'updateMidi'])){
-				sketchDetails.code += `\n\n ${p5liveUtils.midi}`
+				// sketchDetails.code += `\n\n ${p5liveUtils.midi}`
+				sketchDetails.code += `\n\n/* \nP5LIVE - Midi\nIf using outside P5LIVE, include p5live-midi.js \nhttps://cdn.jsdelivr.net/gh/ffd8/P5LIVE/includes/utils/p5live-midi.js\n*/`
 			}
 			
 			tempSketches.structure.push(sketchDetails);
