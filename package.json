@@ -8,7 +8,7 @@
     "start": "node server.js"
   },
   "engines": {
-    "node": "12.x"
+    "node": "*"
   },
   "repository": {
     "type": "git",
@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/ffd8/p5live/",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.21.1",
     "http-proxy": "^1.18.1",
-    "node-osc": "^4.1.7",
-    "pem": "^1.14.4",
-    "socket.io": "^2.3.0"
+    "node-osc": "^4.1.9",
+    "pem": "^1.14.8",
+    "socket.io": "^2.5.1"
   }
 }
