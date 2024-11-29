@@ -1,6 +1,6 @@
 {
   "version": "1.6.3",
-  "revision": 52,
+  "revision": 53,
   "structure": [
     {
       "name": "demos",
@@ -12,7 +12,6 @@
           "name": "new",
           "mod": "1713482983879",
           "type": "sketch",
-          "parent": "demos",
           "code": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\t\n}\n\nfunction draw() {\n\t\n}"
         },
         {
@@ -95,7 +94,7 @@
               "name": "_audio_analysis",
               "mod": "1730910127552",
               "type": "sketch",
-              "code": "/*\t\n\t_audio_analysis // cc teddavis.org 2019-24\n\t\n\trevamp of P5LIVE's Audio snippet, now built-in the background!\n\tadd snippet to other sketches: CTRL + SHIFT + A \n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\n\t// audio stuff now behind the scenes, 'true' makes class vars global\n\tsetupAudio(true) // if empty, use 'a5.' before audio vars below\n\t// a5.ease = .075 // customize ease speed\n}\n\nfunction draw() {\n\t/* audio vars: amp, ampL, ampR, ampEase, fft, fftEase, waveform, waveformEase */\n\tupdateAudio()\n\n\tbackground(0)\n\tnoFill()\n\tstroke(255)\n\ttextAlign(CENTER, CENTER)\n\n\t/* average */\n\ttext(\"MIX\", width * .5, height / 4)\n\tellipse(width / 2, height / 4, amp)\n\ttext(\"L\", width * .25, height / 4)\n\tellipse(width * .25, height / 4, ampL)\n\ttext(\"R\", width * .75, height / 4)\n\tellipse(width * .75, height / 4, ampR)\n\n\t/* waveform */\n\tbeginShape()\n\tfor(let i = 0; i < waveform.length; i++) {\n\t\tlet freq = waveform[i] * height / 4 // (-1, 1)\n\t\tlet x = map(i, 0, waveform.length, 0, width)\n\t\tcurveVertex(x, height * .5 + freq)\n\t}\n\tendShape()\n\n\t/* waveformEase */\n\tbeginShape()\n\tfor(let i = 0; i < waveformEase.length; i++) {\n\t\tlet freq = waveformEase[i] * height / 4 // (-1, 1)\n\t\tlet x = map(i, 0, waveformEase.length, 0, width)\n\t\tcurveVertex(x, height * .5 + freq)\n\t}\n\tendShape()\n\n\t/* fft */\n\tfor(let i = 0; i < fft.length; i++) {\n\t\tlet freq = fft[i]; // (0, 255)\n\t\tlet x = map(i, 0, fft.length, 0, width)\n\t\tlet w = width / fft.length\n\t\trect(x, height * .8 - freq, w, freq)\n\t}\n\n\t/* fftEase */\n\tfor(let i = 0; i < fftEase.length; i++) {\n\t\tlet freq = fftEase[i]; // (0, 255)\n\t\tlet x = map(i, 0, fftEase.length, 0, width)\n\t\tlet w = width / fftEase.length\n\t\trect(x, height * .805, w, freq)\n\t}\n}"
+              "code": "/*\t\n\t_audio_analysis // cc teddavis.org 2019-24\n\t\n\trevamp of P5LIVE's Audio snippet, now built-in the background!\n\tadd snippet to other sketches: CTRL + SHIFT + A \n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\n\t// audio stuff now behind the scenes, 'true' makes class vars global\n\tsetupAudio(true) // if empty, use 'a5.' before audio vars below\n\t// a5.ease = .075 // customize ease speed\n}\n\nfunction draw() {\n\t/* audio vars: amp, ampL, ampR, ampEase, fft, fftEase, waveform, waveformEase */\n\tupdateAudio()\n\n\tbackground(0)\n\tnoFill()\n\tstroke(255)\n\ttextAlign(CENTER, CENTER)\n\n\t/* average */\n\ttext(\"MIX\", width * .5, height / 4)\n\tellipse(width / 2, height / 4, amp)\n\ttext(\"L\", width * .25, height / 4)\n\tellipse(width * .25, height / 4, ampL)\n\ttext(\"R\", width * .75, height / 4)\n\tellipse(width * .75, height / 4, ampR)\n\n\t/* waveform */\n\tbeginShape()\n\tfor(let i = 0; i < waveform.length; i++) {\n\t\tlet freq = waveform[i] * height / 4 // (-1, 1)\n\t\tlet x = map(i, 0, waveform.length, 0, width)\n\t\tcurveVertex(x, height * .5 + freq)\n\t}\n\tendShape()\n\n\t/* waveformEase */\n\tbeginShape()\n\tfor(let i = 0; i < waveformEase.length; i++) {\n\t\tlet freq = waveformEase[i] * height / 4 // (-1, 1)\n\t\tlet x = map(i, 0, waveformEase.length, 0, width)\n\t\tcurveVertex(x, height * .5 + freq)\n\t}\n\tendShape()\n\n\t/* fft */\n\tfor(let i = 0; i < fft.length; i++) {\n\t\tlet freq = fft[i]; // (0, 255)\n\t\tlet x = map(i, 0, fft.length, 0, width)\n\t\tlet w = width / fft.length\n\t\trect(x, height * .8, w, -freq)\n\t}\n\n\t/* fftEase */\n\tfor(let i = 0; i < fftEase.length; i++) {\n\t\tlet freq = fftEase[i]; // (0, 255)\n\t\tlet x = map(i, 0, fftEase.length, 0, width)\n\t\tlet w = width / fftEase.length\n\t\trect(x, height * .805, w, freq)\n\t}\n}"
             },
             {
               "name": "_audio_gen_tonejs",

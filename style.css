@@ -210,7 +210,7 @@ hr{
 #p5-console{
 	position:fixed;
 	width:100%;
-	z-index:9999;
+	z-index:999;
 	max-height:4em;
 	min-height:1em;
 	bottom:0px;
@@ -276,7 +276,7 @@ overflow-y: hidden;
 	height:100vh;
 	width:250px;
 	color:#fff;
-	z-index:101;
+	z-index:1000;
 }
 #menu-switch{
 	position:absolute;
@@ -288,7 +288,7 @@ overflow-y: hidden;
 	color:#fff;
 	opacity:.2;
 	transition: opacity .5s linear;
-	z-index:1000;
+	z-index:1001;
 	background:#222;
 }
 #menu-switch:hover{
