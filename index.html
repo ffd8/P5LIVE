@@ -732,8 +732,8 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.6.2';
-		let currentRevision = 52;
+		let currentVersion = '1.6.3';
+		let currentRevision = 53;
 		let developBranch = false;
 
 		// resetP5(); // manual reset
@@ -6277,7 +6277,7 @@ function println(msg){
 			// check loadScripts / libs / scripts;
 			let scriptsList = processLibs(codeNoComments);
 			for(let i=0; i < scriptsList.length; i++){
-				scriptsCol.push(scriptsList[i]);
+				scriptsCol.push(`${scriptsList[i]}?${Math.floor(Math.random()*9999)}`);
 			}
 
 			// old way ***
