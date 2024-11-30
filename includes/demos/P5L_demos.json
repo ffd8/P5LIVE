@@ -358,7 +358,7 @@
               "name": "_hydra-only",
               "mod": "1708475920914",
               "type": "sketch",
-              "code": "/*\t\n\t_hydra_only // cc teddavis.org 2022\n\tincase you only want to play with ~[HYDRA]LIVE\n\tedit hydra code within '// sandbox start/stop' for smooth (eval) changes\n\tcheatsheets: https://hydra.ojack.xyz/api/ + https://hydra.ojack.xyz/docs\n*/\n\n// no p5\nlet libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']\nlet hydra = new Hydra()\nhydra.setResolution(window.innerWidth*2, window.innerHeight*2) // retina res\n\n// sandbox - start\n\nosc(10, .05, 1.3)\n\t.kaleid(8)\n\t.modulateScale(src(o0)\n\t\t.scale(1.5)\n\t\t.repeat(4, 4)\n\t\t.rotate(0, .1)\n\t\t.modulate(src(o0).scale(.4))\n\t)\n\t.out()\n\n// sandbox - stop\n"
+              "code": "/*\t\n\t_hydra_only // cc teddavis.org 2022\n\tincase you only want to play with ~[HYDRA]LIVE\n\tedit hydra code within '// sandbox start/stop' for smooth (eval) changes\n\tcheatsheets: https://hydra.ojack.xyz/api/ + https://hydra.ojack.xyz/docs\n*/\n\n// no p5\nlet libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']\nlet hydra = new Hydra()\nhydra.setResolution(window.innerWidth*2, window.innerHeight*2) // retina res\n\n// sandbox - start\n\nosc(10, .05, 1.3)\n\t.kaleid(8)\n\t.modulateScale(src(o0)\n\t\t.scale(1.5)\n\t\t.repeat(4, 4)\n\t\t.rotate(0, .1)\n\t\t.modulate(src(o0).scale(.4))\n\t)\n\t.out()\n\n// sandbox - stop"
             },
             {
               "name": "_hydra_texture",
