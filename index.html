@@ -1042,7 +1042,7 @@ function println(msg){
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
 		changelog = {show:false, revision:0, version:0},
-		recoding, exhibitMode = false
+		recoding, exhibitMode = false, useP5 = true, useP5Sound = true
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
@@ -6057,7 +6057,8 @@ function println(msg){
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
 		function buildSketch(force){
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
-			let useP5 = true, useP5Sound = true;
+			useP5 = true
+			useP5Sound = true
 			if(editor.getValue().match(/(\/\/).no p5$/gm)){
 				useP5 = false;
 			}
@@ -6106,7 +6107,7 @@ function println(msg){
 				let allLines = codeNoComments.split('\n');
 
 				// sandbox
-				let sandboxMatch = editor.getValue().match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n/ism);
+				let sandboxMatch = editor.getValue().match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n*/ism);
 				if(sandboxMatch !== null){
 					var currline = editor.getSelectionRange().start.row;
 					var currCode = editor.session.getLine(currline);
@@ -6314,6 +6315,8 @@ function println(msg){
 			if(useP5){
 				codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
 				fullCode = p5custom.value + codeSetup + '\nnew p5(); sketchStatus();';
+			}else{
+				setTimeout(popStream, 500)
 			}
 			// let fullCode = p5custom.value + codeSetup + '\nnew p5(); sketchStatus();';
 
@@ -8474,7 +8477,7 @@ function println(msg){
 
 			
 
-			if(sketchLoaded && p5popActive){
+			if((sketchLoaded || !useP5) && p5popActive){
 				collectCans()
 				p5popStream = p5lCans[p5lCanSel%p5lCans.length].captureStream()
 
