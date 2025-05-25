@@ -37,6 +37,11 @@ function draw() {
 	"content": 
 	`height / 2`
 },{
+	"tabTrigger": "translate",
+	"name": "translate",
+	"content": 
+	`translate(width / 2, height / 2)`
+},{
 	"tabTrigger": "fc",
 	"name": "fc",
 	"content": 
@@ -309,5 +314,20 @@ H2.pixelDensity(2)
 \${1}
 pop()
 `
+},{
+	"tabTrigger": "xy2",
+	"name": "xy2",
+	"content": 
+`xy2.clearWaves()
+// xy2.freq(25)
+\${1}
+xy2.buildWaves()`
+},{
+	"tabTrigger": "midi",
+	"name": "midi",
+	"content": 
+`setupMidi(0, 0, true)
+// midi5.debug = ['note', 'controlchange']
+updateMidi() // to draw`
 },
 ]

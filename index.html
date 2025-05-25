@@ -508,6 +508,10 @@
 						Snippets: 
 						<button onclick="snippetsToggle()" style="cursor:pointer;background:none;color:#fff;border:1px solid #888;outline:none;font-size:8pt;">Launch Editor</button>
 					</div>	
+					<!-- <div id="settings-snippetsghostmode-holder" class="tippy-left" style="cursor:help;" data-title="Animated typing of snippet" onclick="snippetsghostmodeToggle();">
+						<span><input type="checkbox" id="settings-snippetsghostmodetoggle" name="settings-snippetsghostmodetoggle" value="settings-snippetsghostmodetoggle"> Snippets GhostMode</span>
+						<span><input type="" name="menu-settings-snippetsghostmodespeed" id="menu-settings-snippetsghostmodespeed" class="menu-settings-input-text" value="15" onkeyup="fontSizeSet(this.value);"></span>
+					</div> -->
 					<div>
 						<span class="tippy-left" data-title="Sonify editor changes" style="cursor:help;" onclick="sonicodeToggle();"><input type="checkbox" id="settings-sonicode" name="settings-sonicode" value="settings-sonicode"> SoniCode</span> <span class="tippy-left" data-title="Oscillator Wavetype or Midi output" style="cursor:help;">
 								<select id="settings-sonicode-mode" class="menu-settings-dropdown" onchange="sonicodeMode(this.value);">
@@ -709,6 +713,7 @@ function println(msg){
 	<script src="includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/utils/ace.recoding.js?50"></script>
+	<script src="includes/utils/ace.ghost.js?50"></script>
 	<script src="includes/utils/ace-snippets.js?50"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.min.js"></script>
@@ -735,6 +740,7 @@ function println(msg){
 		let currentVersion = '1.6.3';
 		let currentRevision = 53;
 		let developBranch = false;
+		let v2 = false
 
 		// resetP5(); // manual reset
 
@@ -911,6 +917,7 @@ function println(msg){
 				
 			},
 			'sketches': [],
+			// 'snippetsghostmode': false,
 			'sonicode':{
 				'mode': 'sine',
 				'poly': 1,
@@ -1006,6 +1013,7 @@ function println(msg){
 		settingsKeybindings = document.getElementById('menu-settings-keybindings'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsBackup = document.getElementById('menu-settings-backup'),
+		// settingsSnippetsghostmode = document.getElementById('settings-snippetsghostmode')
 		settingsSoniCode = document.getElementById('settings-sonicode'),
 		settingsSoniCodeMode = document.getElementById('settings-sonicode-mode'),
 		settingsSoniCodePoly = document.getElementById('settings-sonicode-poly'),
@@ -1435,12 +1443,12 @@ function println(msg){
 
 		let includeScripts = {
 			p5:{
-				'local':'includes/p5/p5.min.js',
-				'remote':'https://cdn.jsdelivr.net/npm/p5@latest/lib/p5.min.js'
+				'local':v2 ? 'https://cdn.jsdelivr.net/npm/p5@2.0.0-beta.2/lib/p5.min.js' :'includes/p5/p5.min.js',
+				'remote':v2 ? 'https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js' : 'https://cdn.jsdelivr.net/npm/p5@1/lib/p5.min.js',
 			},
 			p5sound:{
-				'local':'includes/p5/addons/p5.sound.min.js',
-				'remote':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js' // *** temp fix for safari!
+				'local':v2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'includes/p5/addons/p5.sound.min.js',
+				'remote':v2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js' // *** temp fix for safari!
 			}
 		};
 
@@ -2506,7 +2514,7 @@ function println(msg){
 			'keep_array_indentation': false,
 			'break_chained_methods': false,
 			'indent_scripts': 'normal',
-			'brace_style': 'collapse',
+			'brace_style': 'none,preserve-inline',
 			'space_before_conditional': false,
 			'unescape_strings': false,
 			'jslint_happy': false,
@@ -2837,6 +2845,7 @@ function println(msg){
 			themeBGactiveToggleUpdate();
 			themeCOLORactiveToggleUpdate();
 			themeACTIVEactiveToggleUpdate();
+			// snippetsghostmodeToggleUpdate();
 			sonicodeToggleUpdate();
 			loadColorPicker('#pickr-background', 'themeBG')
 			loadColorPicker('#pickr-color', 'themeCOLOR')
@@ -6019,8 +6028,13 @@ function println(msg){
 			return scriptsList;
 		}
 
-		function processModule(code){
-			
+		function processImports(code){
+			let sketchFlat = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			let sketchImportMap = sketchFlat.match(/imports\s*=\s*({[\s\S]*?})/);
+			if(sketchImportMap != null){
+				sketchImportMap = JSON.parse(sketchImportMap[1]);
+			}
+			return sketchImportMap
 		}
 
 		function hydraBlock(){
@@ -6124,6 +6138,9 @@ function println(msg){
 
 						p5f.eval(hb.block)
 						recompilePulse(hb.start, hb.end)
+						if(recoding.recording){
+							recoding.compile()
+						}
 						
 						if(p5popCode){
 							p5popCode.recompilePulse(hb.start, hb.end)
@@ -6290,6 +6307,25 @@ function println(msg){
 				iFrameBody.appendChild(s); // **** BIG change to body from head.. test?!
 			}
 
+			var importMap = processImports(codeNoComments)
+			if(importMap != null){
+				console.log(importMap)
+				let s = document.createElement('script')
+				s.type = 'importmap'
+				s.innerHTML = `{\n"imports":${JSON.stringify(importMap)}\n}`
+				iFrameBody.appendChild(s);
+
+				let m = document.createElement('script')
+				m.type = 'module'
+				m.innerHTML = ``
+				for (const [key, value] of Object.entries(importMap)) {
+				    // resultArray.push(key, value);
+				    m.innerHTML += `import '${key}';\n`
+				    // m.innerHTML += `window['${key}'] = ${key}\n`
+				}
+				iFrameBody.appendChild(m);
+				console.log(m)
+			}
 
 
 			// load sketch
@@ -6457,6 +6493,9 @@ function println(msg){
 
 
 		/* SNIPPETS */
+		
+		let snippetGhostMode = true
+		var editorGhost = new AceGhost(editor)
 
 		function snippetsToggle(hide){
 			let snippetsPanel = document.getElementById('snippets-panel')
@@ -6505,7 +6544,16 @@ function println(msg){
 					snip.selectApply.focus()
 				}
 		}
+
 		function snippetsApply(){
+			if(snippetGhostMode){
+				snippetApplyGhost()
+			}else{
+				snippetsApplyInstant()
+			}
+		}
+		
+		function snippetsApplyInstant(){
 			let snippet = snip.current
 			// console.log(snippet)
 			let snippetBase = 'user'
@@ -6551,6 +6599,53 @@ function println(msg){
 			snippetsToggle(true)
 			snippetsApplyToggle(true)
 		}
+
+		function snippetApplyGhost(){
+			let snippet = snip.current
+			// console.log(snippet)
+			let snippetBase = 'user'
+			if(snippet.substring(0, 5) == 'demo-'){
+				snippetBase = 'demo'
+			}
+			let snippetName = snippet.substring(5, snippet.length)
+			if(settings.snippets[snippetBase].hasOwnProperty(snippetName)){
+				let snippetCode = settings.snippets[snippetBase][snippetName];
+				// let addGlobalTop = snippetCode.gt;
+				// let addGlobalBottom = snippetCode.gb;
+				// let addSetup = snippetCode.s;
+				// let addDrawTop = snippetCode.dt;
+				// let addDrawBottom = snippetCode.db;
+
+				let curCode = editor.getValue();
+				let curPos = editor.getCursorPosition()
+				let curLineText = editor.session.getLine(curPos.row);
+
+				editorGhost.snippetsApply(snippetCode)
+				// let codeGlobalTop = addGlobalTop + '\n' + curCode;
+				// let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
+				// let codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
+				// let codeDrawBottom = addCode(codeDrawTop, addDrawBottom, 'draw', 'bottom');
+				// let codeGlobalBottom = codeDrawBottom + '\n\n' + addGlobalBottom;
+
+				// editor.setValue(codeGlobalBottom, 1);
+				// tidyCode(editor);
+				// editor.focus()
+
+				
+
+				// return cursor to previous position (** fix if blank line)
+				let curLines = editor.getValue().split('\n')
+				if(curLineText != ''){
+					let curRow = curLines.indexOf(curLineText)
+					editor.moveCursorTo(curRow, curPos.column);
+					editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
+				}
+
+			}
+			snippetsToggle(true)
+			snippetsApplyToggle(true)
+		}
+
 
 		let snip = {
 			sections : ['gt', 's', 'dt', 'db', 'gb'],
@@ -7232,6 +7327,16 @@ function println(msg){
 			checkToggle('themeACTIVEactive', settings.themeACTIVEactive, settingsACTIVEactive, 'Active Line Color');
 			editor.renderer.updateFull();
 		}
+
+		// **** ghostmode - snippetFlow
+		// function snippetsghostmodeToggle(){
+		// 	settings.snippetsghostmode.active = !settings.sonicode.active;
+		// 	snippetsghostmodeUpdate();
+		// }
+
+		// function snippetsghostmodeUpdate(){
+		// 	checkToggle('snippetsghostmode.active', settings.snippetsghostmode.active, settingsSnippetsghostmode, 'snippetsghostmode');
+		// }
 
 		function sonicodeToggle(){
 			settings.sonicode.active = !settings.sonicode.active;

@@ -33,7 +33,7 @@ class P5LIVEmidi {
 			for(let j = 0; j < 128; j++){
 				if(i == 0){
 					this.notes.push(this.setupNote(j))
-					this.ccs.push(this.setupNote(j))
+					this.ccs.push(this.setupCC(j))
 				}
 
 				this.channels[i].notes.push(this.setupNote(j))
@@ -42,6 +42,7 @@ class P5LIVEmidi {
 		}
 
 		this.setupMidi()
+		this.global()
 
 		// dynamic loading of script
 		// 	var script = document.createElement('script');
@@ -112,6 +113,7 @@ class P5LIVEmidi {
 				this.midiMsg.data = e.data
 				this.midiMsg.timestamp = e.timestamp
 				// parseMidi(this.midiMsg) // optionally send raw only
+				// updateMidi()
 			}.bind(this))
 
 			// noteOn
@@ -210,6 +212,9 @@ class P5LIVEmidi {
 		this.notes[curNumber].number = note.number
 		this.notes[curNumber].velocity = note.velocity
 		this.notes[curNumber].sum += note.velocity
+		// this.notes[curNumber].chan = note.channel
+		// this.notes[curNumber].num = note.number
+		// this.notes[curNumber].vel = note.velocity
 
 		this.channels[note.channel-1].note = this.cloneObj(this.notes[curNumber])
 		this.channels[note.channel-1].notes[curNumber] = this.cloneObj(this.notes[curNumber])
@@ -224,6 +229,9 @@ class P5LIVEmidi {
 		this.notes[curNumber].on = 0
 		this.notes[curNumber].channel = note.channel
 		this.notes[curNumber].number = note.number
+		// this.notes[curNumber].chan = note.channel
+		// this.notes[curNumber].num = note.number
+		// this.notes[curNumber].vel = note.velocity
 		// this.notes[curNumber].velocity = note.velocity // fade below
 
 		this.channels[note.channel-1].note = this.cloneObj(this.notes[curNumber])
@@ -246,6 +254,9 @@ class P5LIVEmidi {
 		this.ccs[curNumber].name = controlchange.name
 		this.ccs[curNumber].number = controlchange.number
 		this.ccs[curNumber].value = controlchange.value
+		// this.ccs[curNumber].value.chan = controlchange.channel
+		// this.ccs[curNumber].value.num = controlchange.number
+		// this.ccs[curNumber].value.val = controlchange.value
 
 		this.channels[controlchange.channel-1].cc = this.cloneObj(this.ccs[curNumber])
 		this.channels[controlchange.channel-1].ccs[curNumber] = this.cloneObj(this.ccs[curNumber])
@@ -267,7 +278,7 @@ class P5LIVEmidi {
 		n.velocityEase = ease(n.velocity, n.velocityEase, this.ease)
 		n.velEase = n.velocityEase
 		n.sumEase = ease(n.sum, n.sumEase, this.ease)
-		if(n.velocity >= this.velocityFade) { // !n.on &&
+		if(!n.on && n.velocity >= this.velocityFade) { // !n.on &&
 			n.velocity -= this.velocityFade
 		}
 	}
@@ -311,6 +322,12 @@ class P5LIVEmidi {
 		// 	}
 		// }
 
+		this.global()
+
+	}
+
+	// UTILS
+	global(){
 		if(this.makeGlobal) {
 			for(const key in this) {
 				if(key != 'makeGlobal' && key != 'ease' && key != 'debug') {
@@ -319,10 +336,8 @@ class P5LIVEmidi {
 				}
 			}
 		}
-
 	}
 
-	// UTILS
 	cloneObj(obj){
 		return JSON.parse(JSON.stringify(obj))
 	}
@@ -335,6 +350,7 @@ function setupMidi(midiDeviceIn = 0, midiDeviceOut = 0, makeGlobal = false) {
 	
 	// instance of P5LIVE midi
 	midi5 = new P5LIVEmidi(midiDeviceIn, midiDeviceOut, makeGlobal)
+	// midi5.updateMidi()
 }
 
 function updateMidi() {
