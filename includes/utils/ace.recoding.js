@@ -317,8 +317,8 @@ class Recoding{
 
 	}
 
-	tsDiff(dateInitial, dateFinal){
-		return (dateFinal - dateInitial) / 1000 / 60
+	tsDiff(tsStart, tsEnd){
+		return (tsEnd - tsStart) / 1000 / 60
 	}
 
 	durationTotal(){

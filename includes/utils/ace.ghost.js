@@ -127,8 +127,12 @@ class AceGhost{
 			codeInsert = `\n\n${codeInsert}`
 		}else{
 			let placeIndex = codePos == 'top' ? 0 : 1
-			let placeBreakTop = ''//codePos == 'top' ? '\n' : '\n'
+			let placeBreakTop = ''//codePos == 'top' ? '' : '\n' // ''//
 			let placeBreakBottom = codePos == 'bottom' ? '\n' : ''
+
+			if(funName == 'draw'){
+				placeBreakBottom = '\n'
+			}
 			
 			let tempIndex = this.addPosition(codeBase, funName)
 			
@@ -136,7 +140,7 @@ class AceGhost{
 			// console.log(tempPos)
 			
 			this.editor.moveCursorTo(tempPos.row, tempPos.column); // on demand
-			codeInsert = `${placeBreakTop}${codeInsert}${placeBreakBottom}`
+			codeInsert = `${placeBreakTop} ${codeInsert} ${placeBreakBottom}`
 		}
 
 		// editor.session.insert(editor.getCursorPosition(), insertCode)
