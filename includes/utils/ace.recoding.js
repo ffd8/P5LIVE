@@ -8,7 +8,7 @@
  */
 
 
-class Recoding{
+class AceRecoding{
 	constructor(editorIn, editorOut){
 		this.editorIn = editorIn
 		this.editorOut = editorOut
@@ -267,6 +267,7 @@ class Recoding{
 					self.session.events.push(replay)
 				}else{
 					recoding.elms.btns.play.innerHTML = icon.play // *** P5LIVE specific
+					self.editorOut.setReadOnly(false)
 				}
 			}
 

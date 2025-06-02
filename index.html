@@ -1151,7 +1151,7 @@ function println(msg){
 
 
 		// RECODING
-		recoding = new Recoding(editor, editor)
+		recoding = new AceRecoding(editor, editor)
 		recoding.elms = {
 			steps: document.getElementById('menu-recoding-steps'),
 			range: document.getElementById('recoding-range'),
@@ -6493,7 +6493,7 @@ function println(msg){
 
 
 		/* SNIPPETS */
-		
+
 		let snippetGhostMode = true
 		var editorGhost = new AceGhost(editor)
 

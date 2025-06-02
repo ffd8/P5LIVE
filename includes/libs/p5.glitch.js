@@ -1,10 +1,11 @@
-// p5.glitch v0.1.3
-// cc teddavis.org 2021
+// p5.glitch v0.1.5
+// cc teddavis.org 2020 -
 
 class Glitch{
 	constructor(instance){
 		if(instance !== undefined) this.p5 = instance;
 		else this.p5 = p5.instance;
+		this.version = '0.1.5';
 		this.mode = 'image';
 		this.width = 1;
 		this.height = 1;
@@ -278,7 +279,7 @@ class Glitch{
 		bytePos = this.parsePosition(bytePos);
 		let newData = this.bytesGlitched.slice();
 
-		newData[bytePos] = this.parseByte(random(255));
+		newData[bytePos] = this.parseByte(this.p5.random(255));
 
 		this.updateBytes(newData);
 	}
@@ -362,6 +363,26 @@ class Glitch{
 		}
 
 		this.updateBytes(newData);
+	}
+
+	// search for offset by hex string, optionally shift backwards/forwards
+	getOffset(hex, shiftOffset = null){
+		let curOffset = this.bytesToHex(this.bytesGlitched).indexOf(hex.toLowerCase())/2
+		if(shiftOffset != null){
+			curOffset += hex.length/2 + shiftOffset
+		}
+		return curOffset;
+	}
+
+	// return byte (0 - 255) of given offset
+	getByte(offset){
+		return this.bytesGlitched[offset%this.bytesGlitched.length];
+	}
+
+	// return hex (00 - ff) of given offset
+	getHex(offset){
+		let curByte = this.bytesGlitched[offset%this.bytesGlitched.length];
+		return this.bytesToHex([curByte]);
 	}
 
 	// handle changes
