@@ -171,17 +171,12 @@ hr{
 .ace_selection{
 	background:rgba(255, 191, 0, .5) !important ;
 	border-radius:0 !important;
-
 }
 
 .ace_selected-word{
 	border:1px solid rgba(255, 191, 0, .25) !important;
 	border-radius:0 !important;
 	background:rgba(255, 191, 0, .1) !important ;
-}
-
-.ace_search.right{
-	right:280px;
 }
 
 .ace_dark.ace_editor.ace_autocomplete, .ace_marker-layer .ace_active-line{
@@ -205,6 +200,31 @@ hr{
 .ace_marker{
 	position:fixed;
 	background:rgba(0, 255, 255, .4);
+}
+.ace_search_form, .ace_replace_form{
+	margin-right:0;
+	outline:none;
+}
+.ace_search.right{
+	right:300px;
+	background:none;
+	color:#fff;
+	border:1px solid #cbcbcb;
+	border-radius: 0px 0px 5px 5px;
+}
+.ace_search.right *{
+	background:none;
+	color:#fff;
+}
+.ace_search_field{
+	min-width:100px;
+	max-width:200px;
+}
+.ace_search_options{
+	
+}
+.ace_searchbtn.prev, .ace_searchbtn.next{
+    padding: 0px .9em;
 }
 
 #p5-console{
