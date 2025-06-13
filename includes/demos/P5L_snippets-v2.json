@@ -1,66 +1,72 @@
 {
-	"new" : {
-	"gt": "",
-	"s": "",
-	"dt": "",
-	"db": "",
-	"gb": "",
-	"demo": "true"
-	}
-	,"audio": {
+	"new": {
 		"gt": "",
-	    "s": "setupAudio(true) // global vars\n// a5.ease = .075 // set easing",
-	    "dt": "/* audio vars: amp, ampEase, fft, fftEase, waveform, waveformEase */\nupdateAudio()",
-	    "db": "",
-	    "gb": "",
+		"s": "",
+		"dt": "",
+		"db": "",
+		"gb": "",
 		"demo": "true"
-	}
-	,"font": {
+	},
+	"audio": {
+		"gt": "",
+		"s": "setupAudio(true) // global vars\n// a5.ease = .075 // set easing",
+		"dt": "/* audio vars: amp, ampEase, fft, fftEase, waveform, waveformEase */\nupdateAudio()",
+		"db": "",
+		"gb": "",
+		"demo": "true"
+	},
+	"font": {
 		"gt": "let font\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\")\n}",
 		"s": "textFont(font)",
 		"dt": "",
 		"db": "",
 		"gb": "",
 		"demo": "true"
-	}
-	,"osc": {
+	},
+	"osc": {
 		"gt": "let libs = [\"includes/js/socket.io.js\"];\nlet socket;",
 		"s": "setupOsc('127.0.0.1', 12000, 12001); // oscHost, oscPortIn, oscPortOut",
 		"dt": "",
 		"db": "",
 		"gb": "\n// OSC LOGIC \nfunction receiveOsc(address, value) {\n\t// print('in: ' + address + ', ' +value)\n}\n\nfunction sendOsc(address, value) {\n\tif(socket != undefined) {\n\t\tsocket.emit('message', [address].concat(value));\n\t}\n}\n\nfunction setupOsc(oscHost, oscPortIn, oscPortOut) {\n\tsocket = io.connect('http://127.0.0.1:8082');\n\tsocket.on('connect', function() {\n\t\tsocket.emit('config', {\n\t\t\tserver: {\n\t\t\t\thost: oscHost,\n\t\t\t\tport: oscPortIn\n\t\t\t},\n\t\t\tclient: {\n\t\t\t\thost: oscHost,\n\t\t\t\tport: oscPortOut\n\t\t\t}\n\t\t});\n\t\tprint('OSC Ready!\\n' + oscHost + ', listen: ' + oscPortIn + ', send: ' + oscPortOut);\n\t});\n\tsocket.on('message', function(msg) {\n\t\treceiveOsc(msg[0], msg.splice(1));\n\t});\n}",
 		"demo": "true"
-	}
-	,"midi":{
+	},
+	"midi": {
 		"gt": "",
-	    "s": "// setup MIDI in/out by ID # or \"name\" (see console.log)\nsetupMidi(0, 0, true) // in, out, globalvars (if false use: midi5. )\n// midi5.debug = ['note', 'controlchange'] // send to console",
-	    "dt": "/* vars: note, cc, notes[], ccs[], channels[], */\nupdateMidi()\n",
-	    "db": "",
-	    "gb": ""
-	} 
-	,"hydra-overlay": {
+		"s": "// setup MIDI in/out by ID # or \"name\" (see console.log)\nsetupMidi(0, 0, true) // in, out, globalvars (if false use: midi5. )\n// midi5.debug = ['note', 'controlchange'] // send to console",
+		"dt": "/* vars: note, cc, notes[], ccs[], channels[], */\nupdateMidi()\n",
+		"db": "",
+		"gb": ""
+	},
+	"hydra-overlay": {
 		"gt": "let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']\n\nlet pg, hc = document.createElement('canvas')\nhc.width = window.innerWidth\nhc.height = window.innerHeight\ndocument.body.appendChild(hc)\n\nlet hydra = new Hydra({\n\tdetectAudio: false,\n\tcanvas: hc\n})\n\n// sandbox - start\nsrc(s0)\n\t.modulate(osc(10))\n\t.out()\n// sandbox - stop\n",
 		"s": "\t// var cnv = createCanvas(windowWidth, windowHeight)\n\t// cnv.hide() // hide p5 canvas to fix mouseY issue\n\n\ts0.init({src: drawingContext.canvas})\n\tpg = createGraphics(hc.width, hc.height)",
 		"dt": "\n\tpg.drawingContext.drawImage(hc, 0, 0, pg.width, pg.height) // hydra as image",
 		"db": "",
 		"gb": "function keyPressed() {\n\tif(key == 'S') {\n\t\tpg.save('P5LIVE_hydra.png') // save hydra texture\n\t}\n}",
 		"demo": "true"
-	}
-	,"HY5_p5_hydra": {
+	},
+	"HY5_p5_hydra": {
 		"gt": "let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']\n\n// sandbox - start\nH.pixelDensity(1) // 2 = retina, set <= 1 if laggy\n\ns0.initP5() // send p5 to hydra\n// P5.toggle(0) // optionally hide p5\n\nsrc(s0)\n\t// .modulate(noize())\n\t.out()\n// sandbox - end\n",
 		"s": "",
 		"dt": "",
 		"db": "",
 		"gb": "",
 		"demo": "true"
-	}
-	,"HY5_hydra_p5": {
+	},
+	"HY5_hydra_p5": {
 		"gt": "let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']\n\n// sandbox - start\n// H.pixelDensity(2) // 2 = retina, set <= 1 if laggy\n// H.toggle(0) // hide hydra\nP5.zIndex(1) // set p5 above hydra\ns0.initP5() // bring p5 into hydra\n\nosc()\n\t.out()\n// sandbox - end\n",
 		"s": "// createCanvas(windowWidth, windowHeight, WEBGL) // for 3D texture/shapes",
 		"dt": "let tex = H.get()\n// texture(tex)\n// sphere(height/3) // use WEBGL in setup\n",
 		"db": "",
 		"gb": "",
 		"demo": "true"
-	}	
+	},
+	"p5.asciify-no_hooks": {
+		"gt": "/*\n\tp5.asciify live coding guide: https://p5.textmode.art/docs/guides/livecoding\n\tp5.asciify API docs: https://p5.textmode.art/docs/api/\n */\n\nlet libs = [\n\t'includes/libs/p5.asciify.js',\n\t//...\n]\n\n// Set the error level for `p5.asciify`\n// https://p5.textmode.art/docs/api/p5.asciify/namespaces/errors/enumerations/P5AsciifyErrorLevel\np5asciify.setErrorLevel(P5AsciifyErrorLevel.WARNING);\n\n// Disable p5.asciify hooks attached to the p5.js lifecycle\n// We handle this manually, otherwise there would be usage-restricting quirks, \n// like not being able to update potential drawings on top of the asciified canvas without hard compiles.\np5asciify.deactivateHook(\"afterSetup\");\np5asciify.deactivateHook(\"pre\");\np5asciify.deactivateHook(\"post\");\n\n// Define variables that'll contain p5.asciify objects for easy access\nlet asciifier;\nlet brightnessRenderer;\nlet edgeRenderer;",
+		"s": "// Make sure to create a WEBGL canvas for 'p5.asciify' to work\n\n// Set up p5.asciify manually\np5asciify.setup();\n\n// `setupAsciify` area\n// From here, and throughout the draw loop, \n// you can access and modify everything p5.asciify has to offer\nasciifier = p5asciify.asciifier();\nbrightnessRenderer = asciifier.renderers().get(\"brightness\");\nedgeRenderer = asciifier.renderers().get(\"edge\");",
+		"dt": "// Update properties of the p5.asciify renderers during run-time\nbrightnessRenderer.update({\n\tenabled: true,\n\tcharacters: \" .:-=+*#%@\",\n\tcharacterColor: \"#ffffff\",\n\tcharacterColorMode: 'sampled', // or 'fixed'\n\tbackgroundColor: \"#000000\",\n\tbackgroundColorMode: 'fixed', // or 'sampled'\n\tinvertMode: false,\n\trotationAngle: 0, // in degrees\n\tflipHorizontally: false,\n\tflipVertically: false,\n\tbrightnessRange: [0, 255],\n});\n  \nedgeRenderer.update({\n    enabled: false,\n    characters: \"-/|\\\\-/|\\\\\", // should be 8 characters ideally\n    characterColor: \"#FFFFFF\",\n    characterColorMode:\"sampled\", // or 'fixed'\n    backgroundColor: \"#000000\",\n    backgroundColorMode: \"fixed\", // or 'sampled'\n    invertMode: false,\n    sobelThreshold: 0.5,\n    sampleThreshold: 16,\n    rotationAngle: 0, // in degrees\n    flipHorizontally: false,\n    flipVertically: false,\n});\n\n// Update properties of the asciifier itself.\nasciifier.fontSize(16);\n\n// Capture the content to asciify inside p5.asciify's `sketchFramebuffer`\np5asciify.sketchFramebuffer.begin();\n\nclear();\nfill(255);\nrotateX(radians(frameCount * 3));\nrotateZ(radians(frameCount));\ndirectionalLight(255, 255, 255, 0, 0, -1);\nbox(800, 100, 100);",
+		"db": "// End capturing the content to asciify.\np5asciify.sketchFramebuffer.end();\n\n// Call `asciify()` manually to generate the asciified textures\np5asciify.asciify();\n\n// `drawAsciify` area\n// With the asciified textures drawn to the canvas, we can draw on top here",
+		"gb": ""
+	}
 }
-				
