@@ -504,14 +504,18 @@
 							<option value="emacs">Emacs</option>
 						</select>
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Modify snippets">
-						Snippets: 
-						<button onclick="snippetsToggle()" style="cursor:pointer;background:none;color:#fff;border:1px solid #888;outline:none;font-size:8pt;">Launch Editor</button>
+					<div class="tippy-left" style="cursor:help;display:flex;" data-title="Modify snippets">
+						<div>Snippets: </div> 
+						<div>
+							<button onclick="snippetsToggle()" style="cursor:pointer;background:none;color:#fff;border:1px solid #888;outline:none;font-size:8pt;">Launch Editor</button>
+							<div id="settings-snippetsghostmode-holder" style="margin-left:-28px;" >
+								<span onclick="snippetsghostmodeToggle();" class="tippy-left" data-title="Animated typing of snippet" style="cursor:help;"><input type="checkbox" id="settings-snippetsghostmode-toggle" name="settings-snippetsghostmode-toggle" value="settings-snippetsghostmodetoggle"> GhostMode</span>
+								<span class="tippy-left" data-title="Animated typing delay" style="cursor:help;"><input type="" name="settings-snippetsghostmode-delay" id="settings-snippetsghostmode-delay" class="menu-settings-input-text" style="width:32px;" value="15" onkeyup="snippetsghostmodeDelay(this.value);"></span>
+							</div>
+						</div>
+						
 					</div>	
-					<!-- <div id="settings-snippetsghostmode-holder" class="tippy-left" style="cursor:help;" data-title="Animated typing of snippet" onclick="snippetsghostmodeToggle();">
-						<span><input type="checkbox" id="settings-snippetsghostmodetoggle" name="settings-snippetsghostmodetoggle" value="settings-snippetsghostmodetoggle"> Snippets GhostMode</span>
-						<span><input type="" name="menu-settings-snippetsghostmodespeed" id="menu-settings-snippetsghostmodespeed" class="menu-settings-input-text" value="15" onkeyup="fontSizeSet(this.value);"></span>
-					</div> -->
+					
 					<div>
 						<span class="tippy-left" data-title="Sonify editor changes" style="cursor:help;" onclick="sonicodeToggle();"><input type="checkbox" id="settings-sonicode" name="settings-sonicode" value="settings-sonicode"> SoniCode</span> <span class="tippy-left" data-title="Oscillator Wavetype or Midi output" style="cursor:help;">
 								<select id="settings-sonicode-mode" class="menu-settings-dropdown" onchange="sonicodeMode(this.value);">
@@ -604,12 +608,40 @@
 	</div>
 
 	<div id="snippets-panel">
+		
+		
 		<div class="snippets-bg"></div>
 		<div id="snippets-content">
+			<div id="snippets-manager-holder" style="width:100%;height:100%;position:absolute;left:-100%;top:0;display:none;">
+			<iframe id="snippets-manager" src="" onload="snippetsManagerLoaded = true;" style="position:relative;left:15px;width:calc(100% - 15px);height:100%;border:none;"></iframe>
+			<!-- http://localhost:8888/p5live_snippets/ -->
+			<!-- https://ffd8.github.io/p5live_snippets/ -->
+			<script type="text/javascript">
+				window.addEventListener('message', e => {
+					const data = e.message || e.data
+					if(e.origin == "https://ffd8.github.io" || e.origin == "http://localhost:8888"){
+						if(data.msg == 'add'){
+							snippetsImportParse(data.snippet)							
+						}else if(data.msg == 'apply'){
+							snippetsApply(data.snippet.code, false)
+						}else if(data.msg == 'toggle'){
+							snippetsManagerToggle()
+							editor.focus()
+						}else if(data.msg == 'blur'){
+							document.getElementById('snippets-manager').blur()
+							// editor.focus()
+						}
+					}    
+				},false);
+
+			</script>
+		</div>
+
+
 			<div class="menu-section">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">
-					SNIPPETS 
+					SNIPPETS EDITOR
 					<div class="snippets-close tippy" data-title="Close Panel" onclick="snippetsToggle()">
 						X
 					</div>
@@ -623,6 +655,8 @@
 					
 					<button class="menu-button snippets-btn-all tippy" onclick="snippetsImportDialog()" data-title="Import Snippet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
 					<input id="file-input-snippet" type="file" name="name" style="display: none;" multiple onchange="snippetsImport(this.files);" onclick="this.value=null;" />
+
+					<button class="menu-button snippets-btn-all tippy" onclick="snippetsManagerToggle()" data-title="Snippets Manager"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-database"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></button>
 
 					<button id="snippets-btn-save" class="menu-button snippets-btn-demo tippy" onclick="snippetsSave()" data-title="Save Changes"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button>
 					
@@ -917,12 +951,16 @@ function println(msg){
 				
 			},
 			'sketches': [],
-			// 'snippetsghostmode': false,
+			'snippetsghostmode': {
+				'active': false,
+				'delay': 15
+			},
 			'sonicode':{
 				'mode': 'sine',
 				'poly': 1,
 				'active': false,
-				'sonicodePoly': 0
+				'sonicodePoly': 0,
+				'base': 3
 			},
 			'statscount': 0,
 			'syncdata': {
@@ -1013,7 +1051,8 @@ function println(msg){
 		settingsKeybindings = document.getElementById('menu-settings-keybindings'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsBackup = document.getElementById('menu-settings-backup'),
-		// settingsSnippetsghostmode = document.getElementById('settings-snippetsghostmode')
+		settingsSnippetsghostmodeToggle = document.getElementById('settings-snippetsghostmode-toggle'),
+		settingsSnippetsghostmodeDelay = document.getElementById('settings-snippetsghostmode-delay'),
 		settingsSoniCode = document.getElementById('settings-sonicode'),
 		settingsSoniCodeMode = document.getElementById('settings-sonicode-mode'),
 		settingsSoniCodePoly = document.getElementById('settings-sonicode-poly'),
@@ -1039,7 +1078,8 @@ function println(msg){
 		sketchLoaded = false, forceRecompile = false, loadingInit = false,
 		paused = false, multitabWarning = false, useRecompilePulse = true,
 		markerID = [], pulsemarkerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
-		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate, p5liveUtils = {},
+		cocode, editorId, p5frameTemplate, p5htmlTemplate, p5liveUtils = {},
+		snippets, snippetsManagerLoaded = false,
 		p5vars = {frameCount:0, pframeCount:0, mouseX:0, mouseY:0}, newBG = '',
 		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -1067,7 +1107,10 @@ function println(msg){
 		let Document = ace.require("ace/document").Document
 		let langTools = ace.require('ace/ext/language_tools');
 		let snippetManager = ace.require("ace/snippets").snippetManager
+		let UndoManager = ace.require("ace/undomanager").UndoManager
+		let undoManager = new UndoManager();
 		var editor = ace.edit('p5-code');
+		var editorGhost = new AceGhost(editor)
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
 		editor.session.on('changeMode', function(e, session) {
@@ -1079,6 +1122,7 @@ function println(msg){
 		        }
 		    }
 		})
+		// editor.getSession().setUndoManager(this.undoManager);
 
 		editor.setOptions({
 			showPrintMargin: false,
@@ -1096,6 +1140,44 @@ function println(msg){
 		// function loadSnippetsManager(acOBJ){
 		snippetManager.register(aceSnippets)
 		// }
+
+		// ghostmode snippet
+		let snippetReg = /\${\d}|\${\w+:.}|\$(?:\d+|\w+)|\$\d|\${\d:.*}/g
+		snippetManager.expandSnippetForSelection = function(e, t) {
+            var n = e.getCursorPosition(), r = e.session.getLine(n.row), i = r.substring(0, n.column), s = r.substr(n.column), o = this.snippetMap, u;
+            return this.getActiveScopes(e).some(function(e) {
+                var t = o[e];
+                return t && (u = this.findMatchingSnippet(t, i, s)),
+                !!u
+            }, this),
+
+            // if ghost, grab start undostack
+            (settings.snippetsghostmode.active && u != undefined) ? editorGhost.getUndoStack() : '',
+
+            u ? t && t.dryRun ? !0 : (e.session.doc.removeInLine(n.row, n.column - u.replaceBefore.length, n.column + u.replaceAfter.length),
+            this.variables.M__ = u.matchBefore,
+            this.variables.T__ = u.matchAfter,
+
+            // toggle ghost/instant
+            settings.snippetsghostmode.active ? setTimeout(()=>{
+            	// console.log('ace-snippet-ghost')
+            	// *** prevent hardCompile on replace... solved?
+            	editorGhost.animateText(u.content.replace(/\${\d}/, '/*$*/').replace(snippetReg, ''), 0, ()=>{
+		            setTimeout(()=>{
+		            	var range = editor.find('/*$*/')
+		            	editor.replace('')
+		            	if(!settings.cocoding.active){
+							localStorage[settings.fileName] = editor.getValue();
+						}
+		            }, 1)	
+	       		})
+            }):setTimeout(()=>{
+            	// console.log('ace-snippet-instant')
+            	this.insertSnippetForSelection(e, u.content)
+            }),
+            this.variables.M__ = this.variables.T__ = null,
+            !0) : !1
+        }
 
 		function getEditor(){
 			return editor.getValue()
@@ -2302,7 +2384,6 @@ function println(msg){
 			curPos = delta.start;
 			curPositions.push(delta.start);
 			checkErrors();
-
 		});
 
 		// check for errors
@@ -2845,7 +2926,8 @@ function println(msg){
 			themeBGactiveToggleUpdate();
 			themeCOLORactiveToggleUpdate();
 			themeACTIVEactiveToggleUpdate();
-			// snippetsghostmodeToggleUpdate();
+			snippetsghostmodeToggleUpdate();
+			snippetsghostmodeDelayUpdate();
 			sonicodeToggleUpdate();
 			loadColorPicker('#pickr-background', 'themeBG')
 			loadColorPicker('#pickr-color', 'themeCOLOR')
@@ -3506,6 +3588,7 @@ function println(msg){
 			let filterItems = menuSketches.getElementsByClassName('drag-item');
 
 			// remove empty while adding another word
+			// https://stackoverflow.com/a/19888749/10885535
 			filter = filter.filter(Boolean);
 
 			// remove filter from all
@@ -5420,7 +5503,8 @@ function println(msg){
 					value: newID, // placeholder
 					callback: function (value) {
 						if(value){
-							addFolderProcess(value, folderName);
+							let cleanValue = versionCheck(value)
+							addFolderProcess(cleanValue, folderName);
 						}
 					},
 					afterOpen: function(){
@@ -6013,6 +6097,7 @@ function println(msg){
 			// });
 		}
 
+		// *** check if online, check if already have libs array
 		function processLibs(code){
 			let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
 			let sketchScriptsString = sketchTest.match(/(?=loadScripts|libs|scripts).*?(\])/);
@@ -6025,6 +6110,8 @@ function println(msg){
 					}
 				}
 			}
+			// clear empties
+			scriptsList = scriptsList.filter(Boolean)
 			return scriptsList;
 		}
 
@@ -6484,18 +6571,19 @@ function println(msg){
 		}
 
 		function tidyCode(aceEdit){
-			let tempPos = editor.getCursorPosition();
+			let tempPos = aceEdit.getCursorPosition();
 			let tempCode = js_beautify(aceEdit.getValue(), beautifyOptions);
 			aceEdit.setValue(tempCode, 1);
 			aceEdit.gotoLine(tempPos.row+1, tempPos.column, false);
+			aceEdit.focus()
 		}
 
 
 
 		/* SNIPPETS */
 
-		let snippetGhostMode = true
-		var editorGhost = new AceGhost(editor)
+		
+		// add for ace snippets: https://github.com/ajaxorg/ace/blob/v1.42.0/src/snippets.js#L1086
 
 		function snippetsToggle(hide){
 			let snippetsPanel = document.getElementById('snippets-panel')
@@ -6509,6 +6597,24 @@ function println(msg){
 			}
 			snippetsForm(snip.current)
 			// snippetsForm('demo-audio')
+		}
+
+		function snippetsManagerInit(){
+			snippetsManagerLoaded = true
+		}
+
+		function snippetsManagerToggle(hide){
+			let snippetsManagerHolder = document.getElementById('snippets-manager-holder')
+			let snippetsManager = document.getElementById('snippets-manager')
+			if(snippetsManagerHolder.style.display == 'block' || hide){
+				snippetsManagerHolder.style.display = 'none'
+			}else{
+				snippetsManagerHolder.style.display = 'block'
+				if(!snippetsManagerLoaded){
+					snippetsManager.src = 'http://localhost:8888/p5live_snippets/?' +11//+ settings.revision	
+					// snippetsManager.src = 'https://ffd8.github.io/p5live_snippets/?' + settings.revision	
+				}
+			}
 		}
 
 		function snippetsPosition(){
@@ -6545,24 +6651,53 @@ function println(msg){
 				}
 		}
 
-		function snippetsApply(){
-			if(snippetGhostMode){
-				snippetApplyGhost()
+		function snippetsApply(snippetCode = null, closeSnippets = true){
+			let curSnippet = snippetApplyPrep(snippetCode)
+			let tempSnippet = cloneJSON(curSnippet)
+
+			let checkLibs = processLibs(tempSnippet.gt)
+			let hasLibs = editor.getValue().match(/(?=var|let|const).*(?=loadScripts|libs|scripts).*?(\])/gs)
+			if(checkLibs.length > 0 && hasLibs != null){
+				tempSnippet.libs = checkLibs
+				// strip libs from code, add to object, add to libs on apply
+				tempSnippet.gt = tempSnippet.gt.replace(/(?=var|let|const).*(?=loadScripts|libs|scripts).*?(\])/gs, '')
+			}
+			// console.log(curSnippet)
+
+
+			if(settings.snippetsghostmode.active){
+				snippetApplyGhost(tempSnippet)
 			}else{
-				snippetsApplyInstant()
+				snippetsApplyInstant(tempSnippet)
+			}
+
+			if(closeSnippets){				
+				snippetsToggle(true)
+				snippetsApplyToggle(true)
 			}
 		}
-		
-		function snippetsApplyInstant(){
-			let snippet = snip.current
-			// console.log(snippet)
-			let snippetBase = 'user'
-			if(snippet.substring(0, 5) == 'demo-'){
-				snippetBase = 'demo'
+
+		function snippetApplyPrep(snippetCode = null){
+			if(snippetCode == null){
+				let snippet = snip.current
+				// console.log(snippet)
+				let snippetBase = 'user'
+				if(snippet.substring(0, 5) == 'demo-'){
+					snippetBase = 'demo'
+				}
+				let snippetName = snippet.substring(5, snippet.length)
+				if(settings.snippets[snippetBase].hasOwnProperty(snippetName)){
+					return settings.snippets[snippetBase][snippetName];
+				}else{
+					return false
+				}
+			}else{
+				return snippetCode
 			}
-			let snippetName = snippet.substring(5, snippet.length)
-			if(settings.snippets[snippetBase].hasOwnProperty(snippetName)){
-				let snippetCode = settings.snippets[snippetBase][snippetName];
+			
+		}
+		
+		function snippetsApplyInstant(snippetCode){
 				let addGlobalTop = snippetCode.gt;
 				let addGlobalBottom = snippetCode.gb;
 				let addSetup = snippetCode.s;
@@ -6572,6 +6707,16 @@ function println(msg){
 				let curCode = editor.getValue();
 				let curPos = editor.getCursorPosition()
 				let curLineText = editor.session.getLine(curPos.row);
+
+				// process found libs
+				// console.log(snippetCode)
+				if(snippetCode.hasOwnProperty('libs')){
+					let curLibs = curCode.match(/(?=var|let|const).*(?=loadScripts|libs|scripts).*?(\])/gs)[0]
+
+					// https://stackoverflow.com/a/47939877/10885535
+					let newLibs = curLibs.slice(0, -1) + snippetCode.libs.map(lib => `,\n'${lib}'`).join('') + ',' + curLibs.slice(-1)
+					curCode = curCode.replace(curLibs, `\n${newLibs}\n`)
+				}
 
 				let codeGlobalTop = addGlobalTop + '\n' + curCode;
 				let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
@@ -6594,56 +6739,22 @@ function println(msg){
 					editor.moveCursorTo(curRow, curPos.column);
 					editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
 				}
-
-			}
-			snippetsToggle(true)
-			snippetsApplyToggle(true)
 		}
 
-		function snippetApplyGhost(){
-			let snippet = snip.current
-			// console.log(snippet)
-			let snippetBase = 'user'
-			if(snippet.substring(0, 5) == 'demo-'){
-				snippetBase = 'demo'
+		function snippetApplyGhost(snippetCode){
+			let curCode = editor.getValue();
+			let curPos = editor.getCursorPosition()
+			let curLineText = editor.session.getLine(curPos.row);
+
+			editorGhost.snippetsApply(snippetCode)				
+
+			// return cursor to previous position (** fix if blank line)
+			let curLines = editor.getValue().split('\n')
+			if(curLineText != ''){
+				let curRow = curLines.indexOf(curLineText)
+				editor.moveCursorTo(curRow, curPos.column);
+				editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
 			}
-			let snippetName = snippet.substring(5, snippet.length)
-			if(settings.snippets[snippetBase].hasOwnProperty(snippetName)){
-				let snippetCode = settings.snippets[snippetBase][snippetName];
-				// let addGlobalTop = snippetCode.gt;
-				// let addGlobalBottom = snippetCode.gb;
-				// let addSetup = snippetCode.s;
-				// let addDrawTop = snippetCode.dt;
-				// let addDrawBottom = snippetCode.db;
-
-				let curCode = editor.getValue();
-				let curPos = editor.getCursorPosition()
-				let curLineText = editor.session.getLine(curPos.row);
-
-				editorGhost.snippetsApply(snippetCode)
-				// let codeGlobalTop = addGlobalTop + '\n' + curCode;
-				// let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
-				// let codeDrawTop = addCode(codeSetup, addDrawTop, 'draw', 'top');
-				// let codeDrawBottom = addCode(codeDrawTop, addDrawBottom, 'draw', 'bottom');
-				// let codeGlobalBottom = codeDrawBottom + '\n\n' + addGlobalBottom;
-
-				// editor.setValue(codeGlobalBottom, 1);
-				// tidyCode(editor);
-				// editor.focus()
-
-				
-
-				// return cursor to previous position (** fix if blank line)
-				let curLines = editor.getValue().split('\n')
-				if(curLineText != ''){
-					let curRow = curLines.indexOf(curLineText)
-					editor.moveCursorTo(curRow, curPos.column);
-					editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
-				}
-
-			}
-			snippetsToggle(true)
-			snippetsApplyToggle(true)
 		}
 
 
@@ -6785,33 +6896,45 @@ function println(msg){
 			for(let i=0; i < data.length; i++){
 				let reader = new FileReader()
 				reader.onload = function(data) {
-					let tSnippet = JSON.parse(data.target.result);
-					snippetsImportParse(tSnippet)
+					// console.log(data)
+					let tSnippet
+					
+					try{
+						tSnippet = JSON.parse(data.target.result);
+						
+						if(tSnippet.hasOwnProperty('doctype') && tSnippet.doctype == 'P5L_SNIPPET'){
+							snippetsImportParse(tSnippet)
+						}else{
+							vex.dialog.alert({
+								message:'Oops, select a P5L_SNIPPET file.'
+							})
+						}
+					}catch(e){
+						// console.log(e)
+						vex.dialog.alert({
+							message:'Oops, select a P5L_SNIPPET file.'
+						})
+					}
+					
 				}
 				reader.readAsText(data[i])
 			}
 		}
 
 		function snippetsImportParse(tSnippet){
-			if(tSnippet.hasOwnProperty('doctype') && tSnippet.doctype == 'P5L_SNIPPET'){
-				let newName = tSnippet.name.replace(/["']/g, '')
-				let nameDup = false
-				if(settings.snippets.user.hasOwnProperty(newName)){
-					newName += `_${Math.floor(Math.random()*9999)}`
-					nameDup = true
-				}
+			let newName = tSnippet.name.replace(/["']/g, '')
+			let nameDup = false
+			if(settings.snippets.user.hasOwnProperty(newName)){
+				newName += `_${Math.floor(Math.random()*9999)}`
+				nameDup = true
+			}
 
-				settings.snippets.user[newName] = tSnippet.code
-				updateSettings()
-				snippetsSelect(newName)
-				snippetsForm(`user-${newName}`)
-				if(nameDup){
-					snippetsUpdate('import')
-				}
-			}else{
-				vex.dialog.alert({
-					message:'Oops, select a P5L_SNIPPET file.'
-				})
+			settings.snippets.user[newName] = tSnippet.code
+			updateSettings()
+			snippetsSelect(newName)
+			snippetsForm(`user-${newName}`)
+			if(nameDup){
+				snippetsUpdate('import')
 			}
 		}
 
@@ -7328,15 +7451,27 @@ function println(msg){
 			editor.renderer.updateFull();
 		}
 
-		// **** ghostmode - snippetFlow
-		// function snippetsghostmodeToggle(){
-		// 	settings.snippetsghostmode.active = !settings.sonicode.active;
-		// 	snippetsghostmodeUpdate();
-		// }
+		function snippetsghostmodeToggle(){
+			settings.snippetsghostmode.active = !settings.snippetsghostmode.active;
+			snippetsghostmodeToggleUpdate();
+		}
 
-		// function snippetsghostmodeUpdate(){
-		// 	checkToggle('snippetsghostmode.active', settings.snippetsghostmode.active, settingsSnippetsghostmode, 'snippetsghostmode');
-		// }
+		function snippetsghostmodeToggleUpdate(){
+			checkToggle('snippetsghostmode.active', settings.snippetsghostmode.active, settingsSnippetsghostmodeToggle, 'Snippets GhostMode');
+		}
+
+		function snippetsghostmodeDelay(newVal){
+			settings.snippetsghostmode.delay = parseFloat(newVal);
+			updateSettings();
+			snippetsghostmodeDelayUpdate();
+		}
+
+		function snippetsghostmodeDelayUpdate(){
+			if(settingsSnippetsghostmodeDelay !== document.activeElement){
+				settingsSnippetsghostmodeDelay.value = parseFloat(settings.snippetsghostmode.delay)
+			}
+			editorGhost.delay = settings.snippetsghostmode.delay
+		}
 
 		function sonicodeToggle(){
 			settings.sonicode.active = !settings.sonicode.active;
@@ -7377,6 +7512,7 @@ function println(msg){
 
 				editor.on('change', sonicodeParse);
 				if(!sonicode.p5livePolySynthLoaded){
+					console.log('loading sonicode')
 					sonicodeSetup()
 				}
 			}else{
@@ -8990,6 +9126,7 @@ function println(msg){
 			settings.statscount++;
 			updateSettings();
 			let txtMsg = 'P5LIVE<span class="counters">Stats</span><br><br><hr><br>';
+			txtMsg += settings.statscount.toLocaleString()+'<span class="counters"> Stats Viewed</span><br>';
 			txtMsg += document.querySelectorAll('.item-folder:not(.demo)').length.toLocaleString()+'<span class="counters">Folders</span><br>';
 			txtMsg += document.querySelectorAll('.item-sketch:not(.demo)').length.toLocaleString()+'<span class="counters">Sketches</span><br>';
 
@@ -9016,7 +9153,7 @@ function println(msg){
 			txtMsg += totalLines.toLocaleString()+'<span class="counters">Lines</span><br>';
 			txtMsg += sketchStats.short.count.toLocaleString()+'<span class="counters">Shortest ('+sketchStats.short.name+')</span><br>';
 			txtMsg += sketchStats.long.count.toLocaleString()+'<span class="counters">Longest ('+sketchStats.long.name+')</span><br>';
-			txtMsg += settings.statscount.toLocaleString()+'<span class="counters">Viewed Stats...</span><br>';
+			txtMsg += (totalChars/1000000).toLocaleString()+' / 5.0<span class="counters">Mb (localStorage limit)</span><br>';
 			alertMsg(txtMsg);
 		}
 

@@ -208,6 +208,7 @@ hr{
 .ace_search.right{
 	right:300px;
 	background:none;
+	background:rgba(0, 0, 0, .75);
 	color:#fff;
 	border:1px solid #cbcbcb;
 	border-radius: 0px 0px 5px 5px;
@@ -225,6 +226,9 @@ hr{
 }
 .ace_searchbtn.prev, .ace_searchbtn.next{
     padding: 0px .9em;
+}
+.ace_button{
+	border:1px solid #000;
 }
 
 #p5-console{
@@ -1813,8 +1817,8 @@ li{
 }
 .snippets-select{
 	/*height: 30px;*/
-	min-width: 200px;
-	max-width: 200px;
+	min-width: 150px;
+	max-width: 150px;
 	margin-top: 0 !important;
 	/*border-radius: 5px;*/
 	/*border: 1px solid #888;*/
@@ -1832,13 +1836,16 @@ li{
 	z-index: 1;
 }
 .snippets-label span{
-	color: #fff;
+	color: #aaa;
 	background: #011F2F;
 	border: 1px solid #888;
 	border-bottom: none;
-	padding: 2px 4px 2px 2px;
+	padding: 0px 4px 2px 2px;
 	text-transform: uppercase;
 	/*color: #00ff00;*/
+	-webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 .snippets-label svg{
 	position: absolute;
@@ -1846,6 +1853,7 @@ li{
 	margin-top: -3px;
 	height:22px;
 	opacity: .5;
+	outline:none;
 }
 .snippets-label svg:hover{
 	opacity: 1;
