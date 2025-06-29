@@ -320,7 +320,7 @@ To launch, toggle on the `Snippets Editor` and click the <img src="includes/icon
 - <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About Snippet, toggles credits.
 - <img src="includes/icons/check-square.svg" height="12px"> Apply Snippet, to test what snippet does (start with a blank p5 sketch).
 - <img src="includes/icons/download.svg" height="12px"> Export Snippet, to download selected snippet with any changes.
-- <img src="includes/icons/log-in" height="12px"> Import Snippet, to add snippet to your own P5LIVE `user` list of snippets.
+- <img src="includes/icons/log-in.svg" height="12px"> Import Snippet, to add snippet to your own P5LIVE `user` list of snippets.
 
 To contribute your own snippets: 
  
