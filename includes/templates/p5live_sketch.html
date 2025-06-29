@@ -124,19 +124,17 @@
 		  // console.log('stole lost!');
 			if(window.p5 !== undefined){
 				loop();
-				// noCursor = function(){
-				// 	document.body.style.cursor = 'none'
-				// }
 			}
 		};
 
-		// forward mouse/key events to parent
-		document.addEventListener('mousemove', forwardMouse);
-		document.addEventListener('mouseup', forwardMouse);
-		document.addEventListener('mousedown', forwardMouse);
+		let pointerEvents = ['mousemove', 'mouseup', 'mousedown', 'pointerdown', 'pointerup', 'pointermove', 'dragend', 'dragover', 'click', 'dblclick', 'wheel']
+
+		for(let p of pointerEvents){
+			document.addEventListener(p, forwardMouse);
+		}
 
 		function forwardMouse(event){
-			window.parent.passMouseClick(event);
+			window.parent.passPointer(event, 'sketch');
 		}
 
 		document.addEventListener('keydown', forwardKey);

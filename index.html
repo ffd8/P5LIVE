@@ -1722,7 +1722,7 @@ function println(msg){
 					if(ev.mode == 'keyboard'){
 						copy = new KeyboardEvent(ev.type, ev.options);
 					}else if(ev.mode == 'mouse'){
-						copy = new MouseEvent(ev.type, ev.options);
+						copy = new PointerEvent(ev.type, ev.options);
 					}
 					p5f.dispatchEvent(copy);
 					p5f.frameCount = ev.fc;
@@ -8685,21 +8685,19 @@ function println(msg){
 		// get mouse clicks on top
 		// initially inspired from here:
 		// https://stackoverflow.com/a/44143731/10885535
-		window.addEventListener('mousemove', passMouseClick);
-		window.addEventListener('mouseup', passMouseClick);
-		window.addEventListener('mousedown', passMouseClick);
+		
+		let pointerEvents = ['mousemove', 'mouseup', 'mousedown', 'pointerdown', 'pointerup', 'pointermove', 'dragend', 'dragover', 'click', 'dblclick', 'wheel']
 
+		for(let p of pointerEvents){
+			window.addEventListener(p, passPointer);
+		}
 
-		let pass = false;
-		function passMouse(event){
-			pass = !pass;
-			if (pass) {
-				processMouse(event);
+		function passPointer(event, src = 'parent'){
+			if((p5l.version >= 2 && event.type.includes('mouse')) || (p5l.version < 2 && event.type.includes('pointer'))){
+				return
 			}
-		};
-
-		function passMouseClick(event){
 			processMouse(event);
+			// console.log([src, event.type]);
 		};
 
 		let mouseFields = ['altKey', 'clientX', 'clientY', 'composed', 'ctrlKey', 'isTrusted', 'layerX', 'layerY', 'metaKey', 'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY', 'screenX', 'screenY', 'shiftKey', 'x', 'y', 'button', 'buttons', 'relatedTarget', 'region'];
@@ -8716,7 +8714,7 @@ function println(msg){
 
 		function processMouse(event){
 			let opts = getOpts(event, mouseFields);
-			let copy = new MouseEvent(event.type, event);
+			let copy = new PointerEvent(event.type, event);
 			if(settings.cocoding.active && settings.cocoding.sync){
 				if(settings.cocoding.level == 'admin'){
 					if(p5editor.style.visibility == 'visible'){
