@@ -510,7 +510,7 @@
 							<button onclick="snippetsToggle()" style="cursor:pointer;background:none;color:#fff;border:1px solid #888;outline:none;font-size:8pt;">Launch Editor</button>
 							<div id="settings-snippetsghostmode-holder" style="margin-left:-28px;" >
 								<span onclick="snippetsghostmodeToggle();" class="tippy-left" data-title="Animated typing of snippet" style="cursor:help;"><input type="checkbox" id="settings-snippetsghostmode-toggle" name="settings-snippetsghostmode-toggle" value="settings-snippetsghostmodetoggle"> GhostMode</span>
-								<span class="tippy-left" data-title="Animated typing delay" style="cursor:help;"><input type="" name="settings-snippetsghostmode-delay" id="settings-snippetsghostmode-delay" class="menu-settings-input-text" style="width:32px;" value="15" onkeyup="snippetsghostmodeDelay(this.value);"></span>
+								<span class="tippy-left" data-title="Animated typing delay" style="cursor:help;"><input type="" name="settings-snippetsghostmode-delay" id="settings-snippetsghostmode-delay" class="menu-settings-input-text" style="width:32px;" value="5" onkeyup="snippetsghostmodeDelay(this.value);"></span>
 							</div>
 						</div>
 						
@@ -615,7 +615,7 @@
 			<div id="snippets-manager-holder" style="width:100%;height:100%;position:absolute;left:-100%;top:0;display:none;">
 			<iframe id="snippets-manager" src="" onload="snippetsManagerLoaded = true;" style="position:relative;left:15px;width:calc(100% - 15px);height:100%;border:none;"></iframe>
 			<!-- http://localhost:8888/p5live_snippets/ -->
-			<!-- https://ffd8.github.io/p5live_snippets/ -->
+			<!-- https://ffd8.github.io/p5live-snippets/ -->
 			<script type="text/javascript">
 				window.addEventListener('message', e => {
 					const data = e.message || e.data
@@ -771,10 +771,10 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.6.3';
-		let currentRevision = 53;
+		let currentVersion = '1.7.0';
+		let currentRevision = 54;
 		let developBranch = false;
-		let v2 = false
+		let p5Version = 1
 
 		// resetP5(); // manual reset
 
@@ -1096,8 +1096,17 @@ function println(msg){
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
 		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
-		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto'}
+		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version:1}
 		;
+
+		function onlineStatus(){
+			if (navigator.onLine) {
+			  p5l.online = true
+			} else {
+			  p5l.online = false
+			}
+		}
+		onlineStatus()
 
 		// force off
 		settings.debugMode = false;
@@ -1525,14 +1534,16 @@ function println(msg){
 
 		let includeScripts = {
 			p5:{
-				'local':v2 ? 'https://cdn.jsdelivr.net/npm/p5@2.0.0-beta.2/lib/p5.min.js' :'includes/p5/p5.min.js',
-				'remote':v2 ? 'https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js' : 'https://cdn.jsdelivr.net/npm/p5@1/lib/p5.min.js',
+				'local':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5@2.0.0-beta.2/lib/p5.min.js' :'includes/p5/p5.min.js',
+				'remote':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js' : 'https://cdn.jsdelivr.net/npm/p5@1/lib/p5.min.js',
+				'parts': {base: 'https://cdn.jsdelivr.net/npm/p5@', file: '/lib/p5.min.js'}
 			},
 			p5sound:{
-				'local':v2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'includes/p5/addons/p5.sound.min.js',
-				'remote':v2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js' // *** temp fix for safari!
+				'local':p5l.version == 2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'includes/p5/addons/p5.sound.min.js',
+				'remote':p5l.version == 2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js', // *** temp fix for safari!
 			}
 		};
+		includeScripts.p5sound.path = includeScripts.p5sound.remote
 
 		// testing q5xjs
 		// includeScripts = [
@@ -2743,6 +2754,7 @@ function println(msg){
 			// .then(res => res.text())
 			// .then(acOBJ => loadSnippetsManager(JSON.parse(acOBJ)))
 
+
 			// load autocomplete p5
 			.then(() => {
 				let acPath = 'includes/utils/p5_autocomplete.json?' + currentRevision;
@@ -2777,6 +2789,20 @@ function println(msg){
 				loadSettings()
 				// *** future tour
 			})
+
+			
+			// grab p5 versions
+			let p5VersionPath = p5l.online ? 'https://data.jsdelivr.com/v1/packages/gh/processing/p5.js' : 'includes/p5/p5-versions.json'
+			fetch(p5VersionPath).then(res => res.json())
+			.then(jsonObj => {
+				includeScripts.p5.versions = []
+				for(let v of jsonObj.versions){
+					includeScripts.p5.versions.push(v.version)
+				}
+			})
+			.catch((error) => {
+			  console.log(`P5LIVE: Error fetching p5-versions`)
+			});
 		}
 
 
@@ -2869,6 +2895,7 @@ function println(msg){
 				settings.refresh = true;
 				updateSettings();
 			}
+
 
 			// check version
 			let versionHTML = `
@@ -4079,17 +4106,26 @@ function println(msg){
 				}else{
 					tempSketches.browser = ''
 				}
-				let tempPath = '/backup';
-				let request = new XMLHttpRequest();
-				request.open('POST', tempPath, true);
-				request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				request.send(JSON.stringify(tempSketches));
+				serverMsg('/backup', tempSketches)
 			}else{
 				exportJSON(tempSketches.sketches, 'P5L_BACKUP' + tempSketches.timestamp + '.json');
 			}
 
 			settings.backup.last = new Date().getTime();
 			updateSettings();
+		}
+
+		function serverMsg(path, data, cb){
+			let tempPath = path
+			let request = new XMLHttpRequest()
+			request.open('POST', tempPath, true)
+			request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+			request.onreadystatechange = () => {
+				if (request.readyState === 4) {
+					cb(request.response);
+				}
+			}
+			request.send(JSON.stringify(data))
 		}
 
 		// https://gist.github.com/lyquix-owner/34a3ed98b990c3c61151d30de2f42702
@@ -6342,8 +6378,7 @@ function println(msg){
 
 			let scriptsCol = [];
 
-			// load scripts remote vs local
-			
+			// load p5/p5sound scripts remote vs local
 			for (const iScript in includeScripts) {
 				//no p5
 				if(!useP5){
@@ -6355,11 +6390,74 @@ function println(msg){
 					if(iScript == 'p5sound') continue;
 				}
 
-				if(p5l.remote){
-					scriptsCol.push(includeScripts[iScript].remote);
+
+				// check p5Version
+				let p5versionCheck = editor.getValue().match(/(?:\/\/\s*p5\s*=.*)/gi)
+				if(iScript == 'p5' && p5versionCheck){
+					// grab version
+					let p5versionRequest = p5versionCheck[0].match(/(?<=(["'`]\b))(?:(?=(\\?))\2.)*?(?=\1)/gi)
+
+					// if version found
+					if(p5versionRequest){
+						p5l.version = parseFloat(p5versionRequest)
+						
+						if(p5l.remote){
+							// if online, grab directly from CDN
+							let parts = includeScripts.p5.parts
+							includeScripts.p5.path = parts.base + p5versionRequest + parts.file
+							scriptsCol.push(includeScripts.p5.path);
+						}else{
+							// if offline, attempt local load
+							let p5VersionLocal = `includes/p5/versions/${p5versionRequest}.js`
+							let parts = includeScripts.p5.parts
+							includeScripts.p5.path = parts.base + p5versionRequest + parts.file
+
+							const request = new XMLHttpRequest();
+							request.open("GET", p5VersionLocal, false); // `false` makes the request synchronous
+
+							request.send(null);
+
+							if (request.status === 200) {
+								// found locally, load
+					    		scriptsCol.push(p5VersionLocal);
+							}else{
+								// not found, download to offline versions
+							  	// console.log('not found: ' + p5VersionLocal)
+								// console.log(includeScripts.p5.path)
+								
+								onlineStatus()
+								if(p5l.online){
+									// if(includeScripts.p5.versions.includes(p5versionRequest)){
+										try{
+											serverMsg('/version', {version:p5versionRequest, path:includeScripts.p5.path}, (res)=>{recompile()})
+										}catch(e){
+											console.log(error)
+										}
+										return false
+									// }
+								}else{
+									console.log('P5LIVE: failed to find/download requested p5 version')
+									scriptsCol.push(includeScripts.p5.local);
+								}
+							}
+						}
+						
+					}else{
+						scriptsCol.push(includeScripts[iScript].remote);
+					}
+					
 				}else{
-					scriptsCol.push(includeScripts[iScript].local);
+					if(p5l.version < 2){
+						if(p5l.remote){
+							scriptsCol.push(includeScripts[iScript].remote);
+						}else{
+							scriptsCol.push(includeScripts[iScript].local);
+						}
+					}
+					
 				}
+
+				
 			}
 			// for(let i=0; i < includeScripts.length; i++){
 			// 	if(p5l.remote){
@@ -6432,12 +6530,13 @@ function println(msg){
 			}
 
 			// console.log(sketchCode);
-			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
+			let updateVars = '\nmyP5.pmouseX=' + p5vars.mouseX + ';\nmyP5.pmouseY=' + p5vars.mouseY + ';\nmyP5.mouseX=' + p5vars.mouseX + ';\nmyP5.mouseY=' + p5vars.mouseY + ';\nmyP5.frameCount=' + p5vars.frameCount + ';\n';
+
 			let codeSetup = sketchCode + updateVars;
 			let fullCode = p5custom.value + codeSetup;
 			if(useP5){
 				codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
-				fullCode = p5custom.value + codeSetup + '\nnew p5(); sketchStatus();';
+				fullCode = p5custom.value + codeSetup + '\nvar myP5 = new p5(); sketchStatus();';
 			}else{
 				setTimeout(popStream, 500)
 			}
@@ -6447,6 +6546,7 @@ function println(msg){
 			// let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },error: function(pathsNotFound) {console.log(pathsNotFound);},async: false});';
 
 			// s.innerHTML = sLoader;
+			// console.log(fullCode)
 			s.innerHTML = fullCode; // *** old (better?) way
 
 			if(settings.syncdata.active){
@@ -6612,7 +6712,7 @@ function println(msg){
 				snippetsManagerHolder.style.display = 'block'
 				if(!snippetsManagerLoaded){
 					snippetsManager.src = 'http://localhost:8888/p5live_snippets/?' +11//+ settings.revision	
-					// snippetsManager.src = 'https://ffd8.github.io/p5live_snippets/?' + settings.revision	
+					// snippetsManager.src = 'https://ffd8.github.io/p5live-snippets/?' + settings.revision	
 				}
 			}
 		}
@@ -8044,10 +8144,10 @@ function println(msg){
 			// load p5 remote
 			for (const iScript in includeScripts) {
 				// no p5.sound
-				if(curCode.match(/(\/\/).*(no.*p5.*sound)/g)){
+				if(curCode.match(/(\/\/).*(no.*p5.*sound)/g) || p5l.version >= 2){ // *** temp disable sound w/ v2
 					if(iScript == 'p5sound') continue;
 				}
-				scriptsCol.push(includeScripts[iScript].remote);
+				scriptsCol.push(includeScripts[iScript].path);
 			}
 
 			// check loadScripts / libs / scripts;

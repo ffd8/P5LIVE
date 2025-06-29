@@ -270,6 +270,20 @@ if(!online){
 	  res.send('OK');
 	});
 
+	app.post('/version', express.json({limit: '5mb', type: '*/*'}), (req, res) => {
+	  let dir = './includes/p5/versions'
+		!fs.existsSync(dir) && fs.mkdirSync(dir);
+		let p5VersionFile = `${dir}/${req.body.version}.js`
+		let file = fs.createWriteStream(p5VersionFile)
+		https.get(req.body.path, resp => {
+			resp.pipe(file)
+			file.on("finish", () => {
+				file.close();
+					res.send('OK');
+			});
+		});
+	})
+
 	app.get('/fancy', express.json({type: '*/*'}), (req, res) => {
 	  res.send('fancy');
 	});

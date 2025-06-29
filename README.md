@@ -1,6 +1,6 @@
 # P5LIVE
-v 1.6.3  
-cc [teddavis.org](http://teddavis.org) – 2019 - 2024  
+v 1.7.0  
+cc [teddavis.org](http://teddavis.org) – 2019 - 2025  
 p5.js collaborative live-coding vj environment!
 
 ## SHORTCUTS
@@ -117,6 +117,8 @@ See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at
 - [x] Active-line, toggle + set active-line color.  
 - Keybinding, [ace], select alternative keybindings of editor.
 - Snippets, `Launch Editor`, to open snippets editor.
+- [ ] GhostMode, animated typing of snippets and ace-snippets.
+- GhostMode Delay, `15`, adjust small/high for fast/slow
 - [ ] SoniCode, plays oscillator/midi on every keystroke. 
 
 #### SoniCode
@@ -271,6 +273,9 @@ For examples, see `DEMOS` » `_CANVAS` » `_canvas_chalkboard` + `..._animation`
 ### SNIPPETS  
 Snippets allow automatically adding chunks of code to your sketch within specific areas: global space, setup, draw – so you can quickly incorporate the necessary code for repeated workflows. Previously it was manually added to a .JSON file, but now there's a snippet editor built it!
 
+#### Ghostmode
+If you want your snippets to magically appear animated (rather than instantly added), activate `Settings` » `Editor` » `Snippets: [√] Ghostmode` and set an ideal delay speed. This is especially useful when performing with live-code, as the audience can better follow what is being added and where. It also looks like a 👻 in the machine...!
+
 #### Shortcuts
 - `ALT + SHIFT + S`, toggle Snippets Editor, *create, modify*.  
 - `CTRL + SHIFT + S`, toggle Snippets Selector, *apply*.
@@ -279,12 +284,13 @@ Snippets allow automatically adding chunks of code to your sketch within specifi
 *Default shortcut keys can be customized within `Settings`*
 
 #### Snippet Editor
-<img src="includes/images/snippets-editor.png" height="50px">  
+<img src="includes/images/snippets-editor-2.png" height="50px">  
 
 - `Select` snippet to edit or 'new' to create a new one
 - <img src="includes/icons/check-square.svg" height="12px"> Apply selected snippet.
 - <img src="includes/icons/copy.svg" height="12px"> Clone snippet, ie, 'Save As...'.
 - <img src="includes/icons/upload.svg" height="12px"> Import an exported snippet.
+- <img src="includes/icons/database.svg" height="12px"> Launch Snippets Manager.
 - <img src="includes/icons/save.svg" height="12px"> Save changes to a custom shortcut.
 - <img src="includes/icons/edit-3.svg" height="12px"> Rename a custom shortcut.
 - <img src="includes/icons/download.svg" height="12px"> Export a custom shortcut.
@@ -304,6 +310,27 @@ Snippets allow automatically adding chunks of code to your sketch within specifi
 - <img src="includes/icons/file-text.svg" height="12px"> Edit selected snippet.
 
 When performing, this can be down entirely with the keyboard, `CTRL + SHIFT + S` to toggle the Snippet Selector, `down/up arrowkey` to select a preferred snippet, `tab` to move focus to the 'Apply Snippet' button, `Enter` to activate that button.
+
+#### Snippets Manager
+<img src="includes/images/snippets-manager.png" height="50px">  
+There is now a [repository](https://github.com/ffd8/p5live-snippets) for community contributed P5LIVE snippets!  
+To launch, toggle on the `Snippets Editor` and click the <img src="includes/icons/database.svg" height="12px">. 
+
+- `Select` snippet to preview
+- <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About Snippet, toggles credits.
+- <img src="includes/icons/check-square.svg" height="12px"> Apply Snippet, to test what snippet does (start with a blank p5 sketch).
+- <img src="includes/icons/download.svg" height="12px"> Export Snippet, to download selected snippet with any changes.
+- <img src="includes/icons/log-in" height="12px"> Import Snippet, to add snippet to your own P5LIVE `user` list of snippets.
+
+To contribute your own snippets: 
+ 
+- Export from `Snippets Editor`
+- Drag + drop over Snippets Manager panel
+- Toggle `About Snippet` to set name, author, about
+- Reduce any unnecessary code from sections
+- Tidy sections of code
+- `Export Snippet` to download as .json file
+- Make [pull-request on github](https://github.com/ffd8/p5live-snippets/pulls) with snippet!
 
 #### Ace Snippets
 Ace Editor also has the ability to have autocomplete snippets of code blocks. To activate, type one out (can also use auto-complete to help you), then press `tab`. The following have been implemented (eventually a custom editor may be added to settings):
@@ -356,7 +383,8 @@ Loading custom assets (image/font/obj/audio/...):
 - Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server ([imgbb](https://imgbb.com/)/[glitch.com](https://glitch.com) images/videos, [GitHub](https://github.com) raw for ~anything)  
 `loadImage('https://i.imgur.com/ijQzwsx.jpeg');`
 - Locally, if running offline-mode create a `/data` folder  
-`loadImage('data/images/fish.png');` (don't add anything to `/includes`!)
+`loadImage('data/images/fish.png');`  
+*Don't add anything inside `/includes`! (gets replaced on update)*
 
 ### VIEW ONLY MODE
 By special request (P5LIVE for remote meditation sessions?!), there's a `view only mode`, meaning everything is hidden (code + menu) and you'll only see the sketch running. Intended for COCODING sessions, where the admin can live-code while attendees enjoy and optionally interact with the visuals using their own mic or mouse. Anytime code is recompiled, the same happens here too. Add `edit=0` to your URL:  
@@ -628,6 +656,7 @@ Listed in order of adoption:
 - [pem](https://github.com/Dexus/pem), self-generated generative ssl certificates
 - [FHNW](https://www.fhnw.ch/), nodejs websockets cocoding-server
 - [loop-breaker](https://github.com/popcodeorg/loop-breaker), inifinite-loop protection
+- [Random Name Generator](https://gist.github.com/tkon99/4c98af713acc73bed74c?permalink_comment_id=5642379#gistcomment-5642379)
 
 
 ## INSPIRATION
