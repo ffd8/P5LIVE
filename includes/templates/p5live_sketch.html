@@ -114,10 +114,27 @@
 		document.onkeydown = function(event){
 			// on CONTROL, return focus and activate CONTROL
 			if(event.keyCode == 17){
-				window.parent.focus();
-				window.setTimeout(function(){window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));}, 100);
+				window.setTimeout(function(){
+					window.parent.focus();
+					window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));
+					console.log('CTRL DOWN')
+					window.setTimeout(function(){
+						window.parent.dispatchEvent(new KeyboardEvent('keyup',{'keyCode':17}));
+						console.log('CTRL UP')
+					}, 100);
+				}, 0);
 			}
 		}
+
+		// document.onkeyup = function(event){
+		// 	if(event.keyCode == 17){
+		// 		window.parent.focus();
+		// 		window.setTimeout(function(){
+		// 			window.parent.dispatchEvent(new KeyboardEvent('keyup',{'keyCode':17}));
+		// 			console.log('CTRL UP')
+		// 		}, 0);
+		// 	}
+		// }
 
 		// test if focus lost
 		window.onfocus = function() {
