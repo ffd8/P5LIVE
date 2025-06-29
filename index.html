@@ -774,7 +774,7 @@ function println(msg){
 		let currentVersion = '1.7.0';
 		let currentRevision = 54;
 		let developBranch = false;
-		let p5Version = 1
+		let p5Version = 2
 
 		// resetP5(); // manual reset
 
@@ -1096,7 +1096,7 @@ function println(msg){
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
 		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
-		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version:1}
+		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version}
 		;
 
 		function onlineStatus(){
@@ -1534,7 +1534,7 @@ function println(msg){
 
 		let includeScripts = {
 			p5:{
-				'local':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5@2.0.0-beta.2/lib/p5.min.js' :'includes/p5/p5.min.js',
+				'local':p5l.version == 2 ? 'includes/p5/p5.min-2.js' :'includes/p5/p5.min.js',
 				'remote':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js' : 'https://cdn.jsdelivr.net/npm/p5@1/lib/p5.min.js',
 				'parts': {base: 'https://cdn.jsdelivr.net/npm/p5@', file: '/lib/p5.min.js'}
 			},
@@ -1544,6 +1544,7 @@ function println(msg){
 			}
 		};
 		includeScripts.p5sound.path = includeScripts.p5sound.remote
+
 
 		// testing q5xjs
 		// includeScripts = [
@@ -6393,59 +6394,68 @@ function println(msg){
 
 				// check p5Version
 				let p5versionCheck = editor.getValue().match(/(?:\/\/\s*p5\s*=.*)/gi)
-				if(iScript == 'p5' && p5versionCheck){
-					// grab version
-					let p5versionRequest = p5versionCheck[0].match(/(?<=(["'`]\b))(?:(?=(\\?))\2.)*?(?=\1)/gi)
+				if(iScript == 'p5'){
+					if(p5versionCheck){
 
-					// if version found
-					if(p5versionRequest){
-						p5l.version = parseFloat(p5versionRequest)
-						
-						if(p5l.remote){
-							// if online, grab directly from CDN
-							let parts = includeScripts.p5.parts
-							includeScripts.p5.path = parts.base + p5versionRequest + parts.file
-							scriptsCol.push(includeScripts.p5.path);
-						}else{
-							// if offline, attempt local load
-							let p5VersionLocal = `includes/p5/versions/${p5versionRequest}.js`
-							let parts = includeScripts.p5.parts
-							includeScripts.p5.path = parts.base + p5versionRequest + parts.file
 
-							const request = new XMLHttpRequest();
-							request.open("GET", p5VersionLocal, false); // `false` makes the request synchronous
+						// grab version
+						let p5versionRequest = p5versionCheck[0].match(/(?<=(["'`]\b))(?:(?=(\\?))\2.)*?(?=\1)/gi)
 
-							request.send(null);
-
-							if (request.status === 200) {
-								// found locally, load
-					    		scriptsCol.push(p5VersionLocal);
+						// if version found
+						if(p5versionRequest){
+							p5l.version = parseFloat(p5versionRequest)
+							
+							if(p5l.remote){
+								// if online, grab directly from CDN
+								let parts = includeScripts.p5.parts
+								includeScripts.p5.path = parts.base + p5versionRequest + parts.file
+								scriptsCol.push(includeScripts.p5.path);
 							}else{
-								// not found, download to offline versions
-							  	// console.log('not found: ' + p5VersionLocal)
-								// console.log(includeScripts.p5.path)
-								
-								onlineStatus()
-								if(p5l.online){
-									// if(includeScripts.p5.versions.includes(p5versionRequest)){
-										try{
-											serverMsg('/version', {version:p5versionRequest, path:includeScripts.p5.path}, (res)=>{recompile()})
-										}catch(e){
-											console.log(error)
-										}
-										return false
-									// }
+								// if offline, attempt local load
+								let p5VersionLocal = `includes/p5/versions/${p5versionRequest}.js`
+								let parts = includeScripts.p5.parts
+								includeScripts.p5.path = parts.base + p5versionRequest + parts.file
+
+								const request = new XMLHttpRequest();
+								request.open("GET", p5VersionLocal, false); // `false` makes the request synchronous
+
+								request.send(null);
+
+								if (request.status === 200) {
+									// found locally, load
+						    		scriptsCol.push(p5VersionLocal);
 								}else{
-									console.log('P5LIVE: failed to find/download requested p5 version')
-									scriptsCol.push(includeScripts.p5.local);
+									// not found, download to offline versions
+								  	// console.log('not found: ' + p5VersionLocal)
+									// console.log(includeScripts.p5.path)
+									
+									onlineStatus()
+									if(p5l.online){
+										// if(includeScripts.p5.versions.includes(p5versionRequest)){
+											try{
+												serverMsg('/version', {version:p5versionRequest, path:includeScripts.p5.path}, (res)=>{recompile()})
+											}catch(e){
+												console.log(error)
+											}
+											return false
+										// }
+									}else{
+										console.log('P5LIVE: failed to find/download requested p5 version')
+										scriptsCol.push(includeScripts.p5.local);
+									}
 								}
 							}
+							
+						}else{
+							scriptsCol.push(includeScripts[iScript].remote);
 						}
-						
 					}else{
-						scriptsCol.push(includeScripts[iScript].remote);
+						if(p5l.remote){
+							scriptsCol.push(includeScripts[iScript].remote);
+						}else{
+							scriptsCol.push(includeScripts[iScript].local);
+						}
 					}
-					
 				}else{
 					if(p5l.version < 2){
 						if(p5l.remote){
