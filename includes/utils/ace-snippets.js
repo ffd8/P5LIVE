@@ -329,5 +329,51 @@ xy2.buildWaves()`
 `setupMidi(0, 0, true)
 // midi5.debug = ['note', 'controlchange']
 updateMidi() // to draw`
+},{
+	"tabTrigger": "font",
+	"name": "font",
+	"content": 
+`font = loadFont("includes/demos-data/fonts/RobotoMono-Regular.otf")`
+},{
+	"tabTrigger": "preload",
+	"name": "preload",
+	"content": 
+`function preload(){
+	\${1}
+}`
+},{
+	"tabTrigger": "mouse",
+	"name": "mouse",
+	"content": 
+`function mousePressed(){
+	\${1}
+}`
+},{
+	"tabTrigger": "key",
+	"name": "key",
+	"content": 
+`function keyPressed(){
+	\${1}
+}`
+},{
+	"tabTrigger": "center",
+	"name": "center",
+	"content": 
+`CENTER, CENTER`
+},{
+	"tabTrigger": "mouseXY",
+	"name": "mouseXY",
+	"content": 
+`mouseX, mouseY`
+},{
+	"tabTrigger": "wh/2",
+	"name": "wh/2",
+	"content": 
+`width/2, height/2`
+},{
+	"tabTrigger": "version",
+	"name": "version",
+	"content": 
+`// p5 = '\${p5l.version}'`
 },
 ]

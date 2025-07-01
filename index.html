@@ -1146,9 +1146,15 @@ function println(msg){
 			enableSnippets: true
 		});
 
-		// function loadSnippetsManager(acOBJ){
-		snippetManager.register(aceSnippets)
-		// }
+		function loadSnippetsManager(){
+			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>v.includes(`${p5l.version}.`))[0]
+			aceSnippets.push({
+					"tabTrigger": "version",
+					"name": "version",
+					"content": `// p5 = '${p5l.currentVersion}'`
+				})
+			snippetManager.register(aceSnippets)
+		}
 
 		// ghostmode snippet
 		let snippetReg = /\${\d}|\${\w+:.}|\$(?:\d+|\w+)|\$\d|\${\d:.*}/g
@@ -2788,6 +2794,7 @@ function println(msg){
 			.then(() => {
 				loaderSub.innerHTML = 'loading settings...';
 				loadSettings()
+				loadSnippetsManager()
 				// *** future tour
 			})
 
