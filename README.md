@@ -374,6 +374,7 @@ let libs = [
 'includes/libs/p5.capture.js', 
 'includes/libs/p5.csg.js', 
 'includes/libs/p5.fab.js', 
+'includes/libs/p5.fillGradient.js', 
 'includes/libs/p5.glitch.js', 
 'includes/libs/p5.mapper.js', 
 'includes/libs/p5.riso.js', 
