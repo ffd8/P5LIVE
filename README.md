@@ -494,6 +494,7 @@ Additional custom functions are available in P5LIVE sketches:
 - `println(foo)` Compatibility with Processing.  
 - `windowResize()` keeps your sketch fullscreen by default. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
 - `p5live.code` returns string of current code editor for meta usage.
+- `p5live.fullCanvas()` forces p5 (and any other) canvas to full window size.
 
 
 ## COCODING 

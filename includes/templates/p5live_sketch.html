@@ -117,10 +117,10 @@
 				window.setTimeout(function(){
 					window.parent.focus();
 					window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));
-					console.log('CTRL DOWN')
+					// console.log('CTRL DOWN')
 					window.setTimeout(function(){
 						window.parent.dispatchEvent(new KeyboardEvent('keyup',{'keyCode':17}));
-						console.log('CTRL UP')
+						// console.log('CTRL UP')
 					}, 100);
 				}, 0);
 			}
@@ -198,6 +198,13 @@
 
 		p5live.recompile = function(){
 			return parent.recompile(true)
+		}
+
+		// check/add if saveHTML?
+		p5live.fullCanvas = function(autoHeight = false){
+			let style = document.createElement('style');
+			style.innerText  = `canvas{width:100vw !important; height:${autoHeight ? 'auto':'100vh'} !important;object-fit: container;image-rendering: pixelated;}`;
+			document.body.appendChild(style);
 		}
 
 	</script>

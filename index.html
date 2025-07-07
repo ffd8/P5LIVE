@@ -2794,7 +2794,6 @@ function println(msg){
 			.then(() => {
 				loaderSub.innerHTML = 'loading settings...';
 				loadSettings()
-				loadSnippetsManager()
 				// *** future tour
 			})
 
@@ -2807,6 +2806,7 @@ function println(msg){
 				for(let v of jsonObj.versions){
 					includeScripts.p5.versions.push(v.version)
 				}
+				loadSnippetsManager()
 			})
 			.catch((error) => {
 			  console.log(`P5LIVE: Error fetching p5-versions`)
