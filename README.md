@@ -188,7 +188,9 @@ Optionally, toggle `<>` to search through source code of all sketches.
 ### ISSUES
 #### LAG
 Lagging or retina display creates too large of a canvas?  
-Use `pixelDensity(1);` in `setup()` to prevent retina scaling.
+
+- Use `pixelDensity(1);` in `setup()` to prevent retina scaling.  
+- Add `p5live.fullCanvas()`, then set `createCanvas()` to fraction of window size, ie. `createCanvas(windowWidth/10, windowHeight/10)` for lo-fi graphics.
 
 #### BUG/CRASH?! 
 Infinite loop? Broken code? P5LIVE now includes an infinite loop breaker, thus rendering previous tricks more or less obsolete... nevertheless, these may still be useful:
@@ -338,12 +340,21 @@ Ace Editor also has the ability to have autocomplete snippets of code blocks. To
 - `libs`, inserts code for loading external libraries.
 - `p5`, adds p5 template incase removed
 - `hydraonly`, replace all code with this to only use hydra-synth
+- `canvas`, a canvas only sketch
 - `sandbox`, adds //sandbox start/stop for eval hydra code
+- `mouse`, adds `function mousePressed(){}`
+- `key`, adds `function keyPressed(){}`
+- `preload`, adds `function preload(){}`
 - `hy5`, load HY5 library and sandbox for hydra code
 - `hy5-p5-hydra`, template for sending p5 into hydra
 - `hy5-hydra-p5`, template for sending hydra into p5
 - `hy5-hydra-p5-x4`, template for sending 4x hydra tex to p5
 - `hy5-hydra-p5-x4-demo`, demo for sending 4x hydra tex to p5
+- `translate`, adds `translate(width/2, height/2)`
+- `am`, adds `angleMode(DEGREES)`
+- `im`, adds `imageMode(CENTER)`
+- `rm`, adds `rectMode(CENTER)`
+- `oc`, adds `orbitControl(3)`
 - *read-only `/includes/utils/ace-snippets.js` for full list*
 
 ### LIBRARIES
@@ -389,8 +400,10 @@ let libs = [
 ```
 
 #### <span style="text-decoration:line-through">p5 or p5.sound</span>
-To exclude libraries `p5.js` (ie. testing other versions) or `p5.sound` (ie. for Tone.js), add `//no p5` or `// no p5sound` anywhere in your code.  
-See `_audio_gen_tonejs` demo for an example.
+To exclude libraries `p5.js` (ie. testing other versions) or `p5.sound` (ie. for Tone.js), add `// no p5` or `// no p5sound` anywhere in your code. 
+
+In fact, if you don't have a `setup()`, p5.js won't be loaded and you can use `let libs = []` to include any* other library to live-code within P5LIVE. You likely just need to create a canvas element, type `canvas` then hit TAB to add ace-snippet for fullscreen canvas.  
+See `_canvas_api` + `_audio_gen_tonejs` demos for example.
 
 ### SANDBOX
 Sometimes you want to adjust global JS code that won't cause p5.js to recompile, ie. [hydra-synth](https://github.com/ojack/hydra-synth). To do so, write such code within 2x `// sandbox` comments. Any changes within that space are processed using `eval()`, however won't trigger a P5LIVE hardCompile.

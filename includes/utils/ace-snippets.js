@@ -371,9 +371,23 @@ updateMidi() // to draw`
 	"content": 
 `width/2, height/2`
 },{
-	"tabTrigger": "version",
-	"name": "version",
+	"tabTrigger": "canvas",
+	"name": "canvas",
 	"content": 
-`// p5 = '\${p5l.version}'`
+`let cnv = document.createElement('canvas')
+let ctx = cnv.getContext("2d")
+var width = window.innerWidth
+var height = window.innerHeight
+cnv.width = width
+cnv.height = height
+document.body.append(cnv)
+
+window.addEventListener('resize', ()=>{
+	width = window.innerWidth
+	height = window.innerHeight
+	cnv.width = width
+	cnv.height = height
+	p5live.recompile()
+})`
 },
 ]

@@ -4767,7 +4767,6 @@ function println(msg){
 							importData += '<div id="importdump">';
 							importData += recursiveImportWarning(jsonStructure, '', '');
 							importData += '</div>';
-							// *** add checkbox to ignore duplicates on import...
 
 							hideLoader();
 							// first confirm importing of whole structure/sketches
@@ -6141,7 +6140,6 @@ function println(msg){
 			// });
 		}
 
-		// *** check if online, check if already have libs array
 		function processLibs(code){
 			let sketchTest = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
 			let sketchScriptsString = sketchTest.match(/(?=loadScripts|libs|scripts).*?(\])/);
@@ -6204,10 +6202,10 @@ function println(msg){
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
 			useP5 = true
 			useP5Sound = true
-			if(editor.getValue().match(/(\/\/).no p5$/gm)){
+			if(editor.getValue().match(/(\/\/)\s*no\s*p5$/gm) || !removeComments(editor.getValue()).match(/setup\s*\(\)/gs)){
 				useP5 = false;
 			}
-			if(editor.getValue().match(/(\/\/).*(no.*p5sound$)/gm)){
+			if(editor.getValue().match(/(\/\/)\s*(no\s*p5sound$)/gm)){
 				useP5Sound = false;
 			}
 
@@ -6490,7 +6488,7 @@ function println(msg){
 				s.type = 'text/javascript';
 				s.src = sc;
 				// s.async = false;
-				iFrameHead.appendChild(s); // **** BIG change to body from head.. test?!
+				iFrameHead.appendChild(s); // loading p5 lib in head
 			}
 
 			scriptsCol = []
@@ -6506,7 +6504,7 @@ function println(msg){
 				s.type = 'text/javascript';
 				s.src = sc;
 				// s.async = false;
-				iFrameBody.appendChild(s); // **** BIG change to body from head.. test?!
+				iFrameBody.appendChild(s); // extra libs in body
 			}
 
 			var importMap = processImports(codeNoComments)
@@ -6547,16 +6545,18 @@ function println(msg){
 			}
 
 			// console.log(sketchCode);
-			let updateVars = '\nmyP5.pmouseX=' + p5vars.mouseX + ';\nmyP5.pmouseY=' + p5vars.mouseY + ';\nmyP5.mouseX=' + p5vars.mouseX + ';\nmyP5.mouseY=' + p5vars.mouseY + ';\nmyP5.frameCount=' + p5vars.frameCount + ';\n';
+			let updateVars = '\n\tif(myP5){\n\t\tmyP5.pmouseX=' + p5vars.mouseX + ';\n\t\tmyP5.pmouseY=' + p5vars.mouseY + ';\n\t\tmyP5.mouseX=' + p5vars.mouseX + ';\n\t\tmyP5.mouseY=' + p5vars.mouseY + ';\n\t\tmyP5.frameCount=' + p5vars.frameCount + ';\n\t}\n';
 
 			let codeSetup = sketchCode + updateVars;
 			let fullCode = p5custom.value + codeSetup;
 			if(useP5){
 				codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
-				fullCode = p5custom.value + codeSetup + '\nvar myP5 = new p5(); sketchStatus();';
+				fullCode = p5custom.value + codeSetup + '\n\nvar myP5 = new p5(); sketchStatus();';
 			}else{
+				fullCode = sketchCode
 				setTimeout(popStream, 500)
 			}
+			// console.log(fullCode) // debug all
 			// let fullCode = p5custom.value + codeSetup + '\nnew p5(); sketchStatus();';
 
 			// *** disabling loadjs route.. failed is missing file.. (needed for remote/local lib loading)

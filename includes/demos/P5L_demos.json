@@ -1,6 +1,6 @@
 {
-  "version": "1.6.3",
-  "revision": 53,
+  "version": "1.7.0",
+  "revision": 54,
   "structure": [
     {
       "name": "demos",
@@ -81,6 +81,18 @@
               "mod": "1713453468369",
               "type": "sketch",
               "code": "/*\n\t_canvas_chalkboard_animation // cc teddavis.org 2020\n\tuse the Chalkboard feature for ~10 frame animations!\n\t\n\t- 'CTRL + B', or open from P5LIVE panel\n\t- set 'Drawing' from 0 - 9, set color, draw!\n\t- grab them with p5live.chalkboard(#), # floors + wraps 0-9!\n\t- enjoy the show!\n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\timageMode(CENTER)\n}\n\nfunction draw() {\n\tbackground(0, 10)\n\n\t// draw from center out (for rotation fun?!)\t\n\ttranslate(width / 2, height / 2)\n\n\t// look at specific chalkboard, 0 - 9\n\t// image(p5live.chalkboard(0), 0, 0)\n\n\t// animate through all 10 frames (uses %10 in the backend!)\n\timage(p5live.chalkboard(frameCount * .25), 0, 0)\n\n\t// animate only first 3 frames\n\t// image(p5live.chalkboard((frameCount * .25) % 3), 0, 0)\n}"
+            },
+            {
+              "name": "_canvas_lofi",
+              "mod": "1752024387977",
+              "type": "sketch",
+              "code": "/* \n\t_canvas_lofi // cc teddavis.org 2025\n\tLike lofi graphics? use p5live.fullCanvas()\n\tto force stretch any sized canvas to full screen.\n*/\n\np5live.fullCanvas() // force canvas to fullscreen\n\nlet scl = 10\n\nfunction setup() {\n\tcreateCanvas(windowWidth/scl, windowHeight/scl)\n}\n\nfunction draw() {\n\tstroke(frameCount*5%255)\n\t\n\tstrokeWeight(1)\n\tlet x = frameCount*.2%width\n\tline(x, 0, x, height)\n\t\n\tstrokeWeight(5)\n\tif(pmouseX != 0 && mouseX != 0){\n\t\tline(mouseX, mouseY, pmouseX, pmouseY)\n\t}\n}\n"
+            },
+            {
+              "name": "_canvas_api",
+              "mod": "1752019158945",
+              "type": "sketch",
+              "code": "/* \n\t_canvas_api // cc teddavis.org 2025\n\tWithout 'setup()' or using `// no p5` in code, \n\tyou can use P5LIVE for live-coding anything!?\n\tThis example adds animation/frameCount/mouseXY\n\t\n\tcanvas api docs:\n\thttps://developer.mozilla.org/en-US/docs/Web/API/Canvas_API\n*/\n\n// create canvas, \nlet cnv = document.createElement('canvas')\nlet ctx = cnv.getContext(\"2d\")\ncnv.onload = init() // don't call it `setup()`\ndocument.body.append(cnv)\n\n// resize canvas with fullscreen\nwindow.addEventListener('resize', () => {\n\tcanvasSize(window.innerWidth, window.innerHeight)\n\t// p5live.recompile() // needed if no animation\n})\n\nfunction canvasSize(w, h, noStretch = false) {\n\twidth = w\n\theight = h\n\tcnv.width = w\n\tcnv.height = h\n\tif(noStretch) {\n\t\tcnv.style.width = `${w}px`\n\t\tcnv.style.height = `${h}px`\n\t}\n}\n\n// mouse tracking\nwindow.addEventListener('mousemove', (e) => {\n\tmouseX = e.clientX\n\tmouseY = e.clientY\n})\n\nfunction init() {\n\tcanvasSize(window.innerWidth, window.innerHeight)\n\t// canvasSize(400, 400, true)\n\tframeCount = mouseX = mouseY = 0\n\twindow.requestAnimationFrame(draw);\n}\n\nfunction draw() {\n\tconst gradient = ctx.createLinearGradient(0, 0, width, 0);\n\n\t// Add three color stops\n\tgradient.addColorStop(.25 + Math.sin(frameCount * .003) * .25, \"cyan\");\n\tgradient.addColorStop(.5 + Math.sin(frameCount * .0035) * .25, \"magenta\");\n\tgradient.addColorStop(.75 + Math.sin(frameCount * .0038) * .25, \"yellow\");\n\n\tctx.fillStyle = gradient;\n\tctx.fillRect(0, 0, width, height);\n\n\tctx.shadowBlur = 25;\n\tctx.shadowColor = \"black\";\n\n\t// ctx.fillStyle = 'white'\n\tctx.font = \"100px serif\";\n\tctx.textAlign = \"center\";\n\tctx.fillText(frameCount, width / 2, 100);\n\tctx.font = \"30px serif\";\n\tctx.fillText(`${mouseX} x ${mouseY}`, width / 2, 140);\n\n\t// keep cycle going\n\tframeCount++\n\twindow.requestAnimationFrame(draw);\n}"
             }
           ]
         },
@@ -446,7 +458,7 @@
     }
   ],
   "count": {
-    "sketches": 55,
+    "sketches": 57,
     "folders": 14
   }
 }
