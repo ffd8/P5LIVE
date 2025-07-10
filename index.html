@@ -6251,11 +6251,12 @@ function println(msg){
 
 				// sandbox
 				let sandboxMatch = editor.getValue().match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n*/ism);
+
 				if(sandboxMatch !== null){
 					var currline = editor.getSelectionRange().start.row;
 					var currCode = editor.session.getLine(currline);
 					var sandboxParts = sandboxMatch[0].split('\n');
-					if(sandboxParts.indexOf(currCode) > -1){
+					if(sandboxParts.indexOf(currCode) > -1 && currCode.trim() != ''){
 
 						let hb = hydraBlock();
 						
@@ -6545,7 +6546,13 @@ function println(msg){
 			}
 
 			// console.log(sketchCode);
-			let updateVars = '\n\tif(myP5){\n\t\tmyP5.pmouseX=' + p5vars.mouseX + ';\n\t\tmyP5.pmouseY=' + p5vars.mouseY + ';\n\t\tmyP5.mouseX=' + p5vars.mouseX + ';\n\t\tmyP5.mouseY=' + p5vars.mouseY + ';\n\t\tmyP5.frameCount=' + p5vars.frameCount + ';\n\t}\n';
+			let updateVars = '\n\tif(typeof myP5 == "object"){\n\t\tpmouseX=' + p5vars.mouseX + ';\n\t\tpmouseY=' + p5vars.mouseY + ';\n\t\tmouseX=' + p5vars.mouseX + ';\n\t\tmouseY=' + p5vars.mouseY + ';\n\t\tframeCount=' + p5vars.frameCount + ';\n\t}\n';
+			
+			// ** hack for v2 p5...
+			if(p5l.version >= 2){
+				updateVars = '\n\tif(typeof myP5 == "object"){\n\t\tmyP5.pmouseX=' + p5vars.mouseX + ';\n\t\tmyP5.pmouseY=' + p5vars.mouseY + ';\n\t\tmyP5.mouseX=' + p5vars.mouseX + ';\n\t\tmyP5.mouseY=' + p5vars.mouseY + ';\n\t\tmyP5.frameCount=' + p5vars.frameCount + ';\n\t}\n';	
+			}
+			
 
 			let codeSetup = sketchCode + updateVars;
 			let fullCode = p5custom.value + codeSetup;

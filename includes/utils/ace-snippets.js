@@ -155,7 +155,7 @@ noize = noise
 // sandbox
 \${1}
 
-// s0.initP5()
+s0.initP5()
 // sandbox`
 },
 {
@@ -167,7 +167,7 @@ noize = noise
 // sandbox
 \${1}
 
-// s0.initP5()
+s0.initP5()
 // sandbox`
 },
 {
@@ -389,5 +389,43 @@ window.addEventListener('resize', ()=>{
 	cnv.height = height
 	p5live.recompile()
 })`
+},{
+	"tabTrigger": "fft",
+	"name": "fft",
+	"content": 
+`for(let i = 0; i < fft.length; i++) {
+	let freq = fft[i]; // (0, 255)
+	let x = map(i, 0, fft.length, 0, width)
+	let w = width / fft.length
+	\${1}
+}`
+},{
+	"tabTrigger": "fftEase",
+	"name": "fftEase",
+	"content": 
+`for(let i = 0; i < fftEase.length; i++) {
+	let freq = fftEase[i]; // (0, 255)
+	let x = map(i, 0, fftEase.length, 0, width)
+	let w = width / fftEase.length
+	\${1}
+}`
+},{
+	"tabTrigger": "waveform",
+	"name": "waveform",
+	"content": 
+`for(let i = 0; i < waveform.length; i++) {
+	let freq = waveform[i] * height / 4 // (-1, 1)
+	let x = map(i, 0, waveform.length, 0, width)
+	\${1}
+}`
+},{
+	"tabTrigger": "waveformEase",
+	"name": "waveformEase",
+	"content": 
+`for(let i = 0; i < waveformEase.length; i++) {
+	let freq = waveformEase[i] * height / 4 // (-1, 1)
+	let x = map(i, 0, waveformEase.length, 0, width)
+	\${1}
+}`
 },
 ]
