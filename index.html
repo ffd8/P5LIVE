@@ -4070,7 +4070,7 @@ function println(msg){
 
 		window.addEventListener('beforeunload', function (e) {
 			if(!settings.cocoding.active && !cocodingUnload){ // ignore if toggling COCODING
-			    e.preventDefault();
+			    // e.preventDefault();
 			    let freq = settings.backup.frequency;
 			    let lastBackup = settings.backup.last;
 

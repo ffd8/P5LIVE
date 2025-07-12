@@ -139,7 +139,7 @@
 		// test if focus lost
 		window.onfocus = function() {
 		  // console.log('stole lost!');
-			if(window.p5 !== undefined){
+			if(typeof window.p5 == "object"){
 				loop();
 			}
 		};
@@ -151,11 +151,11 @@
 		}
 
 		function forwardMouse(event){
-			window.parent.passPointer(event, 'sketch');
+			// window.parent.passPointer(event, 'sketch');
 		}
 
-		document.addEventListener('keydown', forwardKey);
-		document.addEventListener('keyup', forwardKey);
+		// document.addEventListener('keydown', forwardKey);
+		// document.addEventListener('keyup', forwardKey);
 
 		function forwardKey(event){
 			window.parent.sendKey(event);
