@@ -575,6 +575,19 @@ Install offline-mode to live-code without internet, load local assets,  and comm
 
 Alternatively, you can run multiple instances of P5LIVE offline (strange experiments galore!?) by adding any other port number to `npm start` command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localStorage which is unique and isolated per `domain:port`.
 
+### Docker
+Alternatively, it can be run with docker.
+
+```sh
+docker run -p 5001:5001 tiborudvari/p5live:latest
+```
+Or built and run locally
+
+```sh
+docker build -t p5live .
+docker run --rm -p 5001:5001 p5live
+```
+
 ### HTTPS
 If using offline server, you may want to COCODE with peers on the same local network or even remotely around the world. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you access via `localhost`, all connected peers are simply `http` by default, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!
 
