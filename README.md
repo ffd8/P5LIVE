@@ -400,22 +400,40 @@ let libs = [
 ```
 
 #### <span style="text-decoration:line-through">p5 or p5.sound</span>
-To exclude libraries `p5.js` (ie. testing other versions) or `p5.sound` (ie. for Tone.js), add `// no p5` or `// no p5sound` anywhere in your code. 
+With the introduction of p5.js v2.0, you can now set a custom version by using the following syntax (place at very top of code):
 
-In fact, if you don't have a `setup()`, p5.js won't be loaded and you can use `let libs = []` to include any* other library to live-code within P5LIVE. You likely just need to create a canvas element, type `canvas` then hit TAB to add ace-snippet for fullscreen canvas.  
+```js
+// p5 = '1' (uses latest version of 1.0)
+// p5 = '2' (uses latest version of 2.0)
+// p5 = '1.4.0' (uses specific version)
+```
+
+Use `print(VERSION)` within the `setup()` to confirm what version is loaded. In ONLINE mode it will grab the selected version via CDN. In OFFLINE mode, it will download if necessary and then be accessed locally, allowing truely offline usage.
+
+p5.js version 1.0+ remains the default until it's changed officially in the online editor. To archive a new sketch to the current p5.js version, just write `version` + `tab` key, to be sure it continues to use that version in the future. To list all available p5.js versions, write `print(includeScripts.p5.versions)` within the `setup()`.
+
+To exclude libraries `p5.js` (ie. hydra only, canvas hacking) or `p5.sound` (ie. for Tone.js), add `// no p5` or `// no p5sound` anywhere in your code. 
+
+In fact, if you don't have a `setup()`, p5.js won't be loaded and you can use `let libs = []` to include any* other library to live-code within P5LIVE. You likely just need to create a canvas element, type `canvas` then hit `tab` to add ace-snippet for fullscreen canvas.  
 See `_canvas_api` + `_audio_gen_tonejs` demos for example.
 
 ### SANDBOX
-Sometimes you want to adjust global JS code that won't cause p5.js to recompile, ie. [hydra-synth](https://github.com/ojack/hydra-synth). To do so, write such code within 2x `// sandbox` comments. Any changes within that space are processed using `eval()`, however won't trigger a P5LIVE hardCompile.
+Sometimes you want to adjust global JS code that won't cause p5.js to recompile, ie. [hydra-synth](https://github.com/ojack/hydra-synth). To do so, write such code within opening and closing `// sandbox` comments. Any changes within that space are processed using `eval()`, however won't trigger a P5LIVE hardCompile. ie:
+
+```js
+// sandbox
+console.log('this code evals')
+// sandbox
+```
 
 #### HYDRA
-The main use case for this, is [hydra-synth](https://github.com/ojack/hydra-synth), which is included within the P5LIVE libs.  
+The main use case for the sandbox above, is [hydra-synth](https://github.com/ojack/hydra-synth), which is included within the P5LIVE libs.  
 After importing the library, any changes made within the following tags:  
 
 ```js
-// sandbox - start
+// sandbox
 osc().out() // ... your hydra code here
-// sandbox - stop
+// sandbox
 ```
 – will only affect the hydra-synth engine and won't trigger p5.js recompiles!  
 See `DEMOS » HY5` + `DEMOS » _HYDRA` for additional examples.
@@ -441,7 +459,7 @@ You can also load a sketch by URL (for media installation), just add `sketch=nam
 Example: [\_meta\_P5LIVE](https://p5live.org/?sketch=_meta_P5LIVE)
 
 ### STREAM POPUP
-Incase you want to project or stream the visuals or code only (as separate windows) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch popups with a video feed of your P5LIVE canvas or a separate text-editor of code. 
+Incase you want to project or stream the visuals or code only (as separate windows) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch popups with a video feed of your P5LIVE canvas[s] or a separate text-editor of code. 
 
 #### Visuals-Only Stream
 This is also great for PIP if running multiple instances of offline-mode. You can also select which canvas to stream (if multiple are present, ie, HY5) and set the object-fit mode for some scaling/stretching issues.

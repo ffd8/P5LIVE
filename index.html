@@ -5501,7 +5501,7 @@ function println(msg){
 					}
 
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more tippy" '+tippyDate+'>'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a style="display:none;" class="menu-sketch-button tippy" onclick="lockItem(\''+elmID+'\')" data-title="Lock">'+icon.lock+'</a><a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more tippy" '+tippyDate+'>'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
@@ -5836,7 +5836,7 @@ function println(msg){
 
 		p5code.onkeyup = function(event) {
 			keyMap[event.keyCode] = event.type == 'keydown';
-			if(!settings.cocoding.active){
+			if(!settings.cocoding.active){ // *** lockable
 				localStorage[settings.fileName] = editor.getValue();
 			}
 		};

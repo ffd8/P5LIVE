@@ -427,5 +427,19 @@ window.addEventListener('resize', ()=>{
 	let x = map(i, 0, waveformEase.length, 0, width)
 	\${1}
 }`
+},{
+	"tabTrigger": "grid",
+	"name": "grid",
+	"content": 
+`let grid = 20; 
+for(let i=0; i < grid; i++){ 
+	for(let j=0; j < grid; j++){ 
+		let sw = width/grid; 
+		let sh = height/grid; 
+		let x = map(j, 0, grid-1, 0, width-sw); 
+		let y = map(i, 0, grid-1, 0, height-sh); 
+		//rect(x, y, sw, sh); 
+	} 
+} `
 },
 ]
