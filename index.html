@@ -1147,7 +1147,8 @@ function println(msg){
 		});
 
 		function loadSnippetsManager(){
-			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>v.includes(`${p5l.version}.`))[0]
+			// wild hackery to skip newly introduced 'rc' releases
+			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>{if(v.includes(`${p5l.version}.`) && !v.includes(`rc`)){return v}})[0]
 			aceSnippets.push({
 					"tabTrigger": "version",
 					"name": "version",
