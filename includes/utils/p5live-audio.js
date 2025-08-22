@@ -70,6 +70,11 @@ function setupAudio(makeGlobal = false){
 }
 
 function updateAudio(){
-	a5.update()
+	try{
+		a5.update()
+	}catch(e){
+		setTimeout(()=>{a5.update()}, 200)
+	}
+	
 }
 

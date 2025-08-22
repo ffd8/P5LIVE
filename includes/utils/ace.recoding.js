@@ -8,7 +8,7 @@
  */
 
 
-class Recoding{
+class AceRecoding{
 	constructor(editorIn, editorOut){
 		this.editorIn = editorIn
 		this.editorOut = editorOut
@@ -38,14 +38,18 @@ class Recoding{
 		}
 		this.recordKeystrokeBound = this.recordKeystroke.bind(this)
 		this.debug = false
+		this.duration = {
+			step:0,
+			total:0,
+		}
 	}
 
 	loadSession(){
 		let recodingSession = sessionStorage.getItem('recoding')
 		if(recodingSession !== null){
 			this.session = JSON.parse(recodingSession)
-			this.scrubSet()
 			this.session.eventsCur = 0
+			this.scrubSet()
 			recodingToggle()
 		}
 	}
@@ -183,9 +187,9 @@ class Recoding{
 	}
 
 	toggleCat(checked){
-		this.catMode = checked;
+		this.catMode = checked
 		if(this.catMode){
-			this.clearEvents();	
+			this.clearEvents()
 		}else{
 			if(this.playing){
 				this.play()
@@ -234,7 +238,7 @@ class Recoding{
 				self.editorOut.moveCursorTo(k.d.start.row, k.d.start.column+1)
 				
 				self.editorOut.renderer.scrollCursorIntoView({row: k.d.end.row, column: k.d.end.column}, 0.5) // in view
-				// self.editorOut.renderer.scrollToLine(k.d.end.row, true, true); // constant follow
+				// self.editorOut.renderer.scrollToLine(k.d.end.row, true, true) // constant follow
 			}
 			
 
@@ -246,6 +250,7 @@ class Recoding{
 				}
 				if(self.elms.steps){
 					self.elms.steps.innerHTML = (parseInt(rangeIndex) + 1) +'/'+ self.session.compiles.length
+					self.durationLog(self.elms.steps)
 				}
 			}
 
@@ -262,6 +267,7 @@ class Recoding{
 					self.session.events.push(replay)
 				}else{
 					recoding.elms.btns.play.innerHTML = icon.play // *** P5LIVE specific
+					self.editorOut.setReadOnly(false)
 				}
 			}
 
@@ -287,6 +293,9 @@ class Recoding{
 		// every spot
 		// btns.scrub.max = recoding.history.length
 
+		// check duration
+		this.durationTotal()
+
 		// just compiles
 		this.session.compiles = []
 		for(let i=0; i < this.session.history.length; i++){
@@ -303,9 +312,25 @@ class Recoding{
 		}
 
 		if(this.elms.steps){
-			this.elms.steps.innerHTML = this.session.compiles.length +'/'+ this.session.compiles.length
+			this.elms.steps.innerHTML = 0 +'/'+ this.session.compiles.length
+			this.elms.steps.innerHTML += `-0/${this.duration.total}'`
 		}
 
+	}
+
+	tsDiff(tsStart, tsEnd){
+		return (tsEnd - tsStart) / 1000 / 60
+	}
+
+	durationTotal(){
+		let hist = this.session.history
+		this.duration.total = Math.round(this.tsDiff(hist[0].t, hist[hist.length-1].t))
+	}
+
+	durationLog(elm){
+		let hist = this.session.history
+		this.duration.step = Math.round(this.tsDiff(hist[0].t, hist[this.session.eventsCur].t))
+		elm.innerHTML += `-${this.duration.step}/${this.duration.total}'`
 	}
 
 	scrubStop(){
@@ -344,15 +369,16 @@ class Recoding{
 
 		if(this.elms.steps){
 			this.elms.steps.innerHTML = (parseInt(step) + 1) +'/'+ this.session.compiles.length
+			this.durationLog(this.elms.steps)
 		}
 
 		if(tempDeltas.length > 0){
 			this.editorOut.setValue(tempdoc.getValue(), 1)
 			this.editorOut.moveCursorTo(curPos.row, curPos.column+1)
 			// console.log(curPos.row)
-			// this.editorOut.scrollToLine(curPos.row);
+			// this.editorOut.scrollToLine(curPos.row)
 			this.editorOut.renderer.scrollCursorIntoView({row: curPos.row, column: curPos.column}, 0.5)
-			// this.editorOut.renderer.scrollToLine(curPos.row, true, true);
+			// this.editorOut.renderer.scrollToLine(curPos.row, true, true)
 		}
 
 		this.recordLock(true)

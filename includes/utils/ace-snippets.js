@@ -37,6 +37,11 @@ function draw() {
 	"content": 
 	`height / 2`
 },{
+	"tabTrigger": "translate",
+	"name": "translate",
+	"content": 
+	`translate(width / 2, height / 2)`
+},{
 	"tabTrigger": "fc",
 	"name": "fc",
 	"content": 
@@ -139,7 +144,7 @@ noize = noise
 	"content": 
 	`// sandbox - start
 \${1}
-// sandbox - end`
+// sandbox - stop`
 },
 {
 	"tabTrigger": "hy5",
@@ -150,7 +155,7 @@ noize = noise
 // sandbox
 \${1}
 
-// s0.initP5()
+s0.initP5()
 // sandbox`
 },
 {
@@ -162,7 +167,7 @@ noize = noise
 // sandbox
 \${1}
 
-// s0.initP5()
+s0.initP5()
 // sandbox`
 },
 {
@@ -309,5 +314,132 @@ H2.pixelDensity(2)
 \${1}
 pop()
 `
+},{
+	"tabTrigger": "xy2",
+	"name": "xy2",
+	"content": 
+`xy2.clearWaves()
+// xy2.freq(25)
+\${1}
+xy2.buildWaves()`
+},{
+	"tabTrigger": "midi",
+	"name": "midi",
+	"content": 
+`setupMidi(0, 0, true)
+// midi5.debug = ['note', 'controlchange']
+updateMidi() // to draw`
+},{
+	"tabTrigger": "font",
+	"name": "font",
+	"content": 
+`font = loadFont("includes/demos-data/fonts/RobotoMono-Regular.otf")`
+},{
+	"tabTrigger": "preload",
+	"name": "preload",
+	"content": 
+`function preload(){
+	\${1}
+}`
+},{
+	"tabTrigger": "mouse",
+	"name": "mouse",
+	"content": 
+`function mousePressed(){
+	\${1}
+}`
+},{
+	"tabTrigger": "key",
+	"name": "key",
+	"content": 
+`function keyPressed(){
+	\${1}
+}`
+},{
+	"tabTrigger": "center",
+	"name": "center",
+	"content": 
+`CENTER, CENTER`
+},{
+	"tabTrigger": "mouseXY",
+	"name": "mouseXY",
+	"content": 
+`mouseX, mouseY`
+},{
+	"tabTrigger": "wh/2",
+	"name": "wh/2",
+	"content": 
+`width/2, height/2`
+},{
+	"tabTrigger": "canvas",
+	"name": "canvas",
+	"content": 
+`let cnv = document.createElement('canvas')
+let ctx = cnv.getContext("2d")
+var width = window.innerWidth
+var height = window.innerHeight
+cnv.width = width
+cnv.height = height
+document.body.append(cnv)
+
+window.addEventListener('resize', ()=>{
+	width = window.innerWidth
+	height = window.innerHeight
+	cnv.width = width
+	cnv.height = height
+	p5live.recompile()
+})`
+},{
+	"tabTrigger": "fft",
+	"name": "fft",
+	"content": 
+`for(let i = 0; i < fft.length; i++) {
+	let freq = fft[i]; // (0, 255)
+	let x = map(i, 0, fft.length, 0, width)
+	let w = width / fft.length
+	\${1}
+}`
+},{
+	"tabTrigger": "fftEase",
+	"name": "fftEase",
+	"content": 
+`for(let i = 0; i < fftEase.length; i++) {
+	let freq = fftEase[i]; // (0, 255)
+	let x = map(i, 0, fftEase.length, 0, width)
+	let w = width / fftEase.length
+	\${1}
+}`
+},{
+	"tabTrigger": "waveform",
+	"name": "waveform",
+	"content": 
+`for(let i = 0; i < waveform.length; i++) {
+	let freq = waveform[i] * height / 4 // (-1, 1)
+	let x = map(i, 0, waveform.length, 0, width)
+	\${1}
+}`
+},{
+	"tabTrigger": "waveformEase",
+	"name": "waveformEase",
+	"content": 
+`for(let i = 0; i < waveformEase.length; i++) {
+	let freq = waveformEase[i] * height / 4 // (-1, 1)
+	let x = map(i, 0, waveformEase.length, 0, width)
+	\${1}
+}`
+},{
+	"tabTrigger": "grid",
+	"name": "grid",
+	"content": 
+`let grid = 20; 
+for(let i=0; i < grid; i++){ 
+	for(let j=0; j < grid; j++){ 
+		let sw = width/grid; 
+		let sh = height/grid; 
+		let x = map(j, 0, grid-1, 0, width-sw); 
+		let y = map(i, 0, grid-1, 0, height-sh); 
+		//rect(x, y, sw, sh); 
+	} 
+} `
 },
 ]

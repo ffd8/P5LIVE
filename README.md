@@ -1,6 +1,6 @@
 # P5LIVE
-v 1.6.3  
-cc [teddavis.org](http://teddavis.org) – 2019 - 2024  
+v 1.7.0  
+cc [teddavis.org](http://teddavis.org) – 2019 - 2025  
 p5.js collaborative live-coding vj environment!
 
 ## SHORTCUTS
@@ -117,6 +117,8 @@ See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at
 - [x] Active-line, toggle + set active-line color.  
 - Keybinding, [ace], select alternative keybindings of editor.
 - Snippets, `Launch Editor`, to open snippets editor.
+- [ ] GhostMode, animated typing of snippets and ace-snippets.
+- GhostMode Delay, `15`, adjust small/high for fast/slow
 - [ ] SoniCode, plays oscillator/midi on every keystroke. 
 
 #### SoniCode
@@ -186,7 +188,9 @@ Optionally, toggle `<>` to search through source code of all sketches.
 ### ISSUES
 #### LAG
 Lagging or retina display creates too large of a canvas?  
-Use `pixelDensity(1);` in `setup()` to prevent retina scaling.
+
+- Use `pixelDensity(1);` in `setup()` to prevent retina scaling.  
+- Add `p5live.fullCanvas()`, then set `createCanvas()` to fraction of window size, ie. `createCanvas(windowWidth/10, windowHeight/10)` for lo-fi graphics.
 
 #### BUG/CRASH?! 
 Infinite loop? Broken code? P5LIVE now includes an infinite loop breaker, thus rendering previous tricks more or less obsolete... nevertheless, these may still be useful:
@@ -271,6 +275,9 @@ For examples, see `DEMOS` » `_CANVAS` » `_canvas_chalkboard` + `..._animation`
 ### SNIPPETS  
 Snippets allow automatically adding chunks of code to your sketch within specific areas: global space, setup, draw – so you can quickly incorporate the necessary code for repeated workflows. Previously it was manually added to a .JSON file, but now there's a snippet editor built it!
 
+#### Ghostmode
+If you want your snippets to magically appear animated (rather than instantly added), activate `Settings` » `Editor` » `Snippets: [√] Ghostmode` and set an ideal delay speed. This is especially useful when performing with live-code, as the audience can better follow what is being added and where. It also looks like a 👻 in the machine...!
+
 #### Shortcuts
 - `ALT + SHIFT + S`, toggle Snippets Editor, *create, modify*.  
 - `CTRL + SHIFT + S`, toggle Snippets Selector, *apply*.
@@ -279,12 +286,13 @@ Snippets allow automatically adding chunks of code to your sketch within specifi
 *Default shortcut keys can be customized within `Settings`*
 
 #### Snippet Editor
-<img src="includes/images/snippets-editor.png" height="50px">  
+<img src="includes/images/snippets-editor-2.png" height="50px">  
 
 - `Select` snippet to edit or 'new' to create a new one
 - <img src="includes/icons/check-square.svg" height="12px"> Apply selected snippet.
 - <img src="includes/icons/copy.svg" height="12px"> Clone snippet, ie, 'Save As...'.
 - <img src="includes/icons/upload.svg" height="12px"> Import an exported snippet.
+- <img src="includes/icons/database.svg" height="12px"> Launch Snippets Manager.
 - <img src="includes/icons/save.svg" height="12px"> Save changes to a custom shortcut.
 - <img src="includes/icons/edit-3.svg" height="12px"> Rename a custom shortcut.
 - <img src="includes/icons/download.svg" height="12px"> Export a custom shortcut.
@@ -305,47 +313,127 @@ Snippets allow automatically adding chunks of code to your sketch within specifi
 
 When performing, this can be down entirely with the keyboard, `CTRL + SHIFT + S` to toggle the Snippet Selector, `down/up arrowkey` to select a preferred snippet, `tab` to move focus to the 'Apply Snippet' button, `Enter` to activate that button.
 
+#### Snippets Manager
+<img src="includes/images/snippets-manager.png" height="50px">  
+There is now a [repository](https://github.com/ffd8/p5live-snippets) for community contributed P5LIVE snippets!  
+To launch, toggle on the `Snippets Editor` and click the <img src="includes/icons/database.svg" height="12px">. 
+
+- `Select` snippet to preview
+- <img class="svg" src="includes/icons/help-circle.svg" height="12px"> About Snippet, toggles credits.
+- <img src="includes/icons/check-square.svg" height="12px"> Apply Snippet, to test what snippet does (start with a blank p5 sketch).
+- <img src="includes/icons/download.svg" height="12px"> Export Snippet, to download selected snippet with any changes.
+- <img src="includes/icons/log-in.svg" height="12px"> Import Snippet, to add snippet to your own P5LIVE `user` list of snippets.
+
+To contribute your own snippets: 
+ 
+- Export from `Snippets Editor`
+- Drag + drop over Snippets Manager panel
+- Toggle `About Snippet` to set name, author, about
+- Reduce any unnecessary code from sections
+- Tidy sections of code
+- `Export Snippet` to download as .json file
+- Make [pull-request on github](https://github.com/ffd8/p5live-snippets/pulls) with snippet!
+
 #### Ace Snippets
 Ace Editor also has the ability to have autocomplete snippets of code blocks. To activate, type one out (can also use auto-complete to help you), then press `tab`. The following have been implemented (eventually a custom editor may be added to settings):
 
 - `libs`, inserts code for loading external libraries.
 - `p5`, adds p5 template incase removed
 - `hydraonly`, replace all code with this to only use hydra-synth
+- `canvas`, a canvas only sketch
 - `sandbox`, adds //sandbox start/stop for eval hydra code
+- `mouse`, adds `function mousePressed(){}`
+- `key`, adds `function keyPressed(){}`
+- `preload`, adds `function preload(){}`
 - `hy5`, load HY5 library and sandbox for hydra code
 - `hy5-p5-hydra`, template for sending p5 into hydra
 - `hy5-hydra-p5`, template for sending hydra into p5
 - `hy5-hydra-p5-x4`, template for sending 4x hydra tex to p5
 - `hy5-hydra-p5-x4-demo`, demo for sending 4x hydra tex to p5
+- `translate`, adds `translate(width/2, height/2)`
+- `am`, adds `angleMode(DEGREES)`
+- `im`, adds `imageMode(CENTER)`
+- `rm`, adds `rectMode(CENTER)`
+- `oc`, adds `orbitControl(3)`
 - *read-only `/includes/utils/ace-snippets.js` for full list*
 
 ### LIBRARIES
 P5LIVE loads p5.js + p5.sound libraries by default. For additional libraries, load them remotely via [CDN host](https://www.jsdelivr.com/) or locally if running offline (ie. create `/data/libs/`). Can also be used within `SyncData`!  
 
-Add this snippet to the top of your sketch, placing one path per array item:  
+Add this snippet to the top of your sketch, placing one path per array item (or just type `libs` then `TAB`:  
 
 ```javascript
 let libs = [
+	"",
 	""
-	,""
 ];
+```
+#### BUILT-IN LIBRARIES
+There's a curated selection of libraries available for offline-mode, which can be accessed via `includes/libs/_____.js` (add your own libraries to suggested `data/libs` folder – since this gets overwritten on updates. If there are reasonably sized libraries that should be added to the list (or are out of date), please create an [issue on GitHub](https://github.com/ffd8/P5LIVE/issues). See `demos » libs` for additional examples of using certain libraries.
+
+List of available offline libraries include:
+
+```js
+let libs = [
+'includes/libs/p5.anaglyph.js', 
+'includes/libs/bmwalker.js', 
+'includes/libs/hy5.js', 
+'includes/libs/hydra-synth.js', 
+'includes/libs/p5.asciify.js', 
+'includes/libs/p5.axidraw.js', 
+'includes/libs/p5.ble.js', 
+'includes/libs/p5.capture.js', 
+'includes/libs/p5.csg.js', 
+'includes/libs/p5.fab.js', 
+'includes/libs/p5.fillGradient.js', 
+'includes/libs/p5.glitch.js', 
+'includes/libs/p5.mapper.js', 
+'includes/libs/p5.riso.js', 
+'includes/libs/p5.serialport.js', 
+'includes/libs/p5.webserial.js', 
+'includes/libs/p5xr.min.js', 
+'includes/libs/rhill-voronoi-core.js', 
+'includes/libs/ShapeSVG.js', 
+'includes/libs/Tone.js', 
+'includes/libs/xyscope.js'
+]
 ```
 
 #### <span style="text-decoration:line-through">p5 or p5.sound</span>
-To exclude libraries `p5.js` (ie. testing other versions) or `p5.sound` (ie. for Tone.js), add `//no p5` or `// no p5sound` anywhere in your code.  
-See `_audio_gen_tonejs` demo for an example.
+With the introduction of p5.js v2.0, you can now set a custom version by using the following syntax (place at very top of code):
+
+```js
+// p5 = '1' (uses latest version of 1.0)
+// p5 = '2' (uses latest version of 2.0)
+// p5 = '1.4.0' (uses specific version)
+```
+
+Use `print(VERSION)` within the `setup()` to confirm what version is loaded. In ONLINE mode it will grab the selected version via CDN. In OFFLINE mode, it will download if necessary and then be accessed locally, allowing truely offline usage.
+
+p5.js version 1.0+ remains the default until it's changed officially in the online editor. To archive a new sketch to the current p5.js version, just write `version` + `tab` key, to be sure it continues to use that version in the future. To list all available p5.js versions, write `print(includeScripts.p5.versions)` within the `setup()`.
+
+To exclude libraries `p5.js` (ie. hydra only, canvas hacking) or `p5.sound` (ie. for Tone.js), add `// no p5` or `// no p5sound` anywhere in your code. 
+
+In fact, if you don't have a `setup()`, p5.js won't be loaded and you can use `let libs = []` to include any* other library to live-code within P5LIVE. You likely just need to create a canvas element, type `canvas` then hit `tab` to add ace-snippet for fullscreen canvas.  
+See `_canvas_api` + `_audio_gen_tonejs` demos for example.
 
 ### SANDBOX
-Sometimes you want to adjust global JS code that won't cause p5.js to recompile, ie. [hydra-synth](https://github.com/ojack/hydra-synth). To do so, write such code within 2x `// sandbox` comments. Any changes within that space are processed using `eval()`, however won't trigger a P5LIVE hardCompile.
+Sometimes you want to adjust global JS code that won't cause p5.js to recompile, ie. [hydra-synth](https://github.com/ojack/hydra-synth). To do so, write such code within opening and closing `// sandbox` comments. Any changes within that space are processed using `eval()`, however won't trigger a P5LIVE hardCompile. ie:
+
+```js
+// sandbox
+console.log('this code evals')
+// sandbox
+```
 
 #### HYDRA
-The main use case for this, is [hydra-synth](https://github.com/ojack/hydra-synth), which is included within the P5LIVE libs.  
+The main use case for the sandbox above, is [hydra-synth](https://github.com/ojack/hydra-synth), which is included within the P5LIVE libs.  
 After importing the library, any changes made within the following tags:  
 
 ```js
-// sandbox - start
+// sandbox
 osc().out() // ... your hydra code here
-// sandbox - stop
+// sandbox
 ```
 – will only affect the hydra-synth engine and won't trigger p5.js recompiles!  
 See `DEMOS » HY5` + `DEMOS » _HYDRA` for additional examples.
@@ -356,7 +444,8 @@ Loading custom assets (image/font/obj/audio/...):
 - Remotely from a [CORS](https://enable-cors.org/resources.html) friendly server ([imgbb](https://imgbb.com/)/[glitch.com](https://glitch.com) images/videos, [GitHub](https://github.com) raw for ~anything)  
 `loadImage('https://i.imgur.com/ijQzwsx.jpeg');`
 - Locally, if running offline-mode create a `/data` folder  
-`loadImage('data/images/fish.png');` (don't add anything to `/includes`!)
+`loadImage('data/images/fish.png');`  
+*Don't add anything inside `/includes`! (gets replaced on update)*
 
 ### VIEW ONLY MODE
 By special request (P5LIVE for remote meditation sessions?!), there's a `view only mode`, meaning everything is hidden (code + menu) and you'll only see the sketch running. Intended for COCODING sessions, where the admin can live-code while attendees enjoy and optionally interact with the visuals using their own mic or mouse. Anytime code is recompiled, the same happens here too. Add `edit=0` to your URL:  
@@ -370,7 +459,7 @@ You can also load a sketch by URL (for media installation), just add `sketch=nam
 Example: [\_meta\_P5LIVE](https://p5live.org/?sketch=_meta_P5LIVE)
 
 ### STREAM POPUP
-Incase you want to project or stream the visuals or code only (as separate windows) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch popups with a video feed of your P5LIVE canvas or a separate text-editor of code. 
+Incase you want to project or stream the visuals or code only (as separate windows) from P5LIVE, press <img class="svg" src="includes/icons/monitor.svg" height="12px"> within the P5LIVE Panel to launch popups with a video feed of your P5LIVE canvas[s] or a separate text-editor of code. 
 
 #### Visuals-Only Stream
 This is also great for PIP if running multiple instances of offline-mode. You can also select which canvas to stream (if multiple are present, ie, HY5) and set the object-fit mode for some scaling/stretching issues.
@@ -436,6 +525,7 @@ Additional custom functions are available in P5LIVE sketches:
 - `println(foo)` Compatibility with Processing.  
 - `windowResize()` keeps your sketch fullscreen by default. To disable, add `windowResized = null;` in the setup() or overwrite with custom function.
 - `p5live.code` returns string of current code editor for meta usage.
+- `p5live.fullCanvas()` forces p5 (and any other) canvas to full window size.
 
 
 ## COCODING 
@@ -628,6 +718,7 @@ Listed in order of adoption:
 - [pem](https://github.com/Dexus/pem), self-generated generative ssl certificates
 - [FHNW](https://www.fhnw.ch/), nodejs websockets cocoding-server
 - [loop-breaker](https://github.com/popcodeorg/loop-breaker), inifinite-loop protection
+- [Random Name Generator](https://gist.github.com/tkon99/4c98af713acc73bed74c?permalink_comment_id=5642379#gistcomment-5642379)
 
 
 ## INSPIRATION

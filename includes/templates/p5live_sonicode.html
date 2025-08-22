@@ -22,10 +22,7 @@
 			settings = sonicodeSettings
 			p5livePolySynth = new p5.PolySynth();
 			p5livePolySynth.polyvalue = settings.poly
-			if(!p5livePolySynthLoaded){
-				p5livePolySynthLoaded = true
-				console.log('P5LIVE SoniCode - Loaded!')
-			}
+			
 			
 
 			if(settings.mode == 'midi'){
@@ -39,20 +36,28 @@
 		}
 
 		function sonicodeParse(delta){
-			console.log(delta.lines[0].charCodeAt(0))
+			if(!p5livePolySynthLoaded){
+				p5livePolySynthLoaded = true
+				userStartAudio();
+				console.log('P5LIVE SoniCode - Loaded!')
+			}
+			// console.log(delta.lines[0].charCodeAt(0))
 			var freq = delta.lines[0].charCodeAt(0) + parseInt(settings.base)
+			// console.log(freq)
 			if(isNaN(freq)){
+				// freq = parseInt(settings.base)
 				return
 			}
-			
+
 			if(delta.lines[0] == '\t'){
-				freq = 440 + parseInt(settings.base)
+				// freq = 440 + parseInt(settings.base)
 			}
 
 			// necessary for post bug in code
 			try {
 				if(settings.mode === 'midi'){
-					sendNote(1, delta.lines[0].charCodeAt(0), 5550, 127); // channel, note, octave, duration, velocity
+					// sendNote(1, delta.lines[0].charCodeAt(0), 5550, 127); // channel, note, octave, duration, velocity
+					sendNote(1, freqToMidi(freq), 5550, 127); // channel, note, duration, velocity
 				}else{
 					p5livePolySynth.play((constrain(freq, 5, 10000)), .5, 0, .1)
 				}

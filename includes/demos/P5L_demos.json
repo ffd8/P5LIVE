@@ -1,6 +1,6 @@
 {
-  "version": "1.6.3",
-  "revision": 53,
+  "version": "1.7.0",
+  "revision": 54,
   "structure": [
     {
       "name": "demos",
@@ -18,7 +18,7 @@
           "name": "recoding",
           "mod": "1713483337942",
           "type": "sketch",
-          "code": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n}\n\nfunction draw() {\n\t\n}"
+          "code": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\t\n}\n\nfunction draw() {\n\t\n// }fjijwefowef"
         },
         {
           "name": "_meta",
@@ -81,6 +81,18 @@
               "mod": "1713453468369",
               "type": "sketch",
               "code": "/*\n\t_canvas_chalkboard_animation // cc teddavis.org 2020\n\tuse the Chalkboard feature for ~10 frame animations!\n\t\n\t- 'CTRL + B', or open from P5LIVE panel\n\t- set 'Drawing' from 0 - 9, set color, draw!\n\t- grab them with p5live.chalkboard(#), # floors + wraps 0-9!\n\t- enjoy the show!\n*/\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\timageMode(CENTER)\n}\n\nfunction draw() {\n\tbackground(0, 10)\n\n\t// draw from center out (for rotation fun?!)\t\n\ttranslate(width / 2, height / 2)\n\n\t// look at specific chalkboard, 0 - 9\n\t// image(p5live.chalkboard(0), 0, 0)\n\n\t// animate through all 10 frames (uses %10 in the backend!)\n\timage(p5live.chalkboard(frameCount * .25), 0, 0)\n\n\t// animate only first 3 frames\n\t// image(p5live.chalkboard((frameCount * .25) % 3), 0, 0)\n}"
+            },
+            {
+              "name": "_canvas_lofi",
+              "mod": "1752024387977",
+              "type": "sketch",
+              "code": "/* \n\t_canvas_lofi // cc teddavis.org 2025\n\tLike lofi graphics? use p5live.fullCanvas()\n\tto force stretch any sized canvas to full screen.\n*/\n\np5live.fullCanvas() // force canvas to fullscreen\n\nlet scl = 10\n\nfunction setup() {\n\tcreateCanvas(windowWidth/scl, windowHeight/scl)\n}\n\nfunction draw() {\n\tstroke(frameCount*5%255)\n\t\n\tstrokeWeight(1)\n\tlet x = frameCount*.2%width\n\tline(x, 0, x, height)\n\t\n\tstrokeWeight(5)\n\tif(pmouseX != 0 && mouseX != 0){\n\t\tline(mouseX, mouseY, pmouseX, pmouseY)\n\t}\n}\n"
+            },
+            {
+              "name": "_canvas_api",
+              "mod": "1752019158945",
+              "type": "sketch",
+              "code": "/* \n\t_canvas_api // cc teddavis.org 2025\n\tWithout 'setup()' or using `// no p5` in code, \n\tyou can use P5LIVE for live-coding anything!?\n\tThis example adds animation/frameCount/mouseXY\n\t\n\tcanvas api docs:\n\thttps://developer.mozilla.org/en-US/docs/Web/API/Canvas_API\n*/\n\n// create canvas, \nlet cnv = document.createElement('canvas')\nlet ctx = cnv.getContext(\"2d\")\ncnv.onload = init() // don't call it `setup()`\ndocument.body.append(cnv)\n\n// resize canvas with fullscreen\nwindow.addEventListener('resize', () => {\n\tcanvasSize(window.innerWidth, window.innerHeight)\n\t// p5live.recompile() // needed if no animation\n})\n\nfunction canvasSize(w, h, noStretch = false) {\n\twidth = w\n\theight = h\n\tcnv.width = w\n\tcnv.height = h\n\tif(noStretch) {\n\t\tcnv.style.width = `${w}px`\n\t\tcnv.style.height = `${h}px`\n\t}\n}\n\n// mouse tracking\nwindow.addEventListener('mousemove', (e) => {\n\tmouseX = e.clientX\n\tmouseY = e.clientY\n})\n\nfunction init() {\n\tcanvasSize(window.innerWidth, window.innerHeight)\n\t// canvasSize(400, 400, true)\n\tframeCount = mouseX = mouseY = 0\n\twindow.requestAnimationFrame(draw);\n}\n\nfunction draw() {\n\tconst gradient = ctx.createLinearGradient(0, 0, width, 0);\n\n\t// Add three color stops\n\tgradient.addColorStop(.25 + Math.sin(frameCount * .003) * .25, \"cyan\");\n\tgradient.addColorStop(.5 + Math.sin(frameCount * .0035) * .25, \"magenta\");\n\tgradient.addColorStop(.75 + Math.sin(frameCount * .0038) * .25, \"yellow\");\n\n\tctx.fillStyle = gradient;\n\tctx.fillRect(0, 0, width, height);\n\n\tctx.shadowBlur = 25;\n\tctx.shadowColor = \"black\";\n\n\t// ctx.fillStyle = 'white'\n\tctx.font = \"100px serif\";\n\tctx.textAlign = \"center\";\n\tctx.fillText(frameCount, width / 2, 100);\n\tctx.font = \"30px serif\";\n\tctx.fillText(`${mouseX} x ${mouseY}`, width / 2, 140);\n\n\t// keep cycle going\n\tframeCount++\n\twindow.requestAnimationFrame(draw);\n}"
             }
           ]
         },
@@ -101,6 +113,12 @@
               "mod": "1731030896101",
               "type": "sketch",
               "code": "/*\n\t_audio_gen_tonejs // cc teddavis.org 2021-24\n\t\n\tadd '// no p5sound' anywhere in sketch,\n\tto exclude p5.sound from loading (ie. for tone.js)\n\t* need to compile once to allow 'userGesture'\n\t\n\t(O) toggle jacks to set arrangement\n*/\n\n\n// no p5sound\nlet libs = [\"https://unpkg.com/tone\", \"includes/libs/Tone.js\"]\nlet synth // tone.js instance\n\nlet counter = 0,\n\ttempo = 10,\n\tnotesCount = 6,\n\tnotes = [], noteState = false,\n\tfont, bounds\n\nfunction preload() {\n\tfont = loadFont(\"includes/demos-data/fonts/RobotoMono-Regular.otf\")\n}\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight);\n\n\t// tone.js synth\n\t// synth = new Tone.FMSynth().toDestination();\n\n\t// tone.js sampler\n\tsynth = new Tone.Sampler({\n\t\turls: {\n\t\t\t\"C1\": \"includes/demos-data/audio/pluck.mp3\" // p5.js assets\n\t\t},\n\t\trelease: 1,\n\t}).toDestination();\n\n\t// setup type\n\tgenType('P5LIVE', width / 5)\n}\n\nfunction draw() {\n\tbackground(0, 10)\n\n\t// playback head\n\tstroke(255)\n\tstrokeWeight(2)\n\tcounter += 16//noise(frameCount * .05) * 20\n\tlet pos = counter % width\n\tline(pos, 0, pos, height)\n\n\ttranslate(width / 2, height / 2)\n\n\t// notes\n\tfor(let n of notes) {\n\t\tif(mouseIsPressed){\n\t\t\tif(dist(mouseX, mouseY, n.x + width / 2, n.y + height / 2) < 10) {\n\t\t\t\tn.play = noteState\n\t\t\t}\n\t\t}\n\t\tnoFill()\n\t\tstroke(255)\n\t\tstrokeWeight(.5)\n\t\tif(n.play) {\n\t\t\tstrokeWeight(3)\n\t\t\tstroke(50, 255, 0)\n\t\t\t\n\t\t\t// play note logic\n\t\t\tif(abs((n.x + width / 2) - pos) < tempo && !n.playing) {\n\t\t\t\tn.playing = true\n\t\t\t\tlet pitch = ceil(map(n.y, -bounds.h / 2, bounds.h / 2, 120, 40)/ 12) * 12\n\t\t\t\tsynth.triggerAttackRelease(pitch, .3);\n\t\t\t\tfill(255)\n\t\t\t} else {\n\t\t\t\tn.playing = false\n\t\t\t}\n\t\t\t\n\t\t}\n\t\tcircle(n.x, n.y, 20)\n\t}\n\n\n\t// patch cable\n\tnoFill()\n\tstroke(255)\n\tstrokeWeight(4)\n\tlet init = true,\n\t\tlastNode = null\n\tbeginShape()\n\tfor(let n of notes) {\n\t\tif(n.play) {\n\t\t\tif(init) {\n\t\t\t\tcurveVertex(n.x, n.y)\n\t\t\t\tinit = false\n\t\t\t}\n\t\t\tcurveVertex(n.x, n.y)\n\t\t\tlastNode = createVector(n.x, n.y)\n\t\t}\n\t}\n\tif(lastNode !== null) {\n\t\tcurveVertex(lastNode.x, lastNode.y)\n\t}\n\tendShape()\n}\n\nfunction mousePressed() {\n\tfor(let n of notes) {\n\t\tif(dist(mouseX, mouseY, n.x + width / 2, n.y + height / 2) < 10) {\n\t\t\tn.play = !n.play\n\t\t\tnoteState = n.play\n\t\t}\n\t}\n}\n\nfunction keyPressed() {\n\t// genType(key, width / 4)\n\tif(key == 'r'){\n\t\tgenNotes()\n\t}\n}\n\nfunction genType(txtString, txtSize) {\n\t// grab bounding box of text\n\tbounds = font.textBounds(txtString, 0, 0, txtSize)\n\n\t// textToPoints(txt, x, y, size, options)\n\tnotes = font.textToPoints(txtString, -bounds.w / 2, bounds.h / 2, txtSize, {\n\t\tsampleFactor: .02\n\t})\n\n\tgenNotes()\n}\n\nfunction genNotes(){\n\t// set play logic\n\tfor(let n of notes) {\n\t\tn.play = false\n\t\tn.playing = false\n\t\tif(random(1) > .95) {\n\t\t\tn.play = true\n\t\t}\n\t}\n}"
+            },
+            {
+              "name": "_audio_xyscope",
+              "mod": "1755826561973",
+              "type": "sketch",
+              "code": "/*\t\n\t_audio_XYscope // cc teddavis.org 2025\n\t\n\tXYscope.js » live-coding for vector graphics on vector displays!\n\tgraphics » audio » graphics = 'what you see is what you hear'\n\tdocs: https://teddavis.org/xyscopejs/\n*/\n\nlet libs = ['https://teddavis.org/xyscopejs/xyscope.js', 'includes/libs/xyscope.js']\nlet xy;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\n\txy = new XYscope(this)\n\txy.canvas() // resize to fullscreen 1:1 ratio\n}\n\nfunction draw() {\n\txy.drawXY() // virtual XY-mode scope via XXY\n\txy.limitPath() // ignore points beyond canvas\n\n\txy.freq(2.5) // 50 default\n\txy.clearWaves() // reset shape buffer\n\n\t// draw stuff here\n\ttranslate(width / 2, height / 2)\n\txy.textAlign(CENTER, CENTER);\n\txy.textSize(width / 8)\n\txy.text('P5LIVE', 0, 0)\n\txy.circle(0, 0, frameCount%height)\n\n\txy.buildWaves() // shape buffer to sound\n}\n\nfunction mousePressed() {\n\txy.resume()\n}"
             }
           ]
         },
@@ -446,7 +464,7 @@
     }
   ],
   "count": {
-    "sketches": 55,
+    "sketches": 58,
     "folders": 14
   }
 }

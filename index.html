@@ -504,10 +504,18 @@
 							<option value="emacs">Emacs</option>
 						</select>
 					</div>
-					<div class="tippy-left" style="cursor:help;" data-title="Modify snippets">
-						Snippets: 
-						<button onclick="snippetsToggle()" style="cursor:pointer;background:none;color:#fff;border:1px solid #888;outline:none;font-size:8pt;">Launch Editor</button>
+					<div class="tippy-left" style="cursor:help;display:flex;" data-title="Modify snippets">
+						<div>Snippets: </div> 
+						<div>
+							<button onclick="snippetsToggle()" style="cursor:pointer;background:none;color:#fff;border:1px solid #888;outline:none;font-size:8pt;">Launch Editor</button>
+							<div id="settings-snippetsghostmode-holder" style="margin-left:-28px;" >
+								<span onclick="snippetsghostmodeToggle();" class="tippy-left" data-title="Animated typing of snippet" style="cursor:help;"><input type="checkbox" id="settings-snippetsghostmode-toggle" name="settings-snippetsghostmode-toggle" value="settings-snippetsghostmodetoggle"> GhostMode</span>
+								<span class="tippy-left" data-title="Animated typing delay" style="cursor:help;"><input type="" name="settings-snippetsghostmode-delay" id="settings-snippetsghostmode-delay" class="menu-settings-input-text" style="width:32px;" value="5" onkeyup="snippetsghostmodeDelay(this.value);"></span>
+							</div>
+						</div>
+						
 					</div>	
+					
 					<div>
 						<span class="tippy-left" data-title="Sonify editor changes" style="cursor:help;" onclick="sonicodeToggle();"><input type="checkbox" id="settings-sonicode" name="settings-sonicode" value="settings-sonicode"> SoniCode</span> <span class="tippy-left" data-title="Oscillator Wavetype or Midi output" style="cursor:help;">
 								<select id="settings-sonicode-mode" class="menu-settings-dropdown" onchange="sonicodeMode(this.value);">
@@ -600,12 +608,40 @@
 	</div>
 
 	<div id="snippets-panel">
+		
+		
 		<div class="snippets-bg"></div>
 		<div id="snippets-content">
+			<div id="snippets-manager-holder" style="width:100%;height:100%;position:absolute;left:-100%;top:0;display:none;">
+			<iframe id="snippets-manager" src="" onload="snippetsManagerLoaded = true;" style="position:relative;left:15px;width:calc(100% - 15px);height:100%;border:none;"></iframe>
+			<!-- http://localhost:8888/p5live_snippets/ -->
+			<!-- https://ffd8.github.io/p5live-snippets/ -->
+			<script type="text/javascript">
+				window.addEventListener('message', e => {
+					const data = e.message || e.data
+					if(e.origin == "https://ffd8.github.io" || e.origin == "http://localhost:8888"){
+						if(data.msg == 'add'){
+							snippetsImportParse(data.snippet)							
+						}else if(data.msg == 'apply'){
+							snippetsApply(data.snippet.code, false)
+						}else if(data.msg == 'toggle'){
+							snippetsManagerToggle()
+							editor.focus()
+						}else if(data.msg == 'blur'){
+							document.getElementById('snippets-manager').blur()
+							// editor.focus()
+						}
+					}    
+				},false);
+
+			</script>
+		</div>
+
+
 			<div class="menu-section">
 				<div class="menu-section-bg"></div>
 				<div class="menu-header">
-					SNIPPETS 
+					SNIPPETS EDITOR
 					<div class="snippets-close tippy" data-title="Close Panel" onclick="snippetsToggle()">
 						X
 					</div>
@@ -619,6 +655,8 @@
 					
 					<button class="menu-button snippets-btn-all tippy" onclick="snippetsImportDialog()" data-title="Import Snippet"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-upload"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></button>
 					<input id="file-input-snippet" type="file" name="name" style="display: none;" multiple onchange="snippetsImport(this.files);" onclick="this.value=null;" />
+
+					<button class="menu-button snippets-btn-all tippy" onclick="snippetsManagerToggle()" data-title="Snippets Manager"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-database"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg></button>
 
 					<button id="snippets-btn-save" class="menu-button snippets-btn-demo tippy" onclick="snippetsSave()" data-title="Save Changes"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-save"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg></button>
 					
@@ -709,6 +747,7 @@ function println(msg){
 	<script src="includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/utils/ace.recoding.js?50"></script>
+	<script src="includes/utils/ace.ghost.js?50"></script>
 	<script src="includes/utils/ace-snippets.js?50"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.min.js"></script>
@@ -732,9 +771,10 @@ function println(msg){
 		'use strict'
 
 		/* INIT */
-		let currentVersion = '1.6.3';
-		let currentRevision = 53;
+		let currentVersion = '1.7.0';
+		let currentRevision = 54;
 		let developBranch = false;
+		let p5Version = 1 // default is 1.0+
 
 		// resetP5(); // manual reset
 
@@ -911,11 +951,16 @@ function println(msg){
 				
 			},
 			'sketches': [],
+			'snippetsghostmode': {
+				'active': false,
+				'delay': 15
+			},
 			'sonicode':{
 				'mode': 'sine',
 				'poly': 1,
 				'active': false,
-				'sonicodePoly': 0
+				'sonicodePoly': 0,
+				'base': 3
 			},
 			'statscount': 0,
 			'syncdata': {
@@ -1006,6 +1051,8 @@ function println(msg){
 		settingsKeybindings = document.getElementById('menu-settings-keybindings'),
 		settingsCompileTimer = document.getElementById('settings-compiletimer'),
 		settingsBackup = document.getElementById('menu-settings-backup'),
+		settingsSnippetsghostmodeToggle = document.getElementById('settings-snippetsghostmode-toggle'),
+		settingsSnippetsghostmodeDelay = document.getElementById('settings-snippetsghostmode-delay'),
 		settingsSoniCode = document.getElementById('settings-sonicode'),
 		settingsSoniCodeMode = document.getElementById('settings-sonicode-mode'),
 		settingsSoniCodePoly = document.getElementById('settings-sonicode-poly'),
@@ -1031,7 +1078,8 @@ function println(msg){
 		sketchLoaded = false, forceRecompile = false, loadingInit = false,
 		paused = false, multitabWarning = false, useRecompilePulse = true,
 		markerID = [], pulsemarkerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
-		snippets, cocode, editorId, p5frameTemplate, p5htmlTemplate, p5liveUtils = {},
+		cocode, editorId, p5frameTemplate, p5htmlTemplate, p5liveUtils = {},
+		snippets, snippetsManagerLoaded = false,
 		p5vars = {frameCount:0, pframeCount:0, mouseX:0, mouseY:0}, newBG = '',
 		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -1048,8 +1096,17 @@ function println(msg){
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
 		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
-		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto'}
+		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version}
 		;
+
+		function onlineStatus(){
+			if (navigator.onLine) {
+			  p5l.online = true
+			} else {
+			  p5l.online = false
+			}
+		}
+		onlineStatus()
 
 		// force off
 		settings.debugMode = false;
@@ -1059,7 +1116,10 @@ function println(msg){
 		let Document = ace.require("ace/document").Document
 		let langTools = ace.require('ace/ext/language_tools');
 		let snippetManager = ace.require("ace/snippets").snippetManager
+		let UndoManager = ace.require("ace/undomanager").UndoManager
+		let undoManager = new UndoManager();
 		var editor = ace.edit('p5-code');
+		var editorGhost = new AceGhost(editor)
 		editor.setTheme(settings.theme);
 		editor.session.setMode('ace/mode/javascript');
 		editor.session.on('changeMode', function(e, session) {
@@ -1071,6 +1131,7 @@ function println(msg){
 		        }
 		    }
 		})
+		// editor.getSession().setUndoManager(this.undoManager);
 
 		editor.setOptions({
 			showPrintMargin: false,
@@ -1085,9 +1146,54 @@ function println(msg){
 			enableSnippets: true
 		});
 
-		// function loadSnippetsManager(acOBJ){
-		snippetManager.register(aceSnippets)
-		// }
+		function loadSnippetsManager(){
+			// wild hackery to skip newly introduced 'rc' releases
+			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>{if(v.includes(`${p5l.version}.`) && !v.includes(`rc`)){return v}})[0]
+			aceSnippets.push({
+					"tabTrigger": "version",
+					"name": "version",
+					"content": `// p5 = '${p5l.currentVersion}'`
+				})
+			snippetManager.register(aceSnippets)
+		}
+
+		// ghostmode snippet
+		let snippetReg = /\${\d}|\${\w+:.}|\$(?:\d+|\w+)|\$\d|\${\d:.*}/g
+		snippetManager.expandSnippetForSelection = function(e, t) {
+            var n = e.getCursorPosition(), r = e.session.getLine(n.row), i = r.substring(0, n.column), s = r.substr(n.column), o = this.snippetMap, u;
+            return this.getActiveScopes(e).some(function(e) {
+                var t = o[e];
+                return t && (u = this.findMatchingSnippet(t, i, s)),
+                !!u
+            }, this),
+
+            // if ghost, grab start undostack
+            (settings.snippetsghostmode.active && u != undefined) ? editorGhost.getUndoStack() : '',
+
+            u ? t && t.dryRun ? !0 : (e.session.doc.removeInLine(n.row, n.column - u.replaceBefore.length, n.column + u.replaceAfter.length),
+            this.variables.M__ = u.matchBefore,
+            this.variables.T__ = u.matchAfter,
+
+            // toggle ghost/instant
+            settings.snippetsghostmode.active ? setTimeout(()=>{
+            	// console.log('ace-snippet-ghost')
+            	// *** prevent hardCompile on replace... solved?
+            	editorGhost.animateText(u.content.replace(/\${\d}/, '/*$*/').replace(snippetReg, ''), 0, ()=>{
+		            setTimeout(()=>{
+		            	var range = editor.find('/*$*/')
+		            	editor.replace('')
+		            	if(!settings.cocoding.active){
+							localStorage[settings.fileName] = editor.getValue();
+						}
+		            }, 1)	
+	       		})
+            }):setTimeout(()=>{
+            	// console.log('ace-snippet-instant')
+            	this.insertSnippetForSelection(e, u.content)
+            }),
+            this.variables.M__ = this.variables.T__ = null,
+            !0) : !1
+        }
 
 		function getEditor(){
 			return editor.getValue()
@@ -1143,7 +1249,7 @@ function println(msg){
 
 
 		// RECODING
-		recoding = new Recoding(editor, editor)
+		recoding = new AceRecoding(editor, editor)
 		recoding.elms = {
 			steps: document.getElementById('menu-recoding-steps'),
 			range: document.getElementById('recoding-range'),
@@ -1435,14 +1541,17 @@ function println(msg){
 
 		let includeScripts = {
 			p5:{
-				'local':'includes/p5/p5.min.js',
-				'remote':'https://cdn.jsdelivr.net/npm/p5@latest/lib/p5.min.js'
+				'local':p5l.version == 2 ? 'includes/p5/p5.min-2.js' :'includes/p5/p5.min.js',
+				'remote':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js' : 'https://cdn.jsdelivr.net/npm/p5@1/lib/p5.min.js',
+				'parts': {base: 'https://cdn.jsdelivr.net/npm/p5@', file: '/lib/p5.min.js'}
 			},
 			p5sound:{
-				'local':'includes/p5/addons/p5.sound.min.js',
-				'remote':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js' // *** temp fix for safari!
+				'local':p5l.version == 2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'includes/p5/addons/p5.sound.min.js',
+				'remote':p5l.version == 2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js', // *** temp fix for safari!
 			}
 		};
+		includeScripts.p5sound.path = includeScripts.p5sound.remote
+
 
 		// testing q5xjs
 		// includeScripts = [
@@ -1620,7 +1729,7 @@ function println(msg){
 					if(ev.mode == 'keyboard'){
 						copy = new KeyboardEvent(ev.type, ev.options);
 					}else if(ev.mode == 'mouse'){
-						copy = new MouseEvent(ev.type, ev.options);
+						copy = new PointerEvent(ev.type, ev.options);
 					}
 					p5f.dispatchEvent(copy);
 					p5f.frameCount = ev.fc;
@@ -2294,7 +2403,6 @@ function println(msg){
 			curPos = delta.start;
 			curPositions.push(delta.start);
 			checkErrors();
-
 		});
 
 		// check for errors
@@ -2506,7 +2614,7 @@ function println(msg){
 			'keep_array_indentation': false,
 			'break_chained_methods': false,
 			'indent_scripts': 'normal',
-			'brace_style': 'collapse',
+			'brace_style': 'none,preserve-inline',
 			'space_before_conditional': false,
 			'unescape_strings': false,
 			'jslint_happy': false,
@@ -2654,6 +2762,7 @@ function println(msg){
 			// .then(res => res.text())
 			// .then(acOBJ => loadSnippetsManager(JSON.parse(acOBJ)))
 
+
 			// load autocomplete p5
 			.then(() => {
 				let acPath = 'includes/utils/p5_autocomplete.json?' + currentRevision;
@@ -2688,6 +2797,21 @@ function println(msg){
 				loadSettings()
 				// *** future tour
 			})
+
+			
+			// grab p5 versions
+			let p5VersionPath = p5l.online ? 'https://data.jsdelivr.com/v1/packages/gh/processing/p5.js' : 'includes/p5/p5-versions.json'
+			fetch(p5VersionPath).then(res => res.json())
+			.then(jsonObj => {
+				includeScripts.p5.versions = []
+				for(let v of jsonObj.versions){
+					includeScripts.p5.versions.push(v.version)
+				}
+				loadSnippetsManager()
+			})
+			.catch((error) => {
+			  console.log(`P5LIVE: Error fetching p5-versions`)
+			});
 		}
 
 
@@ -2781,6 +2905,7 @@ function println(msg){
 				updateSettings();
 			}
 
+
 			// check version
 			let versionHTML = `
 			<span class="tippy" data-title="Latest version">${settings.version}</span>
@@ -2837,6 +2962,8 @@ function println(msg){
 			themeBGactiveToggleUpdate();
 			themeCOLORactiveToggleUpdate();
 			themeACTIVEactiveToggleUpdate();
+			snippetsghostmodeToggleUpdate();
+			snippetsghostmodeDelayUpdate();
 			sonicodeToggleUpdate();
 			loadColorPicker('#pickr-background', 'themeBG')
 			loadColorPicker('#pickr-color', 'themeCOLOR')
@@ -3497,6 +3624,7 @@ function println(msg){
 			let filterItems = menuSketches.getElementsByClassName('drag-item');
 
 			// remove empty while adding another word
+			// https://stackoverflow.com/a/19888749/10885535
 			filter = filter.filter(Boolean);
 
 			// remove filter from all
@@ -3943,7 +4071,7 @@ function println(msg){
 
 		window.addEventListener('beforeunload', function (e) {
 			if(!settings.cocoding.active && !cocodingUnload){ // ignore if toggling COCODING
-			    e.preventDefault();
+			    // e.preventDefault();
 			    let freq = settings.backup.frequency;
 			    let lastBackup = settings.backup.last;
 
@@ -3987,17 +4115,26 @@ function println(msg){
 				}else{
 					tempSketches.browser = ''
 				}
-				let tempPath = '/backup';
-				let request = new XMLHttpRequest();
-				request.open('POST', tempPath, true);
-				request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-				request.send(JSON.stringify(tempSketches));
+				serverMsg('/backup', tempSketches)
 			}else{
 				exportJSON(tempSketches.sketches, 'P5L_BACKUP' + tempSketches.timestamp + '.json');
 			}
 
 			settings.backup.last = new Date().getTime();
 			updateSettings();
+		}
+
+		function serverMsg(path, data, cb){
+			let tempPath = path
+			let request = new XMLHttpRequest()
+			request.open('POST', tempPath, true)
+			request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
+			request.onreadystatechange = () => {
+				if (request.readyState === 4) {
+					cb(request.response);
+				}
+			}
+			request.send(JSON.stringify(data))
 		}
 
 		// https://gist.github.com/lyquix-owner/34a3ed98b990c3c61151d30de2f42702
@@ -4631,7 +4768,6 @@ function println(msg){
 							importData += '<div id="importdump">';
 							importData += recursiveImportWarning(jsonStructure, '', '');
 							importData += '</div>';
-							// *** add checkbox to ignore duplicates on import...
 
 							hideLoader();
 							// first confirm importing of whole structure/sketches
@@ -5366,7 +5502,7 @@ function println(msg){
 					}
 
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more tippy" '+tippyDate+'>'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a style="display:none;" class="menu-sketch-button tippy" onclick="lockItem(\''+elmID+'\')" data-title="Lock">'+icon.lock+'</a><a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more tippy" '+tippyDate+'>'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
@@ -5411,7 +5547,8 @@ function println(msg){
 					value: newID, // placeholder
 					callback: function (value) {
 						if(value){
-							addFolderProcess(value, folderName);
+							let cleanValue = versionCheck(value)
+							addFolderProcess(cleanValue, folderName);
 						}
 					},
 					afterOpen: function(){
@@ -5700,7 +5837,7 @@ function println(msg){
 
 		p5code.onkeyup = function(event) {
 			keyMap[event.keyCode] = event.type == 'keydown';
-			if(!settings.cocoding.active){
+			if(!settings.cocoding.active){ // *** lockable
 				localStorage[settings.fileName] = editor.getValue();
 			}
 		};
@@ -6016,11 +6153,18 @@ function println(msg){
 					}
 				}
 			}
+			// clear empties
+			scriptsList = scriptsList.filter(Boolean)
 			return scriptsList;
 		}
 
-		function processModule(code){
-			
+		function processImports(code){
+			let sketchFlat = code.replace(/(?:\r\n|\r|\n|\t)/g, '');
+			let sketchImportMap = sketchFlat.match(/imports\s*=\s*({[\s\S]*?})/);
+			if(sketchImportMap != null){
+				sketchImportMap = JSON.parse(sketchImportMap[1]);
+			}
+			return sketchImportMap
 		}
 
 		function hydraBlock(){
@@ -6059,10 +6203,10 @@ function println(msg){
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
 			useP5 = true
 			useP5Sound = true
-			if(editor.getValue().match(/(\/\/).no p5$/gm)){
+			if(editor.getValue().match(/(\/\/)\s*no\s*p5$/gm) || !removeComments(editor.getValue()).match(/setup\s*\(\)/gs)){
 				useP5 = false;
 			}
-			if(editor.getValue().match(/(\/\/).*(no.*p5sound$)/gm)){
+			if(editor.getValue().match(/(\/\/)\s*(no\s*p5sound$)/gm)){
 				useP5Sound = false;
 			}
 
@@ -6108,11 +6252,12 @@ function println(msg){
 
 				// sandbox
 				let sandboxMatch = editor.getValue().match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n*/ism);
+
 				if(sandboxMatch !== null){
 					var currline = editor.getSelectionRange().start.row;
 					var currCode = editor.session.getLine(currline);
 					var sandboxParts = sandboxMatch[0].split('\n');
-					if(sandboxParts.indexOf(currCode) > -1){
+					if(sandboxParts.indexOf(currCode) > -1 && currCode.trim() != ''){
 
 						let hb = hydraBlock();
 						
@@ -6124,6 +6269,9 @@ function println(msg){
 
 						p5f.eval(hb.block)
 						recompilePulse(hb.start, hb.end)
+						if(recoding.recording){
+							recoding.compile()
+						}
 						
 						if(p5popCode){
 							p5popCode.recompilePulse(hb.start, hb.end)
@@ -6238,8 +6386,7 @@ function println(msg){
 
 			let scriptsCol = [];
 
-			// load scripts remote vs local
-			
+			// load p5/p5sound scripts remote vs local
 			for (const iScript in includeScripts) {
 				//no p5
 				if(!useP5){
@@ -6251,11 +6398,83 @@ function println(msg){
 					if(iScript == 'p5sound') continue;
 				}
 
-				if(p5l.remote){
-					scriptsCol.push(includeScripts[iScript].remote);
+
+				// check p5Version
+				let p5versionCheck = editor.getValue().match(/(?:\/\/\s*p5\s*=.*)/gi)
+				if(iScript == 'p5'){
+					if(p5versionCheck){
+
+
+						// grab version
+						let p5versionRequest = p5versionCheck[0].match(/(?<=(["'`]\b))(?:(?=(\\?))\2.)*?(?=\1)/gi)
+
+						// if version found
+						if(p5versionRequest){
+							p5l.version = parseFloat(p5versionRequest)
+							
+							if(p5l.remote){
+								// if online, grab directly from CDN
+								let parts = includeScripts.p5.parts
+								includeScripts.p5.path = parts.base + p5versionRequest + parts.file
+								scriptsCol.push(includeScripts.p5.path);
+							}else{
+								// if offline, attempt local load
+								let p5VersionLocal = `includes/p5/versions/${p5versionRequest}.js`
+								let parts = includeScripts.p5.parts
+								includeScripts.p5.path = parts.base + p5versionRequest + parts.file
+
+								const request = new XMLHttpRequest();
+								request.open("GET", p5VersionLocal, false); // `false` makes the request synchronous
+
+								request.send(null);
+
+								if (request.status === 200) {
+									// found locally, load
+						    		scriptsCol.push(p5VersionLocal);
+								}else{
+									// not found, download to offline versions
+								  	// console.log('not found: ' + p5VersionLocal)
+									// console.log(includeScripts.p5.path)
+									
+									onlineStatus()
+									if(p5l.online){
+										// if(includeScripts.p5.versions.includes(p5versionRequest)){
+											try{
+												serverMsg('/version', {version:p5versionRequest, path:includeScripts.p5.path}, (res)=>{recompile()})
+											}catch(e){
+												console.log(error)
+											}
+											return false
+										// }
+									}else{
+										console.log('P5LIVE: failed to find/download requested p5 version')
+										scriptsCol.push(includeScripts.p5.local);
+									}
+								}
+							}
+							
+						}else{
+							scriptsCol.push(includeScripts[iScript].remote);
+						}
+					}else{
+						if(p5l.remote){
+							scriptsCol.push(includeScripts[iScript].remote);
+						}else{
+							scriptsCol.push(includeScripts[iScript].local);
+						}
+					}
 				}else{
-					scriptsCol.push(includeScripts[iScript].local);
+					if(p5l.version < 2){
+						if(p5l.remote){
+							scriptsCol.push(includeScripts[iScript].remote);
+						}else{
+							scriptsCol.push(includeScripts[iScript].local);
+						}
+					}
+					
 				}
+
+				
 			}
 			// for(let i=0; i < includeScripts.length; i++){
 			// 	if(p5l.remote){
@@ -6271,7 +6490,7 @@ function println(msg){
 				s.type = 'text/javascript';
 				s.src = sc;
 				// s.async = false;
-				iFrameHead.appendChild(s); // **** BIG change to body from head.. test?!
+				iFrameHead.appendChild(s); // loading p5 lib in head
 			}
 
 			scriptsCol = []
@@ -6287,9 +6506,28 @@ function println(msg){
 				s.type = 'text/javascript';
 				s.src = sc;
 				// s.async = false;
-				iFrameBody.appendChild(s); // **** BIG change to body from head.. test?!
+				iFrameBody.appendChild(s); // extra libs in body
 			}
 
+			var importMap = processImports(codeNoComments)
+			if(importMap != null){
+				console.log(importMap)
+				let s = document.createElement('script')
+				s.type = 'importmap'
+				s.innerHTML = `{\n"imports":${JSON.stringify(importMap)}\n}`
+				iFrameBody.appendChild(s);
+
+				let m = document.createElement('script')
+				m.type = 'module'
+				m.innerHTML = ``
+				for (const [key, value] of Object.entries(importMap)) {
+				    // resultArray.push(key, value);
+				    m.innerHTML += `import '${key}';\n`
+				    // m.innerHTML += `window['${key}'] = ${key}\n`
+				}
+				iFrameBody.appendChild(m);
+				console.log(m)
+			}
 
 
 			// load sketch
@@ -6309,21 +6547,31 @@ function println(msg){
 			}
 
 			// console.log(sketchCode);
-			let updateVars = '\npmouseX=' + p5vars.mouseX + ';\npmouseY=' + p5vars.mouseY + ';\nmouseX=' + p5vars.mouseX + ';\nmouseY=' + p5vars.mouseY + ';\nframeCount=' + p5vars.frameCount + ';\n';
+			let updateVars = '\n\tif(typeof myP5 == "object"){\n\t\tpmouseX=' + p5vars.mouseX + ';\n\t\tpmouseY=' + p5vars.mouseY + ';\n\t\tmouseX=' + p5vars.mouseX + ';\n\t\tmouseY=' + p5vars.mouseY + ';\n\t\tframeCount=' + p5vars.frameCount + ';\n\t}\n';
+			
+			// ** hack for v2 p5...
+			if(p5l.version >= 2){
+				updateVars = '\n\tif(typeof myP5 == "object"){\n\t\tmyP5.pmouseX=' + p5vars.mouseX + ';\n\t\tmyP5.pmouseY=' + p5vars.mouseY + ';\n\t\tmyP5.mouseX=' + p5vars.mouseX + ';\n\t\tmyP5.mouseY=' + p5vars.mouseY + ';\n\t\tmyP5.frameCount=' + p5vars.frameCount + ';\n\t}\n';	
+			}
+			
+
 			let codeSetup = sketchCode + updateVars;
 			let fullCode = p5custom.value + codeSetup;
 			if(useP5){
 				codeSetup = addCode(sketchCode, updateVars, 'setup', 'bottom');
-				fullCode = p5custom.value + codeSetup + '\nnew p5(); sketchStatus();';
+				fullCode = p5custom.value + codeSetup + '\n\nvar myP5 = new p5(); sketchStatus();';
 			}else{
+				fullCode = sketchCode
 				setTimeout(popStream, 500)
 			}
+			// console.log(fullCode) // debug all
 			// let fullCode = p5custom.value + codeSetup + '\nnew p5(); sketchStatus();';
 
 			// *** disabling loadjs route.. failed is missing file.. (needed for remote/local lib loading)
 			// let sLoader = 'loadjs(' + JSON.stringify(scriptsCol) + ', {success: function() {pingReady("p5Main", ' + JSON.stringify(fullCode) + '); },error: function(pathsNotFound) {console.log(pathsNotFound);},async: false});';
 
 			// s.innerHTML = sLoader;
+			// console.log(fullCode)
 			s.innerHTML = fullCode; // *** old (better?) way
 
 			if(settings.syncdata.active){
@@ -6448,15 +6696,19 @@ function println(msg){
 		}
 
 		function tidyCode(aceEdit){
-			let tempPos = editor.getCursorPosition();
+			let tempPos = aceEdit.getCursorPosition();
 			let tempCode = js_beautify(aceEdit.getValue(), beautifyOptions);
 			aceEdit.setValue(tempCode, 1);
 			aceEdit.gotoLine(tempPos.row+1, tempPos.column, false);
+			aceEdit.focus()
 		}
 
 
 
 		/* SNIPPETS */
+
+		
+		// add for ace snippets: https://github.com/ajaxorg/ace/blob/v1.42.0/src/snippets.js#L1086
 
 		function snippetsToggle(hide){
 			let snippetsPanel = document.getElementById('snippets-panel')
@@ -6470,6 +6722,24 @@ function println(msg){
 			}
 			snippetsForm(snip.current)
 			// snippetsForm('demo-audio')
+		}
+
+		function snippetsManagerInit(){
+			snippetsManagerLoaded = true
+		}
+
+		function snippetsManagerToggle(hide){
+			let snippetsManagerHolder = document.getElementById('snippets-manager-holder')
+			let snippetsManager = document.getElementById('snippets-manager')
+			if(snippetsManagerHolder.style.display == 'block' || hide){
+				snippetsManagerHolder.style.display = 'none'
+			}else{
+				snippetsManagerHolder.style.display = 'block'
+				if(!snippetsManagerLoaded){
+					snippetsManager.src = 'http://localhost:8888/p5live_snippets/?' +11//+ settings.revision	
+					// snippetsManager.src = 'https://ffd8.github.io/p5live-snippets/?' + settings.revision	
+				}
+			}
 		}
 
 		function snippetsPosition(){
@@ -6505,16 +6775,54 @@ function println(msg){
 					snip.selectApply.focus()
 				}
 		}
-		function snippetsApply(){
-			let snippet = snip.current
-			// console.log(snippet)
-			let snippetBase = 'user'
-			if(snippet.substring(0, 5) == 'demo-'){
-				snippetBase = 'demo'
+
+		function snippetsApply(snippetCode = null, closeSnippets = true){
+			let curSnippet = snippetApplyPrep(snippetCode)
+			let tempSnippet = cloneJSON(curSnippet)
+
+			let checkLibs = processLibs(tempSnippet.gt)
+			let hasLibs = editor.getValue().match(/(?=var|let|const).*(?=loadScripts|libs|scripts).*?(\])/gs)
+			if(checkLibs.length > 0 && hasLibs != null){
+				tempSnippet.libs = checkLibs
+				// strip libs from code, add to object, add to libs on apply
+				tempSnippet.gt = tempSnippet.gt.replace(/(?=var|let|const).*(?=loadScripts|libs|scripts).*?(\])/gs, '')
 			}
-			let snippetName = snippet.substring(5, snippet.length)
-			if(settings.snippets[snippetBase].hasOwnProperty(snippetName)){
-				let snippetCode = settings.snippets[snippetBase][snippetName];
+			// console.log(curSnippet)
+
+
+			if(settings.snippetsghostmode.active){
+				snippetApplyGhost(tempSnippet)
+			}else{
+				snippetsApplyInstant(tempSnippet)
+			}
+
+			if(closeSnippets){				
+				snippetsToggle(true)
+				snippetsApplyToggle(true)
+			}
+		}
+
+		function snippetApplyPrep(snippetCode = null){
+			if(snippetCode == null){
+				let snippet = snip.current
+				// console.log(snippet)
+				let snippetBase = 'user'
+				if(snippet.substring(0, 5) == 'demo-'){
+					snippetBase = 'demo'
+				}
+				let snippetName = snippet.substring(5, snippet.length)
+				if(settings.snippets[snippetBase].hasOwnProperty(snippetName)){
+					return settings.snippets[snippetBase][snippetName];
+				}else{
+					return false
+				}
+			}else{
+				return snippetCode
+			}
+			
+		}
+		
+		function snippetsApplyInstant(snippetCode){
 				let addGlobalTop = snippetCode.gt;
 				let addGlobalBottom = snippetCode.gb;
 				let addSetup = snippetCode.s;
@@ -6524,6 +6832,16 @@ function println(msg){
 				let curCode = editor.getValue();
 				let curPos = editor.getCursorPosition()
 				let curLineText = editor.session.getLine(curPos.row);
+
+				// process found libs
+				// console.log(snippetCode)
+				if(snippetCode.hasOwnProperty('libs')){
+					let curLibs = curCode.match(/(?=var|let|const).*(?=loadScripts|libs|scripts).*?(\])/gs)[0]
+
+					// https://stackoverflow.com/a/47939877/10885535
+					let newLibs = curLibs.slice(0, -1) + snippetCode.libs.map(lib => `,\n'${lib}'`).join('') + ',' + curLibs.slice(-1)
+					curCode = curCode.replace(curLibs, `\n${newLibs}\n`)
+				}
 
 				let codeGlobalTop = addGlobalTop + '\n' + curCode;
 				let codeSetup = addCode(codeGlobalTop, addSetup, 'setup', 'bottom');
@@ -6546,11 +6864,24 @@ function println(msg){
 					editor.moveCursorTo(curRow, curPos.column);
 					editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
 				}
-
-			}
-			snippetsToggle(true)
-			snippetsApplyToggle(true)
 		}
+
+		function snippetApplyGhost(snippetCode){
+			let curCode = editor.getValue();
+			let curPos = editor.getCursorPosition()
+			let curLineText = editor.session.getLine(curPos.row);
+
+			editorGhost.snippetsApply(snippetCode)				
+
+			// return cursor to previous position (** fix if blank line)
+			let curLines = editor.getValue().split('\n')
+			if(curLineText != ''){
+				let curRow = curLines.indexOf(curLineText)
+				editor.moveCursorTo(curRow, curPos.column);
+				editor.renderer.scrollCursorIntoView({row: curRow, column: curPos.column}, 0.5);
+			}
+		}
+
 
 		let snip = {
 			sections : ['gt', 's', 'dt', 'db', 'gb'],
@@ -6690,33 +7021,45 @@ function println(msg){
 			for(let i=0; i < data.length; i++){
 				let reader = new FileReader()
 				reader.onload = function(data) {
-					let tSnippet = JSON.parse(data.target.result);
-					snippetsImportParse(tSnippet)
+					// console.log(data)
+					let tSnippet
+					
+					try{
+						tSnippet = JSON.parse(data.target.result);
+						
+						if(tSnippet.hasOwnProperty('doctype') && tSnippet.doctype == 'P5L_SNIPPET'){
+							snippetsImportParse(tSnippet)
+						}else{
+							vex.dialog.alert({
+								message:'Oops, select a P5L_SNIPPET file.'
+							})
+						}
+					}catch(e){
+						// console.log(e)
+						vex.dialog.alert({
+							message:'Oops, select a P5L_SNIPPET file.'
+						})
+					}
+					
 				}
 				reader.readAsText(data[i])
 			}
 		}
 
 		function snippetsImportParse(tSnippet){
-			if(tSnippet.hasOwnProperty('doctype') && tSnippet.doctype == 'P5L_SNIPPET'){
-				let newName = tSnippet.name.replace(/["']/g, '')
-				let nameDup = false
-				if(settings.snippets.user.hasOwnProperty(newName)){
-					newName += `_${Math.floor(Math.random()*9999)}`
-					nameDup = true
-				}
+			let newName = tSnippet.name.replace(/["']/g, '')
+			let nameDup = false
+			if(settings.snippets.user.hasOwnProperty(newName)){
+				newName += `_${Math.floor(Math.random()*9999)}`
+				nameDup = true
+			}
 
-				settings.snippets.user[newName] = tSnippet.code
-				updateSettings()
-				snippetsSelect(newName)
-				snippetsForm(`user-${newName}`)
-				if(nameDup){
-					snippetsUpdate('import')
-				}
-			}else{
-				vex.dialog.alert({
-					message:'Oops, select a P5L_SNIPPET file.'
-				})
+			settings.snippets.user[newName] = tSnippet.code
+			updateSettings()
+			snippetsSelect(newName)
+			snippetsForm(`user-${newName}`)
+			if(nameDup){
+				snippetsUpdate('import')
 			}
 		}
 
@@ -7233,6 +7576,28 @@ function println(msg){
 			editor.renderer.updateFull();
 		}
 
+		function snippetsghostmodeToggle(){
+			settings.snippetsghostmode.active = !settings.snippetsghostmode.active;
+			snippetsghostmodeToggleUpdate();
+		}
+
+		function snippetsghostmodeToggleUpdate(){
+			checkToggle('snippetsghostmode.active', settings.snippetsghostmode.active, settingsSnippetsghostmodeToggle, 'Snippets GhostMode');
+		}
+
+		function snippetsghostmodeDelay(newVal){
+			settings.snippetsghostmode.delay = parseFloat(newVal);
+			updateSettings();
+			snippetsghostmodeDelayUpdate();
+		}
+
+		function snippetsghostmodeDelayUpdate(){
+			if(settingsSnippetsghostmodeDelay !== document.activeElement){
+				settingsSnippetsghostmodeDelay.value = parseFloat(settings.snippetsghostmode.delay)
+			}
+			editorGhost.delay = settings.snippetsghostmode.delay
+		}
+
 		function sonicodeToggle(){
 			settings.sonicode.active = !settings.sonicode.active;
 			sonicodeToggleUpdate();
@@ -7272,6 +7637,7 @@ function println(msg){
 
 				editor.on('change', sonicodeParse);
 				if(!sonicode.p5livePolySynthLoaded){
+					console.log('loading sonicode')
 					sonicodeSetup()
 				}
 			}else{
@@ -7803,10 +8169,10 @@ function println(msg){
 			// load p5 remote
 			for (const iScript in includeScripts) {
 				// no p5.sound
-				if(curCode.match(/(\/\/).*(no.*p5.*sound)/g)){
+				if(curCode.match(/(\/\/).*(no.*p5.*sound)/g) || p5l.version >= 2){ // *** temp disable sound w/ v2
 					if(iScript == 'p5sound') continue;
 				}
-				scriptsCol.push(includeScripts[iScript].remote);
+				scriptsCol.push(includeScripts[iScript].path);
 			}
 
 			// check loadScripts / libs / scripts;
@@ -8334,21 +8700,19 @@ function println(msg){
 		// get mouse clicks on top
 		// initially inspired from here:
 		// https://stackoverflow.com/a/44143731/10885535
-		window.addEventListener('mousemove', passMouseClick);
-		window.addEventListener('mouseup', passMouseClick);
-		window.addEventListener('mousedown', passMouseClick);
+		
+		let pointerEvents = ['mousemove', 'mouseup', 'mousedown', 'pointerdown', 'pointerup', 'pointermove', 'dragend', 'dragover', 'click', 'dblclick', 'wheel']
 
+		for(let p of pointerEvents){
+			window.addEventListener(p, passPointer);
+		}
 
-		let pass = false;
-		function passMouse(event){
-			pass = !pass;
-			if (pass) {
-				processMouse(event);
+		function passPointer(event, src = 'parent'){
+			if((p5l.version >= 2 && event.type.includes('mouse')) || (p5l.version < 2 && event.type.includes('pointer'))){
+				return
 			}
-		};
-
-		function passMouseClick(event){
 			processMouse(event);
+			// console.log([src, event.type]);
 		};
 
 		let mouseFields = ['altKey', 'clientX', 'clientY', 'composed', 'ctrlKey', 'isTrusted', 'layerX', 'layerY', 'metaKey', 'movementX', 'movementY', 'offsetX', 'offsetY', 'pageX', 'pageY', 'screenX', 'screenY', 'shiftKey', 'x', 'y', 'button', 'buttons', 'relatedTarget', 'region'];
@@ -8365,7 +8729,7 @@ function println(msg){
 
 		function processMouse(event){
 			let opts = getOpts(event, mouseFields);
-			let copy = new MouseEvent(event.type, event);
+			let copy = new PointerEvent(event.type, event);
 			if(settings.cocoding.active && settings.cocoding.sync){
 				if(settings.cocoding.level == 'admin'){
 					if(p5editor.style.visibility == 'visible'){
@@ -8885,6 +9249,7 @@ function println(msg){
 			settings.statscount++;
 			updateSettings();
 			let txtMsg = 'P5LIVE<span class="counters">Stats</span><br><br><hr><br>';
+			txtMsg += settings.statscount.toLocaleString()+'<span class="counters"> Stats Viewed</span><br>';
 			txtMsg += document.querySelectorAll('.item-folder:not(.demo)').length.toLocaleString()+'<span class="counters">Folders</span><br>';
 			txtMsg += document.querySelectorAll('.item-sketch:not(.demo)').length.toLocaleString()+'<span class="counters">Sketches</span><br>';
 
@@ -8911,7 +9276,7 @@ function println(msg){
 			txtMsg += totalLines.toLocaleString()+'<span class="counters">Lines</span><br>';
 			txtMsg += sketchStats.short.count.toLocaleString()+'<span class="counters">Shortest ('+sketchStats.short.name+')</span><br>';
 			txtMsg += sketchStats.long.count.toLocaleString()+'<span class="counters">Longest ('+sketchStats.long.name+')</span><br>';
-			txtMsg += settings.statscount.toLocaleString()+'<span class="counters">Viewed Stats...</span><br>';
+			txtMsg += (totalChars/1000000).toLocaleString()+' / 5.0<span class="counters">Mb (localStorage limit)</span><br>';
 			alertMsg(txtMsg);
 		}
 

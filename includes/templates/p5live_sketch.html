@@ -28,8 +28,8 @@
 		}
 	</style>
 	<script src="includes/js/loadjs.min.js"></script>
-	<script src="includes/utils/p5live-audio.js?2"></script>
-	<script src="includes/utils/p5live-midi.js?2"></script>
+	<script src="includes/utils/p5live-audio.js?3"></script>
+	<script src="includes/utils/p5live-midi.js?3"></script>
 
 	<script type="text/javascript">
 		var p5p = parent.document;
@@ -114,33 +114,48 @@
 		document.onkeydown = function(event){
 			// on CONTROL, return focus and activate CONTROL
 			if(event.keyCode == 17){
-				window.parent.focus();
-				window.setTimeout(function(){window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));}, 100);
+				window.setTimeout(function(){
+					window.parent.focus();
+					window.parent.dispatchEvent(new KeyboardEvent('keydown',{'keyCode':17}));
+					// console.log('CTRL DOWN')
+					window.setTimeout(function(){
+						window.parent.dispatchEvent(new KeyboardEvent('keyup',{'keyCode':17}));
+						// console.log('CTRL UP')
+					}, 100);
+				}, 0);
 			}
 		}
+
+		// document.onkeyup = function(event){
+		// 	if(event.keyCode == 17){
+		// 		window.parent.focus();
+		// 		window.setTimeout(function(){
+		// 			window.parent.dispatchEvent(new KeyboardEvent('keyup',{'keyCode':17}));
+		// 			console.log('CTRL UP')
+		// 		}, 0);
+		// 	}
+		// }
 
 		// test if focus lost
 		window.onfocus = function() {
 		  // console.log('stole lost!');
-			if(window.p5 !== undefined){
+			if(typeof window.p5 == "object"){
 				loop();
-				// noCursor = function(){
-				// 	document.body.style.cursor = 'none'
-				// }
 			}
 		};
 
-		// forward mouse/key events to parent
-		document.addEventListener('mousemove', forwardMouse);
-		document.addEventListener('mouseup', forwardMouse);
-		document.addEventListener('mousedown', forwardMouse);
+		let pointerEvents = ['mousemove', 'mouseup', 'mousedown', 'pointerdown', 'pointerup', 'pointermove', 'dragend', 'dragover', 'click', 'dblclick', 'wheel']
 
-		function forwardMouse(event){
-			window.parent.passMouseClick(event);
+		for(let p of pointerEvents){
+			document.addEventListener(p, forwardMouse);
 		}
 
-		document.addEventListener('keydown', forwardKey);
-		document.addEventListener('keyup', forwardKey);
+		function forwardMouse(event){
+			// window.parent.passPointer(event, 'sketch');
+		}
+
+		// document.addEventListener('keydown', forwardKey);
+		// document.addEventListener('keyup', forwardKey);
 
 		function forwardKey(event){
 			window.parent.sendKey(event);
@@ -183,6 +198,13 @@
 
 		p5live.recompile = function(){
 			return parent.recompile(true)
+		}
+
+		// check/add if saveHTML?
+		p5live.fullCanvas = function(autoHeight = false){
+			let style = document.createElement('style');
+			style.innerText  = `canvas{width:100vw !important; height:${autoHeight ? 'auto':'100vh'} !important;object-fit: container;image-rendering: pixelated;}`;
+			document.body.appendChild(style);
 		}
 
 	</script>
