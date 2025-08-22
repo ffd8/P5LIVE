@@ -1,11 +1,11 @@
 /* 
-	XYscope.js v0.4.3
+	XYscope.js v0.4.4
 	cc teddavis.org 2025
 */
 
 window.XYscope = class XYscopeJS {
 	constructor(p, xyAC = null, opts = null) {
-		this.version = '0.4.3'
+		this.version = '0.4.4'
 		this.id = Math.floor(Math.random() * 9999)
 		this.p = p // reference to the p5 instance
 
@@ -2139,14 +2139,17 @@ registerProcessor('xyscope-processor-${this.id}', class VectorProcessor extends 
 	}
 
 	textParse(s, x, y) {
-		x += 5 * this.hfactor
+		x += 12 * this.hfactor
 
 		switch (this.textAlignX) {
+			case this.p.LEFT:
+				x -= 5 * this.hfactor
+				break
 			case this.p.CENTER:
 				x -= this.textWidth(s) / 2
 				break
 			case this.p.RIGHT:
-				x -= this.textWidth(s)
+				x -= this.textWidth(s) - 5 * this.hfactor
 				break
 		}
 
@@ -2225,14 +2228,17 @@ registerProcessor('xyscope-processor-${this.id}', class VectorProcessor extends 
 	}
 
 	textPathsParse(s, x, y, coords) {
-		x += 5 * this.hfactor
+		x += 12 * this.hfactor
 
 		switch (this.textAlignX) {
+			case this.p.LEFT:
+				x -= 5 * this.hfactor
+				break
 			case this.p.CENTER:
 				x -= this.textWidth(s) / 2
 				break
 			case this.p.RIGHT:
-				x -= this.textWidth(s)
+				x -= this.textWidth(s) - 5 * this.hfactor
 				break
 		}
 

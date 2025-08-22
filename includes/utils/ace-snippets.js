@@ -144,7 +144,7 @@ noize = noise
 	"content": 
 	`// sandbox - start
 \${1}
-// sandbox - end`
+// sandbox - stop`
 },
 {
 	"tabTrigger": "hy5",
