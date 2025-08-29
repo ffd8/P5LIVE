@@ -1096,7 +1096,8 @@ function println(msg){
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
 		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
-		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version}
+		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version},
+		strudel = {init:false, frame:null}
 		;
 
 		function onlineStatus(){
@@ -6167,7 +6168,7 @@ function println(msg){
 			return sketchImportMap
 		}
 
-		function hydraBlock(){
+		function hydraBlock(replaceWord){
 			let rawLines = editor.session.getLines(0, editor.session.getLength());
 			let currline = editor.getSelectionRange().start.row;
 			let currCode = editor.session.getLine(currline);
@@ -6192,23 +6193,85 @@ function println(msg){
 				hb.end++
 				i++
 			}
-
-			hb.block.replaceAll(/\/\/ sandbox.*/g, '')
-
+			let ra = new RegExp(String.raw`\/\/ ${replaceWord}.*`, "g");
+			hb.block = hb.block.replaceAll(ra, '')
+			// hb.block.replaceAll(/\/\/ sandbox.*/g, '')
+			// console.log(hb.block.replaceAll(ra, ''))
 			return hb;
+		}
+
+		function initStrudel(){
+			let s = document.createElement('iframe')
+			s.id = 'strudel-frame'
+			s.style = 'border:none;background:red;'
+			s.srcdoc = `
+				<!DOCTYPE html>
+				<html>
+				<head>
+					<script src="https://unpkg.com/@strudel/web@1.2.3"><\/script>
+				</head>
+				<body>
+					<script>
+						async function loadSamples() {
+						  const ds = "https://raw.githubusercontent.com/felixroos/dough-samples/main/";
+						  return Promise.all([
+						    samples(\`\${ds}/tidal-drum-machines.json\`),
+						    samples(\`\${ds}/piano.json\`),
+						    samples(\`\${ds}/Dirt-Samples.json\`),
+						    samples(\`\${ds}/EmuSP12.json\`),
+						    samples(\`\${ds}/vcsl.json\`),
+						    samples(\`\${ds}/mridangam.json\`),
+						  ]);
+						}
+
+						async function main() {
+							await initStrudel()
+							await loadSamples()
+							window.parent.parent.strudel.init = true
+							console.log('strudel ready!!')
+						}
+
+						main()
+					<\/script>
+				</body>
+				</html>
+			`
+
+			p5f.document.body.appendChild(s);
+			strudel.frame = p5f.document.getElementById('strudel-frame').contentWindow
 		}
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
 		function buildSketch(force){
+			let editorRaw = editor.getValue()
+			let editorClean = editor.getValue()
+
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
 			useP5 = true
 			useP5Sound = true
-			if(editor.getValue().match(/(\/\/)\s*no\s*p5$/gm) || !removeComments(editor.getValue()).match(/setup\s*\(\)/gs)){
+			if(editorRaw.match(/(\/\/)\s*no\s*p5$/gm) || !removeComments(editorRaw).match(/setup\s*\(\)/gs)){
 				useP5 = false;
 			}
-			if(editor.getValue().match(/(\/\/)\s*(no\s*p5sound$)/gm)){
+			if(editorRaw.match(/(\/\/)\s*(no\s*p5sound$)/gm)){
 				useP5Sound = false;
 			}
+
+			// check strudel
+			let strudelTest = false
+			let strudelMatch = editorRaw.match(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism);
+			
+			if(strudelMatch !== null && !strudel.init){
+				// let regex = new RegExp(`^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*`, "ism")
+				// console.log(regex)
+				editorClean = editorClean.replace(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism, '')
+				// console.log('strudel code found')
+				// if(!strudel.init){
+					// strudelTest = true
+					// initStrudel()
+					// return false
+				// }
+			}
+			console.log(editorClean)
 
 			// grab latest p5vars only before reload! no more interval...
 			if(sketchLoaded && p5f.frameCount != undefined){
@@ -6234,7 +6297,7 @@ function println(msg){
 				}
 			}
 
-			let codeNoComments = removeComments(editor.getValue());
+			let codeNoComments = removeComments(editorRaw);
 
 			// softCompile
 			if((force == undefined && sketchLoaded) || (force == undefined && !useP5)){
@@ -6251,7 +6314,7 @@ function println(msg){
 				let allLines = codeNoComments.split('\n');
 
 				// sandbox
-				let sandboxMatch = editor.getValue().match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n*/ism);
+				let sandboxMatch = editorRaw.match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n*/ism);
 
 				if(sandboxMatch !== null){
 					var currline = editor.getSelectionRange().start.row;
@@ -6259,7 +6322,8 @@ function println(msg){
 					var sandboxParts = sandboxMatch[0].split('\n');
 					if(sandboxParts.indexOf(currCode) > -1 && currCode.trim() != ''){
 
-						let hb = hydraBlock();
+						let hb = hydraBlock('sandbox');
+						console.log(hb.block)
 						
 						// check if added via snippet
 						let checkSnippet = sandboxMatch[0].replaceAll('\n', '')
@@ -6278,6 +6342,48 @@ function println(msg){
 						}
 
 						// p5f.eval(sandboxMatch[0])
+						if(!force){
+							return false;
+						}
+					}
+				}
+
+				// strudel
+				// ** remove any strudel from fullcompile!! then send after init...
+				// let strudelMatch = editorRaw.match(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism);
+
+				if(strudelMatch !== null && !strudelTest){
+					var currline = editor.getSelectionRange().start.row;
+					var currCode = editor.session.getLine(currline);
+					var strudelParts = strudelMatch[0].split('\n');
+					if(strudelParts.indexOf(currCode) > -1 && currCode.trim() != ''){
+
+						let hb = hydraBlock('strudel');
+						
+						// check if added via snippet
+						let checkSnippet = strudelMatch[0].replaceAll('\n', '')
+						if(checkSnippet == '// sandbox// sandbox'){
+							force = true;
+						}
+
+						// console.log(strudel.init)
+						if(!strudel.init){
+							initStrudel()
+						}
+						// console.log(`init: ${strudel.init}`)
+						if(strudel.init){
+							strudel.frame.evaluate(hb.block)
+							
+							recompilePulse(hb.start, hb.end)
+							if(recoding.recording){
+								recoding.compile()
+							}
+							
+							if(p5popCode){
+								p5popCode.recompilePulse(hb.start, hb.end)
+							}
+						}
+
 						if(!force){
 							return false;
 						}
@@ -6400,7 +6506,7 @@ function println(msg){
 
 
 				// check p5Version
-				let p5versionCheck = editor.getValue().match(/(?:\/\/\s*p5\s*=.*)/gi)
+				let p5versionCheck = editorRaw.match(/(?:\/\/\s*p5\s*=.*)/gi)
 				if(iScript == 'p5'){
 					if(p5versionCheck){
 
@@ -6533,7 +6639,7 @@ function println(msg){
 			// load sketch
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			let sketchCode = editor.getValue();
+			let sketchCode = editorClean;
 
 			// break infinite loops
 			if(!sketchCode.match(/(\/\/).*(no.*protect)/g) || settings.cocoding.active){
