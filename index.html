@@ -5581,7 +5581,8 @@ function println(msg){
 
 			vex.dialog.confirm({
 				focusFirstInput : false,
-				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="popup-editor vex-long">'+inspectCode+'</div>',
+				unsafeMessage:'Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="popup-editor vex-long"></div>',
+				// unsafeMessage:`Inspect Code and optionally save changes.<br><br><div class="syncdata-header code-header">code</div><div id="inspectcode" class="popup-editor vex-long">${inspectCode}</div>`,
 				callback: function (value) {},
 				afterOpen: function(){
 					vexClass(this.rootEl, 'vex-padding')
@@ -5627,6 +5628,7 @@ function println(msg){
 				showGutter: true,
 				tabSize: 4, useSoftTabs: false,
 			});
+			inspectEditor.setValue(inspectCode)
 			tidyCode(inspectEditor);
 			inspectEditor.focus();
 			inspectEditor.moveCursorTo(0,0);
@@ -8172,7 +8174,14 @@ function println(msg){
 				if(curCode.match(/(\/\/).*(no.*p5.*sound)/g) || p5l.version >= 2){ // *** temp disable sound w/ v2
 					if(iScript == 'p5sound') continue;
 				}
-				scriptsCol.push(includeScripts[iScript].path);
+
+				if(iScript == 'p5'){
+					let parts = includeScripts[iScript].parts
+					includeScripts[iScript].path = parts.base + p5l.version + parts.file
+					scriptsCol.push(includeScripts[iScript].path);
+				}else{
+					scriptsCol.push(includeScripts[iScript].path);
+				}				
 			}
 
 			// check loadScripts / libs / scripts;
