@@ -145,6 +145,13 @@ noize = noise
 	`// sandbox - start
 \${1}
 // sandbox - stop`
+},{
+	"tabTrigger": "strudel",
+	"name": "strudel",
+	"content": 
+	`// strudel
+\${1}
+// strudel`
 },
 {
 	"tabTrigger": "hy5",
