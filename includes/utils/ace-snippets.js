@@ -145,6 +145,13 @@ noize = noise
 	`// sandbox - start
 \${1}
 // sandbox - stop`
+},{
+	"tabTrigger": "strudel",
+	"name": "strudel",
+	"content": 
+	`// strudel
+\${1}
+// strudel`
 },
 {
 	"tabTrigger": "hy5",
@@ -306,6 +313,11 @@ synth.s0.initP5()
 H2.pixelDensity(2)
 
 //synth.src(synth.s0).out(synth.o0)`
+},{
+	"tabTrigger": "src",
+	"name": "src",
+	"content": 
+`src(s0).out(o0)`
 },{
 	"tabTrigger": "push",
 	"name": "push",

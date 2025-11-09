@@ -438,6 +438,18 @@ osc().out() // ... your hydra code here
 – will only affect the hydra-synth engine and won't trigger p5.js recompiles!  
 See `DEMOS » HY5` + `DEMOS » _HYDRA` for additional examples.
 
+### STRUDEL
+One can code music on the fly using [Strudel](https://strudel.cc/), which is now accessible from within P5LIVE (very rudimentary first steps). The workflow is similar to `// sandbox`, however we use `// strudel` as an open and closer of any code that should be evaluated by Strudel. Unfortunately there's no visual feedback (yet..?!) like the Strudel REPL editor, but hopefully soon. An alternative overlay with the REPL editor is also in the works.
+
+```js
+// strudel
+s("<bd sd, hh*4>")//.bank("CasioRZ1")
+.room(.5)
+.delay(.5)
+// strudel
+```
+To stop the audio, either use `hush()` or just comment out everything.
+
 ### ASSETS
 Loading custom assets (image/font/obj/audio/...):  
 

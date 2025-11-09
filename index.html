@@ -1096,7 +1096,8 @@ function println(msg){
 		var chalkboardVisible = false, chalkboardInit = false,
 		chalkboardSettingsUpdate, chalkboardFrame,
 		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
-		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version}
+		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version},
+		strudel = {init:false, frame:null}, sandbox = {}
 		;
 
 		function onlineStatus(){
@@ -6169,7 +6170,7 @@ function println(msg){
 			return sketchImportMap
 		}
 
-		function hydraBlock(){
+		function hydraBlock(replaceWord){
 			let rawLines = editor.session.getLines(0, editor.session.getLength());
 			let currline = editor.getSelectionRange().start.row;
 			let currCode = editor.session.getLine(currline);
@@ -6194,23 +6195,74 @@ function println(msg){
 				hb.end++
 				i++
 			}
-
-			hb.block.replaceAll(/\/\/ sandbox.*/g, '')
-
+			let ra = new RegExp(String.raw`\/\/ ${replaceWord}.*`, "g");
+			hb.block = hb.block.replaceAll(ra, '')
+			// hb.block.replaceAll(/\/\/ sandbox.*/g, '')
+			// console.log(hb.block.replaceAll(ra, ''))
 			return hb;
+		}
+
+		function initStrudel(){
+			// ** solve highlighting?! onPaint / haps / drawer / ...
+			let s = document.createElement('iframe')
+			s.id = 'strudel-frame'
+			s.style = 'position:absolute;z-index:0;mix-blend-mode:difference;border:none;width:100vw;height:100vh;pointer-events:none;'
+			s.srcdoc = `
+				<!DOCTYPE html>
+				<html>
+				<head>
+					<script src="https://unpkg.com/@strudel/web@1"><\/script>
+				</head>
+				<body>
+					<script>
+						async function loadSamples() {
+						  const ds = "https://raw.githubusercontent.com/felixroos/dough-samples/main/";
+						  return Promise.all([
+						    samples(\`\${ds}/tidal-drum-machines.json\`),
+						    samples(\`\${ds}/piano.json\`),
+						    samples(\`\${ds}/Dirt-Samples.json\`),
+						    samples(\`\${ds}/EmuSP12.json\`),
+						    samples(\`\${ds}/vcsl.json\`),
+						    samples(\`\${ds}/mridangam.json\`),
+						  ]);
+						}
+
+						async function main() {
+							await initStrudel()
+							await loadSamples()
+							window.parent.strudel.init = true
+							console.log('strudel ready!!')
+						}
+
+						main()
+					<\/script>
+				</body>
+				</html>
+			`
+
+			// give own iframe outside p5f, so recompile doesn't disturb it
+			document.body.appendChild(s);
+			strudel.frame = document.getElementById('strudel-frame').contentWindow
 		}
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
 		function buildSketch(force){
+			// console.log('building sketch ' + Math.random())
+			let editorRaw = editor.getValue()
+			let editorClean = editor.getValue()
+			let rawLines = editor.session.getLines(0, editor.session.getLength());
+
 			// replace single + multiline comments with \n to avoid processing + keep line numbers same
 			useP5 = true
 			useP5Sound = true
-			if(editor.getValue().match(/(\/\/)\s*no\s*p5$/gm) || !removeComments(editor.getValue()).match(/setup\s*\(\)/gs)){
+			if(editorRaw.match(/(\/\/)\s*no\s*p5$/gm) || !removeComments(editorRaw).match(/setup\s*\(\)/gs)){
 				useP5 = false;
 			}
-			if(editor.getValue().match(/(\/\/)\s*(no\s*p5sound$)/gm)){
+			if(editorRaw.match(/(\/\/)\s*(no\s*p5sound$)/gm)){
 				useP5Sound = false;
 			}
+
+			
 
 			// grab latest p5vars only before reload! no more interval...
 			if(sketchLoaded && p5f.frameCount != undefined){
@@ -6236,12 +6288,63 @@ function println(msg){
 				}
 			}
 
-			let codeNoComments = removeComments(editor.getValue());
+			let codeNoComments = removeComments(editorRaw);
+
+
+			// check strudel
+			strudel.test = false
+			let strudelMatch = editorRaw.match(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism);
+			if(strudelMatch !== null){
+				strudel.test = true
+				strudel.code = strudelMatch[0]
+
+				let foundStart = false
+				for(let i=0; i < rawLines.length; i++){
+					let l = rawLines[i]
+					if(l.match(/^\/\/\s*strudel/) !== null){
+						if(!foundStart){
+							strudel.start = i
+							foundStart = true
+						}else{
+							strudel.end = i
+						}
+					}
+				}
+				
+				// console.log([strudel.start, strudel.end])
+				// build strudel iframe
+				if(!strudel.init){
+					setTimeout(initStrudel, 100)
+				}
+				editorClean = editorClean.replace(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism, '')
+			}
+			// console.log(editorClean)
+
+
+			// check sandbox
+			sandbox.test = false
+			let sandboxMatch = editorRaw.match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n*/ism);
+			if(sandboxMatch !== null){
+				sandbox.test = true
+				sandbox.code = sandboxMatch[0]
+
+				let foundStart = false
+				for(let i=0; i < rawLines.length; i++){
+					let l = rawLines[i]
+					if(l.match(/^\/\/\s*sandbox/) !== null){
+						if(!foundStart){
+							sandbox.start = i
+							foundStart = true
+						}else{
+							sandbox.end = i
+						}
+					}
+				}
+			}
 
 			// softCompile
 			if((force == undefined && sketchLoaded) || (force == undefined && !useP5)){
 				// technique to only update draw if code changed there (= continous background!)
-				let rawLines = editor.session.getLines(0, editor.session.getLength());
 				let drawPos = [];//{};
 				let drawPosSel = -1;
 				let countBrackets = false;
@@ -6253,15 +6356,15 @@ function println(msg){
 				let allLines = codeNoComments.split('\n');
 
 				// sandbox
-				let sandboxMatch = editor.getValue().match(/^\/\/\s*(hydra)*sandbox.*?\/\/.*?(hydra)*sandbox.*?\n*/ism);
 
-				if(sandboxMatch !== null){
+				if(sandbox.test){
 					var currline = editor.getSelectionRange().start.row;
 					var currCode = editor.session.getLine(currline);
-					var sandboxParts = sandboxMatch[0].split('\n');
-					if(sandboxParts.indexOf(currCode) > -1 && currCode.trim() != ''){
-
-						let hb = hydraBlock();
+					var sandboxParts = sandbox.code.split('\n');
+					// if(sandboxParts.indexOf(currCode) > -1 && currCode.trim() != ''){
+					if(currline >= sandbox.start && currline <= sandbox.end){
+						let hb = hydraBlock('sandbox');
+						// console.log(hb.block)
 						
 						// check if added via snippet
 						let checkSnippet = sandboxMatch[0].replaceAll('\n', '')
@@ -6280,6 +6383,35 @@ function println(msg){
 						}
 
 						// p5f.eval(sandboxMatch[0])
+						if(!force){
+							return false;
+						}
+					}
+				}
+
+				// strudel
+				// ** samples() broken? need to parse separately?
+				// ** add option of iframe repl
+				// let strudelMatch = editorRaw.match(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism);
+
+				if(strudelMatch !== null){
+					let strudelMerge = strudel.code.replaceAll(/^\/\/\s*strudel/gm, '').replaceAll('\n\n', '\n')
+					var currline = editor.getSelectionRange().start.row;
+					// console.log(currline)
+					// console.log(`strudel init: ${strudel.init}`)
+
+					if(currline >= strudel.start && currline <= strudel.end){
+						strudel.frame.evaluate(strudelMerge)
+						recompilePulse(strudel.start, strudel.end)
+
+						if(recoding.recording){
+							recoding.compile()
+						}
+						
+						if(p5popCode){
+							p5popCode.recompilePulse(strudel.start, strudel.end)
+						}
+
 						if(!force){
 							return false;
 						}
@@ -6402,7 +6534,7 @@ function println(msg){
 
 
 				// check p5Version
-				let p5versionCheck = editor.getValue().match(/(?:\/\/\s*p5\s*=.*)/gi)
+				let p5versionCheck = editorRaw.match(/(?:\/\/\s*p5\s*=.*)/gi)
 				if(iScript == 'p5'){
 					if(p5versionCheck){
 
@@ -6535,7 +6667,7 @@ function println(msg){
 			// load sketch
 			let s = document.createElement('script');
 			s.type = 'text/javascript';
-			let sketchCode = editor.getValue();
+			let sketchCode = editorClean;
 
 			// break infinite loops
 			if(!sketchCode.match(/(\/\/).*(no.*protect)/g) || settings.cocoding.active){
