@@ -6392,7 +6392,6 @@ function println(msg){
 				// ** add option of iframe repl
 				// let strudelMatch = editorRaw.match(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism);
 
-				// console.log()
 				if(strudelMatch !== null){
 					let strudelMerge = strudel.code.replaceAll(/^\/\/\s*strudel/gm, '').replaceAll('\n\n', '\n')
 					var currline = editor.getSelectionRange().start.row;
@@ -6415,44 +6414,6 @@ function println(msg){
 							return false;
 						}
 					}
-
-					// var currCode = editor.session.getLine(currline);
-					// var strudelParts = strudelMatch[0].split('\n');
-					// // console.log(currCode)
-					// if(strudelParts.indexOf(currCode) > -1 && currCode.trim() != ''){
-
-					// 	let hb = hydraBlock('strudel');
-						
-					// 	// check if added via snippet
-					// 	let checkSnippet = strudelMatch[0].replaceAll('\n', '')
-					// 	if(checkSnippet == '// sandbox// sandbox'){
-					// 		force = true;
-					// 	}
-
-					// 	// console.log(strudel.init)
-					// 	if(!strudel.init){
-					// 		// initStrudel()
-					// 	}
-					// 	// console.log(`init: ${strudel.init}`)
-					// 	if(strudel.init){
-					// 		// strudel.frame.evaluate(hb.block)
-					// 		console.log(strudelMerge)
-					// 		strudel.frame.evaluate(strudelMerge)
-							
-					// 		recompilePulse(hb.start, hb.end)
-					// 		if(recoding.recording){
-					// 			recoding.compile()
-					// 		}
-							
-					// 		if(p5popCode){
-					// 			p5popCode.recompilePulse(hb.start, hb.end)
-					// 		}
-					// 	}
-
-					// 	if(!force){
-					// 		return false;
-					// 	}
-					// }
 				}
 
 				// test purging of comments
