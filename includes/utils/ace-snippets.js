@@ -314,6 +314,11 @@ H2.pixelDensity(2)
 
 //synth.src(synth.s0).out(synth.o0)`
 },{
+	"tabTrigger": "src",
+	"name": "src",
+	"content": 
+`src(s0).out(o0)`
+},{
 	"tabTrigger": "push",
 	"name": "push",
 	"content": 
