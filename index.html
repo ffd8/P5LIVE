@@ -988,7 +988,8 @@ function println(msg){
 			},
 			'backup' : {
 				'frequency':2, 'last':0,
-			}
+			},
+			'indexDB': false
 		}
 
 		// init variabless
@@ -6413,19 +6414,22 @@ function println(msg){
 			strudel.frame = document.getElementById('strudel-frame').contentWindow
 			strudel.canvas = strudel.frame.document.querySelector('#pre-canvas')
 			strudel.hide = (val = 1) => {
-				if(val == 1){
-					strudel.canvas.style.display = 'none'
-				}else{
-					strudel.canvas.style.display = 'block'
+				if(strudel && strudel.canvas != null){
+					if(val == 1){
+						strudel.canvas.style.display = 'none'
+					}else{
+						strudel.canvas.style.display = 'block'
+					}
 				}
-				
 			}
 			strudel.get = (layer = 'st0') => {
-				layer = this.checkLayer(layer)
-				layer.clear()
-				layer.drawingContext.drawImage(strudel.canvas, 0, 0, layer.width, layer.height)
-				strudel.layer = layer
-				return layer
+					layer = this.checkLayer(layer)
+					layer.clear()
+					if(strudel && strudel.canvas != null){
+						layer.drawingContext.drawImage(strudel.canvas, 0, 0, layer.width, layer.height)
+					}
+					strudel.layer = layer
+					return layer
 			}
 			p5f.strudel = strudel
 		}
