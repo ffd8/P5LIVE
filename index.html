@@ -1542,7 +1542,7 @@ function println(msg){
 			elm.classList.add(className);
 		}
 
-		let includeScripts = {
+		var includeScripts = {
 			p5:{
 				'local':p5l.version == 2 ? 'includes/p5/p5.min-2.js' :'includes/p5/p5.min.js',
 				'remote':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5@2/lib/p5.min.js' : 'https://cdn.jsdelivr.net/npm/p5@1/lib/p5.min.js',
@@ -2808,7 +2808,9 @@ function println(msg){
 			.then(jsonObj => {
 				includeScripts.p5.versions = []
 				for(let v of jsonObj.versions){
-					includeScripts.p5.versions.push(v.version)
+					if(!v.version.includes('rc') && !v.version.includes('beta')){
+						includeScripts.p5.versions.push(v.version)
+					}
 				}
 				loadSnippetsManager()
 			})
@@ -4146,7 +4148,7 @@ function println(msg){
 			request.open('POST', tempPath, true)
 			request.setRequestHeader("Content-Type", "application/json;charset=UTF-8")
 			request.onreadystatechange = () => {
-				if (request.readyState === 4) {
+				if (cb != null && request.readyState === 4) {
 					cb(request.response);
 				}
 			}
@@ -6779,7 +6781,6 @@ function println(msg){
 				let p5versionCheck = editorRaw.match(/(?:\/\/\s*p5\s*=.*)/gi)
 				if(iScript == 'p5'){
 					if(p5versionCheck){
-
 
 						// grab version
 						let p5versionRequest = p5versionCheck[0].match(/(?<=(["'`]\b))(?:(?=(\\?))\2.)*?(?=\1)/gi)

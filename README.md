@@ -410,7 +410,7 @@ With the introduction of p5.js v2.0, you can now set a custom version by using t
 
 Use `print(VERSION)` within the `setup()` to confirm what version is loaded. In ONLINE mode it will grab the selected version via CDN. In OFFLINE mode, it will download if necessary and then be accessed locally, allowing truely offline usage.
 
-p5.js version 1.0+ remains the default until it's changed officially in the online editor. To archive a new sketch to the current p5.js version, just write `version` + `tab` key, to be sure it continues to use that version in the future. To list all available p5.js versions, write `print(includeScripts.p5.versions)` within the `setup()`.
+p5.js version 1.0+ remains the default until it's changed officially in the online editor. To archive a new sketch to the current p5.js version, just write `version` + `tab` key, to be sure it continues to use that version in the future. To list all available p5.js versions, write `print(parent.includeScripts.p5.versions)` within the `setup()`.
 
 To exclude libraries `p5.js` (ie. hydra only, canvas hacking) or `p5.sound` (ie. for Tone.js), add `// no p5` or `// no p5sound` anywhere in your code. 
 
