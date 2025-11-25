@@ -453,5 +453,13 @@ for(let i=0; i < grid; i++){
 		//rect(x, y, sw, sh); 
 	} 
 } `
+},{
+	"tabTrigger": ".p5live",
+	"name": ".p5live",
+	"content": 
+`.p5live(()=>{
+	// console.log(hap)
+	\${1}
+})`
 },
 ]

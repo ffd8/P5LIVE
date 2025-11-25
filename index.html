@@ -744,8 +744,8 @@ function println(msg){
 	<link rel="stylesheet" href="includes/js/highlight/a11y-dark.css" />
 
 	<!-- Scripts -->
-	<script src="includes/js/ace/src-min-noconflict/ace.js?8" type="text/javascript" charset="utf-8"></script>
-	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?8" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/ace/src-min-noconflict/ace.js?9" type="text/javascript" charset="utf-8"></script>
+	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?9" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/utils/ace.recoding.js?54"></script>
 	<script src="includes/utils/ace.ghost.js?54"></script>
 	<script src="includes/utils/ace-snippets.js?54"></script>
@@ -1076,7 +1076,7 @@ function println(msg){
 		settings = getSettings(),
 		validCode = true, sketchesFirstTime = true,
 		sketchLoaded = false, forceRecompile = false, loadingInit = false,
-		paused = false, multitabWarning = false, useRecompilePulse = true,
+		paused = false, multitabWarning = false, useRecompilePulse = true, useTransparency = false,
 		markerID = [], pulsemarkerID = [], errorTimer, consoleTimer, consoleVisible = false, braketError,
 		cocode, editorId, p5frameTemplate, p5htmlTemplate, p5liveUtils = {},
 		snippets, snippetsManagerLoaded = false,
@@ -1097,7 +1097,8 @@ function println(msg){
 		chalkboardSettingsUpdate, chalkboardFrame,
 		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
 		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version},
-		strudel = {init:false, frame:null}, sandbox = {}
+		strudelOG = {init:false, active:false, frame:null, markers:[], debug:false},
+		strudel = cloneJSON(strudelOG), sandbox = {}
 		;
 
 		function onlineStatus(){
@@ -3005,6 +3006,11 @@ function println(msg){
 				exhibitMode = true
 			}
 
+			if((checkParam('background') && !boolParam('background')) || 
+				(checkParam('bg') && !boolParam('bg'))){
+				useTransparency = true
+			}
+
 			// load sketch by param
 			if(checkParam('sketch')){
 				settings.welcome = false
@@ -4010,6 +4016,14 @@ function println(msg){
 				}else if(recodingCheck()){
 					recodingStop()
 					recodingScrub(0)
+				}
+
+				// catch strudel
+				if(strudel.init && strudel.active){
+					strudel.frame.evaluate('hush()')
+					// removeStrudelMarkers()
+					removeStrudel()
+					if(strudel.debug){console.log('loadsketch - stop strudel')}
 				}
 
 				if(localStorage.hasOwnProperty(sketch)){
@@ -6202,47 +6216,255 @@ function println(msg){
 			return hb;
 		}
 
+		function removeStrudel(){
+			document.getElementById('strudel-frame').remove()
+			removeStrudelMarkers()
+			strudel = cloneJSON(strudelOG)
+		}
+
 		function initStrudel(){
-			// ** solve highlighting?! onPaint / haps / drawer / ...
 			let s = document.createElement('iframe')
 			s.id = 'strudel-frame'
-			s.style = 'position:absolute;z-index:0;mix-blend-mode:difference;border:none;width:100vw;height:100vh;pointer-events:none;'
+			// s.sandbox.add('allow-scripts');
+			// s.sandbox.add('allow-same-origin');
+			// s.sandbox.add('allow-downloads');
+			s.style = 'position:fixed;background:none;top:0;left:0;z-index:0;border:none;width:100vw;height:100vh;pointer-events:none;'
 			s.srcdoc = `
 				<!DOCTYPE html>
 				<html>
 				<head>
+					<title>strudel-web</title>
 					<script src="https://unpkg.com/@strudel/web@1"><\/script>
+					<style type="text/css">
+						canvas{
+							width:100vw;
+							height:100vh;
+						}
+					</style>
+
 				</head>
 				<body>
+					<canvas id="pre-canvas" style="display:none;width:10px;height:10px;"></canvas>
+					<script>
+						const parentOfELement = document.body
+
+						const onMutation = () => {
+						  if (parentOfELement.querySelector('#test-canvas')) {
+						    observer.disconnect()
+							//console.log('strudel.canvas appeared!')
+						    window.parent.strudel.canvas = parent.strudel.frame.document.querySelector('#test-canvas')
+							window.parent.p5f.strudel = window.parent.strudel
+						  }
+						}
+
+						const observer = new MutationObserver(onMutation)
+						observer.observe(parentOfELement, {childList: true})
+					<\/script>
 					<script>
 						async function loadSamples() {
-						  const ds = "https://raw.githubusercontent.com/felixroos/dough-samples/main/";
-						  return Promise.all([
-						    samples(\`\${ds}/tidal-drum-machines.json\`),
-						    samples(\`\${ds}/piano.json\`),
-						    samples(\`\${ds}/Dirt-Samples.json\`),
-						    samples(\`\${ds}/EmuSP12.json\`),
-						    samples(\`\${ds}/vcsl.json\`),
-						    samples(\`\${ds}/mridangam.json\`),
-						  ]);
+							const ds = "https://raw.githubusercontent.com/felixroos/dough-samples/main/";
+					    	const ts = 'https://raw.githubusercontent.com/todepond/samples/main';
+		  					const tc = 'https://raw.githubusercontent.com/tidalcycles/uzu-drumkit/main';
+
+							return Promise.all([
+								samples(\`\${ds}/tidal-drum-machines.json\`),
+								samples(\`\${ds}/piano.json\`),
+								samples(\`\${ds}/Dirt-Samples.json\`),
+								samples(\`\${ds}/vcsl.json\`),
+								samples(\`\${ds}/mridangam.json\`),
+								samples(\`\${tc}/strudel.json\`),
+							]);
+						}
+						async function loadP5LIVE(){
+							
+							register('p5live', (fun, x) => x.onTrigger((hap) => {
+								(()=>{
+									let funCode = fun.toString().match(/\\\{([\\s\\S]\*)\\\}/)[1].trim()
+									let hapCode = \`let hap = \${JSON.stringify(hap.value)}\\n\\n\${funCode}\` 
+									let p5f = window.parent.p5f
+									p5f.eval(hapCode)
+								})()
+							}, false))
+
+						}
+
+						// based on strudel's .draw()
+						async function preloadStrudel(){
+							let animationFrames = {};
+							function stopAnimationFrame(id) {
+							  if (animationFrames[id] !== undefined) {
+							    cancelAnimationFrame(animationFrames[id]);
+							    delete animationFrames[id];
+							  }
+							}
+							function stopAllAnimations(replID) {
+							  Object.keys(animationFrames).forEach((id) => (!replID || id.startsWith(replID)) && stopAnimationFrame(id));
+							}		
+							var memory = {};
+							strudel.Pattern.prototype.drawHaps = function (fn, options) {
+							  if (typeof window === 'undefined') {
+							    return this;
+							  }
+							  let { id = 1, lookbehind = 0, lookahead = 0 } = options;
+							  let __t = Math.max(getTime(), 0);
+						      stopAnimationFrame(id);
+							  lookbehind = Math.abs(lookbehind);
+							  // init memory, clear future haps of old pattern
+							  memory[id] = (memory[id] || []).filter((h) => !h.isInFuture(__t));
+							  let newFuture = this.queryArc(__t, __t + lookahead).filter((h) => h.hasOnset());
+							  memory[id] = memory[id].concat(newFuture);
+
+							  let last;
+							  const animate = () => {
+							    const _t = getTime();
+							    const t = _t + lookahead;
+							    // filter out haps that are too far in the past
+							    memory[id] = memory[id].filter((h) => h.isInNearPast(lookbehind, _t));
+							    // begin where we left off in last frame, but max -0.1s (inactive tab throttles to 1fps)
+							    let begin = Math.max(last || t, t - 1 / 10);
+							    const haps = this.queryArc(begin, t).filter((h) => h.hasOnset());
+							    memory[id] = memory[id].concat(haps);
+							    last = t; // makes sure no haps are missed
+							    fn(memory[id], _t, t, this);
+							    animationFrames[id] = requestAnimationFrame(animate);
+							  };
+							  animationFrames[id] = requestAnimationFrame(animate);
+							  return this;
+							};
+
 						}
 
 						async function main() {
+							await preloadStrudel()
 							await initStrudel()
 							await loadSamples()
+							await loadP5LIVE()
+							// await catchHaps()
 							window.parent.strudel.init = true
-							console.log('strudel ready!!')
+							
+							window.addEventListener('click', async () => {
+							let ctx = getAudioContext()
+							if (ctx.state === 'suspended') {
+							    const ctxResume = await ctx.resume()
+							    if(ctxResume){
+									console.log(ctx)
+							    }								   
+							  }
+							});
+							
+							console.log('P5LIVE x Strudel ready!!')
 						}
 
 						main()
+
+
 					<\/script>
 				</body>
 				</html>
 			`
 
+			strudel.recompile = ()=>{
+				let strudelMerge = strudel.code//.replaceAll('\t', '  ')//.replaceAll(/^\/\/\s*strudel/gm, '').replaceAll('\n\n', '\n')
+
+						// just always require $: syntax...
+						// let orbitMatch = strudelMerge.match(/^(?!.*_)(?!.*\/\/).*:[^minor|major|dorian|mixolydian|pentatonic|\d]/gm) // ^(?!.*_).*$
+						
+						strudelMerge += strudel.drawAll// + strudel.p5live
+
+						strudel.active = true
+						if(strudel.debug){console.log('strudel - recompiled')}
+						strudel.frame.evaluate(strudel.p5live + strudelMerge)
+						recompilePulse(strudel.start, strudel.end)
+			}
+
+			strudel.p5live = `\nvar p5live = window.parent.p5f\n`
+
+			// custom 'draw()' that doesn't kill pianoroll/scope/spectrum
+			strudel.drawAll = `\n\nall(x=>x.drawHaps((...args) => {
+						// if(debug){console.log(args)}
+						if(args[0].length > 0){
+							window.parent.removeStrudelMarkers()
+							let collectMarkers = []
+							for(let a of args[0]){
+								for(let l of a.context.locations){
+									if (collectMarkers.filter(item=> item.start == l.start && item.end == l.end).length == 0){
+										let col = '#fff'
+										if(a.value.hasOwnProperty('color')){
+											col = a.value.color
+										}
+										collectMarkers.push({start:l.start, end:l.end, color:col})
+									}
+								}
+							}
+							for(let c of collectMarkers){
+								window.parent.recompileIndex(c.start, c.end, c.color)
+							}
+						}else{
+							window.parent.removeStrudelMarkers()
+						}
+						window.parent.p5f.strudel = window.parent.strudel
+						}, {})
+					)`
+
+			
+			// strudel.drawAll = ''
 			// give own iframe outside p5f, so recompile doesn't disturb it
 			document.body.appendChild(s);
 			strudel.frame = document.getElementById('strudel-frame').contentWindow
+			strudel.canvas = strudel.frame.document.querySelector('#pre-canvas')
+			strudel.hide = (val = 1) => {
+				if(val == 1){
+					strudel.canvas.style.display = 'none'
+				}else{
+					strudel.canvas.style.display = 'block'
+				}
+				
+			}
+			strudel.get = (layer = 'st0') => {
+				layer = this.checkLayer(layer)
+				layer.clear()
+				layer.drawingContext.drawImage(strudel.canvas, 0, 0, layer.width, layer.height)
+				strudel.layer = layer
+				return layer
+			}
+			p5f.strudel = strudel
+		}
+
+		function recompileIndex(s = 0, e = editor.getValue().length, col){
+			let offset = editor.session.doc.positionToIndex({row:strudel.start, column:0})
+			let start = editor.session.doc.indexToPosition(s + offset - strudel.p5live.length)
+			let end = editor.session.doc.indexToPosition(e + offset - strudel.p5live.length)
+			
+
+			strudel.markers.push(editor.session.addDynamicMarker({ update: (html, markerLayer, session, config)=>{
+				let extraStyle = `position:fixed;outline:2px solid ${col};`;
+				let range = new Range(start.row, start.column, end.row, end.column)
+				range = range.toScreenRange(editor.session)
+				markerLayer.drawSingleLineMarker(html, range, "", config, 0, extraStyle);   
+			} }, false))
+
+			// old way (no dynamic CSS)
+			// strudel.markers.push({id:editor.session.addMarker(new Range(start.row, start.column, end.row, end.column), "strudel_marker", "text")})
+		}
+
+		
+		function removeStrudelMarkers(){
+			for(let i=0; i < strudel.markers.length; i++){				
+				editor.session.removeMarker(strudel.markers[i].id);
+			}
+			strudel.markers = [];
+		}
+
+		// from HY5
+		function checkLayer(layer = 'st0'){
+			if(typeof p5f.window[layer] === 'undefined'){
+				p5f.window[layer] = p5f.createGraphics(p5f.width, p5f.height)
+				return p5f.window[layer]
+			}else if(typeof layer === 'string'){
+				return p5f.window[layer]
+			}else{
+				return layer
+			}
 		}
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
@@ -6292,11 +6514,11 @@ function println(msg){
 
 
 			// check strudel
-			strudel.test = false
-			let strudelMatch = editorRaw.match(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism);
-			if(strudelMatch !== null){
-				strudel.test = true
-				strudel.code = strudelMatch[0]
+			strudel.found = false
+			strudel.match = editorRaw.match(/\/\/\s*strudel[\s\S]*?\/\/\s*strudel/g);
+			if(strudel.match !== null){
+				strudel.found = true
+				strudel.code = strudel.match[0]
 
 				let foundStart = false
 				for(let i=0; i < rawLines.length; i++){
@@ -6313,12 +6535,16 @@ function println(msg){
 				
 				// console.log([strudel.start, strudel.end])
 				// build strudel iframe
-				if(!strudel.init){
-					setTimeout(initStrudel, 100)
+				if(!strudel.init && !strudel.hasOwnProperty('setupStrudel')){
+					strudel.setupStrudel = setTimeout(initStrudel, 100)
 				}
 				editorClean = editorClean.replace(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism, '')
 			}
 			// console.log(editorClean)
+
+			if(strudel.found){
+				if(strudel.debug){console.log(`buildsketch - strudel found`)}
+			}
 
 
 			// check sandbox
@@ -6391,18 +6617,21 @@ function println(msg){
 
 				// strudel
 				// ** samples() broken? need to parse separately?
-				// ** add option of iframe repl
-				// let strudelMatch = editorRaw.match(/^\/\/\s*strudel.*?\/\/.*?strudel.*?\n*/ism);
+				// ** add option of iframe repl?
 
-				if(strudelMatch !== null){
-					let strudelMerge = strudel.code.replaceAll(/^\/\/\s*strudel/gm, '').replaceAll('\n\n', '\n')
+				if(strudel.found){
 					var currline = editor.getSelectionRange().start.row;
+
+
 					// console.log(currline)
 					// console.log(`strudel init: ${strudel.init}`)
 
-					if(currline >= strudel.start && currline <= strudel.end){
-						strudel.frame.evaluate(strudelMerge)
-						recompilePulse(strudel.start, strudel.end)
+					
+
+					if(strudel.debug){console.log(`strudel.active: ${strudel.active}`)}
+					if((currline >= strudel.start && currline <= strudel.end) || (strudel.init && !strudel.active)){
+
+						strudel.recompile()
 
 						if(recoding.recording){
 							recoding.compile()
@@ -6507,6 +6736,15 @@ function println(msg){
 					}
 
 					return false; // prevent complete rebuild
+				}
+			}
+
+			// if strudel + 1st time load, recompile
+			if(strudel.debug){console.log(`strudel.active: ${strudel.active}`)}
+			if(strudel.found && strudel.init && !strudel.active){
+				let ctx = strudel.frame.getAudioContext()
+				if (ctx.state !== 'suspended') {
+					strudel.recompile()
 				}
 			}
 
@@ -6706,6 +6944,14 @@ function println(msg){
 
 			// s.innerHTML = sLoader;
 			// console.log(fullCode)
+
+			if(useTransparency){
+				fullCode += `parent.window.document.body.style.background = 'none'
+	parent.window.document.getElementById('p5-frame').style.background = 'none'
+	background = ()=>{clear()}
+			`
+			}
+
 			s.innerHTML = fullCode; // *** old (better?) way
 
 			if(settings.syncdata.active){

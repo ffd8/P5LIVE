@@ -201,6 +201,13 @@ hr{
 	position:fixed;
 	background:rgba(0, 255, 255, .4);
 }
+.strudel_marker{
+	position:fixed;
+	outline:2px solid #fff;
+}
+.ace_br15{
+	position:fixed;
+}
 .ace_search_form, .ace_replace_form{
 	margin-right:0;
 	outline:none;
@@ -1858,6 +1865,12 @@ li{
 .snippets-label svg:hover{
 	opacity: 1;
 }
+
+/*STRUDEL*/
+#strudel-frame{
+	height:100vh;
+}
+
 /*
 ##Device = Tablets, Ipads (landscape)
 ##Screen = B/w 768px to 1024px
