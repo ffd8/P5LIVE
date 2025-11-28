@@ -520,6 +520,11 @@ h2{
 .menu-sketches{
 	height:99%;
 }
+.menu-sketches * {
+	-webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
 #menu-sketches-new{
 	background:#222;
 	position:relative;
@@ -537,7 +542,7 @@ h2{
 	font-weight: 200;
 	cursor:text;
 }
-#menu-sketches-new {
+#menu-sketches-new{
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
@@ -1213,13 +1218,12 @@ li{
 	color:#ddd;
 }
 .sortable-drag{
-	background:#003300;
+	background:#003300 !important;
 	border:1px solid green;
 }
 .sortable-ghost{
-	background:#003300;
+	background:#006600;
 	border:1px solid green;
-	opacity: .5;
 }
 .sortable-placeholder{
 	width:100%;

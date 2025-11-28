@@ -426,29 +426,30 @@ console.log('this code evals')
 // sandbox
 ```
 
-#### HYDRA
-The main use case for the sandbox above, is [hydra-synth](https://github.com/ojack/hydra-synth), which is included within the P5LIVE libs.  
-After importing the library, any changes made within the following tags:  
+### HYDRA
+The main use case for the sandbox above, is [hydra-synth](https://github.com/ojack/hydra-synth), which is included within the P5LIVE libs. After importing the library, any changes made within the following tags:  
 
 ```js
 // sandbox
 osc().out() // ... your hydra code here
 // sandbox
 ```
-– will only affect the hydra-synth engine and won't trigger p5.js recompiles!  
-See `DEMOS » HY5` + `DEMOS » _HYDRA` for additional examples.
+– will only affect (`eval`) the hydra-synth engine and won't trigger p5.js recompiles!  
+
+See `DEMOS » _HY5` + `DEMOS » _HYDRA` for additional examples.  
+See [HY5](https://github.com/ffd8/hy5) for details of Hydra + p5.js.
 
 ### STRUDEL
 One can code music on the fly using [Strudel](https://strudel.cc/), which is now accessible from within P5LIVE (very rudimentary first steps). The workflow is similar to `// sandbox`, however we use `// strudel` as an open and closer of any code that should be evaluated by Strudel. Unfortunately there's no visual feedback (yet..?!) like the Strudel REPL editor, but hopefully soon. An alternative overlay with the REPL editor is also in the works.
 
 ```js
 // strudel
-s("<bd sd, hh*4>")//.bank("CasioRZ1")
+$: s("<bd sd, hh*4>")//.bank("CasioRZ1")
 .room(.5)
 .delay(.5)
 // strudel
 ```
-To stop the audio, either use `hush()` or just comment out everything.
+To stop the audio, either use `hush()`, `_$:` or just comment out everything.
 
 ### ASSETS
 Loading custom assets (image/font/obj/audio/...):  
@@ -731,6 +732,7 @@ Listed in order of adoption:
 - [FHNW](https://www.fhnw.ch/), nodejs websockets cocoding-server
 - [loop-breaker](https://github.com/popcodeorg/loop-breaker), inifinite-loop protection
 - [Random Name Generator](https://gist.github.com/tkon99/4c98af713acc73bed74c?permalink_comment_id=5642379#gistcomment-5642379)
+- [localforage](https://localforage.github.io/localForage/), IndexDB storage
 
 
 ## INSPIRATION

@@ -766,9 +766,10 @@ function println(msg){
 	<script src="includes/js/loopBreaker.min.js"></script>
 	<script src="includes/js/socket.io.js"></script>
 	<script src="includes/js/rga.js"></script>
+	<script src="includes/js/localforage.min.js"></script>
 
 	<script type="text/javascript">
-		'use strict'
+		// 'use strict' // *** was for ace?
 
 		/* INIT */
 		let currentVersion = '1.7.2';
@@ -778,7 +779,7 @@ function println(msg){
 
 		// resetP5(); // manual reset
 
-		function resetP5(){
+		async function resetP5(){
 			if(settings.cocoding.active){
 				settingsCocodingWarning();
 				return false;
@@ -786,12 +787,12 @@ function println(msg){
 
 			vex.dialog.confirm({
 				unsafeMessage: 'Completely reset P5LIVE?<br><i>All sketches will be removed.</i>',
-				callback: function (value) {
+				callback: async function (value) {
 					if (value) {
-						localStorage.clear();
-						// localStorage.settings = initSettings;
-						// updateSettings();
-						location.reload();
+						settings = initSettings
+						updateSettings();
+						let clearIt = await p5liveDB.clear()
+						location.reload();						
 					}
 				},
 				afterOpen: function(){
@@ -1091,7 +1092,7 @@ function println(msg){
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
 		changelog = {show:false, revision:0, version:0},
-		recoding, exhibitMode = false, useP5 = true, useP5Sound = true
+		recoding, exhibitMode = false, useP5 = true, useP5Sound = true, cloningDemo = false
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
@@ -1099,8 +1100,12 @@ function println(msg){
 		p5pop, p5popStream, p5popActive = false, p5lCans, p5lCanSel = 0, p5lCansOptions = [],
 		p5l = {remote:false, fancy:false, console:true, consoleMode:'auto', version: p5Version},
 		strudelOG = {init:false, active:false, frame:null, markers:[], debug:false},
-		strudel = cloneJSON(strudelOG), sandbox = {}
+		strudel = cloneJSON(strudelOG), sandbox = {}, loadedCode = ''
 		;
+
+		const p5liveDB = localforage.createInstance({
+		  name: 'p5liveDB',
+		})
 
 		function onlineStatus(){
 			if (navigator.onLine) {
@@ -1129,7 +1134,8 @@ function println(msg){
 		    if('ace/mode/javascript' === session.getMode().$id) {
 		        if(!!session.$worker) {
 		            session.$worker.send('changeOptions', [{
-		                asi: true // disable "Missing semicolon." warning in editor for JavaScript
+		                asi: true, // disable "Missing semicolon." warning in editor for JavaScript
+		                // strict: "implied", // lint the code as if there is the "use strict"; directive
 		            }])
 		        }
 		    }
@@ -1182,11 +1188,11 @@ function println(msg){
             	// console.log('ace-snippet-ghost')
             	// *** prevent hardCompile on replace... solved?
             	editorGhost.animateText(u.content.replace(/\${\d}/, '/*$*/').replace(snippetReg, ''), 0, ()=>{
-		            setTimeout(()=>{
+		            setTimeout(async ()=>{
 		            	var range = editor.find('/*$*/')
 		            	editor.replace('')
 		            	if(!settings.cocoding.active){
-							localStorage[settings.fileName] = editor.getValue();
+		            		let lf = await p5liveDB.setItem(settings.fileName, editor.getValue())
 						}
 		            }, 1)	
 	       		})
@@ -1519,18 +1525,22 @@ function println(msg){
 			});
 		}
 
-
+		// https://github.com/SortableJS/Sortable/tree/1.9.0
 		let options = {
 			group: {name: 'sketches'},
-			bubbleScroll: true, // apply autoscroll to all parent elements, allowing for easier movement
+			bubbleScroll: false, // apply autoscroll to all parent elements, allowing for easier movement
 			revertOnSpill: true,
+			forceFallback: true, // ** helpful for lots of items?
 			animation: 0,
 			filter:'.sortable-placeholder, .demo',
 			emptyInsertThreshold: 0,
 			dragClass: 'sortable-drag',
 			ghostClass: 'sortable-ghost',
+			chosenClass: "sortable-drag",
 			draggable: ['li', 'ul'],
 			swapInvert:true,
+			// swapThreshold: 1,
+			invertedSwapThreshold: 1,
 			store: {
 				set: function (sortable) {
 					getOrder();
@@ -2693,12 +2703,11 @@ function println(msg){
 			}
 		}
 
-
-
 		/* ASSETS */
 		preloadAssets() // waterfall assets - settings
 
 		function preloadAssets(){
+
 			checkOffline();
 			checkSettings();
 
@@ -2794,14 +2803,49 @@ function println(msg){
 				}
 			})
 
+			// grab indexDB keys
+			.then(()=>{
+				return p5liveDB.keys()
+			})
+
+			// check if localStorage » indexDB already done
+			.then((keys)=>{
+				if(!settings.welcome){
+					if(!settings.indexDB || !keys.includes('P5LIVE-initIndexDB')){
+						console.log('P5LIVE: localStorage » indexDB')
+						var data = []
+						data.push(['P5LIVE-initIndexDB', null])
+						let sketchesOverview = listSketches(settings.sketches)
+						// console.log(sketchesOverview)
+						
+						for(let s of sketchesOverview){
+							if(!keys.includes(s)){
+								data.push([`${s}`, localStorage.getItem(s)])
+							}
+						}
+						return p5liveDB.setItems(data, (d)=>{
+							settings.indexDB = true
+							updateSettings()
+							console.log('P5LIVE: sketches now in indexDB')
+							// *** remove localstorage sketches??
+						})
+					}
+				}
+			})
+
+			// indexDB change complete!
+			// .then(() =>{
+
+			// })
+
 			// everything else
 			.then(() => {
 				loaderSub.innerHTML = 'loading settings...';
 				loadSettings()
 				// *** future tour
 			})
-
 			
+
 			// grab p5 versions
 			let p5VersionPath = p5l.online ? 'https://data.jsdelivr.com/v1/packages/gh/processing/p5.js' : 'includes/p5/p5-versions.json'
 			fetch(p5VersionPath).then(res => res.json())
@@ -2893,6 +2937,7 @@ function println(msg){
 				}
 			});
 			updateSettings();
+			return true
 		}
 
 		// react to settings once gathered
@@ -3102,9 +3147,9 @@ function println(msg){
 			// load code via URL
 			if(checkParam('code')){
 				loadDefault();
-				setTimeout(function(){
+				setTimeout(async function(){
 					editor.setValue(b64_to_utf8(getParam('code')), 1);
-					localStorage[settings.fileName] = editor.getValue();
+					let lf = await p5liveDB.setItem(settings.fileName, editor.getValue())
 					clearParam();
 				}, 100);
 			}
@@ -3229,9 +3274,10 @@ function println(msg){
 				updateSettings();
 			}
 
+			// ** disabled due to dup demos
 			if(searchJSON(settings.sketches, 'name', 'demos').length == 0 || settings.revision < currentRevision){
 				//settings.refresh = false; // *** check this.. if needed?
-				loadDemos();
+				// loadDemos();
 			}
 		}
 
@@ -3726,7 +3772,7 @@ function println(msg){
 		}
 
 		let fullCode = []
-		function filterSketchesFullText(){
+		async function filterSketchesFullText(){
 			let demosFolder = document.getElementById('demofolder');
 			let filterClear = document.getElementById('menu-sketches-filter-clear');
 			let filter = menuSketchesFilter.value//.toLowerCase().split(' ');
@@ -3743,9 +3789,10 @@ function println(msg){
 
 			// test fullcode search
 			if(fullCode.length == 0){
-				for (var key in localStorage){
-				   fullCode.push({filename:key, code:localStorage[key]})
-				}
+				let ita = await p5liveDB.iterate((value, key)=>{
+					// console.log(key)
+					fullCode.push({filename:key, code:value})
+				})
 			}
 
 			// if chars typed
@@ -3845,26 +3892,31 @@ function println(msg){
 
 		// use sketch versions instead of timestamp
 		function versionCheck(sketchName, importObj){
-			let tempName = sketchName;
-			let forkScores = tempName.split('_');
-			if(forkScores.length > 0){
-				let forkVersion = forkScores[forkScores.length-1];
-				if(!isNaN(forkVersion) && forkVersion.length == 3){
-					forkScores[forkScores.length-1] = pad(parseInt(forkVersion)+1, 3);
-				}else{
-					forkScores.push('001');
-				}
+			if(importObj == undefined){
+				importObj = cloneJSON(settings.sketches)
 			}
-			tempName = forkScores.join('_');
-
-			// check entire sketches for dup version name
-			if(importObj !== undefined){
-				while(searchSketches(tempName, settings.sketches) || searchSketches(tempName, importObj)){
-					tempName = versionCheck(tempName, importObj);
+			let dupFound = searchSketches(sketchName, importObj)
+			let tempName = sketchName;
+			// let isVersioned = sketchName.match(/_\d{3}/g)
+			
+			if(dupFound){ //  || isVersioned != null
+				let forkScores = tempName.split('_');
+				if(forkScores.length > 0){
+					let forkVersion = forkScores[forkScores.length-1];
+					if(!isNaN(forkVersion) && forkVersion.length == 3){
+						forkScores[forkScores.length-1] = pad(parseInt(forkVersion)+1, 3);
+					}else{
+						forkScores.push('001');
+					}
 				}
-			}else{
-				while(searchSketches(tempName, settings.sketches)){
-					tempName = versionCheck(tempName);
+				tempName = forkScores.join('_');
+
+				// check entire sketches for dup version name
+				if(importObj !== undefined){
+					while(searchSketches(tempName, settings.sketches) || searchSketches(tempName, importObj)){
+						// console.log('searching')
+						tempName = versionCheck(tempName, importObj);
+					}
 				}
 			}
 
@@ -3872,7 +3924,7 @@ function println(msg){
 		}
 
 		// save sketch as...
-		function cloneSketch(){
+		async function cloneSketch(){
 			if(settings.cocoding.active){
 				cloneSketchCOCODING();
 				return false;
@@ -3903,14 +3955,18 @@ function println(msg){
 			updateSettings();
 
 			updateSketches();
-			localStorage[settings.fileName] = editor.getValue();
+			let lf = await p5liveDB.setItem(settings.fileName, editor.getValue(), ()=>{})
+
 			editor.focus();
-			editor.session.off('change', cloneSketch);
 			sketchScrollIntoView(true);
 			notifyMsg('Cloned Sketch!')
+
+			if(cloningDemo){
+				cloningDemo = false
+			}
 		}
 
-		function subSketch(dirName){
+		async function subSketch(dirName){
 			let useDir = searchJSON(settings.sketches, 'name', dirName)[0];
 			let forkName = versionCheck('new');
 			let tc = timeDate();
@@ -3920,7 +3976,7 @@ function println(msg){
 			useDir.toggle = 'expand';
 			
 			settings.fileName = forkName;
-			localStorage[settings.fileName] = p5template;
+			let lf = await p5liveDB.setItem(settings.fileName, p5template)
 			updateSettings();
 			updateSketches();
 			editor.focus();
@@ -3937,7 +3993,7 @@ function println(msg){
 			}
 		}
 
-		function cloneSketchCOCODING(){
+		async function cloneSketchCOCODING(){
 			let tc = timeDate();
 			let forkSession = 'cc_'+settings.cocoding.namespace+'_'+settings.cocoding.timestamp;
 			if(searchJSON(settings.sketches, 'name', forkSession).length == 0){
@@ -3952,11 +4008,11 @@ function println(msg){
 			forkObj.contents.unshift({'type':'sketch', 'name':forkName, 'mod':tc});
 			forkObj.toggle = 'expand';
 			updateSketches();
-			localStorage[forkName] = editor.getValue();
+			let lf = await p5liveDB.setItem(forkName, editor.getValue())
 		}
 
 		// load sketch
-		function loadSketch(sketch, lineNum){
+		async function loadSketch(sketch, lineNum){
 			if(settings.cocoding.active){
 
 				// **** temp off for testing code replace below
@@ -4029,12 +4085,14 @@ function println(msg){
 					if(strudel.debug){console.log('loadsketch - stop strudel')}
 				}
 
-				if(localStorage.hasOwnProperty(sketch)){
-					editor.getSession().off('change', cloneSketch);
+				let getCode = await p5liveDB.getItem(sketch)
+
+				if(getCode != null){
 					// auto expand folder (incase of short-cut selection)
 					recursiveFolderExpand(settings.sketches, sketch, '');
 					settings.fileName = sketch;
-					editor.setValue(localStorage[settings.fileName], 1);
+					editor.setValue(getCode, 1);
+					loadedCode = editor.getValue()
 
 					updateSketches();
 
@@ -4050,22 +4108,11 @@ function println(msg){
 						editor.gotoLine(lineNum, 1, false);
 					}
 
-					let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
-					if(searchSketches(settings.fileName, checkDemo) && demosLocked){
-						// if(settings.fileName == 'new'){
-							// window.location.hash = '#'; // *** removed for conflict w/ #bug + refs...
-						// }
-						if(settings.fileName !== 'recoding'){
-							editor.getSession().on('change', cloneSketch);
-						}
-					}
-
 					if(loader.style.display === 'none'){
 						recompile(true);
 						loadingInit = true
 					}
-				}else if(!localStorage.hasOwnProperty(sketch) && searchSketches(sketch, settings.sketches)){
-
+				}else if(getCode == null && searchSketches(sketch, settings.sketches)){
 					vex.dialog.confirm({
 						message:'Sketch code missing, remove from list?',
 						callback: function(value){
@@ -4084,6 +4131,19 @@ function println(msg){
 						loadDefault();
 					}
 				}
+			}
+		}
+
+		function isDemo(){
+			let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
+			if(searchSketches(settings.fileName, checkDemo) && demosLocked){
+				if(settings.fileName !== 'recoding'){
+					return true
+				}else{
+					return false
+				}
+			}else{
+				return false
 			}
 		}
 
@@ -4121,8 +4181,8 @@ function println(msg){
 			}
 		});
 
-		function backupSketches(){
-			let tempSketches = exportSketchesPrepare();
+		async function backupSketches(){
+			let tempSketches = await exportSketchesPrepare();
 			tempSketches.sketches.settings = exportSettingsPrepare();
 			tempSketches.timestamp = timeStampFile();
 
@@ -4246,13 +4306,19 @@ function println(msg){
 			}
 		}
 
+		// function searchSketches(sketchName, obj){
+		// 	let sketchesFlat = JSON.stringify(obj);
+		// 	if( sketchesFlat.indexOf('"' + sketchName + '"') > -1 ) {
+		// 		return true;
+		// 	}else{
+		// 		return false;
+		// 	}
+		// }
+
 		function searchSketches(sketchName, obj){
-			let sketchesFlat = JSON.stringify(obj);
-			if( sketchesFlat.indexOf('"' + sketchName + '"') > -1 ) {
-				return true;
-			}else{
-				return false;
-			}
+			let results = filterJSON(cloneJSON(obj), 'name', sketchName);
+			// console.log(results)
+			return Object.keys(results).length > 0 ? true : false
 		}
 
 		function cloneJSON(obj){
@@ -4279,39 +4345,74 @@ function println(msg){
 			return out;
 		}
 
-		function filterJSON(obj, key, value, out, dir) {
-			if(out == undefined){
-				out = [];
-			}
-			if(Array.isArray(obj)){
-				obj.forEach(function(o){
-					if(o[key] == value){
-						if(dir !== undefined){
-							o.parent = dir;
-						}
-						if(o.type == 'folder'){
-							for( var i = 0; i < o.contents.length; i++){
-								if(o.contents[i].dup){
-									o.contents.splice(i, 1);
-								}
-							}
-							out.push(o);
-						}
+		// *** huuuuge performance issue w/ this function.. replaced below
+		// function filterJSON(obj, key, value, out, dir) {
+		// 	if(out == undefined){
+		// 		out = [];
+		// 	}
+		// 	if(Array.isArray(obj)){
+		// 		// console.log([dir, obj.length])
+		// 		obj.forEach(function(o){
+		// 			if(o[key] == value){
+		// 				if(dir !== undefined){
+		// 					o.parent = dir;
+		// 				}
+		// 				if(o.type == 'folder'){
+		// 					for(var i = 0; i < o.contents.length; i++){
+		// 						if(o.contents[i].dup){
+		// 							o.contents.splice(i, 1);
+		// 						}
+		// 					}
+		// 					out.push(o);
+		// 				}
 
-						if(o.type == 'sketch'){
-							if(!searchSketches(o.name, out)){
-								out.push(o);
-							}
-						}
-					}
+		// 				if(o.type == 'sketch'){
+		// 					if(!searchSketches(o.name, out)){
+		// 						out.push(o);
+		// 					}
+		// 				}
+		// 			}
 
-					if(o.contents){ // *** else if or just if??
-						filterJSON(o.contents, key, value, out, o.name);
-					}
-				});
-			}
+		// 			if(o.contents){ // *** else if or just if??
+		// 				filterJSON(o.contents, key, value, out, o.name);
+		// 			}
+		// 		});
+		// 	}
 
-			return out;
+		// 	return out;
+		// }
+
+		// https://stackoverflow.com/a/72998956
+		function filterJSON(data, k, v) {
+		  var result = {}
+		  
+		  const iterate = (obj) => {
+		    if (!obj) {
+		      return;
+		    }
+		    Object.keys(obj).forEach(key => {
+		      var value = obj[key]
+		      if (typeof value === "object" && value !== null) {
+		        iterate(value)
+		        if (value[k] == v) {
+		          result[key] = value;
+		        } 
+		      }
+		    })
+		  }
+
+		  iterate(data)
+		  return result;
+		}
+
+		function functionTimer(cb){
+			const startTime = performance.now()
+
+			cb()
+			    
+			const endTime = performance.now()
+
+			console.log(`${endTime - startTime} ms`)
 		}
 
 
@@ -4390,7 +4491,8 @@ function println(msg){
 		// }
 
 		// export single sketch to JS
-		function exportSketch(sketch, customTimestamp){
+		async function exportSketch(sketch, customTimestamp){
+			let sketchCode = await p5liveDB.getItem(sketch)
 			let tempSketches = {};
 			tempSketches.version = settings.version;
 			tempSketches.revision = settings.revision;
@@ -4404,8 +4506,8 @@ function println(msg){
 				sketchDetails.mod = timeDate();
 				sketchDetails.type = 'sketch';
 				sketchDetails.code = editor.getValue();
-			}else if(localStorage.hasOwnProperty(sketch)){
-				sketchDetails.code = localStorage.getItem(sketch);
+			}else if(sketchCode != null){
+				sketchDetails.code = sketchCode;
 			}else{
 				alertMsg('Sketch code missing...');
 				return false;
@@ -4440,7 +4542,7 @@ function println(msg){
 		}
 
 		// export all/folder[s] w/ sketches to JSON
-		function exportSketchesPrepare(folder){
+		async function exportSketchesPrepare(folder){
 			let tempSketches = {}, objCopy, tempType;
 			tempSketches.version = settings.version;
 			tempSketches.revision = settings.revision;
@@ -4454,9 +4556,9 @@ function println(msg){
 				tempType = 'SKETCHES';
 			}
 			if(!demosLocked && folder === 'demos'){
-				tempSketches.structure = exportAddCode(objCopy, true);
+				tempSketches.structure = await exportAddCode(objCopy, true);
 			}else{
-				tempSketches.structure = exportAddCode(objCopy);
+				tempSketches.structure = await exportAddCode(objCopy);
 			}
 
 			// remove demos
@@ -4472,8 +4574,8 @@ function println(msg){
 			return {'sketches':tempSketches, 'type':tempType};
 		}
 
-		function exportSketches(folder){
-			let tempSketches = exportSketchesPrepare(folder);
+		async function exportSketches(folder){
+			let tempSketches = await exportSketchesPrepare(folder);
 			exportJSON(tempSketches.sketches, 'P5L_' + tempSketches.type + timeStampFile() + '.json');
 		}
 
@@ -4483,21 +4585,22 @@ function println(msg){
 			return obj;
 		}
 
-		function exportAddCode(objStructure, allowDemos) { // obj
+		async function exportAddCode(objStructure, allowDemos = false) { // obj
 			for (let k in objStructure) {
 				let ric = objStructure[k];
-
+				let getRicCode = await p5liveDB.getItem(ric.name)
 				if(ric.type == 'sketch'){
-					if(localStorage.hasOwnProperty(ric.name)){
-						ric.code = localStorage.getItem(ric.name);
+					if(getRicCode != null){
+						ric.code = getRicCode;
 					}
 				}
 
 				// if folder, recurse deeper
-				if(ric.type == 'folder' && (ric.name != 'demos') || allowDemos){
-					ric.contents = exportAddCode(ric.contents, allowDemos);
+				if(ric.type == 'folder' && ((ric.name != 'demos') || allowDemos)){
+					ric.contents = await exportAddCode(ric.contents, allowDemos);
 				}
 			};
+
 			return objStructure;
 		}
 
@@ -4728,7 +4831,11 @@ function println(msg){
 							let count, importData;
 							let jsonStructure = jsonObjList.structure;
 							recursiveDupCheck(jsonStructure); // flag dups
-							let jsonStructureDups = filterJSON(cloneJSON(jsonStructure), 'dup', false);
+							// console.log(jsonStructure)
+							// return false
+							
+							// *** wasn't being used??
+							// let jsonStructureDups = filterJSON(cloneJSON(jsonStructure), 'dup', false);
 
 							// console.log(jsonStructureDups);
 							// console.log(recursiveDupFilter(jsonStructure))
@@ -4841,7 +4948,6 @@ function println(msg){
 												parseSketches(jsonObj, legacyDemos);
 											}else{
 												// new importer from r34
-												//console.log(dupsCheckbox)
 												importSketchesParser(jsonStructure.reverse(), dupsCheckbox);
 												hideLoader();
 											}
@@ -4881,23 +4987,45 @@ function println(msg){
 		}
 
 		function importSingle(jsonStructure){
-			let importText = `Load Imported Sketch?`
-			if(!jsonStructure[0].name.includes('new_')){
-				importText += '<br><div id="importdump"><div class="import-sketch">'+icon.fileLines+' ' + jsonStructure[0].name+'</div></div>'
-			}
+			let inspectEditor;
+			let importText = `Load Imported Sketch?<br>Inspect Code and optionally modify before import.
+				<div id="importdump">
+					<div class="import-sketch">${icon.fileLines} ${jsonStructure[0].name}</div>
+				</div>
+				<div class="syncdata-header code-header">code</div>
+				<div id="inspectcode" class="popup-editor vex-long"></div>
+			`
+
 			vex.dialog.confirm({
-			unsafeMessage: importText,
-			callback: function (value) {
-				if (value) {
-					importSketchesParser(jsonStructure, false);
-					loadSketch(loadLatest());
-					setTimeout(function (){sketchScrollIntoView(true);}, 100);
+				unsafeMessage: importText,
+				callback: function (value) {
+					if (value) {
+						jsonStructure[0].code = inspectEditor.getValue()
+						importSketchesParser(jsonStructure, false);
+						setTimeout(function (){
+							loadSketch(loadLatest());
+							sketchScrollIntoView(true);
+						}, 100);
+					}
+				},
+				afterOpen: function(){
+					vexClass(this.rootEl, 'vex-padding')
 				}
-			},
-			afterOpen: function(){
-				vexClass(this.rootEl, 'vex-small')
-			}
-		})
+			})
+			inspectEditor = ace.edit("inspectcode");
+			inspectEditor.setTheme(settings.theme);
+			inspectEditor.session.setMode('ace/mode/javascript');
+			inspectEditor.setOptions({
+				showPrintMargin: false,
+				animatedScroll: false,
+				displayIndentGuides: false,
+				useWorker: true,
+				showLineNumbers: true,
+				showGutter: true,
+				tabSize: 4, useSoftTabs: false,
+			});
+			inspectEditor.setValue(jsonStructure[0].code)
+			inspectEditor.moveCursorTo(0,0);
 		}
 
 		function toggleImport(importsCheck){
@@ -4925,7 +5053,7 @@ function println(msg){
 			let dups = document.getElementById('importdump').getElementsByClassName('import-sketch dup');
 			let contents = document.getElementById('importdump').getElementsByClassName('import-contents');
 			let dirs = document.getElementById('importdump').getElementsByClassName('import-folder');
-			console.log(count +" / "+dups.length);
+			// console.log(count +" / "+dups.length);
 			for(let d of dups){
 				d.style.display = "block";
 				importCount.innerHTML = count;
@@ -4994,7 +5122,9 @@ function println(msg){
 			if(skipDups){
 				importObj = filterJSON(importObj, 'dup', false)
 			}
-			//console.log(importObj)
+			if(Object.keys(importObj).length ==0){
+				return false
+			}
 
 			recursiveImportDup(importObj, importObj);
 			importObj.forEach(function(jsonItem){
@@ -5034,12 +5164,15 @@ function println(msg){
 		}
 
 		function recursiveImportDup(obj, objHold){
+			let tempSketches = cloneJSON(settings.sketches)
+			
 			for (let k in obj) {
 				let allNames = recursiveNames(objHold);
 				let ric = obj[k];
 
-				if(searchSketches(ric.name, settings.sketches)){
-					ric.name = versionCheck(ric.name, allNames);
+				if(searchSketches(ric.name, tempSketches)){
+					ric.name = versionCheck(ric.name, tempSketches);
+					tempSketches.push(ric) // req to versionCheck future 
 				}
 
 				delete ric['dup'];
@@ -5051,13 +5184,13 @@ function println(msg){
 			};
 		}
 
-		function recursiveImportCode(obj){
+		async function recursiveImportCode(obj){
 			for (let k in obj) {
 				let ric = obj[k];
 
-				// if sketch, add to localStorage
+				// if sketch, add to ~localStorage~ » indexDB
 				if(ric.type == 'sketch'){
-					localStorage.setItem(ric.name, ric.code);
+					let addCode = await p5liveDB.setItem(ric.name, ric.code)
 				}
 
 				// if folder, go deeper
@@ -5224,7 +5357,7 @@ function println(msg){
 		}
 
 		// load demos
-		function loadDemos(force = false){
+		async function loadDemos(force = false){
 			let demosPath = 'includes/demos/P5L_demos.json?' + currentRevision;
 			if(force){
 				demosPath = 'includes/demos/P5L_demos.json?' + currentRevision + timeStamp();
@@ -5232,7 +5365,7 @@ function println(msg){
 			let request = new XMLHttpRequest();
 			request.open('GET', demosPath, true);
 			request.send();
-			request.addEventListener('load', function(){
+			request.addEventListener('load', async function(){
 				if(searchSketches('demos', settings.sketches)){
 					removeItemProcess('demos');
 				}
@@ -5243,7 +5376,7 @@ function println(msg){
 
 				updateSettings();
 				initSortable();
-				recursiveImportCode(jsonObj.structure);
+				await recursiveImportCode(jsonObj.structure);
 
 				if(settings.fileName == 'new'){
 					loadDefault();
@@ -5260,12 +5393,12 @@ function println(msg){
 			}, 200);
 		}
 
-		function parseSketches(jsonObj, legacyDemos){
+		async function parseSketches(jsonObj, legacyDemos){
 			let jsonSketches = jsonObj.sketches.reverse();
 			for(let i=0; i < jsonSketches.length; i++){
 				let sketchName = jsonSketches[i].sketchName;
 				let sketchCode = jsonSketches[i].sketchCode;
-				localStorage.setItem(sketchName, sketchCode);
+				let lfCode = await p5liveDB.setItem(sketchName, sketchCode)
 
 				// add to settings if doesn't exist
 				if(!searchSketches(sketchName, settings.sketches)) {
@@ -5424,6 +5557,14 @@ function println(msg){
 						group: {name: 'demos', pull:false, put:false},
 						filter: '.demo'
 					});
+
+					// sub demos
+					document.querySelectorAll('#demofolder .item-folder').forEach((s) => {
+						new Sortable(s, {
+							group: {name: 'demos', pull:false, put:false},
+							filter: '.demo'
+						});
+					});
 				}
 
 				if(settings.refresh){
@@ -5566,6 +5707,7 @@ function println(msg){
 					callback: function (value) {
 						if(value){
 							let cleanValue = versionCheck(value)
+							console.log(cleanValue)
 							addFolderProcess(cleanValue, folderName);
 						}
 					},
@@ -5593,8 +5735,8 @@ function println(msg){
 			getOrder();
 		}
 
-		function inspectItem(itemName, itemLocked){
-			let inspectCode = localStorage.getItem(itemName);
+		async function inspectItem(itemName, itemLocked){
+			let inspectCode = await p5liveDB.getItem(itemName);
 			let inspectEditor;
 
 			vex.dialog.confirm({
@@ -5610,8 +5752,8 @@ function println(msg){
 					type: 'submit',
 					text: 'SAVE',
 					className: 'my-button-class-name',
-					click: function updateCode () {
-						localStorage[itemName] = inspectEditor.getValue();
+					click: async function updateCode () {
+						let setCode = await p5liveDB.setItem(itemName, inspectEditor.getValue())
 						if(settings.safeMode){
 							settings.fileName = itemName;
 							settings.safeMode = false;
@@ -5619,7 +5761,10 @@ function println(msg){
 							window.location.hash = '#';
 							loadSketch(settings.fileName);
 						}else if(itemName == settings.fileName){
-							setTimeout(function(){editor.setValue(localStorage.getItem(itemName), 1);}, 100);
+							setTimeout(async function(){
+								let getCode = await p5liveDB.getItem(itemName)
+								editor.setValue(getCode, 1);
+							}, 100);
 						}
 					}
 				} : {
@@ -5653,7 +5798,7 @@ function println(msg){
 		}
 
 		// rename sketch/folder
-		function renameItem(itemName, itemType){
+		async function renameItem(itemName, itemType){
 			let existingItems = [];
 			for(let di of menuSketches.getElementsByClassName('drag-item')){
 				existingItems.push(di.getAttribute('data-id'));
@@ -5662,7 +5807,7 @@ function println(msg){
 			vex.dialog.prompt({
 				message: 'Rename:',
 				value: itemName, // placeholder
-				callback: function (value) {
+				callback: async function (value) {
 					if(value){
 						let newName = value.replace(/["']/g, '');
 						if(newName != '' && newName != itemName){
@@ -5686,8 +5831,9 @@ function println(msg){
 							updateSettings();
 							initSortable();
 							if(itemType == 'sketch'){
-								localStorage.setItem(newName, localStorage[itemName]);
-								localStorage.removeItem(itemName);
+								let itemCode = await p5liveDB.getItem(itemName)
+								let itemRename = await p5liveDB.setItem(newName, itemCode)
+								let itemRemove = await p5liveDB.removeItem(itemName)
 								if(settings.fileName == itemName){
 									settings.fileName = newName;
 									updateSketches();
@@ -5701,7 +5847,25 @@ function println(msg){
 					}
 				},
 				afterOpen: function(){
-					document.getElementsByClassName('vex-dialog-prompt-input')[0].select();
+					// *** abstract and use for all naming vox?
+					let input = document.getElementsByClassName('vex-dialog-prompt-input')[0]
+					let origValue = input.value
+					input.addEventListener('keyup', ()=>{
+						if(input.value != origValue){
+							let submitBtn = document.querySelector('.vex-dialog-button-primary')
+							let voxMsg = document.querySelector('.vex-dialog-message')
+							if(existingItems.indexOf(input.value) > -1){
+								submitBtn.disabled = true
+								input.style.background = 'rgb(255, 180, 180)'
+								voxMsg.innerHTML = 'Rename: <i>(taken)</i>'
+							}else{
+								submitBtn.disabled = false
+								input.style.background = '#fff'
+								voxMsg.innerHTML = 'Rename:'
+							}
+						}
+					})
+					input.select();
 					vexClass(this.rootEl, 'vex-small')
 				}
 			})
@@ -5738,12 +5902,12 @@ function println(msg){
 			})
 		}
 
-		function removeItemProcess(dataID){
+		async function removeItemProcess(dataID){
 			let nextLoad = nextSketch(1)
 
 			let selElm = document.querySelectorAll('[data-id="'+dataID+'"]');
-			selElm[0].querySelectorAll('[data-id]').forEach(function(k){
-				localStorage.removeItem(k.dataset.id);
+			selElm[0].querySelectorAll('[data-id]').forEach(async function(k){
+				let rItem = await p5liveDB.removeItem(k.dataset.id)
 				k.remove();
 			});
 
@@ -5757,7 +5921,7 @@ function println(msg){
 			// 	}
 			// }
 
-			localStorage.removeItem(dataID);
+			let dItem = await p5liveDB.removeItem(dataID)
 			if(selElm.length > 1){
 				for(let se of selElm){
 					se.remove();
@@ -5855,11 +6019,16 @@ function println(msg){
 			keyMap[event.keyCode] = event.type == 'keydown';
 		}
 
-		p5code.onkeyup = function(event) {
+		p5code.onkeyup = async function(event) {
 			keyMap[event.keyCode] = event.type == 'keydown';
-			if(!settings.cocoding.active){ // *** lockable
-				localStorage[settings.fileName] = editor.getValue();
+			let checkDemo = isDemo()
+			if(checkDemo && loadedCode != editor.getValue()){ // *** check if sketch changed before clone!
+				cloningDemo = true
+				cloneSketch()
+			}else{
+				let updateCode = await p5liveDB.setItem(settings.fileName, editor.getValue())
 			}
+			
 		};
 
 		menuCocodeChatInput.onkeydown = function(event){
@@ -7207,7 +7376,7 @@ function println(msg){
 			
 		}
 		
-		function snippetsApplyInstant(snippetCode){
+		async function snippetsApplyInstant(snippetCode){
 				let addGlobalTop = snippetCode.gt;
 				let addGlobalBottom = snippetCode.gb;
 				let addSetup = snippetCode.s;
@@ -7239,7 +7408,7 @@ function println(msg){
 				editor.focus()
 
 				if(!settings.cocoding.active){
-					localStorage[settings.fileName] = editor.getValue();
+					let updateCode = await p5liveDB.setItem(settings.fileName, editor.getValue())
 				}
 
 				// return cursor to previous position (** fix if blank line)
@@ -9540,13 +9709,13 @@ function println(msg){
 
 		// receive messages from popupCode editor
 		var msgEditor = false
-		window.addEventListener("message", function(event){
+		window.addEventListener("message", async function(event){
 			if(event.data.type == 'delta'){
 				msgEditor = true
 				let delta = event.data.msg
 				editor.gotoLine(delta.start.row + 1, delta.start.column);
 				editor.session.doc.applyDelta(delta);
-				localStorage[settings.fileName] = editor.getValue()
+				let updateCode = await p5liveDB.setItem(settings.fileName, editor.getValue())
 				msgEditor = false
 			}else if(event.data.type == 'softCompile'){
 				recompile();
@@ -9637,7 +9806,7 @@ function println(msg){
 		}
 
 		/* Sketches Congrats */
-		function sketchesCounter(){
+		async function sketchesCounter(){
 			settings.statscount++;
 			updateSettings();
 			let txtMsg = 'P5LIVE<span class="counters">Stats</span><br><br><hr><br>';
@@ -9650,7 +9819,7 @@ function println(msg){
 			let sketchStats = {long:{count:0, name:''}, short:{count:9999, name:''}};
 			for(let is of document.querySelectorAll('.item-sketch:not(.demo)')){
 				let grabName = is.getAttribute('data-id');
-				let grabSketch = localStorage.getItem(grabName);
+				let grabSketch = await p5liveDB.getItem(grabName);
 				if(grabSketch !== null){
 					totalChars += grabSketch.replace('\n', '').replace('\t', '').length;
 					totalLines += grabSketch.split('\n').length;
@@ -9668,17 +9837,17 @@ function println(msg){
 			txtMsg += totalLines.toLocaleString()+'<span class="counters">Lines</span><br>';
 			txtMsg += sketchStats.short.count.toLocaleString()+'<span class="counters">Shortest ('+sketchStats.short.name+')</span><br>';
 			txtMsg += sketchStats.long.count.toLocaleString()+'<span class="counters">Longest ('+sketchStats.long.name+')</span><br>';
-			txtMsg += (totalChars/1000000).toLocaleString()+' / 5.0<span class="counters">Mb (localStorage limit)</span><br>';
+			txtMsg += (totalChars/1000000).toLocaleString()+' <span class="counters">Mb (IndexDB Storage)</span><br>';
 			alertMsg(txtMsg);
 		}
 
 		// *** add to stats with GUI for cleanup, list sketches with export/trash option
-		function sketchesStats(){
+		async function sketchesStats(){
 			let totalStats = {count:0, size:0}
 			let sketchesList = []
 			for(let is of document.querySelectorAll('.item-sketch:not(.demo)')){
 				let grabName = is.getAttribute('data-id');
-				let grabSketch = localStorage.getItem(grabName);
+				let grabSketch = await p5liveDB.getItem(grabName);
 				if(grabSketch !== null){
 					let totalChars = grabSketch.replace('\n', '').replace('\t', '').length;
 					// totalLines += grabSketch.split('\n').length;

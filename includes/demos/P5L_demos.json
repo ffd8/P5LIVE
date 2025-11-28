@@ -18,7 +18,7 @@
           "name": "recoding",
           "mod": "1713483337942",
           "type": "sketch",
-          "code": "function setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\t\n}\n\nfunction draw() {\n\t\n// }fjijwefowef"
+          "code": "// volatile recoding space, clone to save anything here\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\t\n}\n\nfunction draw() {\n\t\n }"
         },
         {
           "name": "_meta",
