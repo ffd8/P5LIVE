@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.7.2  
+v 1.7.5 - beta 1  
 cc [teddavis.org](http://teddavis.org) – 2019 - 2025  
 p5.js collaborative live-coding vj environment!
 

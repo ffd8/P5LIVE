@@ -899,6 +899,11 @@ h2{
 	50%	 { opacity: 1 }
 	100% { opacity: .25 }
 }
+@keyframes sync-50 {
+	0%	 { opacity: .5 }
+	50%	 { opacity: 1 }
+	100% { opacity: .5 }
+}
 button:disabled,
 button[disabled]{
 	opacity:.25;
@@ -1645,6 +1650,9 @@ li{
 }
 .pulse{
 	animation:sync 1s infinite
+}
+.pulse-slow{
+	animation:sync-50 2s infinite
 }
 #presetname-input{
 	margin:10px 0 10px 0;

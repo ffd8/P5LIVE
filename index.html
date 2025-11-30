@@ -772,8 +772,8 @@ function println(msg){
 		// 'use strict' // *** was for ace?
 
 		/* INIT */
-		let currentVersion = '1.7.2';
-		let currentRevision = 55;
+		let currentVersion = '1.7.5b1';
+		let currentRevision = 56;
 		let developBranch = false;
 		let p5Version = 1 // default is 1.0+
 
@@ -1339,16 +1339,19 @@ function println(msg){
 
 			if(recoding.session.history.length > 0){
 				if(settings.fileName != 'recoding'){
-					loadSketch('recoding')
+					loadSketch('recoding') // *** set code as first frame
 				}
-				setTimeout(function(){sketchScrollIntoView(true)}, 100)
-				if(!recoding.playing){
-					recoding.play()
-					recoding.elms.btns.play.innerHTML = icon.pause
-				}else{
-					recoding.stop()
-					recoding.elms.btns.play.innerHTML = icon.play
-				}
+				setTimeout(function(){
+					sketchScrollIntoView(true)
+					if(!recoding.playing){
+						recoding.play()
+						recoding.elms.btns.play.innerHTML = icon.pause
+					}else{
+						recoding.stop()
+						recoding.elms.btns.play.innerHTML = icon.play
+					}
+				}, 100)
+				
 			}
 		}
 
@@ -1442,6 +1445,7 @@ function println(msg){
 		icon.export = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-small feather-download"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>';
 		icon.eye = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
 		icon.fileLines = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-file-text"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>';
+		icon.fileLocked = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14,2H6c-1.1,0-2,.9-2,2v16c0,1.1.9,2,2,2h12c1.1,0,2-.9,2-2v-12l-6-6Z" fill="none"/><polyline points="14 2 14 8 20 8"/><g><rect x="7" y="12.44" width="10" height="6.11" rx="2" ry="2" /><path d="M9.22,12.44v-2.22c0-1.53,1.24-2.78,2.78-2.78s2.78,1.24,2.78,2.78v2.22" fill="none"/></g></svg>';
 		icon.filter = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-filter"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>';
 		icon.folderEmpty = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>';
 		icon.folderCollapse = '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-folder-minus"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="9" y1="14" x2="15" y2="14"></line></svg>';
@@ -4067,6 +4071,9 @@ function println(msg){
 				*/
 
 			}else {
+				// disable any locked sketches
+				// unlockAll() // *** better w/wo?
+
 				// catch RECODING
 				if(recodingCheck() && settings.fileName === 'recoding' && sketch !== settings.fileName){
 					recodingStop()
@@ -4738,6 +4745,9 @@ function println(msg){
 			}
 			vex.dialog.alert({
 				unsafeMessage:'Error importing. <br>Only P5LIVE '+type+' are accepted.',
+				afterOpen: ()=>{
+					hideLoader();
+				}
 			})
 		}
 
@@ -4766,7 +4776,7 @@ function println(msg){
 				let reader = new FileReader();
 				reader.onload = function(data) {
 					if(!IsJsonString(data.target.result)){
-						hideLoader();
+						// hideLoader();
 						let importLines = data.target.result.split('\n')
 						let header = importLines[0].substring(3, importLines[0].length)
 
@@ -4799,7 +4809,7 @@ function println(msg){
 
 						let tempStructure = [{'type':'sketch', 'name':filename, 'mod':tc, 'code':importLines.join('\n')}]
 						importSingle(tempStructure)
-
+						hideLoader();
 
 						return;
 					}else{
@@ -4814,6 +4824,7 @@ function println(msg){
 						}
 
 						if(jsonObj.hasOwnProperty('type') && jsonObj.type === 'RECODING'){
+							hideLoader()
 							if(recoding.elms.range !== undefined){
 								recoding.elms.range.value = 0
 							}
@@ -4894,7 +4905,7 @@ function println(msg){
 							importData += recursiveImportWarning(jsonStructure, '', '');
 							importData += '</div>';
 
-							hideLoader();
+							
 							// first confirm importing of whole structure/sketches
 							vex.dialog.confirm({
 								unsafeMessage:importData,
@@ -4911,8 +4922,8 @@ function println(msg){
 										}
 
 										if(!isBackup || (isBackup && isBackupSketches)){
-											loaderSub.innerHTML = 'importing sketches...';
-											showLoader();
+											// loaderSub.innerHTML = 'importing sketches...';
+											// showLoader();
 											if(legacyImport(jsonObj)){
 												let legacyDemos = ["new", "P5LIVE_meta", "P5LIVE_COCODING_meta", "bwEllipse", "easeFunction", "sinStrings", "wanderingWorm", "audioAnalysis", "webgl_primatives", "webgl_sphereBox", "slidersGrid", "textToPoints", "basel.codes", "this is a really long name", "osc_setup", "midi_setup"];
 												jsonStructure.forEach(function(jsonItem){
@@ -4949,9 +4960,9 @@ function println(msg){
 											}else{
 												// new importer from r34
 												importSketchesParser(jsonStructure.reverse(), dupsCheckbox);
-												hideLoader();
+												// hideLoader();
 											}
-											hideLoader();
+											// hideLoader();
 										}
 										// if backup, check settings import
 										if(isBackupSettings){
@@ -4963,6 +4974,7 @@ function println(msg){
 								},
 								afterOpen: function(){
 									vexFocus();
+									hideLoader();
 								}
 							})
 						}else{
@@ -4977,13 +4989,11 @@ function println(msg){
 								return false;
 							}
 						}	
-					}
-
-					
+					}					
 				}
 				reader.readAsText(data[i]);
 			}
-			hideLoader();
+			
 		}
 
 		function importSingle(jsonStructure){
@@ -5499,14 +5509,21 @@ function println(msg){
 							}
 
 							let selSelf = 'loadSketch(\''+d.name+'\');';
+							let curSel = false
 							if(d.name == settings.fileName && !settings.cocoding.active){
+								curSel = true
 								selClass = 'sketch-selected';
 								if(curFolder !== 'demos' && parFolder !== 'demos'){
 									selSelf = `renameItem(\'${d.name}\', \'sketch\')`
 								}
 							}
 
-							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + '" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+'><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;'+selSelf+'">'+icon.fileLines + '<div class="item-label">' +d.name+'</div></div></li>';
+							let checkLocked = isLocked(d)
+							let locked = checkLocked ? `<span class="${curSel ? 'pulse-slow':''}">${icon.fileLocked}</span>` : icon.fileLines
+							let lockedTitle = checkLocked ? 'Read-Only':''
+							let lockTippy = checkLocked ? 'tippy-left':''
+
+							html +='<li class="item-sketch menu-sketch-holder ' + selClass + demoClass + ' ' +lockTippy +'" data-type="sketch" data-mod="'+d.mod+'" data-id="'+d.name+'" '+navSketch+' data-title="'+lockedTitle+'"><div class="menu-sketch-nav"></div><div class="menu-sketch '+marq+'" onclick="navMouseOver = false;'+selSelf+'">'+ locked + '<div class="item-label">' +d.name+'</div></div></li>';
 						}else if(d.type == 'folder'){
 							curFolder = d.name;
 							let iconSel = icon.folderExpand;
@@ -5653,7 +5670,15 @@ function println(msg){
 				}
 
 			}else if(elmType == 'sketch'){
+
 				if(elmLevel === 1){
+					let sketch = searchJSON(settings.sketches, 'name', elmID)[0]
+					let lockedIcon = icon.unlock
+					if(sketch.hasOwnProperty('locked') && sketch.locked){
+						lockedIcon = icon.lock
+					}
+
+
 					let dateMod = elm.parentNode.parentNode.getAttribute('data-mod')
 					let tippyDate = ''
 					if(dateMod){
@@ -5661,7 +5686,7 @@ function println(msg){
 					}
 
 					elm.parentNode.setAttribute('onmouseleave', 'navMouseOver=false;showNav(this.parentNode, \'' + elmID + '\', \''+elmType+'\');');
-					elm.parentNode.innerHTML = '<a style="display:none;" class="menu-sketch-button tippy" onclick="lockItem(\''+elmID+'\')" data-title="Lock">'+icon.lock+'</a><a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more tippy" '+tippyDate+'>'+icon.moreHorizontal+'</a>';
+					elm.parentNode.innerHTML = '<a style="" class="menu-sketch-button tippy nav-lockitem" onclick="lockItem(this, \''+elmID+'\')" data-title="Lock">'+lockedIcon+'</a><a class="menu-sketch-button tippy" onclick="inspectItem(\''+elmID+'\')" data-title="Inspect">'+icon.alignLeft+'</a><a class="menu-sketch-button tippy" onclick="renameItem(\''+elmID+'\', \''+elmType+'\')" data-title="Rename">'+icon.rename+'</a><a class="menu-sketch-button tippy" onclick="exportSketch(\''+elmID+'\')" data-title="Export">'+icon.export+'</a><a class="menu-sketch-button tippy" onclick="removeItem(\''+elmID+'\', \''+elmType+'\')" data-title="Remove">'+icon.remove+'</a><a class="menu-sketch-button tippy" data-title="Pin Sketch" style="display:none;">'+icon.bookmark+'</a><a class="menu-sketch-button menu-more tippy" '+tippyDate+'>'+icon.moreHorizontal+'</a>';
 				}else{
 					if(!navMouseOver){
 						navMouseOver = true;
@@ -5733,6 +5758,39 @@ function println(msg){
 				menuSketches.innerHTML = newFolder + tempHTML;
 			}
 			getOrder();
+		}
+
+		function isLocked(item){
+			if(item.hasOwnProperty('locked') && item.locked){
+				return true
+			}else{
+				return false
+			}
+		}
+
+		function unlockAll(){
+			for(let s of settings.sketches){
+				if(s.hasOwnProperty('locked') && s.locked){
+					s.locked = false
+				}
+			}
+			updateSettings()
+			initSortable()
+		}
+
+		function lockItem(svgElm, sketchName){
+			let sketch = searchJSON(settings.sketches, 'name', sketchName)[0]
+			if(!sketch.hasOwnProperty('locked') || !sketch.locked){
+				sketch.locked = true
+			}else{
+				sketch.locked = false
+			}
+			updateSettings()
+			initSortable()
+			// console.log(sketch)
+			// console.log([svgElm, sketchName])
+			// let selElm = document.querySelector('[data-id="'+sketchName+'"]') // nav-lockitem
+			// console.log(selElm)
 		}
 
 		async function inspectItem(itemName, itemLocked){
@@ -6026,7 +6084,10 @@ function println(msg){
 				cloningDemo = true
 				cloneSketch()
 			}else{
-				let updateCode = await p5liveDB.setItem(settings.fileName, editor.getValue())
+				if(!isLocked(searchJSON(settings.sketches, 'name', settings.fileName)[0])){
+					console.log('locked')
+					let updateCode = await p5liveDB.setItem(settings.fileName, editor.getValue())
+				}
 			}
 			
 		};
