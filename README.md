@@ -42,18 +42,18 @@ p5.js collaborative live-coding vj environment!
 
 - <img class="svg" src="includes/icons/file-plus.svg" height="12px"> Create New Sketch or `CTRL + N` and start coding!  
 - Live-coding active by default, `CTRL + ENTER` to force recompile.  
-- Sketches are auto-saved to localStorage on every keystroke.  
+- Sketches are auto-saved to localStorage + IndexDB on every keystroke.  
 
 ## INSTALL
 Online »  [p5live.org](https://p5live.org)  
-Offline » [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-mode) *(or see below for instructions)*
+Offline » [github.com/ffd8/p5live](https://github.com/ffd8/P5LIVE#offline-mode) *(see OFFLINE-MODE at bottom for instructions)*
 
 ## SAVING
-Sketches are **_ONLY_** saved in your browser's localStorage(!).  
+Sketches are **_ONLY_** saved in your browser's localStorage + IndexDB(!).  
 Export all (<img class="svg" src="includes/icons/download.svg" height="12px">) sketches + settings regularly.  
 Clearing browser history/data will likely erase all sketches + settings.
 
-localStorage is unique and isolated per http[s] / domain / port,  
+localStorage + IndexDB are unique and isolated per http[s] / domain / port,  
 so export/import all sketches to migrate between online / offline / browsers.  
 Simply use `Settings Panel`» `Backup` » `Now` to export all settings + sketches.
 
@@ -160,15 +160,18 @@ Type in keywords to match names of sketches and folders, filtering only those re
 Optionally, toggle `<>` to search through source code of all sketches.
 
 #### Sketch  
+<img src="includes/images/menu-sketch-selected.png" width="209px">  
 <img src="includes/images/menu-sketch-nav-9.png" width="209px">  
-<img src="includes/images/menu-sketch-nav-expanded-9.png" width="209px">  
-
+<img src="includes/images/menu-sketch-nav-expanded-10.png" width="209px">  
+<img src="includes/images/menu-sketch-locked.png" width="209px">
+  
 - Load Sketch, click on name.
 - Click on loaded sketch (green) to rename.
 - <img class="svg" src="includes/icons/more-horizontal.svg" height="12px"> Hover to view contextual options  
+	- <img class="svg" src="includes/icons/unlock-mod.svg" height="12px"> Lock,  read-only for remixig during performances.  
 	- <img class="svg" src="includes/icons/align-left.svg" height="12px"> Inspect,  view/edit code as popup.  
 	- <img class="svg" src="includes/icons/edit-3.svg" height="12px"> Rename, give sketch new name.  
-	- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export single sketch as JSON file.  
+	- <img class="svg" src="includes/icons/download.svg" height="12px"> Export, export single sketch as JS file.  
 	- <img class="svg" src="includes/icons/trash-2.svg" height="12px"> Remove, delete sketch after confirmation.  
 - Sort, click + hold + drag to desired order.  
 - Place in folder, slowly drag + drop into/over folder.
@@ -220,6 +223,8 @@ A recompile when nothing has changed (and `live-coding` active), triggers a hard
 If in doubt or not seeing changes, run a hardCompile, `CTRL + SHIFT + ENTER`. 
 
 `frameCount`, `mouseX`, `mouseY` are continous per recompile for smooth refreshes.
+
+The first reference of `background()` in your code, sets the background of P5LIVE, so that each hardCompile is smooth and the entire website uses that background color. Alternatively, you can use `&background=0` in the URL to disable all backgrounds, for usage in a transparent-browser (pending).
 	
 ### AUTOCOMPLETE
 Custom autocomplete with p5.js functions and constants has been implemented!  
@@ -342,6 +347,7 @@ Ace Editor also has the ability to have autocomplete snippets of code blocks. To
 - `hydraonly`, replace all code with this to only use hydra-synth
 - `canvas`, a canvas only sketch
 - `sandbox`, adds //sandbox start/stop for eval hydra code
+- `strudel` adds // strudel start/stop for eval strudel code
 - `mouse`, adds `function mousePressed(){}`
 - `key`, adds `function keyPressed(){}`
 - `preload`, adds `function preload(){}`
@@ -440,16 +446,56 @@ See `DEMOS » _HY5` + `DEMOS » _HYDRA` for additional examples.
 See [HY5](https://github.com/ffd8/hy5) for details of Hydra + p5.js.
 
 ### STRUDEL
-One can code music on the fly using [Strudel](https://strudel.cc/), which is now accessible from within P5LIVE (very rudimentary first steps). The workflow is similar to `// sandbox`, however we use `// strudel` as an open and closer of any code that should be evaluated by Strudel. Unfortunately there's no visual feedback (yet..?!) like the Strudel REPL editor, but hopefully soon. An alternative overlay with the REPL editor is also in the works.
+One can code music on the fly using [Strudel](https://strudel.cc/), which is now accessible from within P5LIVE! The workflow is similar to `// sandbox`, however we use `// strudel` as an open and closer of any code that should be evaluated by Strudel. Type `strudel` + `TAB Key` to add this snippet to your code.
 
 ```js
 // strudel
-$: s("<bd sd, hh*4>")//.bank("CasioRZ1")
-.room(.5)
-.delay(.5)
+$: s("bd(3,8) sd, hh*<4 8 16>").dec(.2).delay(.4)
 // strudel
 ```
 To stop the audio, either use `hush()`, `_$:` or just comment out everything.
+
+#### HAP TRIGGER
+We can directly write p5.js code or change global variables on every `hap` (happening/event), ie on each trigger within a pattern. This allows you to synchronize your visuals with specific instruments, notes, effects of your pattern. To do so, use the `.p5live()` custom function (type `.p5live` + `TAB` for snippet). Code within that space, will run on any event, or filter with if statements per `hap.s` for each sound. Enable the `console.log` to monitor what's available, including things like `hap.pan` to have your visuals follow the current pan position?! While direct drawing to the canvas is possible, you'll more likely want to set variable values that you react upon within your `draw()` function.
+
+```js
+// strudel
+$: s("bd(3,8) sd, hh*<4 8 16>").dec(.2).delay(.4)
+.pan(sine.slow(2))
+.p5live(()=>{
+	//console.log(hap)
+	if(hap.s == 'hh'){ 
+		// render to each high-hat, position with pan
+		circle(hap.pan * width, height/2, 100)
+	}
+})
+// strudel
+```
+
+#### VISUALS INFLUENCE STRUDEL
+We can also pass values from the rest of our sketch intro Strudel, so that the audio reacts to our visuals! This can be any global variable, function, etc etc. To do so, we just have to use `signal(() => p5live.foo)`, where `foo` is your variable or function.
+
+```js
+// strudel
+$: s("bd(3,8) sd, hh*<4 8 16>").dec(.2).delay(.4)
+.pan(signal(() => p5live.random(1))) // use p5.js' random()
+// strudel
+```
+
+#### STRUDEL VISUALS CANVAS
+There are great visualizations built into Strudel (`pianoroll()`, `spectrum()`, `scope()`). When calling it at the end of your chain, Strudel dynamically creates a canvas with those visuals. Within P5LIVE we can access both the `<canvas>` element itself (in order to adjust CSS or ____) and we can grab it as a texture within p5.js for building volumetric visualizations!? Use these within p5.js' `draw()` or in the `//sandbox` when using Hydra.
+
+```js
+strudel.frame // iframe that loads strudel (custom API access?)
+
+strudel.canvas // access Strudel's <canvas> element
+init({src:strudel.canvas}) // usage within Hydra
+
+strudel.hide() // hide the canvas, strudel.hide(0) to reveal
+
+strudel.get() // returns p5 image called `st0` or use directly
+texture(st0) // when first calling `strudel.get()` and in WEBGL mode
+```
 
 ### ASSETS
 Loading custom assets (image/font/obj/audio/...):  
@@ -481,7 +527,7 @@ This is also great for PIP if running multiple instances of offline-mode. You ca
 The popup editor is read/write, so be careful while typing, as all keypresses are saved. It lacks fancy P5LIVE shortcuts/snippets etc – as it's more intended as a separate projection of what you are doing in main window (same editor style, theme, position, pulse of main code).
 
 ### EXPORT / IMPORT
-Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.js`/`P5L_*****.json` into the browser. Single sketches are now imported and exported as plain .js for embedding anywhere. 
+Beyond exporting all sketches regularly (**_backup!_**) – you can export single sketches and/or entire folders (click the export icon next to their name). To re-import, click the import button in the Sketches panel or simply `drag + drop` the `P5L_*****.js`/`P5L_*****.json` into the browser. Single sketches are now imported and exported as plain .js for embedding anywhere. You can also preview and modify a single sketch code prior to importing.
 
 See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals.  
 
@@ -676,7 +722,21 @@ Install offline-mode to live-code without internet, load local assets,  and comm
 
 **Port `5001` is now default** since MacOS activated `5000` for AirPlay in 2021. If you've used P5LIVE offline in the past, start in a custom port, ie `npm start 5000`, do a complete backup from the Settings panel, then startup again with `npm start` and reimport that file for sketches and settings. 
 
-Alternatively, you can run multiple instances of P5LIVE offline (strange experiments galore!?) by adding any other port number to `npm start` command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localStorage which is unique and isolated per `domain:port`.
+Alternatively, you can run multiple instances of P5LIVE offline (strange experiments galore!?) by adding any other port number to `npm start` command above, ie: `npm start 5010`. Remember P5LIVE sketches are stored in localStorage + IndexDB which is unique and isolated per `domain:port`.
+
+### UPDATE
+To update P5LIVE offline: 
+
+- backup `now` from the settings panel
+- stop process in Terminal
+- download and expand the latest release
+- select all contents from new release 
+- drag into existing `~/Documents/P5LIVE` directory, replacing all items
+- run `npm install` once to make sure all is up to day
+- run `npm start` to reboot offline
+- refresh browser window
+
+When you haven't modified the `/includes` directory, you shouldn't lose any data – just be sure to replace all the contents within the directory and not the P5LIVE directory itself!
 
 ### HTTPS
 If using offline server, you may want to COCODE with peers on the same local network or even remotely around the world. With p5.sound always enabled, a `localhost` or `https` connection is now required regardless of mic being active. While you access via `localhost`, all connected peers are simply `http` by default, therefore we can use an http-proxy to tunnel `https` traffic to our `localhost`!

@@ -1,6 +1,6 @@
 {
-  "version": "1.7.0",
-  "revision": 54,
+  "version": "1.7.5 - beta 1",
+  "revision": 56,
   "structure": [
     {
       "name": "demos",
@@ -119,6 +119,12 @@
               "mod": "1755826561973",
               "type": "sketch",
               "code": "/*\t\n\t_audio_XYscope // cc teddavis.org 2025\n\t\n\tXYscope.js » live-coding for vector graphics on vector displays!\n\tgraphics » audio » graphics = 'what you see is what you hear'\n\tdocs: https://teddavis.org/xyscopejs/\n*/\n\nlet libs = ['https://teddavis.org/xyscopejs/xyscope.js', 'includes/libs/xyscope.js']\nlet xy;\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\n\txy = new XYscope(this)\n\txy.canvas() // resize to fullscreen 1:1 ratio\n}\n\nfunction draw() {\n\txy.drawXY() // virtual XY-mode scope via XXY\n\txy.limitPath() // ignore points beyond canvas\n\n\txy.freq(2.5) // 50 default\n\txy.clearWaves() // reset shape buffer\n\n\t// draw stuff here\n\ttranslate(width / 2, height / 2)\n\txy.textAlign(CENTER, CENTER);\n\txy.textSize(width / 8)\n\txy.text('P5LIVE', 0, 0)\n\txy.circle(0, 0, frameCount%height)\n\n\txy.buildWaves() // shape buffer to sound\n}\n\nfunction mousePressed() {\n\txy.resume()\n}"
+            },
+            {
+              "name": "_audio_strudel",
+              "mod": "1764540545337",
+              "type": "sketch",
+              "code": "/*\t\n\t_audio_strudel // cc teddavis.org 2025\n\t\n\tStrudel for live-coding music and COCODING A/V collabs!\n\tdocs: https://strudel.cc/learn\n\tlearn: https://glfmn.io/presentations/algorave/\n*/\n\n// strudel\n_$: n(\"<0 1 <2 5 ~> 3>*<1 2>\") // remove '_' to unmute\n\t.scale(\"[c g, c2, e]:minor\")\n\t.s(\"<saw square>\")\n\t.dec(.2).room(.3).seg(4)\n\t.velocity(signal(()=>p5live.random(.8, 1.5)))\n\n$: s(\"bd(3,8) sd, hh*<4 8 16>\")\n\t.dec(.2).delay(.4)\n\t.color(\"cyan magenta yellow\")\n\t.pianoroll()\n\t.p5live(() => {\n\t\t// console.log(hap)\n\n\t\t// filter for bd and sd events\n\t\tif(hap.s == 'bd') {\n\t\t\tbd = 1\n\t\t}\n\n\t\tif(hap.s == 'sd') {\n\t\t\tsd = 1\n\t\t}\n\t})\n\n// hush() // silence everything above it\n// strudel\n\n// store some global vars\nvar bd = 0, sd = 0\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, WEBGL)\n\n}\n\nfunction draw() {\n\tclear()\n\torbitControl(3)\n\tangleMode(DEGREES)\n\trotateY(frameCount / 3)\n\tnoStroke()\n\n\tstrudel.hide(1) // 0 to show\n\n\tstrudel.get()\n\ttexture(st0)\n\n\ttorus(height / 3, bd * 100)\n\n\trotateX(sin(frameCount * 1) * 30)\n\tbox(height / 4, height / 4, sd * height)\n\n\tbd = ease(.2, bd, .02)\n\tsd = ease(0, sd, .05)\n}"
             }
           ]
         },
@@ -208,7 +214,7 @@
               "name": "_typo_opentype",
               "mod": "1693699223697",
               "type": "sketch",
-              "code": "/*\t\n\t_typo_opentype // cc teddavis.org 2021\t\n\tisolated glyphs + opentype.js features\n*/\n\nlet libs = ['https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js']\n\nlet fontPath = 'includes/demos-data/fonts/RobotoMono-Regular.otf'\nlet path\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\tnoFill()\n\n\tgenOpenType('P5LIVE', width / 4)\n}\n\nfunction draw() {\n\tbackground(0, 5)\n\ttranslate(width / 2, height / 2)\n\n\tlet osc = sin(frameCount * .01) * 15\n\n\t// cycle path if ready\n\tif(path) {\n\t\tlet c = 0\n\t\tfor(let cmd of path.commands) {\n\t\t\tif(cmd.type === 'M') {\n\t\t\t\t// start of each glyph\n\t\t\t\tpush()\n\t\t\t\trotate(radians(osc))\n\t\t\t\tbeginShape()\n\t\t\t\tvertex(cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'L') {\n\t\t\t\tvertex(cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'C') {\n\t\t\t\tbezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'Q') {\n\t\t\t\tquadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'Z') {\n\t\t\t\t// end of each glyph\n\t\t\t\tstroke((c * 5 + frameCount) % 255);\n\t\t\t\tendShape(CLOSE)\n\t\t\t\tpop()\n\t\t\t}\n\t\t\tc++\n\t\t}\n\t}\n}\n\nfunction genOpenType(txtString, txtSize) {\n\topentype.load(fontPath, function(err, f) {\n\t\tif(err) {\n\t\t\tprint('Error loading font: ' + err)\n\t\t} else {\n\t\t\t// grab once for measuring\n\t\t\tpath = f.getPath(txtString, 0, 0, txtSize)\n\t\t\tlet bounds = path.getBoundingBox()\n\t\t\t\n\t\t\t// reposition to 0, 0 as center (for WEBGL, rotate, etc)\n\t\t\tpath = f.getPath(txtString, -(bounds.x2 - bounds.x1) / 2, (bounds.y2 - bounds.y1) / 2, txtSize)\n\t\t}\n\t})\n}"
+              "code": "/*\t\n\t_typo_opentype // cc teddavis.org 2021\t\n\tisolated glyphs + opentype.js features\n*/\n\nlet libs = ['https://cdn.jsdelivr.net/npm/opentype.js@latest/dist/opentype.min.js', 'includes/libs/opentype.min.js']\n\nlet fontPath = 'includes/demos-data/fonts/RobotoMono-Regular.otf'\nlet path\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight)\n\tnoFill()\n\n\tgenOpenType('P5LIVE', width / 4)\n}\n\nfunction draw() {\n\tbackground(0, 5)\n\ttranslate(width / 2, height / 2)\n\n\tlet osc = sin(frameCount * .01) * 15\n\n\t// cycle path if ready\n\tif(path) {\n\t\tlet c = 0\n\t\tfor(let cmd of path.commands) {\n\t\t\tif(cmd.type === 'M') {\n\t\t\t\t// start of each glyph\n\t\t\t\tpush()\n\t\t\t\trotate(radians(osc))\n\t\t\t\tbeginShape()\n\t\t\t\tvertex(cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'L') {\n\t\t\t\tvertex(cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'C') {\n\t\t\t\tbezierVertex(cmd.x1, cmd.y1, cmd.x2, cmd.y2, cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'Q') {\n\t\t\t\tquadraticVertex(cmd.x1, cmd.y1, cmd.x, cmd.y)\n\t\t\t} else if(cmd.type === 'Z') {\n\t\t\t\t// end of each glyph\n\t\t\t\tstroke((c * 5 + frameCount) % 255);\n\t\t\t\tendShape(CLOSE)\n\t\t\t\tpop()\n\t\t\t}\n\t\t\tc++\n\t\t}\n\t}\n}\n\nfunction genOpenType(txtString, txtSize) {\n\topentype.load(fontPath, function(err, f) {\n\t\tif(err) {\n\t\t\tprint('Error loading font: ' + err)\n\t\t} else {\n\t\t\t// grab once for measuring\n\t\t\tpath = f.getPath(txtString, 0, 0, txtSize)\n\t\t\tlet bounds = path.getBoundingBox()\n\t\t\t\n\t\t\t// reposition to 0, 0 as center (for WEBGL, rotate, etc)\n\t\t\tpath = f.getPath(txtString, -(bounds.x2 - bounds.x1) / 2, (bounds.y2 - bounds.y1) / 2, txtSize)\n\t\t}\n\t})\n}"
             },
             {
               "name": "_typo_google-fonts",
@@ -318,7 +324,7 @@
               "name": "_hardware_ar",
               "mod": "1731690450199",
               "type": "sketch",
-              "code": "/*\n\t_hardware_ar // cc tiborudvari.com 2024\n\tcopy + paste as COCODING session, goto URL on AR device, go wild!\n\t\n\ttibor's research : https://www.tiborudvari.com/projects/spatial-p5\n\tp5.xr : https://p5xr.org/\n\ton ar device, disable to autostart: chrome://flags/#webxr-enforce-user-activation\n\timmersive web emulator: https://p5xr.org/#/quick-start/emulator\n*/\n\nlet libs = ['https://cdn.jsdelivr.net/npm/p5.xr@latest/dist/p5xr.min.js']\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, AR);\n}\n\nfunction draw() {\n\tscale(1, -1) // fix AR vs p5 inverted y-axis\n\n\tpush();\n\ttranslate(0, .47, -0.5);\n\trotateY(frameCount * .002)\n\tbox(.1, .1, .1)\n\tpop();\n}"
+              "code": "/*\n\t_hardware_ar // cc tiborudvari.com 2024\n\tcopy + paste as COCODING session, goto URL on AR device, go wild!\n\t\n\ttibor's research : https://www.tiborudvari.com/projects/spatial-p5\n\tp5.xr : https://p5xr.org/\n\ton ar device, disable to autostart: chrome://flags/#webxr-enforce-user-activation\n\timmersive web emulator: https://p5xr.org/#/quick-start/emulator\n*/\n\nlet libs = ['https://cdn.jsdelivr.net/npm/p5.xr@latest/dist/p5xr.min.js', 'includes/libs/p5xr.min.js']\n\nfunction setup() {\n\tcreateCanvas(windowWidth, windowHeight, AR);\n}\n\nfunction draw() {\n\tscale(1, -1) // fix AR vs p5 inverted y-axis\n\n\tpush();\n\ttranslate(0, .47, -0.5);\n\trotateY(frameCount * .002)\n\tbox(.1, .1, .1)\n\tpop();\n}"
             }
           ]
         },
@@ -464,7 +470,7 @@
     }
   ],
   "count": {
-    "sketches": 58,
+    "sketches": 59,
     "folders": 14
   }
 }

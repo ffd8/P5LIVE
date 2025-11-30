@@ -6085,7 +6085,6 @@ function println(msg){
 				cloneSketch()
 			}else{
 				if(!isLocked(searchJSON(settings.sketches, 'name', settings.fileName)[0])){
-					console.log('locked')
 					let updateCode = await p5liveDB.setItem(settings.fileName, editor.getValue())
 				}
 			}
@@ -6751,7 +6750,7 @@ function println(msg){
 
 			// check strudel
 			strudel.found = false
-			strudel.match = editorRaw.match(/\/\/\s*strudel[\s\S]*?\/\/\s*strudel/g);
+			strudel.match = editorRaw.match(/\/\/\s*strudel\s[\s\S]*?\/\/\s*strudel/g);
 			if(strudel.match !== null){
 				strudel.found = true
 				strudel.code = strudel.match[0]
