@@ -772,8 +772,8 @@ function println(msg){
 		// 'use strict' // *** was for ace?
 
 		/* INIT */
-		let currentVersion = '1.7.5b1';
-		let currentRevision = 56;
+		let currentVersion = '1.8.0b3';
+		let currentRevision = 58;
 		let developBranch = false;
 		let p5Version = 1 // default is 1.0+
 
@@ -2848,7 +2848,6 @@ function println(msg){
 				loadSettings()
 				// *** future tour
 			})
-			
 
 			// grab p5 versions
 			let p5VersionPath = p5l.online ? 'https://data.jsdelivr.com/v1/packages/gh/processing/p5.js' : 'includes/p5/p5-versions.json'
@@ -5570,7 +5569,7 @@ function println(msg){
 				});
 
 				if(document.getElementById('demofolder') != undefined){
-					new Sortable(demofolder, {
+					new Sortable(document.getElementById('demofolder'), {
 						group: {name: 'demos', pull:false, put:false},
 						filter: '.demo'
 					});
@@ -5594,7 +5593,7 @@ function println(msg){
 				}
 
 				// scroll to selected sketch
-				sketchScrollIntoView();
+				sketchScrollIntoView(true);
 
 			}
 		}
@@ -6461,6 +6460,7 @@ function println(msg){
 			// s.sandbox.add('allow-same-origin');
 			// s.sandbox.add('allow-downloads');
 			s.style = 'position:fixed;background:none;top:0;left:0;z-index:0;border:none;width:100vw;height:100vh;pointer-events:none;'
+			// s.src = 'includes/templates/p5live-strudel.html'
 			s.srcdoc = `
 				<!DOCTYPE html>
 				<html>
@@ -6507,16 +6507,19 @@ function println(msg){
 								samples(\`\${tc}/strudel.json\`),
 							]);
 						}
+						
 						async function loadP5LIVE(){
 							
 							register('p5live', (fun, x) => x.onTrigger((hap) => {
 								(()=>{
+								// console.log(fun)
 									let funCode = fun.toString().match(/\\\{([\\s\\S]\*)\\\}/)[1].trim()
 									let hapCode = \`let hap = \${JSON.stringify(hap.value)}\\n\\n\${funCode}\` 
 									let p5f = window.parent.p5f
+									// console.log(hapCode)
 									p5f.eval(hapCode)
 								})()
-							}, false))
+							}, false)) // , false
 
 						}
 
@@ -6572,7 +6575,9 @@ function println(msg){
 							await loadSamples()
 							await loadP5LIVE()
 							// await catchHaps()
-							window.parent.strudel.init = true
+							if(window.parent !== undefined){
+								window.parent.strudel.init = true
+							}
 							
 							window.addEventListener('click', async () => {
 							let ctx = getAudioContext()
@@ -6596,17 +6601,23 @@ function println(msg){
 			`
 
 			strudel.recompile = ()=>{
+				strudel.code = strudel.code.replace(/.p5live\([\s\S]*?}\)/g, m=> {
+					return m.replace(/"/g, '\'')
+				})
+				// console.log(strudel.code)
 				let strudelMerge = strudel.code//.replaceAll('\t', '  ')//.replaceAll(/^\/\/\s*strudel/gm, '').replaceAll('\n\n', '\n')
 
-						// just always require $: syntax...
-						// let orbitMatch = strudelMerge.match(/^(?!.*_)(?!.*\/\/).*:[^minor|major|dorian|mixolydian|pentatonic|\d]/gm) // ^(?!.*_).*$
-						
-						strudelMerge += strudel.drawAll// + strudel.p5live
+				// just always require $: syntax...
+				// let orbitMatch = strudelMerge.match(/^(?!.*_)(?!.*\/\/).*:[^minor|major|dorian|mixolydian|pentatonic|\d]/gm) // ^(?!.*_).*$
+				
+				strudelMerge += strudel.drawAll// + strudel.p5live
 
-						strudel.active = true
-						if(strudel.debug){console.log('strudel - recompiled')}
-						strudel.frame.evaluate(strudel.p5live + strudelMerge)
-						recompilePulse(strudel.start, strudel.end)
+				strudel.active = true
+				if(strudel.debug){console.log('strudel - recompiled')}
+				if(strudel.frame != undefined){
+					strudel.frame.evaluate(strudel.p5live + strudelMerge)
+					recompilePulse(strudel.start, strudel.end)
+				}
 			}
 
 			strudel.p5live = `\nvar p5live = window.parent.p5f\n`
