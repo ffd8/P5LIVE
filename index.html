@@ -772,8 +772,8 @@ function println(msg){
 		// 'use strict' // *** was for ace?
 
 		/* INIT */
-		let currentVersion = '1.8.0b3';
-		let currentRevision = 58;
+		let currentVersion = '1.8.0b4v3';
+		let currentRevision = 59;
 		let developBranch = false;
 		let p5Version = 1 // default is 1.0+
 
@@ -831,7 +831,7 @@ function println(msg){
 				'softcompile':{
 					'name':'SoftCompile'
 					,'key':'ctrl+enter'
-					,'callback':'recompile()'
+					,'callback':'recompileKey()'
 				}
 				,'hardcompile':{
 					'name':'HardCompile'
@@ -1086,7 +1086,7 @@ function println(msg){
 		refList = [], downloadedRef = false, refScroll = 0, refSearch = '',
 		chars = 'abcdefghijklmnopqrstuvwxyz0123456789', // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		showNotify = false, navMouseOver = false,
-		curPos, curPositions = [], updateCursor, showCursors = false, notifyTimer, hideButtonsTimer,
+		curPos, curChange, curPositions = [], updateCursor, showCursors = false, notifyTimer, hideButtonsTimer,
 		demosLocked = true, autoCompleteExport = false,
 		syncdataEditor, syncdataPresets = [],
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
@@ -1198,6 +1198,8 @@ function println(msg){
 	       		})
             }):setTimeout(()=>{
             	// console.log('ace-snippet-instant')
+            	// console.log(e)
+            	// console.log(u.content)
             	this.insertSnippetForSelection(e, u.content)
             }),
             this.variables.M__ = this.variables.T__ = null,
@@ -1752,9 +1754,9 @@ function println(msg){
 					p5f.frameCount = ev.fc;
 				});
 
-				this.socket.on('recompile', (force)=>{
+				this.socket.on('recompile', (opts)=>{
 					syncDown();
-					buildSketch(force); //
+					buildSketch(opts); //
 					updateBackground();
 				});
 
@@ -2256,9 +2258,9 @@ function println(msg){
 				this.socket.emit('dispatchSyncEvent', ev);
 			}
 
-			recompile(force){
+			recompile(opts){
 				syncUp();
-				this.socket.emit('recompile', force);
+				this.socket.emit('recompile', opts);
 			}
 
 			sync(syncMode){
@@ -2418,6 +2420,7 @@ function println(msg){
 
 		editor.getSession().on('change', function(delta){
 			curPos = delta.start;
+			curChange = cloneJSON(delta.start);
 			curPositions.push(delta.start);
 			checkErrors();
 		});
@@ -2698,7 +2701,7 @@ function println(msg){
 				}
 
 				if(sketchLoaded && cocodingRecompile && settings.cocoding.level == 'admin'){
-					cocode.recompile(true);
+					cocode.recompile({force: true});
 					cocodingRecompile = false;
 				}
 			}else{
@@ -2815,8 +2818,12 @@ function println(msg){
 			// check if localStorage » indexDB already done
 			.then((keys)=>{
 				if(!settings.welcome){
-					if(!settings.indexDB || !keys.includes('P5LIVE-initIndexDB')){
-						console.log('P5LIVE: localStorage » indexDB')
+					if(document.querySelectorAll('.item-sketch:not(.demo)').length == 0){
+						settings.indexDB = true
+						updateSettings()
+					}else if(!settings.indexDB || !keys.includes('P5LIVE-initIndexDB')){
+						backupSketchesLS() // download current sketches to be safe
+						console.log('P5LIVE: migration of localStorage » indexDB')
 						var data = []
 						data.push(['P5LIVE-initIndexDB', null])
 						let sketchesOverview = listSketches(settings.sketches)
@@ -2830,7 +2837,7 @@ function println(msg){
 						return p5liveDB.setItems(data, (d)=>{
 							settings.indexDB = true
 							updateSettings()
-							console.log('P5LIVE: sketches now in indexDB')
+							console.log('P5LIVE: sketches now stored with indexDB')
 							// *** remove localstorage sketches??
 						})
 					}
@@ -4017,7 +4024,6 @@ function println(msg){
 		// load sketch
 		async function loadSketch(sketch, lineNum){
 			if(settings.cocoding.active){
-
 				// **** temp off for testing code replace below
 				vex.dialog.confirm({
 					message: 'Exit COCODING?',
@@ -4138,6 +4144,11 @@ function println(msg){
 					}
 				}
 			}
+
+			// jump to sketch
+			setTimeout(()=>{
+				sketchScrollIntoView(true)
+			}, 0)
 		}
 
 		function isDemo(){
@@ -4206,6 +4217,66 @@ function println(msg){
 
 			settings.backup.last = new Date().getTime();
 			updateSettings();
+		}
+
+		// legacy localStorage backup to complete 1x before switch to IndexDB
+		function backupSketchesLS(){
+			let tempSketches = exportSketchesPrepareLS();
+			tempSketches.sketches.settings = exportSettingsPrepare();
+			tempSketches.timestamp = timeStampFile();
+			exportJSON(tempSketches.sketches, 'P5L_BACKUP_localStorage_' + tempSketches.timestamp + '.json');
+		}
+
+		// export all/folder[s] w/ sketches to JSON
+		function exportSketchesPrepareLS(folder){
+			let tempSketches = {}, objCopy, tempType;
+			tempSketches.version = settings.version;
+			tempSketches.revision = settings.revision;
+
+			if(folder !== undefined){
+				let folderObj = searchJSON(settings.sketches, 'name', folder);
+				objCopy = cloneJSON(folderObj);
+				tempType = 'FOLDER_'+ folder+'';
+			}else{
+				objCopy = cloneJSON(settings.sketches);
+				tempType = 'SKETCHES';
+			}
+			if(!demosLocked && folder === 'demos'){
+				tempSketches.structure = exportAddCodeLS(objCopy, true);
+			}else{
+				tempSketches.structure = exportAddCodeLS(objCopy);
+			}
+
+			// remove demos
+			if(demosLocked){
+				tempSketches.structure = tempSketches.structure.filter(function( obj ) {
+					return obj.name !== 'demos';
+				});
+			}
+
+			let folderCount = findValues(tempSketches.structure, 'type', 'folder', 'name').length;
+			tempSketches.count = {sketches:listSketches(tempSketches.structure).length, folders:folderCount};
+
+			return {'sketches':tempSketches, 'type':tempType};
+		}
+
+
+		function exportAddCodeLS(objStructure, allowDemos) { // obj
+			for (let k in objStructure) {
+				let ric = objStructure[k];
+
+				if(ric.type == 'sketch'){
+					if(localStorage.hasOwnProperty(ric.name)){
+						ric.code = localStorage.getItem(ric.name);
+					}
+				}
+
+				// if folder, recurse deeper
+				if(ric.type == 'folder' && (ric.name != 'demos') || allowDemos){
+					ric.contents = exportAddCodeLS(ric.contents, allowDemos);
+				}
+			};
+			return objStructure;
 		}
 
 		function serverMsg(path, data, cb){
@@ -5593,7 +5664,7 @@ function println(msg){
 				}
 
 				// scroll to selected sketch
-				sketchScrollIntoView(true);
+				// sketchScrollIntoView(true);
 
 			}
 		}
@@ -6083,7 +6154,7 @@ function println(msg){
 				cloningDemo = true
 				cloneSketch()
 			}else{
-				if(!isLocked(searchJSON(settings.sketches, 'name', settings.fileName)[0])){
+				if(!settings.cocoding.active && !isLocked(searchJSON(settings.sketches, 'name', settings.fileName)[0])){
 					let updateCode = await p5liveDB.setItem(settings.fileName, editor.getValue())
 				}
 			}
@@ -6275,7 +6346,28 @@ function println(msg){
 			recompile(hard);
 		}
 
-		function recompile(force){
+		function recompileKey(){
+			if(settings.cocoding.active && !settings.cocoding.lockdown){
+				cocode.recompile({curChange: editor.getCursorPosition()})
+			}
+			recompile({curChange: editor.getCursorPosition()})
+		}
+
+		function recompile(opts = {}){
+			if(typeof opts == 'boolean' && opts){
+				opts = {force:true}
+			}
+
+			let force = undefined
+			if(opts.hasOwnProperty('force')){
+				force = opts.force
+			}
+
+			let curLine = curChange.row//editor.getSelectionRange().start.row;
+			if(opts.hasOwnProperty('curChange')){
+				curLine = opts.curChange.row
+			}
+
 
 			// catch #bug attempt to recompile while COCODING
 			if(force && settings.safeMode){
@@ -6295,9 +6387,10 @@ function println(msg){
 				})
 			}
 
-			let currline = editor.getSelectionRange().start.row;
-			let currCode = editor.session.getLine(currline);
+			// let currline = editor.getSelectionRange().start.row;
+			let curCode = editor.session.getLine(curLine);
 			curPos = editor.getCursorPosition();
+			// curChange = curPos // manual recompile of single line
 
 			// catch missing {}'s
 			let codeNoComments = removeComments(editor.getValue());
@@ -6343,21 +6436,21 @@ function println(msg){
 				}
 			}
 
-			if((currCode.search(/^\s(?:for|while)(|\s)(\()/) == -1 || !editor.getValue().match(/(\/\/).*(no.*protect)/g)) || forceRecompile || force){
+			if((curCode.search(/^\s(?:for|while)(|\s)(\()/) == -1 || !editor.getValue().match(/(\/\/).*(no.*protect)/g)) || forceRecompile || force){
 				if(validCode){
 						// buildSketch(); //
 						updateBackground();
 						if(settings.cocoding.active){
 							if(settings.cocoding.sync){
-								if(settings.cocoding.level == 'admin'){
-									buildSketch(force); //
-									cocode.recompile(force);
+								if(settings.cocoding.level == 'admin' || settings.cocoding.writemode){
+									buildSketch(opts); //
+									cocode.recompile(opts);
 								}
 							}else{
-								buildSketch(force);
+								buildSketch(opts);
 							}
 						}else{
-							buildSketch(force);
+							buildSketch(opts);
 						}
 
 						// if(settings.cocoding.active && settings.cocoding.sync && settings.cocoding.level == 'admin'){
@@ -6415,26 +6508,26 @@ function println(msg){
 			return sketchImportMap
 		}
 
-		function hydraBlock(replaceWord){
+		function hydraBlock(replaceWord, curLine){
 			let rawLines = editor.session.getLines(0, editor.session.getLength());
-			let currline = editor.getSelectionRange().start.row;
-			let currCode = editor.session.getLine(currline);
+			// let currline = editor.getSelectionRange().start.row;
+			let curCode = editor.session.getLine(curLine);
 
 			// search +/- cur pos for new lines
 			let hb = {
-				block : currCode,
-				start : currline,
-				end : currline
+				block : curCode,
+				start : curLine,
+				end : curLine
 			}
 			
-			let i = currline-1
+			let i = curLine-1
 			while(i >= 0 && rawLines[i].trimStart() != ''){
 				hb.block = editor.session.getLine(i)+ '\n' + hb.block
 				hb.start--
 				i--
 			}
 
-			i = currline+1
+			i = curLine+1
 			while(i < rawLines.length && rawLines[i].trimStart() != '' && rawLines[i].trimStart() != '\n' && !rawLines[i].includes('function')){
 				hb.block += '\n' + editor.session.getLine(i)
 				hb.end++
@@ -6601,9 +6694,17 @@ function println(msg){
 			`
 
 			strudel.recompile = ()=>{
+				
+				// catch ""s within .p5live blocks
 				strudel.code = strudel.code.replace(/.p5live\([\s\S]*?}\)/g, m=> {
 					return m.replace(/"/g, '\'')
 				})
+
+				// catch any non $:
+				// strudel.code = strudel.code.replace(/(?<!.)([^\s_\t](\w|"))/g, m=> {
+				// 	return m = `$: ${m}`
+				// })
+
 				// console.log(strudel.code)
 				let strudelMerge = strudel.code//.replaceAll('\t', '  ')//.replaceAll(/^\/\/\s*strudel/gm, '').replaceAll('\n\n', '\n')
 
@@ -6615,6 +6716,7 @@ function println(msg){
 				strudel.active = true
 				if(strudel.debug){console.log('strudel - recompiled')}
 				if(strudel.frame != undefined){
+					strudel.frame.document.body.click()
 					strudel.frame.evaluate(strudel.p5live + strudelMerge)
 					recompilePulse(strudel.start, strudel.end)
 				}
@@ -6714,7 +6816,20 @@ function println(msg){
 		}
 
 		// new technique to avoid accessing p5live_sketch.html sooo many times!
-		function buildSketch(force){
+		function buildSketch(opts = {}){
+			// console.log(opts)
+			let force = undefined
+			if(opts.hasOwnProperty('force')){
+				force = opts.force
+			}
+
+			let curLine = curChange.row//editor.getSelectionRange().start.row;
+			if(opts.hasOwnProperty('curChange')){
+				curLine = opts.curChange.row
+			}
+
+
+
 			// console.log('building sketch ' + Math.random())
 			let editorRaw = editor.getValue()
 			let editorClean = editor.getValue()
@@ -6830,12 +6945,12 @@ function println(msg){
 				// sandbox
 
 				if(sandbox.test){
-					var currline = editor.getSelectionRange().start.row;
-					var currCode = editor.session.getLine(currline);
+					// var currline = curChange.row//editor.getSelectionRange().start.row;
+					// var currCode = editor.session.getLine(currline);
 					var sandboxParts = sandbox.code.split('\n');
 					// if(sandboxParts.indexOf(currCode) > -1 && currCode.trim() != ''){
-					if(currline >= sandbox.start && currline <= sandbox.end){
-						let hb = hydraBlock('sandbox');
+					if(curLine >= sandbox.start && curLine <= sandbox.end){
+						let hb = hydraBlock('sandbox', curLine);
 						// console.log(hb.block)
 						
 						// check if added via snippet
@@ -6866,7 +6981,7 @@ function println(msg){
 				// ** add option of iframe repl?
 
 				if(strudel.found){
-					var currline = editor.getSelectionRange().start.row;
+					// var currline = curChange.row//editor.getSelectionRange().start.row;
 
 
 					// console.log(currline)
@@ -6875,7 +6990,7 @@ function println(msg){
 					
 
 					if(strudel.debug){console.log(`strudel.active: ${strudel.active}`)}
-					if((currline >= strudel.start && currline <= strudel.end) || (strudel.init && !strudel.active)){
+					if((curLine >= strudel.start && curLine <= strudel.end) || (strudel.init && !strudel.active)){
 
 						strudel.recompile()
 
@@ -8673,6 +8788,9 @@ function println(msg){
 						if(exhibitMode){
 							preventLinks()
 						}
+					},
+					afterClose: ()=>{
+						editor.focus()
 					}
 				})
 			});

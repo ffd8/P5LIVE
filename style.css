@@ -272,6 +272,9 @@ hr{
 	background:none;
 	border-width:3px;
 }
+.cursor, .cursor-label{
+	pointer-events: none;
+}
 .cursor-label{
 	color:#fff;
 	padding:2px;
@@ -516,6 +519,9 @@ h2{
 	color:#fff;
 	opacity: 1;
 	background:#444;
+}
+.menu-button.cocoding-active:hover{
+	background:#008800;
 }
 .menu-sketches{
 	height:99%;
