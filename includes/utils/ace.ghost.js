@@ -23,7 +23,15 @@ class AceGhost{
 	async animateText(message, index, cb){
 		if (index < message.length) {
 		 	// insert at cursor
-			this.editor.session.insert(this.editor.getCursorPosition(), message[index++]);
+		 	// console.log(message[index] == '\n')
+		 	// if(message[index] == '\n'){
+		 	// 	this.editor.insert( "\n")
+		 	// }else{
+			// 	this.editor.session.insert(this.editor.getCursorPosition(), message[index]);
+		 	// }
+		 	// index++
+
+		 	this.editor.session.insert(this.editor.getCursorPosition(), message[index++]);
 			// clear selection just in case there was something selected
 			this.editor.selection.clearSelection();
 			// make sure cursor is visible
