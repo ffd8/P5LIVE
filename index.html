@@ -2835,10 +2835,12 @@ function println(msg){
 			// check if localStorage » indexDB already done
 			.then((keys)=>{
 				if(!settings.welcome){
-					if(document.querySelectorAll('.item-sketch:not(.demo)').length == 0){
-						settings.indexDB = true
-						updateSettings()
-					}else if(!settings.indexDB || !keys.includes('P5LIVE-initIndexDB')){
+					// if(document.querySelectorAll('.item-sketch:not(.demo)').length == 0){
+					// 	settings.indexDB = true
+					// 	updateSettings()
+					// }else 
+					if(!settings.indexDB || !keys.includes('P5LIVE-initIndexDB')){
+						loadDefault();
 						backupSketchesLS() // download current sketches to be safe
 						console.log('P5LIVE: migration of localStorage » indexDB')
 						var data = []
