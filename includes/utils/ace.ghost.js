@@ -20,7 +20,7 @@ class AceGhost{
 		if(this.debug) console.log(txt)
 	}
 
-	animateText(message, index, cb){
+	async animateText(message, index, cb){
 		if (index < message.length) {
 		 	// insert at cursor
 			this.editor.session.insert(this.editor.getCursorPosition(), message[index++]);
@@ -59,7 +59,7 @@ class AceGhost{
 			}else{
 				this.disableEditor(false)
 				if(!settings.cocoding.active){
-					localStorage[settings.fileName] = editor.getValue();
+					let lf = await p5liveDB.setItem(settings.fileName, editor.getValue())
 				}
 
 				this.setUndoStack()

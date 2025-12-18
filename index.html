@@ -1168,43 +1168,60 @@ function println(msg){
 
 		// ghostmode snippet
 		let snippetReg = /\${\d}|\${\w+:.}|\$(?:\d+|\w+)|\$\d|\${\d:.*}/g
-		snippetManager.expandSnippetForSelection = function(e, t) {
-            var n = e.getCursorPosition(), r = e.session.getLine(n.row), i = r.substring(0, n.column), s = r.substr(n.column), o = this.snippetMap, u;
-            return this.getActiveScopes(e).some(function(e) {
-                var t = o[e];
-                return t && (u = this.findMatchingSnippet(t, i, s)),
-                !!u
-            }, this),
+		
+		// https://github.com/ajaxorg/ace/blob/35e1be52fd8172405cf0f219bab1ef7571b3363f/src/snippets.js#L376
+        snippetManager.expandSnippetForSelection = function (editor, options) {
+        var cursor = editor.getCursorPosition();
+        var line = editor.session.getLine(cursor.row);
+        var before = line.substring(0, cursor.column);
+        var after = line.substr(cursor.column);
 
-            // if ghost, grab start undostack
-            (settings.snippetsghostmode.active && u != undefined) ? editorGhost.getUndoStack() : '',
+        var snippetMap = this.snippetMap;
+        /**@type {Snippet}*/
+        var snippet;
+        this.getActiveScopes(editor).some(function(scope) {
+            var snippets = snippetMap[scope];
+            if (snippets)
+                snippet = this.findMatchingSnippet(snippets, before, after);
+            return !!snippet;
+        }, this);
 
-            u ? t && t.dryRun ? !0 : (e.session.doc.removeInLine(n.row, n.column - u.replaceBefore.length, n.column + u.replaceAfter.length),
-            this.variables.M__ = u.matchBefore,
-            this.variables.T__ = u.matchAfter,
+        // if ghost, grab start undostack
+         if(settings.snippetsghostmode.active && snippet != undefined){
+         	editorGhost.getUndoStack()
+         }
 
-            // toggle ghost/instant
-            settings.snippetsghostmode.active ? setTimeout(()=>{
-            	// console.log('ace-snippet-ghost')
-            	// *** prevent hardCompile on replace... solved?
-            	editorGhost.animateText(u.content.replace(/\${\d}/, '/*$*/').replace(snippetReg, ''), 0, ()=>{
-		            setTimeout(async ()=>{
-		            	var range = editor.find('/*$*/')
-		            	editor.replace('')
-		            	if(!settings.cocoding.active){
-		            		let lf = await p5liveDB.setItem(settings.fileName, editor.getValue())
-						}
-		            }, 1)	
-	       		})
-            }):setTimeout(()=>{
-            	// console.log('ace-snippet-instant')
-            	// console.log(e)
-            	// console.log(u.content)
-            	this.insertSnippetForSelection(e, u.content)
-            }),
-            this.variables.M__ = this.variables.T__ = null,
-            !0) : !1
+        if (!snippet)
+            return false;
+        if (options && options.dryRun)
+            return true;
+        editor.session.doc.removeInLine(cursor.row,
+            cursor.column - snippet.replaceBefore.length,
+            cursor.column + snippet.replaceAfter.length
+        );
+
+        this.variables.M__ = snippet.matchBefore;
+        this.variables.T__ = snippet.matchAfter;
+
+        if(settings.snippetsghostmode.active){
+        	// console.log('ace-snippet-ghost')
+        	// *** prevent hardCompile on replace... solved?
+        	editorGhost.animateText(snippet.content.replace(/\${\d}/, '/*$*/').replace(snippetReg, ''), 0, ()=>{
+	            setTimeout(async ()=>{
+	            	var range = editor.find('/*$*/')
+	            	editor.replace('')
+	            	if(!settings.cocoding.active){
+	            		let lf = await p5liveDB.setItem(settings.fileName, editor.getValue())
+					}
+	            }, 1)	
+       		})
+        }else{
+        	this.insertSnippetForSelection(editor, snippet.content);
         }
+
+        this.variables.M__ = this.variables.T__ = null;
+        return true;
+    }
 
 		function getEditor(){
 			return editor.getValue()
