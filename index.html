@@ -1208,11 +1208,15 @@ function println(msg){
         	// *** prevent hardCompile on replace... solved?
         	editorGhost.animateText(snippet.content.replace(/\${\d}/, '/*$*/').replace(snippetReg, ''), 0, ()=>{
 	            setTimeout(async ()=>{
+
 	            	var range = editor.find('/*$*/')
 	            	editor.replace('')
 	            	if(!settings.cocoding.active){
 	            		let lf = await p5liveDB.setItem(settings.fileName, editor.getValue())
 					}
+					if(snippet.recompile){
+    	        		recompile({force:true})
+    	        	}
 	            }, 1)	
        		})
         }else{
