@@ -2844,7 +2844,6 @@ function println(msg){
 					// 	updateSettings()
 					// }else 
 					if(!settings.indexDB || !keys.includes('P5LIVE-initIndexDB')){
-						loadDefault();
 						backupSketchesLS() // download current sketches to be safe
 						console.log('P5LIVE: migration of localStorage » indexDB')
 						var data = []
@@ -2859,6 +2858,7 @@ function println(msg){
 						}
 						return p5liveDB.setItems(data, (d)=>{
 							settings.indexDB = true
+							settings.refresh = true;
 							updateSettings()
 							console.log('P5LIVE: sketches now stored with indexDB')
 							// *** remove localstorage sketches??
@@ -6621,7 +6621,9 @@ function println(msg){
 								samples(\`\${ds}/vcsl.json\`),
 								samples(\`\${ds}/mridangam.json\`),
 								samples(\`\${tc}/strudel.json\`),
+								aliasBank(\`\${ts}/tidal-drum-machines-alias.json\`),
 							]);
+							
 						}
 						
 						async function loadP5LIVE(){
