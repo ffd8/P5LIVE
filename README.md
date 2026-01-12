@@ -1,6 +1,6 @@
 # P5LIVE
-v 1.8.0 - beta 4v4  
-cc [teddavis.org](http://teddavis.org) – 2019 - 2025  
+v 1.8.0  
+cc [teddavis.org](http://teddavis.org) – 2019 - 2026  
 p5.js collaborative live-coding vj environment!
 
 ## SHORTCUTS
@@ -446,17 +446,17 @@ See `DEMOS » _HY5` + `DEMOS » _HYDRA` for additional examples.
 See [HY5](https://github.com/ffd8/hy5) for details of Hydra + p5.js.
 
 ### STRUDEL
-One can code music on the fly using [Strudel](https://strudel.cc/), which is now accessible from within P5LIVE! The workflow is similar to `// sandbox`, however we use `// strudel` as an open and closer of any code that should be evaluated by Strudel. Type `strudel` + `TAB Key` to add this snippet to your code.
+One can code music on the fly using [Strudel](https://strudel.cc/), which is now accessible from within P5LIVE! The workflow is similar to `// sandbox`, however we use `// strudel` as an open and close of a code block to be evaluated by Strudel. Type `strudel` + `TAB Key` to add this snippet to your code.
 
 ```js
 // strudel
 $: s("bd(3,8) sd, hh*<4 8 16>").dec(.2).delay(.4)
 // strudel
 ```
-To stop the audio, either use `hush()`, `_$:` or just comment out everything.
+To stop the audio, use either `hush()`, `_$:` or `CTRL + .` to stop.
 
-#### HAP TRIGGER
-We can directly write p5.js code or change global variables on every `hap` (happening/event), ie on each trigger within a pattern. This allows you to synchronize your visuals with specific instruments, notes, effects of your pattern. To do so, use the `.p5live()` custom function (type `.p5live` + `TAB` for snippet). Code within that space, will run on any event, or filter with if statements per `hap.s` for each sound. Enable the `console.log` to monitor what's available, including things like `hap.pan` to have your visuals follow the current pan position?! While direct drawing to the canvas is possible, you'll more likely want to set variable values that you react upon within your `draw()` function.
+#### STRUDEL INFLUENCE VISUALS
+We can directly write p5.js code or change global variables on every `hap` (happening/event), ie on each trigger within a pattern. This allows you to synchronize your visuals with specific instruments, notes, effects of your pattern. To do so, use the `.p5live()` custom function (type `.p5live` + `TAB` for snippet). Code within that space, will run on any event, or filter with if statements per `hap.s` for each sound. Enable the `console.log` to monitor what's available, including things like `hap.pan` to have your visuals follow the current pan position?! While direct drawing to the canvas is possible, you'll more likely want to set variable values that you react upon continuously within your `draw()` function.
 
 ```js
 // strudel
@@ -489,7 +489,7 @@ There are great visualizations built into Strudel (`pianoroll()`, `spectrum()`, 
 strudel.frame // iframe that loads strudel (custom API access?)
 
 strudel.canvas // access Strudel's <canvas> element
-init({src:strudel.canvas}) // usage within Hydra
+s0.init({src:strudel.canvas}) // usage within Hydra
 
 strudel.hide() // hide the canvas, strudel.hide(0) to reveal
 

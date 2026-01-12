@@ -772,8 +772,8 @@ function println(msg){
 		// 'use strict' // *** was for ace?
 
 		/* INIT */
-		let currentVersion = '1.8.0b4v4';
-		let currentRevision = 59;
+		let currentVersion = '1.8.0';
+		let currentRevision = 60;
 		let developBranch = false;
 		let p5Version = 1 // default is 1.0+
 
@@ -6635,7 +6635,7 @@ function println(msg){
 								samples(\`\${ds}/mridangam.json\`),
 								samples(\`\${tc}/strudel.json\`)
 							]);
-								
+
 							aliasBank(\`\${ts}/tidal-drum-machines-alias.json\`)
 						}
 
@@ -8855,15 +8855,15 @@ function println(msg){
 
 		function loadChangelog(){
 			// changelog.revision
-			let portWarning = ''
+			let changeWarning = '<b><br><br>v1.8+ now saves sketches with IndexDB. <br>A backup was downloaded, reset and re-import if anything went wrong.</b>'
 			if(!p5l.remote){
-				portWarning = `<br><br><b>v1.5.0+ now uses port :5001 by default! Restart offline-mode \`npm start 5000\` for sketches and/or backup everything then switch to :5001.</b>`
+				changeWarning += `<b><br><br>v1.5+ now uses port :5001 by default! <br>If missing sketches, restart offline-mode \`npm start 5000\`, export backup then import to :5001.</b>`
 			}
 			let changeUpdate = `
 				<h1 style="font-size:1.5em;">P5LIVE</h1>
 				Updated: <i>v${changelog.version} r${changelog.revision} → v${settings.version} r${settings.revision}</i><br>
 				See <a onclick="vex.closeAll();loadAbout()" style="cursor:pointer;text-decoration:underline;">About</a> for overview<br>
-				Visit <a href="https://github.com/ffd8/P5LIVE/pulls?q=is%3Apr+is%3Aclosed" target="_blank" style="color:#fff;">Github Repo</a> for details.${portWarning}`
+				Visit <a href="https://github.com/ffd8/P5LIVE/pulls?q=is%3Apr+is%3Aclosed" target="_blank" style="color:#fff;">Github Repo</a> for details.${changeWarning}`
 			vex.dialog.alert({
 				unsafeMessage:changeUpdate,
 				afterOpen: function(){
