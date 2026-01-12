@@ -6153,6 +6153,15 @@ function println(msg){
 				event.preventDefault();
 			}
 
+			if(keyMap[17]){
+				if(event.keyCode === 190){
+					if(strudel.active){
+						strudel.frame.stop()
+					}
+					event.preventDefault();
+				}
+			}
+
 			if(event.keyCode == 8){ // DELETE = prevent back navigation in FF
 				let eTarget = event.target.tagName.toLowerCase();
 				if(!p5code.focus() && eTarget != 'input' && eTarget != 'textarea'){
@@ -6583,6 +6592,7 @@ function println(msg){
 				<head>
 					<title>strudel-web</title>
 					<script src="https://unpkg.com/@strudel/web@1"><\/script>
+					<!-- <script src="http://localhost:5055/index.js?5"><\/script> -->
 					<style type="text/css">
 						canvas{
 							width:100vw;
@@ -6598,7 +6608,7 @@ function println(msg){
 
 						const onMutation = () => {
 						  if (parentOfELement.querySelector('#test-canvas')) {
-						    observer.disconnect()
+						    // observer.disconnect()
 							//console.log('strudel.canvas appeared!')
 						    window.parent.strudel.canvas = parent.strudel.frame.document.querySelector('#test-canvas')
 							window.parent.p5f.strudel = window.parent.strudel
@@ -6614,16 +6624,29 @@ function println(msg){
 					    	const ts = 'https://raw.githubusercontent.com/todepond/samples/main';
 		  					const tc = 'https://raw.githubusercontent.com/tidalcycles/uzu-drumkit/main';
 
-							return Promise.all([
+							await Promise.all([
+							    // registerZZFXSounds(),
+								// registerSoundfonts(),
+								// registerSynthSounds(),
 								samples(\`\${ds}/tidal-drum-machines.json\`),
 								samples(\`\${ds}/piano.json\`),
 								samples(\`\${ds}/Dirt-Samples.json\`),
 								samples(\`\${ds}/vcsl.json\`),
 								samples(\`\${ds}/mridangam.json\`),
-								samples(\`\${tc}/strudel.json\`),
-								aliasBank(\`\${ts}/tidal-drum-machines-alias.json\`),
+								samples(\`\${tc}/strudel.json\`)
 							]);
-							
+								
+							aliasBank(\`\${ts}/tidal-drum-machines-alias.json\`)
+						}
+
+						// custom function 
+						function stop(){
+							strudelRepl.stop();
+							strudelRepl.scheduler.stop();
+							let drawCanvas = document.querySelector('#test-canvas')
+							if(drawCanvas !== null){
+								drawCanvas.remove()
+							}
 						}
 						
 						async function loadP5LIVE(){
@@ -6689,7 +6712,7 @@ function println(msg){
 
 						async function main() {
 							await preloadStrudel()
-							await initStrudel()
+							window.strudelRepl = await initStrudel()
 							await loadSamples()
 							await loadP5LIVE()
 							// await catchHaps()
