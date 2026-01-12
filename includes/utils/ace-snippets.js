@@ -7,6 +7,7 @@ var aceSnippets = [
 },{
 	"tabTrigger": "p5",
 	"name": "p5",
+	"recompile": true,
 	"content": 
 	`function setup() {
 	createCanvas(windowWidth, windowHeight)
@@ -100,6 +101,7 @@ function draw() {
 {
 	"tabTrigger": "hydra",
 	"name": "hydra",
+	"recompile": true,
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']
 
@@ -125,6 +127,7 @@ noize = noise // use noize() since noise() is taken by p5js
 {
 	"tabTrigger": "hydraonly",
 	"name": "hydraonly",
+	"recompile": true,
 	"content": 
 	`// no p5
 let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js']
@@ -156,6 +159,7 @@ noize = noise
 {
 	"tabTrigger": "hy5",
 	"name": "hy5",
+	"recompile": true,
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
 
@@ -163,11 +167,14 @@ noize = noise
 \${1}
 
 s0.initP5()
-// sandbox`
+// sandbox
+
+`
 },
 {
 	"tabTrigger": "HY5",
 	"name": "HY5",
+	"recompile": true,
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
 
@@ -175,11 +182,14 @@ s0.initP5()
 \${1}
 
 s0.initP5()
-// sandbox`
+// sandbox
+
+`
 },
 {
 	"tabTrigger": "hy5offline",
 	"name": "hy5offline",
+	"recompile": true,
 	"content": 
 	`let libs = ['includes/libs/hydra-synth.js', 'includes/libs/hy5.js']
 
@@ -191,6 +201,7 @@ s0.initP5()
 },{
 	"tabTrigger": "hy5-p5-hydra",
 	"name": "hy5-p5-hydra",
+	"recompile": true,
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
 
@@ -214,6 +225,7 @@ function draw() {
 },{
 	"tabTrigger": "hy5-hydra-p5",
 	"name": "hy5-hydra-p5",
+	"recompile": true,
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
 
@@ -235,6 +247,7 @@ function draw() {
 },{
 	"tabTrigger": "hy5-hydra-p5-x4",
 	"name": "hy5-hydra-p5-x4",
+	"recompile": true,
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
 
@@ -263,6 +276,7 @@ function draw() {
 },{
 	"tabTrigger": "hy5-hydra-p5-x4-demo",
 	"name": "hy5-hydra-p5-x4-demo",
+	"recompile": true,
 	"content": 
 	`let libs = ['https://unpkg.com/hydra-synth', 'includes/libs/hydra-synth.js', 'https://cdn.jsdelivr.net/gh/ffd8/hy5@main/hy5.js', 'includes/libs/hy5.js']
 
@@ -385,6 +399,7 @@ updateMidi() // to draw`
 },{
 	"tabTrigger": "canvas",
 	"name": "canvas",
+	"recompile": true,
 	"content": 
 `let cnv = document.createElement('canvas')
 let ctx = cnv.getContext("2d")
@@ -453,5 +468,20 @@ for(let i=0; i < grid; i++){
 		//rect(x, y, sw, sh); 
 	} 
 } `
+},{
+	"tabTrigger": ".p5live",
+	"name": ".p5live",
+	"content": 
+`.p5live(()=>{
+	// console.log(hap)
+	\${1}
+})`
+},{
+	"tabTrigger": "ease",
+	"name": "ease",
+	"content": 
+`function ease(iVal, oVal, eVal){
+	return oVal += (iVal - oVal) * eVal;
+}`
 },
 ]

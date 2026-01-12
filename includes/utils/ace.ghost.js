@@ -20,10 +20,18 @@ class AceGhost{
 		if(this.debug) console.log(txt)
 	}
 
-	animateText(message, index, cb){
+	async animateText(message, index, cb){
 		if (index < message.length) {
 		 	// insert at cursor
-			this.editor.session.insert(this.editor.getCursorPosition(), message[index++]);
+		 	// console.log(message[index] == '\n')
+		 	// if(message[index] == '\n'){
+		 	// 	this.editor.insert( "\n")
+		 	// }else{
+			// 	this.editor.session.insert(this.editor.getCursorPosition(), message[index]);
+		 	// }
+		 	// index++
+
+		 	this.editor.session.insert(this.editor.getCursorPosition(), message[index++]);
 			// clear selection just in case there was something selected
 			this.editor.selection.clearSelection();
 			// make sure cursor is visible
@@ -59,7 +67,7 @@ class AceGhost{
 			}else{
 				this.disableEditor(false)
 				if(!settings.cocoding.active){
-					localStorage[settings.fileName] = editor.getValue();
+					let lf = await p5liveDB.setItem(settings.fileName, editor.getValue())
 				}
 
 				this.setUndoStack()

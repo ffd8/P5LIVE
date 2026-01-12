@@ -137,7 +137,7 @@ hr{
 	z-index:1;
 	font-size:20pt;
 	line-height: 1.3em;
-	width:100vw;
+	width: calc(100vw - 50px);
 	background: none;
 	outline:none;
 	border:none;
@@ -200,6 +200,13 @@ hr{
 .ace_marker{
 	position:fixed;
 	background:rgba(0, 255, 255, .4);
+}
+.strudel_marker{
+	position:fixed;
+	outline:2px solid #fff;
+}
+.ace_br15{
+	position:fixed;
 }
 .ace_search_form, .ace_replace_form{
 	margin-right:0;
@@ -264,6 +271,9 @@ hr{
 .ace-gob .ace_cursor{
 	background:none;
 	border-width:3px;
+}
+.cursor, .cursor-label{
+	pointer-events: none;
 }
 .cursor-label{
 	color:#fff;
@@ -510,8 +520,16 @@ h2{
 	opacity: 1;
 	background:#444;
 }
+.menu-button.cocoding-active:hover{
+	background:#008800;
+}
 .menu-sketches{
 	height:99%;
+}
+.menu-sketches * {
+	-webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 #menu-sketches-new{
 	background:#222;
@@ -530,7 +548,7 @@ h2{
 	font-weight: 200;
 	cursor:text;
 }
-#menu-sketches-new {
+#menu-sketches-new{
 	border-top:1px solid #888;
 	border-bottom:1px solid #888;
 }
@@ -887,6 +905,11 @@ h2{
 	50%	 { opacity: 1 }
 	100% { opacity: .25 }
 }
+@keyframes sync-50 {
+	0%	 { opacity: .5 }
+	50%	 { opacity: 1 }
+	100% { opacity: .5 }
+}
 button:disabled,
 button[disabled]{
 	opacity:.25;
@@ -1206,13 +1229,12 @@ li{
 	color:#ddd;
 }
 .sortable-drag{
-	background:#003300;
+	background:#003300 !important;
 	border:1px solid green;
 }
 .sortable-ghost{
-	background:#003300;
+	background:#006600;
 	border:1px solid green;
-	opacity: .5;
 }
 .sortable-placeholder{
 	width:100%;
@@ -1635,6 +1657,9 @@ li{
 .pulse{
 	animation:sync 1s infinite
 }
+.pulse-slow{
+	animation:sync-50 2s infinite
+}
 #presetname-input{
 	margin:10px 0 10px 0;
 	outline:none;
@@ -1858,6 +1883,12 @@ li{
 .snippets-label svg:hover{
 	opacity: 1;
 }
+
+/*STRUDEL*/
+#strudel-frame{
+	height:100vh;
+}
+
 /*
 ##Device = Tablets, Ipads (landscape)
 ##Screen = B/w 768px to 1024px
