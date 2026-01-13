@@ -364,7 +364,7 @@ Ace Editor also has the ability to have autocomplete snippets of code blocks. To
 - *read-only `/includes/utils/ace-snippets.js` for full list*
 
 ### LIBRARIES
-P5LIVE loads p5.js + p5.sound libraries by default. For additional libraries, load them remotely via [CDN host](https://www.jsdelivr.com/) or locally if running offline (ie. create `/data/libs/`). Can also be used within `SyncData`!  
+P5LIVE loads p5.js + p5.sound libraries by default. For [additional libraries](https://p5js.org/libraries/directory/), load them remotely via [CDN host](https://www.jsdelivr.com/) or locally if running offline (ie. create `/data/libs/`). Can also be used within `SyncData`!  
 
 Add this snippet to the top of your sketch, placing one path per array item (or just type `libs` then `TAB`:  
 
@@ -375,31 +375,19 @@ let libs = [
 ];
 ```
 #### BUILT-IN LIBRARIES
-There's a curated selection of libraries available for offline-mode, which can be accessed via `includes/libs/_____.js` (add your own libraries to suggested `data/libs` folder – since this gets overwritten on updates. If there are reasonably sized libraries that should be added to the list (or are out of date), please create an [issue on GitHub](https://github.com/ffd8/P5LIVE/issues). See `demos » libs` for additional examples of using certain libraries.
+There's a small selection of libraries from demos available for offline-mode, which can be accessed via `includes/libs/_____.js` (add your own libraries to suggested `data/libs` folder – since this gets overwritten on updates. See `demos » libs` for additional examples of using certain libraries.
 
 List of available offline libraries include:
 
 ```js
 let libs = [
-'includes/libs/p5.anaglyph.js', 
-'includes/libs/bmwalker.js', 
 'includes/libs/hy5.js', 
 'includes/libs/hydra-synth.js', 
-'includes/libs/p5.asciify.js', 
-'includes/libs/p5.axidraw.js', 
-'includes/libs/p5.ble.js', 
-'includes/libs/p5.capture.js', 
-'includes/libs/p5.csg.js', 
-'includes/libs/p5.fab.js', 
-'includes/libs/p5.fillGradient.js', 
+'includes/libs/opentype.min.js', 
 'includes/libs/p5.glitch.js', 
-'includes/libs/p5.mapper.js', 
-'includes/libs/p5.riso.js', 
 'includes/libs/p5.serialport.js', 
-'includes/libs/p5.webserial.js', 
 'includes/libs/p5xr.min.js', 
 'includes/libs/rhill-voronoi-core.js', 
-'includes/libs/ShapeSVG.js', 
 'includes/libs/Tone.js', 
 'includes/libs/xyscope.js'
 ]
