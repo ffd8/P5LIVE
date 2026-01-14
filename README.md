@@ -466,7 +466,7 @@ We can also pass values from the rest of our sketch intro Strudel, so that the a
 ```js
 // strudel
 $: s("bd(3,8) sd, hh*<4 8 16>").dec(.2).delay(.4)
-.pan(signal(() => p5live.random(1))) // use p5.js' random()
+.pan(signal(() => p5live.rotX)) // ie rotX is a normalized var in p5 sketch
 // strudel
 ```
 
