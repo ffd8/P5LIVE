@@ -477,6 +477,11 @@ for(let i=0; i < grid; i++){
 	\${1}
 })`
 },{
+	"tabTrigger": "signal",
+	"name": "signal",
+	"content": 
+`signal(()=>p5live.mouseX/p5live.width)`
+},{
 	"tabTrigger": "ease",
 	"name": "ease",
 	"content": 

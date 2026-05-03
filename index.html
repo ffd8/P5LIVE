@@ -29,7 +29,7 @@
 	<meta name="twitter:image" content="https://teddavis.org/p5live/includes/social/p5live.png">
 
 	<!-- Style -->
-	<link rel="stylesheet" type="text/css" media="all" href="style.css?53">
+	<link rel="stylesheet" type="text/css" media="all" href="style.css?54">
 </head>
 <body>
 	<iframe id="chalkboard"></iframe>
@@ -748,7 +748,7 @@ function println(msg){
 	<script src="includes/js/ace/src-min-noconflict/ext-language_tools.js?10" type="text/javascript" charset="utf-8"></script>
 	<script src="includes/utils/ace.recoding.js?60"></script>
 	<script src="includes/utils/ace.ghost.js?60"></script>
-	<script src="includes/utils/ace-snippets.js?60"></script>
+	<script src="includes/utils/ace-snippets.js?61"></script>
 	<script src="includes/js/Sortable.js"></script>
 	<script src="includes/js/beautify.min.js"></script>
 	<script src="includes/js/pickr/pickr.min.js"></script>
@@ -772,8 +772,8 @@ function println(msg){
 		// 'use strict' // *** was for ace?
 
 		/* INIT */
-		let currentVersion = '1.8.0';
-		let currentRevision = 60;
+		let currentVersion = '1.8.1';
+		let currentRevision = 61;
 		let developBranch = false;
 		let p5Version = 1 // default is 1.0+
 
@@ -936,7 +936,12 @@ function println(msg){
 					,'key':'ctrl+shift+o'
 					,'callback':`snippetsApplySelect('demo-osc');snippetsApply()`
 					,'fixed':false
+				},'filter':{
+					'name':'Filter Sketches'
+					,'key':'ctrl+shift+f'
+					,'callback':`filterSketchesFocus()`
 				}
+
 			},
 			'editor':{
 				'fontSize':15, 'keybinding':'keybinding', 'linenumbers':true, 'autocomplete': false, 'lockcode':true, 'passEditorKeys':false, 'recompilepulse':true,
@@ -1157,13 +1162,24 @@ function println(msg){
 
 		function loadSnippetsManager(){
 			// wild hackery to skip newly introduced 'rc' releases
-			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>{if(v.includes(`${p5l.version}.`) && !v.includes(`rc`)){return v}})[0]
+			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>{if(v.startsWith(`${p5l.version}.`) && !v.includes(`rc`)){return v}})[0]
+			
+			//console.log(sortSemVer(includeScripts.p5.versions, true)[0]) // ***
 			aceSnippets.push({
 					"tabTrigger": "version",
 					"name": "version",
 					"content": `// p5 = '${p5l.currentVersion}'`
 				})
 			snippetManager.register(aceSnippets)
+		}
+
+		// https://dev.to/gaelgthomas/remove-null-values-from-array-in-javascript-4g5a
+		function sortSemVer(arr, reverse = false) {
+		    let semVerArr = arr.map(i => i.replace(/(\d+)/g, m => +m + 100000)).sort(); // +m is just a short way of converting the match to int
+		    if (reverse)
+		        semVerArr = semVerArr.reverse();
+
+		    return semVerArr.map(i => i.replace(/(\d+)/g, m => +m - 100000))
 		}
 
 		// ghostmode snippet
@@ -2885,7 +2901,7 @@ function println(msg){
 			.then(jsonObj => {
 				includeScripts.p5.versions = []
 				for(let v of jsonObj.versions){
-					if(!v.version.includes('rc') && !v.version.includes('beta')){
+					if(!v.version.includes('rc') && !v.version.includes('beta') && !v.version.includes('null') && v.version !== '0'){
 						includeScripts.p5.versions.push(v.version)
 					}
 				}
@@ -3263,9 +3279,13 @@ function println(msg){
 					if(e.key == "page_available" && !multitabWarning){
 							multitabWarning = true;
 							vex.dialog.alert({
-								unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Close all but one to avoid data loss.',
+								unsafeMessage:'<span class="pulse">Warning:</span> <br>'+document.title+' open in multiple tabs!<br>Sketches get lost when out of sync.<br><br>Please close this tab.',
 								afterOpen: function(){
 									vexClass(this.rootEl, 'vex-small')
+									editor.setReadOnly(true)
+									menuToggle(false)
+									document.title += ' x [ DUP ]'
+									menuPanel.style.display = 'none';
 								},
 								callback: function(){
 									multitabWarning = false;
@@ -3699,6 +3719,10 @@ function println(msg){
 			}else{
 				filterFull.style.opacity = .5
 			}
+		}
+
+		function filterSketchesFocus(){
+			menuSketchesFilter.focus();
 		}
 
 		// search laundry list of sketches
@@ -5224,8 +5248,10 @@ function println(msg){
 
 			if(skipDups){
 				importObj = filterJSON(importObj, 'dup', false)
+				importObj = Object.values(importObj) // filterJSON jsobj back to array
 			}
-			if(Object.keys(importObj).length ==0){
+			
+			if(Object.keys(importObj).length == 0){
 				return false
 			}
 
@@ -5377,6 +5403,7 @@ function println(msg){
 				let ric = objStructure[k];
 				let ricDup = '';
 
+
 				if(searchSketches(ric.name, settings.sketches)){
 					// ricDup = 'class="importdump-dup"';
 					ricDup = 'dup"';
@@ -5393,6 +5420,11 @@ function println(msg){
 
 				// if folder, recurse deeper
 				if(ric.type == 'folder' && ric.name != 'demos'){
+					// catch and ignore empty folders
+					if(ric.type == 'folder' && ric.contents.length == 0){
+						continue
+					}
+
 					outputData += '<div class="import-contents">';
 						outputData += '<div class="import-folder '+ricDup+'">' + level + icon.folderEmpty +'<span>'+ ric.name + '</span></div>'; //  '+ricDup+' // removed from folder...
 						outputData = recursiveImportWarning(ric.contents, '&nbsp;&nbsp;'+level, outputData);
@@ -6499,7 +6531,7 @@ function println(msg){
 		}
 
 		function removeComments(code){
-			return code.replace(/\/\*[\s\S]*?\*\/|([^:\}\)]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'))
+			return code.replace(/\/\*[\s\S]*?\*\/|([^:\}\)\{]|^)\/\/.*$/gm, (_, g1, g2) => Array(_.split('\n').length).join('\n'))
 			// const regex = /\/\*[\s\S]*?\*\/|([^:\}\)\w]|^)(\/\/.*)|(["'`])(?:(?!\3)[^\\]|\\.)*\3/gm;
 
 			// return code.replace(regex, (match, p1, p2, p3) => {
@@ -7191,6 +7223,14 @@ function println(msg){
 						// if version found
 						if(p5versionRequest){
 							p5l.version = parseFloat(p5versionRequest)
+
+							// if generic '1' or '2', grab latest
+							if(p5versionRequest[0].length == 1){
+								p5versionRequest = sortSemVer(includeScripts.p5.versions, true).filter((v)=>{if(v.startsWith(`${p5l.version}.`)){return v}})[0]
+								console.log(p5versionRequest)
+							}else{
+							//	p5l.versionLatest = p5l.version
+							}
 							
 							if(p5l.remote){
 								// if online, grab directly from CDN
@@ -7237,6 +7277,7 @@ function println(msg){
 							scriptsCol.push(includeScripts[iScript].remote);
 						}
 					}else{
+						p5l.version = p5Version
 						if(p5l.remote){
 							scriptsCol.push(includeScripts[iScript].remote);
 						}else{
@@ -7576,6 +7617,11 @@ function println(msg){
 				tempSnippet.gt = tempSnippet.gt.replace(/(?=var|let|const).*(?=loadScripts|libs|scripts).*?(\])/gs, '')
 			}
 			// console.log(curSnippet)
+
+			let checkDemo = isDemo()
+			if(checkDemo){
+				cloneSketch()
+			}
 
 
 			if(settings.snippetsghostmode.active){

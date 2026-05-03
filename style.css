@@ -458,6 +458,19 @@ h2{
 	padding-left:55px;
 	border-bottom:1px solid #333;
 }
+#menu-sketches-filter:focus{
+	animation: filter-focus 1.5s linear infinite;
+	border-bottom:1px solid #666;
+}
+@keyframes filter-focus {
+	0%	 { 	background:rgba(90, 90, 90, .5);
+ }
+	50%	 { 	background:rgba(110, 110, 110, .5);
+ }
+	100% { 	background:rgba(90, 90, 90, .5);
+ }
+}
+
 #menu-sketches-filter-fulltext {
 /*	position:absolute;*/
 /*	top:0px;*/
@@ -1715,8 +1728,12 @@ li{
 .vex-about code{
 	padding:0 3px 0 3px;
 }
+#about-toc{
+	background:#666;
+	animation: about-toc-pulse 2s linear infinite;
+}
 #about-toc-select{
-	background:#444;
+	background:#666;
 	border:none;
 	color:#fff;
 	width:100%;
@@ -1724,6 +1741,18 @@ li{
 	border-bottom:1px solid #fff;
 	padding-bottom:5px;
 	padding-left:0px;
+	animation: about-toc-pulse 2s linear infinite;
+}
+@keyframes about-toc-pulse {
+	0% {
+		background:#666;
+	}
+	50% {
+		background:#888;
+	}
+	100% {
+		background:#666;
+	}
 }
 #notify{
 	position:fixed;
