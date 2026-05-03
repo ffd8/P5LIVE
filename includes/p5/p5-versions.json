@@ -11,6 +11,139 @@
 			}
 		},
 		{
+			"version": "2.2.3",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.3",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.3"
+			}
+		},
+		{
+			"version": "2.2.3-rc.1",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.3-rc.1",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.3-rc.1"
+			}
+		},
+		{
+			"version": "2.2.3-rc.0",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.3-rc.0",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.3-rc.0"
+			}
+		},
+		{
+			"version": "2.2.2",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.2",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.2"
+			}
+		},
+		{
+			"version": "2.2.2-rc.2",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.2-rc.2",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.2-rc.2"
+			}
+		},
+		{
+			"version": "2.2.2-rc.1",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.2-rc.1",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.2-rc.1"
+			}
+		},
+		{
+			"version": "2.2.2-rc.0",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.2-rc.0",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.2-rc.0"
+			}
+		},
+		{
+			"version": "2.2.1",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.1",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.1"
+			}
+		},
+		{
+			"version": "2.2.1-rc.1",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.1-rc.1",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.1-rc.1"
+			}
+		},
+		{
+			"version": "2.2.1-rc.0",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.1-rc.0",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.1-rc.0"
+			}
+		},
+		{
+			"version": "2.2.0",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0"
+			}
+		},
+		{
+			"version": "2.2.0-rc.6",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0-rc.6",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0-rc.6"
+			}
+		},
+		{
+			"version": "2.2.0-rc.5",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0-rc.5",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0-rc.5"
+			}
+		},
+		{
+			"version": "2.2.0-rc.4",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0-rc.4",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0-rc.4"
+			}
+		},
+		{
+			"version": "2.2.0-rc.3",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0-rc.3",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0-rc.3"
+			}
+		},
+		{
+			"version": "2.2.0-rc.2",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0-rc.2",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0-rc.2"
+			}
+		},
+		{
+			"version": "2.2.0-rc.1",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0-rc.1",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0-rc.1"
+			}
+		},
+		{
+			"version": "2.2.0-rc.0",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.2.0-rc.0",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.2.0-rc.0"
+			}
+		},
+		{
+			"version": "2.1.2",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.1.2",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.1.2"
+			}
+		},
+		{
 			"version": "2.1.1",
 			"links": {
 				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.1.1",
@@ -183,6 +316,48 @@
 			"links": {
 				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@2.0.0-beta.1",
 				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@2.0.0-beta.1"
+			}
+		},
+		{
+			"version": "1.11.13",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@1.11.13",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@1.11.13"
+			}
+		},
+		{
+			"version": "1.11.13-rc.0",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@1.11.13-rc.0",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@1.11.13-rc.0"
+			}
+		},
+		{
+			"version": "1.11.12",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@1.11.12",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@1.11.12"
+			}
+		},
+		{
+			"version": "1.11.12-rc.2",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@1.11.12-rc.2",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@1.11.12-rc.2"
+			}
+		},
+		{
+			"version": "1.11.12-rc.1",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@1.11.12-rc.1",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@1.11.12-rc.1"
+			}
+		},
+		{
+			"version": "1.11.12-rc.0",
+			"links": {
+				"self": "https://data.jsdelivr.com/v1/packages/gh/processing/p5.js@1.11.12-rc.0",
+				"stats": "https://data.jsdelivr.com/v1/stats/packages/gh/processing/p5.js@1.11.12-rc.0"
 			}
 		},
 		{

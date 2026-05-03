@@ -1,11 +1,11 @@
-// p5.glitch v0.1.5
+// p5.glitch v0.1.6
 // cc teddavis.org 2020 -
 
 class Glitch{
 	constructor(instance){
 		if(instance !== undefined) this.p5 = instance;
 		else this.p5 = p5.instance;
-		this.version = '0.1.5';
+		this.version = '0.1.6';
 		this.mode = 'image';
 		this.width = 1;
 		this.height = 1;
@@ -276,6 +276,11 @@ class Glitch{
 
 	// set single byte of whole image to random value
 	randomByte(bytePos){
+		if(bytePos === undefined){
+			this.randomBytes(1)
+			return false
+		}
+
 		bytePos = this.parsePosition(bytePos);
 		let newData = this.bytesGlitched.slice();
 
@@ -285,12 +290,8 @@ class Glitch{
 	}
 
 	// set x (byteCount) bytes within pre-set limits to random or newValue
-	randomBytes(byteCount, replaceVal){
+	randomBytes(byteCount = 1, replaceVal){
 		let newData = this.bytesGlitched.slice();
-
-		if(byteCount === undefined){
-			byteCount = 1;
-		}
 
 		for(let i = 0; i < byteCount; i++) {
 			if(replaceVal !== undefined){
@@ -569,7 +570,7 @@ class Glitch{
 	// Convert a hex string to a byte array
 	hexToBytes(hex) {
 		for (var bytes = [], c = 0; c < hex.length; c += 2) {
-			bytes.push(parseInt(hex.substr(c, 2), 16));
+			bytes.push(this.parseInt(hex.substr(c, 2), 16));
 		}
 		return bytes;
 	}

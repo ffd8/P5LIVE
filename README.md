@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.8.0  
+v 1.8.1  
 cc [teddavis.org](http://teddavis.org) – 2019 - 2026  
 p5.js collaborative live-coding vj environment!
 
@@ -23,6 +23,7 @@ p5.js collaborative live-coding vj environment!
 | `CTRL` + `S` | save png [ + code ] |
 | `CTRL` + `1, 2, 3...0` | jump to first 10 sketches |
 | `CTRL` + `SHIFT` + `⇡⇣` | jump to previous/next sketch |  
+| `CTRL` + `SHIFT` + `F` | filter sketchs |
 | `CTRL` + `SHIFT` + `DELETE` | delete current sketch |
 
 *Customize shortcut keys within the `Settings` panel*
