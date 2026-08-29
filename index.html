@@ -772,7 +772,7 @@ function println(msg){
 		// 'use strict' // *** was for ace?
 
 		/* INIT */
-		let currentVersion = '1.8.1';
+		let currentVersion = '1.8.2-dev';
 		let currentRevision = 61;
 		let developBranch = false;
 		let p5Version = 1 // default is 1.0+
@@ -1097,7 +1097,7 @@ function println(msg){
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
 		changelog = {show:false, revision:0, version:0},
-		recoding, exhibitMode = false, useP5 = true, useP5Sound = true, cloningDemo = false
+		recoding, exhibitMode = false, useP5 = true, useP5Sound = true, cloningDemo = false, demoActive = false
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
@@ -4009,6 +4009,7 @@ function println(msg){
 			}
 
 			settings.fileName = forkName;
+			demoActive = false
 			updateSettings();
 
 			updateSketches();
@@ -4126,6 +4127,10 @@ function println(msg){
 				// disable any locked sketches
 				// unlockAll() // *** better w/wo?
 
+				// catch demo
+				demoActive = await isDemo(sketch)
+				// console.log(`isDemo: ${demoActive}`)
+
 				// catch RECODING
 				if(recodingCheck() && settings.fileName === 'recoding' && sketch !== settings.fileName){
 					recodingStop()
@@ -4198,9 +4203,9 @@ function println(msg){
 			}, 0)
 		}
 
-		function isDemo(){
+		async function isDemo(sketch = settings.fileName){
 			let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
-			if(searchSketches(settings.fileName, checkDemo) && demosLocked){
+			if(searchSketches(sketch, checkDemo) && demosLocked){
 				if(settings.fileName !== 'recoding'){
 					return true
 				}else{
@@ -5633,7 +5638,7 @@ function println(msg){
 								}
 							}
 
-							let selSelf = 'loadSketch(\''+d.name+'\');';
+							let selSelf = 'loadSketch(\''+d.name+'\');'; // **** console.log(\'loading sketch\')
 							let curSel = false
 							if(d.name == settings.fileName && !settings.cocoding.active){
 								curSel = true
@@ -6213,8 +6218,8 @@ function println(msg){
 
 		p5code.onkeyup = async function(event) {
 			keyMap[event.keyCode] = event.type == 'keydown';
-			let checkDemo = isDemo()
-			if(checkDemo && loadedCode != editor.getValue()){ // *** check if sketch changed before clone!
+			// let checkDemo = isDemo() //  bad-idea checking this every key!
+			if(demoActive && loadedCode != editor.getValue()){ // *** check if sketch changed before clone!
 				cloningDemo = true
 				cloneSketch()
 			}else{
@@ -7618,8 +7623,8 @@ function println(msg){
 			}
 			// console.log(curSnippet)
 
-			let checkDemo = isDemo()
-			if(checkDemo){
+			//let checkDemo = isDemo()
+			if(demoActive){
 				cloneSketch()
 			}
 
