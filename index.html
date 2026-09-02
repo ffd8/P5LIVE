@@ -9412,7 +9412,7 @@ function println(msg){
 
 		function loadRef(){
 			refList = [];
-			let refPath = 'includes/p5/data.js?' + currentRevision;
+			let refPath = 'includes/p5/data-2.js?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
 			request.send();
@@ -9447,15 +9447,22 @@ function println(msg){
 						let classExamples = [];
 						let paramsCollect = [];
 
-						if(ci.example != undefined){
+						if(ci.example != undefined && ci.example.length > 0){
 							let exs = ci.example[0].match(/<code.*>(.|\n)*?<\/code>/g);
-							if(exs == undefined){
+
+							// p5js v1 refs
+							if(exs == null){
 								// *** temp quieting 1.3.1, until update to data.json
-								//console.log(ci.name +" : "+ ci.example)
+								// console.log(ci.name +" : "+ ci.example)
 							}else{
 								for(let ex of exs){
-									classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
+									// classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
 								}
+							}
+
+							// p5js v2 refs
+							for(let ex of ci.example){
+								classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
 							}
 
 						}
