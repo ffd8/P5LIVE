@@ -711,6 +711,8 @@
 	</div>
 
 <textarea style="display:none;" id="p5-template">
+// p5 = '2'
+
 function setup() {
 	createCanvas(windowWidth, windowHeight);
 
@@ -772,8 +774,8 @@ function println(msg){
 		// 'use strict' // *** was for ace?
 
 		/* INIT */
-		let currentVersion = '1.8.1';
-		let currentRevision = 61;
+		let currentVersion = '1.9.0';
+		let currentRevision = 63;
 		let developBranch = false;
 		let p5Version = 1 // default is 1.0+
 
@@ -1097,7 +1099,7 @@ function println(msg){
 		cocodingFirstTime = false, cocodingShowMic = false, cocodingUnload = false,
 		cocodingRecompile = false,
 		changelog = {show:false, revision:0, version:0},
-		recoding, exhibitMode = false, useP5 = true, useP5Sound = true, cloningDemo = false
+		recoding, exhibitMode = false, useP5 = true, useP5Sound = true, cloningDemo = false, demoActive = false
 		;
 
 		var chalkboardVisible = false, chalkboardInit = false,
@@ -1162,12 +1164,13 @@ function println(msg){
 
 		function loadSnippetsManager(){
 			// wild hackery to skip newly introduced 'rc' releases
-			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>{if(v.startsWith(`${p5l.version}.`) && !v.includes(`rc`)){return v}})[0]
+			let getVersion = 2 // p5l.version
+			p5l.currentVersion = includeScripts.p5.versions.filter((v)=>{if(v.startsWith(`${getVersion}.`) && !v.includes(`rc`)){return v}})[0]
 			
 			//console.log(sortSemVer(includeScripts.p5.versions, true)[0]) // ***
 			aceSnippets.push({
-					"tabTrigger": "version",
-					"name": "version",
+					"tabTrigger": 'version',
+					"name": 'version',
 					"content": `// p5 = '${p5l.currentVersion}'`
 				})
 			snippetManager.register(aceSnippets)
@@ -1602,8 +1605,8 @@ function println(msg){
 				'parts': {base: 'https://cdn.jsdelivr.net/npm/p5@', file: '/lib/p5.min.js'}
 			},
 			p5sound:{
-				'local':p5l.version == 2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'includes/p5/addons/p5.sound.min.js',
-				'remote':p5l.version == 2 ? 'https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.11.1/addons/p5.sound.min.js':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js', // *** temp fix for safari!
+				'local':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5.sound@0.4.1/dist/p5.sound.min.js':'includes/p5/addons/p5.sound.min.js',
+				'remote':p5l.version == 2 ? 'https://cdn.jsdelivr.net/npm/p5.sound@0.4.1/dist/p5.sound.min.js':'https://cdn.jsdelivr.net/gh/processing/p5.js-sound/lib/p5.sound.min.js', // *** temp fix for safari!
 			}
 		};
 		includeScripts.p5sound.path = includeScripts.p5sound.remote
@@ -2860,26 +2863,38 @@ function println(msg){
 					// 	updateSettings()
 					// }else 
 					if(!settings.indexDB || !keys.includes('P5LIVE-initIndexDB')){
-						backupSketchesLS() // download current sketches to be safe
-						console.log('P5LIVE: migration of localStorage » indexDB')
-						var data = []
-						data.push(['P5LIVE-initIndexDB', null])
-						let sketchesOverview = listSketches(settings.sketches)
-						// console.log(sketchesOverview)
-						
-						for(let s of sketchesOverview){
-							if(!keys.includes(s)){
-								data.push([`${s}`, localStorage.getItem(s)])
+						if(settings.sketches.length > 1){
+							console.log('P5LIVE: downloading old sketches as backup, incase upgrade to indexDB has issues')
+							backupSketchesLS() // download current sketches to be safe
+							console.log('P5LIVE: migration of localStorage » indexDB')
+							var data = []
+							data.push(['P5LIVE-initIndexDB', null])
+							let sketchesOverview = listSketches(settings.sketches)
+							// console.log(sketchesOverview)
+							
+							for(let s of sketchesOverview){
+								if(!keys.includes(s)){
+									data.push([`${s}`, localStorage.getItem(s)])
+								}
 							}
-						}
-						return p5liveDB.setItems(data, (d)=>{
+							return p5liveDB.setItems(data, (d)=>{
+								settings.indexDB = true
+								settings.refresh = true;
+								updateSettings()
+								console.log('P5LIVE: sketches now stored with indexDB')
+								// *** remove localstorage sketches??
+							})
+						}else{
+							let db =  p5liveDB.setItem('P5LIVE-initIndexDB', 0)
 							settings.indexDB = true
-							settings.refresh = true;
 							updateSettings()
-							console.log('P5LIVE: sketches now stored with indexDB')
-							// *** remove localstorage sketches??
-						})
+						}
 					}
+				}else{
+					p5liveDB.setItems(['P5LIVE-initIndexDB', 0])
+					let db =  p5liveDB.setItem('P5LIVE-initIndexDB', 0)
+					settings.indexDB = true
+					updateSettings()
 				}
 			})
 
@@ -2990,7 +3005,7 @@ function println(msg){
 		}
 
 		// react to settings once gathered
-		function loadSettings(){
+		async function loadSettings(){
 
 			if(settings.revision == undefined || settings.revision < currentRevision){
 				changelog.show = true;
@@ -3074,12 +3089,12 @@ function println(msg){
 				settings.cocoding.active = false;
 			}
 			settings.safeMode = false;
-			updateSketches();
+			await updateSketches();
 			filterParse();
 			snippetsLoad()
 
 			if(settings.refresh){
-				refreshDemos();
+				await refreshDemos();
 				settings.refresh = false;
 				updateSettings();
 			}
@@ -3264,6 +3279,7 @@ function println(msg){
 				loadChangelog();
 			}
 
+			backupParse()
 			resizeSketchesHolder();
 			hideLoader();
 
@@ -4009,6 +4025,7 @@ function println(msg){
 			}
 
 			settings.fileName = forkName;
+			demoActive = false
 			updateSettings();
 
 			updateSketches();
@@ -4126,6 +4143,10 @@ function println(msg){
 				// disable any locked sketches
 				// unlockAll() // *** better w/wo?
 
+				// catch demo
+				demoActive = await isDemo(sketch)
+				// console.log(`isDemo: ${demoActive}`)
+
 				// catch RECODING
 				if(recodingCheck() && settings.fileName === 'recoding' && sketch !== settings.fileName){
 					recodingStop()
@@ -4198,9 +4219,9 @@ function println(msg){
 			}, 0)
 		}
 
-		function isDemo(){
+		async function isDemo(sketch = settings.fileName){
 			let checkDemo = searchJSON(settings.sketches, 'name', 'demos');//listSketches(settings.sketches.demo);
-			if(searchSketches(settings.fileName, checkDemo) && demosLocked){
+			if(searchSketches(sketch, checkDemo) && demosLocked){
 				if(settings.fileName !== 'recoding'){
 					return true
 				}else{
@@ -4211,39 +4232,38 @@ function println(msg){
 			}
 		}
 
-		window.addEventListener('beforeunload', function (e) {
-			if(!settings.cocoding.active && !cocodingUnload){ // ignore if toggling COCODING
-			    // e.preventDefault();
-			    let freq = settings.backup.frequency;
-			    let lastBackup = settings.backup.last;
+		// document.onvisibilitychange = (e) => {
+		//   if (document.visibilityState === "hidden") {
+		//     // console.log('hidden')
+		//   }
+		// };
 
-			    let dateLast = new Date(settings.backup.last)
-				let dateNow = new Date();
-				let timeDiff = Math.abs(dateNow.getTime() - dateLast.getTime());
-				let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-			    switch(freq){
-			    	case 1: // every exit
-			    		backupSketches();
-			    	break;
-			    	case 2: // daily
-			    		if(diffDays > 1){
-			    			backupSketches();
-			    		}
-			    	break;
-			    	case 3: // weekly
-			    		if(diffDays > 7){
-			    			backupSketches();
-			    		}
-			    	break;
-			    	case 4: // monthly
-			    		if(diffDays > 30){
-			    			backupSketches();
-			    		}
-			    	break;
-			    }
-			}
-		});
+		async function backupParse(){
+		    let dateLast = new Date(settings.backup.last)
+			let dateNow = new Date();
+			let timeDiff = Math.abs(dateNow.getTime() - dateLast.getTime());
+			let diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+		    switch(settings.backup.frequency){
+		    	case 1: // every exit
+		    		backupSketches();
+		    	break;
+		    	case 2: // daily
+		    		if(diffDays > 1){
+		    			backupSketches();
+		    		}
+		    	break;
+		    	case 3: // weekly
+		    		if(diffDays > 7){
+		    			backupSketches();
+		    		}
+		    	break;
+		    	case 4: // monthly
+		    		if(diffDays > 30){
+		    			backupSketches();
+		    		}
+		    	break;
+		    }
+		}
 
 		async function backupSketches(){
 			let tempSketches = await exportSketchesPrepare();
@@ -5502,7 +5522,7 @@ function println(msg){
 			request.send();
 			request.addEventListener('load', async function(){
 				if(searchSketches('demos', settings.sketches)){
-					removeItemProcess('demos');
+					await removeItemProcess('demos');
 				}
 				let jsonObj = JSON.parse(request.responseText);
 				let jsonItem = jsonObj.structure[0];
@@ -5510,22 +5530,22 @@ function println(msg){
 				settings.sketches.push({'type':'folder', 'name':jsonItem.name, 'mod':jsonItem.mod, 'toggle':jsonItem.toggle, 'contents':jsonItem.contents});
 
 				updateSettings();
-				initSortable();
+				await initSortable();
 				await recursiveImportCode(jsonObj.structure);
 
 				if(settings.fileName == 'new'){
-					loadDefault();
+					await loadDefault();
 				}
 			});
 		}
 
-		function refreshDemos(){
-			window.setTimeout(function(){
-				if(searchSketches('demos', settings.sketches)){
-					removeItemProcess('demos');
+		async function refreshDemos(){
+			// window.setTimeout(async function(){
+				if(await searchSketches('demos', settings.sketches)){
+					await removeItemProcess('demos');
 				}
 				window.setTimeout(function(){loadDemos(true);}, 100);
-			}, 200);
+			// }, 200);
 		}
 
 		async function parseSketches(jsonObj, legacyDemos){
@@ -5546,10 +5566,10 @@ function println(msg){
 				}
 
 				if(sketchName == settings.fileName){
-					loadSketch(sketchName);
+					await loadSketch(sketchName);
 				}
 			}
-			updateSketches();
+			await updateSketches();
 		}
 
 
@@ -5601,7 +5621,7 @@ function println(msg){
 		}
 
 		// initialize sortable
-		function initSortable(){
+		async function initSortable(){
 			if(settings.sketches.length > 0 && typeof settings.sketches[0] === 'object'){
 				let htmlStr = '<li class="sortable-placeholder" data-type="buffer"></li>'+recurse( settings.sketches , '');
 				menuSketches.innerHTML = htmlStr + '<li class="sortable-placeholder" data-type="buffer"></li>';
@@ -5633,7 +5653,7 @@ function println(msg){
 								}
 							}
 
-							let selSelf = 'loadSketch(\''+d.name+'\');';
+							let selSelf = 'loadSketch(\''+d.name+'\');'; // **** console.log(\'loading sketch\')
 							let curSel = false
 							if(d.name == settings.fileName && !settings.cocoding.active){
 								curSel = true
@@ -5711,7 +5731,7 @@ function println(msg){
 
 				if(settings.refresh){
 					settings.refresh = false;
-					refreshDemos();
+					await refreshDemos();
 				}
 				loadTippy();
 				if(menuSketchesFilter.value != ''){
@@ -6012,14 +6032,14 @@ function println(msg){
 							}
 
 							updateSettings();
-							initSortable();
+							await initSortable();
 							if(itemType == 'sketch'){
 								let itemCode = await p5liveDB.getItem(itemName)
 								let itemRename = await p5liveDB.setItem(newName, itemCode)
 								let itemRemove = await p5liveDB.removeItem(itemName)
 								if(settings.fileName == itemName){
 									settings.fileName = newName;
-									updateSketches();
+									await updateSketches();
 									// *** removing below if no prob, no need to refresh??
 									// if(!settings.cocoding.active){
 									// 	setTimeout(function(){ loadSketch(newName); }, 100);
@@ -6213,8 +6233,8 @@ function println(msg){
 
 		p5code.onkeyup = async function(event) {
 			keyMap[event.keyCode] = event.type == 'keydown';
-			let checkDemo = isDemo()
-			if(checkDemo && loadedCode != editor.getValue()){ // *** check if sketch changed before clone!
+			// let checkDemo = isDemo() //  bad-idea checking this every key!
+			if(demoActive && loadedCode != editor.getValue()){ // *** check if sketch changed before clone!
 				cloningDemo = true
 				cloneSketch()
 			}else{
@@ -7618,8 +7638,8 @@ function println(msg){
 			}
 			// console.log(curSnippet)
 
-			let checkDemo = isDemo()
-			if(checkDemo){
+			//let checkDemo = isDemo()
+			if(demoActive){
 				cloneSketch()
 			}
 
@@ -9037,6 +9057,11 @@ function println(msg){
 			// check for audio/midi snippet
 			if(checkCodeMatch(curCode, ['setupAudio', 'updateAudio'])){
 				curCode += `\n\n ${p5liveUtils.audio}`
+				// let s = document.createElement('script');
+				// s.type = 'text/javascript';
+				// s.innerHTML = p5liveUtils.audio
+				// iFrameHead.appendChild(s);
+				// iFrameHead.innerHTML += `\n`;
 			}
 
 			if(checkCodeMatch(curCode, ['setupMidi', 'updateMidi'])){
@@ -9387,7 +9412,7 @@ function println(msg){
 
 		function loadRef(){
 			refList = [];
-			let refPath = 'includes/p5/data.js?' + currentRevision;
+			let refPath = 'includes/p5/data-2.js?' + currentRevision;
 			let request = new XMLHttpRequest();
 			request.open('GET', refPath, true);
 			request.send();
@@ -9422,15 +9447,22 @@ function println(msg){
 						let classExamples = [];
 						let paramsCollect = [];
 
-						if(ci.example != undefined){
+						if(ci.example != undefined && ci.example.length > 0){
 							let exs = ci.example[0].match(/<code.*>(.|\n)*?<\/code>/g);
-							if(exs == undefined){
+
+							// p5js v1 refs
+							if(exs == null){
 								// *** temp quieting 1.3.1, until update to data.json
-								//console.log(ci.name +" : "+ ci.example)
+								// console.log(ci.name +" : "+ ci.example)
 							}else{
 								for(let ex of exs){
-									classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
+									// classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
 								}
+							}
+
+							// p5js v2 refs
+							for(let ex of ci.example){
+								classExamples.push(ex.replace(/<.*code?[^>]*>/g, ''));
 							}
 
 						}
