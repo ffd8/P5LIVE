@@ -67,6 +67,9 @@ class P5LIVEaudio{
 function setupAudio(makeGlobal = false){
 	a5 = new P5LIVEaudio(makeGlobal)
 	a5.setup()
+	// window.addEventListener("click", ()=>{
+	// 	userStartAudio()
+	// })
 }
 
 function updateAudio(){

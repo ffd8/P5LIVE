@@ -1,5 +1,5 @@
 # P5LIVE
-v 1.8.2-dev  
+v 1.9.0  
 cc [teddavis.org](http://teddavis.org) – 2019 - 2026  
 p5.js collaborative live-coding vj environment!
 
@@ -59,7 +59,7 @@ so export/import all sketches to migrate between online / offline / browsers.
 Simply use `Settings Panel`» `Backup` » `Now` to export all settings + sketches.
 
 #### Automatic Backups
-See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals. If using [Offline Server](https://github.com/ffd8/P5LIVE#offline-mode), it will save these backups to your `P5LIVE/_backups` folder rather than downloads.
+See `Settings Panel` » `Backup` to automatically export a P5LIVE backup file at varying intervals. If using [Offline Server](https://github.com/ffd8/P5LIVE#offline-mode), it will save these backups to your `P5LIVE/_backups` folder rather than downloads. Previously these were saved when exiting P5LIVE, but due to security changes in the browser, they now occur when starting P5LIVE, thus backing up the state before you start to adjust sketches.
 
 ## MENU
 ### P5LIVE PANEL 
@@ -345,6 +345,8 @@ Ace Editor also has the ability to have autocomplete snippets of code blocks. To
 
 - `libs`, inserts code for loading external libraries.
 - `p5`, adds p5 template incase removed
+- `v1`, adds p5 v1 header
+- `p2`, adds p5 v2 header
 - `hydraonly`, replace all code with this to only use hydra-synth
 - `canvas`, a canvas only sketch
 - `sandbox`, adds //sandbox start/stop for eval hydra code
@@ -394,7 +396,7 @@ let libs = [
 ]
 ```
 
-#### <span style="text-decoration:line-through">p5 or p5.sound</span>
+#### p5 or p5.sound
 With the introduction of p5.js v2.0, you can now set a custom version by using the following syntax (place at very top of code):
 
 ```js
@@ -403,9 +405,9 @@ With the introduction of p5.js v2.0, you can now set a custom version by using t
 // p5 = '1.4.0' (uses specific version)
 ```
 
-Use `print(VERSION)` within the `setup()` to confirm what version is loaded. In ONLINE mode it will grab the selected version via CDN. In OFFLINE mode, it will download if necessary and then be accessed locally, allowing truely offline usage.
+Use `print(VERSION)` within the `setup()` to confirm which version is loaded. In ONLINE mode it will grab the selected version via CDN. In OFFLINE mode, it will download if necessary and then be accessed locally, allowing truely offline usage.
 
-p5.js version 1.0+ remains the default until it's changed officially in the online editor. To archive a new sketch to the current p5.js version, just write `version` + `tab` key, to be sure it continues to use that version in the future. To list all available p5.js versions, write `print(parent.includeScripts.p5.versions)` within the `setup()`.
+p5.js version 1.0+ remains the default if no version is given, so all older sketches continue to work. Creating a `new` sketch automatically adds the p5.js v2 header. To manually set version, at very top of sketch type `v1` or `v2` and `tab` key. To archive a new sketch to the current p5.js version, just write `version` + `tab` key, to be sure it continues to use that version in the future. To list all available p5.js versions, write `print(parent.includeScripts.p5.versions)` within the `setup()`.
 
 To exclude libraries `p5.js` (ie. hydra only, canvas hacking) or `p5.sound` (ie. for Tone.js), add `// no p5` or `// no p5sound` anywhere in your code. 
 

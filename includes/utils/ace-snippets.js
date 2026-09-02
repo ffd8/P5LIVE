@@ -9,7 +9,9 @@ var aceSnippets = [
 	"name": "p5",
 	"recompile": true,
 	"content": 
-	`function setup() {
+	`// p5 = '2'
+
+async function setup() {
 	createCanvas(windowWidth, windowHeight)
 }
 
@@ -17,6 +19,18 @@ function draw() {
 	\${1}
 }
 `
+},{
+	"tabTrigger": "v1",
+	"name": "v1",
+	"recompile": true,
+	"content": 
+	`// p5 = '1'`
+},{
+	"tabTrigger": "v2",
+	"name": "v2",
+	"recompile": true,
+	"content": 
+	`// p5 = '2'`
 },{
 	"tabTrigger": "w",
 	"name": "w",
